@@ -18,7 +18,7 @@ const uploadtodir = multer({ dest: 'C:/Users/prasa/Music/uploads' });
 const app = express();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Connect to MongoDB with error handling
-mongoose.connect('mongodb://localhost:27017/documents', {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
