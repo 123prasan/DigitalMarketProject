@@ -197,26 +197,35 @@
         </div>
       </div>
       <div class="cart-item">
-        <img src="<%=file.previewUrl%>" alt="Preview" class="cart-item-img" />
-        <div class="cart-item-details">
-          <div class="cart-item-title"><%= file.filename %></div>
-          <div class="cart-item-meta">Item by <span style="color:#7c3aed;">Admin</span></div>
-          <div class="cart-item-license">
-            License: <a href="#" style="color:#6366f1;text-decoration:underline;">Regular License</a>
-          </div>
-          <div class="cart-item-support">
-            Support: <a href="#" style="color:#6366f1;text-decoration:underline;">6 months support</a>
-          </div>
-          <div class="cart-item-qty">
-            Qty <input type="number" value="1" min="1" max="10" readonly />
-            <span style="color:#6366f1;cursor:pointer;" onclick="alert('Update feature coming soon!')">Update</span>
-            <span class="cart-item-remove" onclick="emptyCart()">&times;</span>
-          </div>
-        </div>
-        <div class="cart-item-price">₹<%= file.price %></div>
-      </div>
-      <!-- Cart Summary is now inside the cart-box, at the bottom -->
-      <div class="cart-summary-box" style="margin:32px auto 0 auto;">
+  <img src="<%= previewUrl %>" alt="Preview" class="cart-item-img" />
+  <div class="cart-item-details">
+    <div class="cart-item-title"><%= file.filename %></div>
+    <div class="cart-item-meta">
+      Uploaded by <span style="color:#7c3aed;"><%= file.user || 'Admin' %></span>
+      <span style="color:#bbb; margin-left:10px;">
+        | Uploaded on <%= file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'N/A' %>
+      </span>
+    </div>
+    <div class="cart-item-license">
+      <b>Category:</b> <span style="color:#6366f1;"><%= file.category || 'General' %></span>
+    </div>
+    <div class="cart-item-license">
+      <b>Description:</b> <span style="color:#444;"><%= file.filedescription || 'No description provided.' %></span>
+    </div>
+    <div class="cart-item-support">
+      <b>Support:</b> 6 months included
+    </div>
+    <div class="cart-item-license">
+      <b>License:</b> Regular License
+    </div>
+    <div class="cart-item-qty">
+      Qty <input type="number" value="1" min="1" max="10" readonly />
+      <span style="color:#6366f1;cursor:pointer;" onclick="alert('Update feature coming soon!')">Update</span>
+      <span class="cart-item-remove" onclick="emptyCart()">&times;</span>
+    </div>
+  </div>
+  <!-- <div class="cart-item-price">₹<%= file.price %></div> -->
+  <div class="cart-summary-box" style="margin:32px auto 0 auto;">
         <div class="cart-summary-title">Your Cart Total</div>
         <div class="cart-summary-total" id="cartTotal">₹<%= file.price %></div>
         <button class="btn-checkout" onclick="checkout()">
@@ -229,7 +238,13 @@
           <i class="fa fa-lock"></i> Secure checkout
         </div>
       </div>
+</div>
+        <!-- <div class="cart-item-price">₹<%= file.price %></div> -->
+      </div>
+      <!-- Cart Summary is now inside the cart-box, at the bottom -->
+      
     </div>
+    
   </div>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>

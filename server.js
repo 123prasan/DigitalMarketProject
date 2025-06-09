@@ -479,7 +479,18 @@ app.get('/notifications', async (req, res) => {
 app.get('/file/:id', async (req, res) => {
   const file = await File.findById(req.params.id);
   if (!file) return res.status(404).send('File not found');
-  res.render('file-details', { file, razorpayKey: process.env.RAZORPAY_KEY_ID });
+
+  // Get signed URL for the preview image from Supabase
+  const { data: previewData } = await supabase
+    .storage
+    .from('files')
+    .createSignedUrl(`previews/${file._id}.jpg`, 60 * 5);
+
+  res.render('file-details', {
+    file,
+    razorpayKey: process.env.RAZORPAY_KEY_ID,
+    previewUrl: previewData?.signedUrl || null
+  });
 });
 
 
@@ -511,8 +522,6 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-const { createCanvas } = require('canvas');
-const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
 
 async function pdfFirstPageToImage(pdfBuffer, outputPath) {
   const fontPath = path.join(
