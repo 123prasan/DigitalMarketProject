@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout | <%= file.filename %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body { background: #f8fafc; font-family: 'Inter', Arial, sans-serif; }
+    .checkout-container {
+      max-width: 1100px;
+      margin: 48px auto;
+      background: none;
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .cart-box {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(124,58,237,0.08);
+      padding: 0 0 18px 0;
+      flex: 1 1 520px;
+      min-width: 320px;
+      max-width: 600px;
+    }
+    .cart-header {
+      background: #444;
+      color: #fff;
+      border-radius: 10px 10px 0 0;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.18em;
+      font-weight: 700;
+    }
+    .cart-header button {
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 18px;
+      font-weight: 600;
+      font-size: 1em;
+      margin-left: 8px;
+      transition: background 0.18s;
+    }
+    .cart-header button:hover {
+      background: #7c3aed;
+    }
+    .cart-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      padding: 24px 24px 12px 24px;
+      border-bottom: 1px solid #ececec;
+    }
+    .cart-item-img {
+      width: 70px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 7px;
+      background: #f3f4f6;
+      box-shadow: 0 1px 4px rgba(124,58,237,0.07);
+    }
+    .cart-item-details {
+      flex: 1;
+    }
+    .cart-item-title {
+      font-size: 1.13em;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 2px;
+    }
+    .cart-item-meta {
+      font-size: 0.98em;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    .cart-item-license {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 2px;
+    }
+    .cart-item-support {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 2px;
+    }
+    .cart-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .cart-item-qty input {
+      width: 48px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+    .cart-item-price {
+      font-size: 1.25em;
+      font-weight: 700;
+      color: #222;
+      margin-left: 18px;
+      white-space: nowrap;
+    }
+    .cart-item-remove {
+      color: #e11d48;
+      font-size: 1.2em;
+      cursor: pointer;
+      margin-left: 10px;
+      margin-top: 2px;
+    }
+    .cart-extra {
+      padding: 16px 24px 0 24px;
+      font-size: 1em;
+      color: #444;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cart-extra input[type="checkbox"] {
+      accent-color: #7c3aed;
+      margin-right: 7px;
+    }
+    .cart-summary-box {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(124,58,237,0.08);
+      padding: 32px 32px 24px 32px;
+      min-width: 260px;
+      max-width: 340px;
+      margin-top: 0;
+      text-align: center;
+    }
+    .cart-summary-title {
+      font-size: 1.18em;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: #222;
+    }
+    .cart-summary-total {
+      font-size: 2.3em;
+      font-weight: 800;
+      color: #22c55e;
+      margin-bottom: 18px;
+    }
+    .btn-checkout {
+      background: #7ed957;
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 16px 0;
+      font-size: 1.18em;
+      width: 100%;
+      margin-bottom: 10px;
+      transition: background 0.18s;
+    }
+    .btn-checkout:hover {
+      background: #22c55e;
+    }
+    .cart-summary-note {
+      font-size: 0.98em;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    @media (max-width: 900px) {
+      .checkout-container { flex-direction: column; align-items: stretch; gap: 24px; }
+      .cart-summary-box { margin: 0 auto; }
+    }
+    @media (max-width: 600px) {
+      .checkout-container { margin: 12px auto; }
+      .cart-box, .cart-summary-box { padding: 12px 6px; }
+      .cart-header { padding: 12px 10px; font-size: 1em; }
+      .cart-item { padding: 12px 8px 8px 8px; gap: 10px; }
+      .cart-summary-box { padding: 18px 6px 12px 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-container">
+    <!-- Cart Section (now contains summary inside) -->
+    <div class="cart-box">
+      <div class="cart-header">
+        <div>
+          <button onclick="window.location.href='/'">Continue Shopping</button>
+        </div>
+        <div>
+          <button onclick="emptyCart()" id="emptyCartBtn">Empty Cart</button>
+        </div>
+      </div>
+      <div class="cart-item">
+        <img src="<%=file.previewUrl%>" alt="Preview" class="cart-item-img" />
+        <div class="cart-item-details">
+          <div class="cart-item-title"><%= file.filename %></div>
+          <div class="cart-item-meta">Item by <span style="color:#7c3aed;">Admin</span></div>
+          <div class="cart-item-license">
+            License: <a href="#" style="color:#6366f1;text-decoration:underline;">Regular License</a>
+          </div>
+          <div class="cart-item-support">
+            Support: <a href="#" style="color:#6366f1;text-decoration:underline;">6 months support</a>
+          </div>
+          <div class="cart-item-qty">
+            Qty <input type="number" value="1" min="1" max="10" readonly />
+            <span style="color:#6366f1;cursor:pointer;" onclick="alert('Update feature coming soon!')">Update</span>
+            <span class="cart-item-remove" onclick="emptyCart()">&times;</span>
+          </div>
+        </div>
+        <div class="cart-item-price">₹<%= file.price %></div>
+      </div>
+      <!-- Cart Summary is now inside the cart-box, at the bottom -->
+      <div class="cart-summary-box" style="margin:32px auto 0 auto;">
+        <div class="cart-summary-title">Your Cart Total</div>
+        <div class="cart-summary-total" id="cartTotal">₹<%= file.price %></div>
+        <button class="btn-checkout" onclick="checkout()">
+          <i class="fa fa-lock"></i> Secure Checkout
+        </button>
+        <div class="cart-summary-note">
+          Price displayed excludes any applicable taxes and a handling fee.
+        </div>
+        <div style="color:#bbb;font-size:1.1em;margin-top:18px;">
+          <i class="fa fa-lock"></i> Secure checkout
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+function emptyCart() {
+  window.location.href = '/';
+}
+
+function checkout() {
+  // Disable button to prevent multiple clicks
+  const btn = document.querySelector('.btn-checkout');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+
+  fetch('/create-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fileId: "<%= file._id %>",
+      filename: "<%= file.filename %>",
+      price: <%= file.price %>
+    })
+  })
+  .then(res => res.json())
+  .then(order => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa fa-lock"></i> Secure Checkout';
+    if (!order.id) {
+      alert('Failed to create order. Please try again.');
+      return;
+    }
+    const options = {
+      key: "<%= process.env.RAZORPAY_KEY_ID %>", // Pass from server if possible
+      amount: order.amount,
+      currency: order.currency,
+      name: "<%= file.filename %>",
+      description: "<%= file.filedescription %>",
+      order_id: order.id,
+      handler: function (response) {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+        // Verify payment on server
+        fetch('/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_order_id,
+            razorpay_payment_id,
+            razorpay_signature,
+            fileId: "<%= file._id %>"
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            // Download the file as a blob
+            fetch(`/download/<%= file._id %>`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id,
+                razorpay_payment_id,
+                razorpay_signature
+              })
+            })
+            .then(async response => {
+              if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "<%= file.filename%>"; 
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+              } else {
+                alert('Payment verification failed or download error.');
+              }
+            });
+          } else {
+            alert('Payment verification failed.');
+          }
+        });
+      },
+      prefill: {
+        name: "",
+        email: "",
+        contact: ""
+      },
+      theme: { color: "#7c3aed" }
+    };
+    const rzp = new Razorpay(options);
+    rzp.open();
+  })
+  .catch(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa fa-lock"></i> Secure Checkout';
+    alert('Something went wrong. Please try again.');
+  });
+}
+</script>
+</body>
+</html>

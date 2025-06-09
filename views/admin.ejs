@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --sidebar-bg: #f8fafc;
+      --sidebar-active: #ede9fe;
+      --sidebar-text: #64748b;
+      --sidebar-active-text: #7c3aed;
+      --card-bg: #fff;
+      --border: #e5e7eb;
+      --table-header: #f1f5f9;
+      --success-bg: #ecfdf5;
+      --success-text: #10b981;
+      --pending-bg: #fef9c3;
+      --pending-text: #eab308;
+      --unfulfilled-bg: #fee2e2;
+      --unfulfilled-text: #ef4444;
+      --fulfilled-bg: #dcfce7;
+      --fulfilled-text: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f1f5f9;
+      color: #222;
+    }
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .main {
+      flex: 1;
+      padding: 0 0 0 0;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      justify-content: space-between;
+     padding-top: 20px;
+     padding-bottom: 20px;
+     padding-left: 20px;
+     padding-right: 20px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+    .header .search {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+    .header .search input {
+      width: 100%;
+      padding: 10px 36px 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #f8fafc;
+    }
+    .header .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+    .header .actions button, .header .actions .dropdown {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 1rem;
+      margin-left: 10px;
+      cursor: pointer;
+      color: #222;
+      transition: background 0.2s;
+    }
+    .header .actions .primary {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      font-weight: 600;
+    }
+    .dashboard {
+      padding: 32px 40px;
+      background: #f1f5f9;
+      flex: 1;
+      min-width: 0;
+    }
+    .dashboard .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .dashboard .title-row h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    .dashboard .date-range {
+      font-size: 1rem;
+      color: #64748b;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    .dashboard .cards {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .dashboard .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      padding: 18px 24px;
+      flex: 1;
+      min-width: 180px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .dashboard .card .label {
+      font-size: 1rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .dashboard .card .value {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .dashboard .card .trend {
+      font-size: 0.95rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dashboard .card .trend.negative {
+      color: #ef4444;
+    }
+    .dashboard .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .dashboard .tab {
+      padding: 7px 18px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #64748b;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .dashboard .tab.active, .dashboard .tab:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .dashboard .table-container {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+    th, td {
+      padding: 14px 10px;
+      text-align: left;
+      font-size: 1rem;
+    }
+    th {
+      background: var(--table-header);
+      color: #64748b;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    tr {
+      border-bottom: 1px solid var(--border);
+    }
+    tr:last-child {
+      border-bottom: none;
+    }
+    td {
+      color: #222;
+      vertical-align: middle;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-size: 0.95em;
+      font-weight: 500;
+      vertical-align: middle;
+    }
+    .badge.success {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+    .badge.pending {
+      background: var(--pending-bg);
+      color: var(--pending-text);
+    }
+    .badge.unfulfilled {
+      background: var(--unfulfilled-bg);
+      color: var(--unfulfilled-text);
+    }
+    .badge.fulfilled {
+      background: var(--fulfilled-bg);
+      color: var(--fulfilled-text);
+    }
+    .action-icons {
+      display: flex;
+      gap: 10px;
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+    .checkbox {
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+    }
+    /* Spinner for loading buttons */
+    .btn-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid #fff;
+      border-top: 2.5px solid #7c3aed;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-left: 8px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @media (max-width: 1100px) {
+      .dashboard .cards {
+        flex-direction: column;
+      }
+    }
+    @media (max-width: 900px) {
+      .header, .dashboard {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+      }
+      .dashboard .cards {
+        flex-direction: column;
+        gap: 10px;
+      }
+      table {
+        min-width: 600px;
+        font-size: 0.95em;
+      }
+    }
+    @media (max-width: 600px) {
+      .actions {
+        flex-direction: column;
+        gap: 6px;
+      }
+      .header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar removed -->
+    <div class="main" style="width:100%;">
+      <div class="header">
+        <div class="search">
+          <input type="text" placeholder="Search By order ID, Transaction ID, Customer Name...">
+          <span class="search-icon">
+            <!-- Google-style SVG search icon -->
+            <svg height="20" width="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+        </div>
+        <div class="actions">
+          <button id="exportBtn">Export</button>
+          <button id="uploadedFilesBtn" class="uploaded-files-btn">Uploaded Files</button>
+          <button class="primary">Upload file</button>
+          <!-- Notification Tab Button -->
+          <button id="notificationTabBtn" style="position:relative;">
+            <svg width="20" height="20" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:middle;">
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            Notification
+          </button>
+          <button id="logoutBtn" style="background:#ef4444; color:#fff; border:none; border-radius:6px; padding:8px 18px; font-size:1rem; margin-left:10px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center;">
+            <svg width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:5px;">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Logout
+          </button>
+        </div>
+      </div>
+      <div class="dashboard">
+        <div class="title-row">
+          <h2>Orders</h2>
+          <div class="date-range"></div>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <div class="label">Total Orders</div>
+            <div class="value"><%= totalOrders %></div>
+            <div class="trend <%= totalOrdersTrend < 0 ? 'negative' : '' %>">
+              <span><%= totalOrdersTrend >= 0 ? '↑' : '↓' %></span>
+              <%= Math.abs(totalOrdersTrend) %>% last week
+            </div>
+          </div>
+          <div class="card">
+            <div class="label">Order Failed</div>
+            <div class="value" style="color: red;"><%= failedOrders %> -</div>
+            <div class="trend <%= failedOrdersTrend < 0 ? 'negative' : '' %>">
+              <span><%= failedOrdersTrend >= 0 ?'↑' : '↓'%></span>
+              <%= Math.abs(failedOrdersTrend) %>% last week
+            </div>
+          </div>
+          <div class="card">
+            <div class="label">Total Amount</div>
+            <div class="value" style="color:  #10b981;">
+              ₹<%= totalAmount %>
+            </div>
+            <div class="trend <%= successfulOrdersTrend < 0 ? 'negative' : '' %>">
+              <span><%= successfulOrdersTrend >= 0 ? '↑' : '↓' %></span>
+              <%= Math.abs(successfulOrdersTrend) %>% last week
+            </div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab active">All</div>
+          <div class="tab">Unsuccessful</div>
+          <div class="tab">Successful</div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" class="checkbox"></th>
+                <th>Order</th>
+                <th>Date & Time</th>
+                <th>Customer</th>
+                <th>Transaction ID</th>
+                <th>Payment</th>
+                <th>Total</th>
+                <th>Items</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% orders.forEach(function(order) { %>
+                <tr data-status="<%= order.status.toLowerCase() %>">
+                  <td><input type="checkbox" class="checkbox"></td>
+                  <td><%= order.orderId %></td>
+                  <td><%= order.dateTime.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
+                  <td><%= order.customer %></td>
+                  <td><%= order.transactionId %></td>
+                  <td><%= order.payment %></td>
+                  <td><%= order.total %></td>
+                  <td><%= order.items.length %> items</td>
+                  <td>
+                    <% if(order.status.toLowerCase() === 'unsuccessful' || order.status.toLowerCase() === 'unsuccessfull') { %>
+                      <span class="badge unfulfilled">Unsuccessful</span>
+                    <% } else if(order.status.toLowerCase() === 'successful' || order.status.toLowerCase() === 'successfull') { %>
+                      <span class="badge fulfilled">Successful</span>
+                    <% } else { %>
+                      <span class="badge"><%= order.status %></span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <span style="cursor: pointer;" class="action-icons delete-icon" title="Delete">
+                      <!-- Trash bin SVG icon -->
+                      <svg width="20" height="20" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                      </svg>
+                    </span>
+                    
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+ 
+</body>
+ <script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Enhanced Search
+  document.querySelector('.header .search input').addEventListener('input', function () {
+    const filter = this.value.toLowerCase();
+    document.querySelectorAll('.table-container tbody tr').forEach(row => {
+      const tds = row.getElementsByTagName('td');
+      const orderId = tds[1]?.innerText.toLowerCase() || '';
+      const transactionId = tds[4]?.innerText.toLowerCase() || '';
+      const rowText = row.innerText.toLowerCase();
+      if (
+        orderId.includes(filter) ||
+        transactionId.includes(filter) ||
+        rowText.includes(filter)
+      ) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+
+  // Select all checkboxes
+  document.querySelector('thead .checkbox').addEventListener('change', function () {
+    const checked = this.checked;
+    document.querySelectorAll('tbody .checkbox').forEach(cb => cb.checked = checked);
+  });
+
+  // Tabs filter
+  document.querySelectorAll('.dashboard .tab').forEach(tab => {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.dashboard .tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const filter = this.textContent.trim().toLowerCase();
+      document.querySelectorAll('.table-container tbody tr').forEach(row => {
+        const status = (row.getAttribute('data-status') || '').toLowerCase();
+        if (filter === 'all') {
+          row.style.display = '';
+        } else if (filter === 'unsuccessful') {
+          row.style.display = (status === 'unsuccessful' || status === 'unsuccessfull') ? '' : 'none';
+        } else if (filter === 'successful') {
+          row.style.display = (status === 'successful' || status === 'successfull') ? '' : 'none';
+        } else {
+          row.style.display = '';
+        }
+      });
+    });
+  });
+
+  // Action icons
+  document.querySelectorAll('.action-icons').forEach(icon => {
+    icon.addEventListener('click', function () {
+      if (this.innerHTML.includes('128065')) {
+        alert('View order details');
+      } else if (this.innerHTML.includes('9998')) {
+        alert('Edit order');
+      }
+    });
+  });
+
+  // Delete Confirmation Modal logic
+  let deleteRow = null;
+  let deleteOrderId = null;
+  document.querySelectorAll('.delete-icon').forEach(icon => {
+    icon.addEventListener('click', function () {
+      deleteRow = this.closest('tr');
+      deleteOrderId = deleteRow.querySelector('td:nth-child(2)').innerText.trim();
+      document.getElementById('deleteConfirmModal').style.display = 'flex';
+    });
+  });
+  document.getElementById('deleteCancelBtn').addEventListener('click', function () {
+    document.getElementById('deleteConfirmModal').style.display = 'none';
+    deleteRow = null;
+    deleteOrderId = null;
+  });
+  document.getElementById('deleteYesBtn').addEventListener('click', function () {
+    const btn = this;
+    const btnText = document.getElementById('deleteYesBtnText');
+    const spinner = document.getElementById('deleteSpinner');
+    btn.disabled = true;
+    btnText.textContent = 'Deleting...';
+    spinner.style.display = 'inline-block';
+
+    fetch('/delete-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: deleteOrderId })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          if (deleteRow) deleteRow.remove();
+        } else {
+          alert('Failed to delete order!');
+        }
+        document.getElementById('deleteConfirmModal').style.display = 'none';
+        btn.disabled = false;
+        btnText.textContent = 'Yes, Delete';
+        spinner.style.display = 'none';
+        deleteRow = null;
+        deleteOrderId = null;
+      })
+      .catch(() => {
+        alert('Failed to delete order!');
+        document.getElementById('deleteConfirmModal').style.display = 'none';
+        btn.disabled = false;
+        btnText.textContent = 'Yes, Delete';
+        spinner.style.display = 'none';
+        deleteRow = null;
+        deleteOrderId = null;
+      });
+  });
+
+  // Export to PDF functionality
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    const btn = this;
+    const original = btn.innerHTML;
+    btn.innerHTML = 'Exporting <span class="btn-spinner"></span>';
+    btn.disabled = true;
+    const table = document.querySelector('.table-container');
+    html2canvas(table).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new window.jspdf.jsPDF({
+        orientation: 'landscape',
+        unit: 'pt',
+        format: 'a4'
+      });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = pageWidth - 40;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      pdf.addImage(imgData, 'PNG', 20, 20, imgWidth, imgHeight);
+      pdf.save('order-history.pdf');
+      btn.innerHTML = original;
+      btn.disabled = false;
+    }).catch(() => {
+      btn.innerHTML = original;
+      btn.disabled = false;
+      alert('Export failed!');
+    });
+  });
+
+  // Uploaded files modal logic
+  document.getElementById('uploadedFilesBtn').addEventListener('click', function () {
+    document.getElementById('uploadedFilesModal').style.display = 'flex';
+  });
+  document.getElementById('uploadedFilesModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+      this.style.display = 'none';
+    }
+  });
+
+  // Upload file modal logic
+  document.querySelector('.header .primary').addEventListener('click', function () {
+    document.getElementById('uploadFileModal').style.display = 'flex';
+  });
+  document.getElementById('uploadFileCancelBtn').addEventListener('click', function () {
+    document.getElementById('uploadFileModal').style.display = 'none';
+  });
+  document.getElementById('uploadFileForm').addEventListener('submit', function (e) {
+    const btn = document.getElementById('uploadFileSubmitBtn');
+    btn.innerHTML = 'Uploading <span class="btn-spinner"></span>';
+    btn.disabled = true;
+    // Let the form submit normally (page will reload)
+  });
+
+  // Notification Modal Logic
+  document.getElementById('notificationTabBtn').addEventListener('click', function () {
+    document.getElementById('notificationModal').style.display = 'flex';
+  });
+  function closeNotificationModal() {
+    document.getElementById('notificationModal').style.display = 'none';
+  }
+  document.getElementById('notificationModal').addEventListener('click', function(e) {
+    if (e.target === this) closeNotificationModal();
+  });
+  document.getElementById('notificationForm').addEventListener('submit', function () {
+    var btn = document.getElementById('sendNotificationBtn');
+    btn.innerHTML = 'Sending <span class="btn-spinner"></span>';
+    btn.disabled = true;
+  });
+
+  // Logout button logic with popup
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    document.getElementById('logoutModal').style.display = 'flex';
+  });
+  document.getElementById('logoutCancelBtn').addEventListener('click', function () {
+    document.getElementById('logoutModal').style.display = 'none';
+  });
+  document.getElementById('logoutYesBtn').addEventListener('click', function () {
+    var yesBtn = document.getElementById('logoutYesBtn');
+    var spinner = document.getElementById('logoutSpinner');
+    var btnText = document.getElementById('logoutYesBtnText');
+    yesBtn.disabled = true;
+    btnText.textContent = 'Logging out';
+    spinner.style.display = 'inline-block';
+    setTimeout(function () {
+      fetch('/logout', { method: 'GET', credentials: 'same-origin' })
+        .then(() => {
+          window.location.href = '/login';
+        })
+        .catch(() => {
+          spinner.style.display = 'none';
+          btnText.textContent = 'Yes, Logout';
+          yesBtn.disabled = false;
+          document.getElementById('logoutModal').style.display = 'none';
+        });
+    }, 2000);
+  });
+});
+</script>
+
+<!-- Add this modal for uploaded files just before </body> -->
+<div id="uploadedFilesModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:32px 24px; min-width:320px; max-width:95vw; max-height:85vh; overflow:auto; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+    <h2 style="margin-top:0; margin-bottom:20px; color:#7c3aed;">Uploaded Files</h2>
+    <ul style="list-style:none; padding:0; margin:0;">
+      <% if (uploadedFiles && uploadedFiles.length > 0) { %>
+        <% uploadedFiles.forEach(function(file, idx) { %>
+          <li style="background:#f8fafc; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.04); margin-bottom:18px; padding:18px 18px 14px 18px; display:flex; align-items:flex-start; gap:18px; position:relative;">
+            <div style="flex:1;">
+              <div style="font-weight:600; font-size:1.1em; color:#222;"><%= file.filename %></div>
+              <div style="color:#64748b; font-size:0.98em; margin:4px 0 6px 0;"><%= file.filedescription %></div>
+              <div style="color:#888; font-size:0.93em;">
+                <span>By <b><%= file.user %></b></span>
+                <span style="margin-left:10px;">| Uploaded: <%= new Date(file.uploadedAt).toLocaleString() %></span>
+                <% if(file.price && file.price > 0) { %>
+                  <span style="margin-left:10px; color:#10b981;">| Price: ₹<%= file.price %></span>
+                <% } %>
+              </div>
+              <div style="margin-top:8px;">
+                <% if (file.downloadUrl && file.downloadUrl !== '#') { %>
+                  <a href="<%= file.downloadUrl %>" target="_blank" style="color:#7c3aed; text-decoration:underline; font-weight:500;">
+                    Download/View
+                  </a>
+                <% } else { %>
+                  <span style="color:red;">File missing in storage</span>
+                <% } %>
+              </div>
+            </div>
+            <button
+              class="edit-file-btn"
+              data-id="<%= file._id %>"
+              data-filename="<%- file.filename.replace(/"/g, '&quot;') %>"
+              data-description="<%- file.filedescription ? file.filedescription.replace(/"/g, '&quot;') : '' %>"
+              data-price="<%= file.price || 0 %>"
+              onclick="openEditFileModalFromBtn(this)"
+              title="Edit"
+              style="background:#ede9fe; border:none; border-radius:6px; padding:7px 14px; color:#7c3aed; font-weight:600; cursor:pointer; font-size:1em; display:flex; align-items:center; gap:5px;"
+            >
+              <svg width="18" height="18" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19.5 3 21l1.5-4L16.5 3.5z"></path>
+              </svg>
+              Edit
+            </button>
+            <button
+              class="delete-file-btn"
+              data-id="<%= file._id %>"
+              data-fileurl="<%= file.fileUrl %>"
+              title="Delete"
+              style="background:#fee2e2; border:none; border-radius:6px; padding:7px 14px; color:#ef4444; font-weight:600; cursor:pointer; font-size:1em; display:flex; align-items:center; gap:5px; margin-left:8px;"
+            >
+              <svg width="18" height="18" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              <span class="delete-btn-text">Delete</span>
+              <span class="delete-btn-loader" style="display:none;">Deleting...</span>
+            </button>
+          </li>
+        <% }) %>
+      <% } else { %>
+        <li style="color:#888; text-align:center; padding:30px 0;">No files uploaded yet.</li>
+      <% } %>
+    </ul>
+    <button onclick="document.getElementById('uploadedFilesModal').style.display='none'" style="background:#7c3aed; color:#fff; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; margin-top:10px; cursor:pointer;">Close</button>
+  </div>
+</div>
+
+<!-- Edit File Modal -->
+<div id="editFileModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:10000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:32px 24px; min-width:320px; max-width:95vw; max-height:85vh; overflow:auto; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+    <h2 style="margin-top:0; margin-bottom:20px; color:#7c3aed;">Edit File</h2>
+    <form id="editFileForm" method="POST" action="/edit-file">
+      <input type="hidden" name="fileId" id="editFileId">
+      <div style="margin-bottom:14px;">
+        <label for="editFileName" style="font-weight:500;">File Name</label><br>
+        <input type="text" id="editFileName" name="filename" style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="editFileDescription" style="font-weight:500;">Description</label><br>
+        <textarea id="editFileDescription" name="filedescription" style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;" rows="3"></textarea>
+      </div>
+      <div style="margin-bottom:18px;">
+        <label for="editFilePrice" style="font-weight:500;">Price</label><br>
+        <input type="number" id="editFilePrice" name="price" style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;">
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button type="submit" id="saveFileBtn" style="background:#7c3aed; color:#fff; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Save</button>
+        <button type="button" onclick="closeEditFileModal()" style="background:#f3f4f6; color:#222; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Notification Modal -->
+<div id="notificationModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:12000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:32px 24px; min-width:320px; max-width:95vw; max-height:85vh; overflow:auto; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+    <h2 style="margin-top:0; margin-bottom:20px; color:#7c3aed;">Send Notification</h2>
+    <form id="notificationForm" method="POST" action="/send-notification">
+      <div style="margin-bottom:18px;">
+        <label for="notificationText" style="font-weight:500;">Message</label><br>
+        <textarea id="notificationText" name="message" required style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;" rows="3" placeholder="Enter notification message"></textarea>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button type="submit" id="sendNotificationBtn" style="background:#7c3aed; color:#fff; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Send</button>
+        <button type="button" onclick="closeNotificationModal()" style="background:#f3f4f6; color:#222; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Logout Confirmation Modal -->
+<div id="logoutModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:20000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:32px 36px; min-width:320px; max-width:95vw; box-shadow:0 8px 32px rgba(0,0,0,0.18); text-align:center;">
+    <h3 style="color:#ef4444; margin-bottom:18px;">Logout Confirmation</h3>
+    <div style="font-size:1.08em; color:#444; margin-bottom:24px;">Are you sure you want to logout?</div>
+    <div style="display:flex; gap:16px; justify-content:center;">
+      <button id="logoutCancelBtn" style="background:#f3f4f6; color:#222; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Cancel</button>
+      <button id="logoutYesBtn" style="background:#ef4444; color:#fff; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer; display:inline-flex; align-items:center;">
+        <span id="logoutYesBtnText">Yes, Logout</span>
+        <span id="logoutSpinner" class="btn-spinner" style="display:none; margin-left:10px;"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Logout button logic with popup
+  document.getElementById('logoutBtn').addEventListener('click', function () {
+    document.getElementById('logoutModal').style.display = 'flex';
+  });
+
+  document.getElementById('logoutCancelBtn').addEventListener('click', function () {
+    document.getElementById('logoutModal').style.display = 'none';
+  });
+
+  document.getElementById('logoutYesBtn').addEventListener('click', function () {
+    var yesBtn = document.getElementById('logoutYesBtn');
+    var spinner = document.getElementById('logoutSpinner');
+    var btnText = document.getElementById('logoutYesBtnText');
+    yesBtn.disabled = true;
+    btnText.textContent = 'Logging out';
+    spinner.style.display = 'inline-block';
+    setTimeout(function () {
+      fetch('/logout', { method: 'GET', credentials: 'same-origin' })
+        .then(() => {
+          window.location.href = '/login';
+        })
+        .catch(() => {
+          spinner.style.display = 'none';
+          btnText.textContent = 'Yes, Logout';
+          yesBtn.disabled = false;
+          document.getElementById('logoutModal').style.display = 'none';
+        });
+    }, 2000);
+  });
+</script>
+
+<% if (typeof fileUpdated !== 'undefined' && fileUpdated) { %>
+  <div id="successPopup" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;z-index:20000;">
+    <div style="background:#fff;border-radius:12px;padding:32px 48px;box-shadow:0 8px 32px rgba(0,0,0,0.18);font-size:1.3em;color:#10b981;font-weight:600;text-align:center;border:2px solid #10b981;">
+      ✅ Successfully updated file!
+    </div>
+  </div>
+  <script>
+    setTimeout(function() {
+      document.getElementById('successPopup').style.display = 'none';
+      // Remove fileUpdated=1 from URL without reloading
+      if (window.history.replaceState) {
+        const url = new URL(window.location);
+        url.searchParams.delete('fileUpdated');
+        window.history.replaceState({}, document.title, url.pathname + url.search);
+      }
+    }, 1800);
+  </script>
+<% } %>
+
+<!-- Upload File Modal -->
+<div id="uploadFileModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:12000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:32px 24px; min-width:320px; max-width:95vw; max-height:85vh; overflow:auto; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+    <h2 style="margin-top:0; margin-bottom:20px; color:#7c3aed;">Upload File</h2>
+    <form id="uploadFileForm" method="POST" action="/upload-file" enctype="multipart/form-data">
+      <div style="margin-bottom:14px;">
+        <label for="uploadFileInput" style="font-weight:500;">Choose File</label><br>
+        <input type="file" id="uploadFileInput" name="file" required style="margin-top:4px;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="uploadFileName" style="font-weight:500;">File Name</label><br>
+        <input type="text" id="uploadFileName" name="filename" required style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="uploadFileDescription" style="font-weight:500;">Description</label><br>
+        <textarea id="uploadFileDescription" name="filedescription" style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;" rows="3"></textarea>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="uploadFileCategory" style="font-weight:500;">Category</label><br>
+        <select id="uploadFileCategory" name="category" required style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;">
+          <option value="">Select Category</option>
+          <option value="Engineering">Engineering</option>
+          <option value="BSC Nursing">BSC Nursing</option>
+          <!-- Add more categories as needed -->
+        </select>
+      </div>
+      <div style="margin-bottom:18px;">
+        <label for="uploadFilePrice" style="font-weight:500;">Price</label><br>
+        <input type="number" id="uploadFilePrice" name="price" style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;">
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button type="submit" id="uploadFileSubmitBtn" style="background:#7c3aed; color:#fff; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Upload</button>
+        <button type="button" id="uploadFileCancelBtn" style="background:#f3f4f6; color:#222; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Show upload file modal
+  document.querySelector('.header .primary').addEventListener('click', function () {
+    document.getElementById('uploadFileModal').style.display = 'flex';
+  });
+
+  // Close upload file modal
+  document.getElementById('uploadFileCancelBtn').addEventListener('click', function () {
+    document.getElementById('uploadFileModal').style.display = 'none';
+  });
+
+  // Upload file form submission
+  document.getElementById('uploadFileForm').addEventListener('submit', function (e) {
+    const btn = document.getElementById('uploadFileSubmitBtn');
+    btn.innerHTML = 'Uploading <span class="btn-spinner"></span>';
+    btn.disabled = true;
+    // Let the form submit normally (page will reload)
+  });
+</script>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteConfirmModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:30000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:32px 36px; min-width:320px; max-width:95vw; box-shadow:0 8px 32px rgba(0,0,0,0.18); text-align:center;">
+    <h3 style="color:#ef4444; margin-bottom:18px;">Delete Transaction</h3>
+    <div style="font-size:1.08em; color:#444; margin-bottom:24px;">Are you sure you want to delete this transaction?</div>
+    <div style="display:flex; gap:16px; justify-content:center;">
+      <button id="deleteCancelBtn" style="background:#f3f4f6; color:#222; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Cancel</button>
+      <button id="deleteYesBtn" style="background:#ef4444; color:#fff; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer; display:inline-flex; align-items:center;">
+        <span id="deleteYesBtnText">Yes, Delete</span>
+        <span id="deleteSpinner" class="btn-spinner" style="display:none; margin-left:10px;"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let deleteRow = null;
+  let deleteOrderId = null;
+
+  // Delete action - show confirmation modal
+  document.querySelectorAll('.delete-icon').forEach(icon => {
+    icon.addEventListener('click', function () {
+      deleteRow = this.closest('tr');
+      deleteOrderId = deleteRow.querySelector('td:nth-child(2)').innerText.trim();
+      document.getElementById('deleteConfirmModal').style.display = 'flex';
+    });
+  });
+
+  // Confirm delete action
+  document.getElementById('deleteYesBtn').addEventListener('click', function () {
+    const btn = this;
+    const btnText = document.getElementById('deleteYesBtnText');
+    const spinner = document.getElementById('deleteSpinner');
+    btn.disabled = true;
+    btnText.textContent = 'Deleting...';
+    spinner.style.display = 'inline-block';
+
+    fetch('/delete-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: deleteOrderId })
+    })
+      .then(res => res.json())
+      .then data => {
+        if (data.success) {
+          if (deleteRow) deleteRow.remove();
+        } else {
+          alert('Failed to delete order!');
+        }
+        document.getElementById('deleteConfirmModal').style.display = 'none';
+        btn.disabled = false;
+        btnText.textContent = 'Yes, Delete';
+        spinner.style.display = 'none';
+        deleteRow = null;
+        deleteOrderId = null;
+      })
+      .catch(() => {
+        alert('Failed to delete order!');
+        document.getElementById('deleteConfirmModal').style.display = 'none';
+        btn.disabled = false;
+        btnText.textContent = 'Yes, Delete';
+        spinner.style.display = 'none';
+        deleteRow = null;
+        deleteOrderId = null;
+      });
+  });
+
+  // Cancel delete action
+  document.getElementById('deleteCancelBtn').addEventListener('click', function () {
+    document.getElementById('deleteConfirmModal').style.display = 'none';
+    deleteRow = null;
+    deleteOrderId = null;
+  });
+</script>
+
+<script>
+function openEditFileModalFromBtn(btn) {
+  // Fill the modal fields with the file's data
+  document.getElementById('editFileId').value = btn.getAttribute('data-id');
+  document.getElementById('editFileName').value = btn.getAttribute('data-filename');
+  document.getElementById('editFileDescription').value = btn.getAttribute('data-description');
+  document.getElementById('editFilePrice').value = btn.getAttribute('data-price');
+  document.getElementById('editFileModal').style.display = 'flex';
+}
+
+// Close Edit File Modal
+function closeEditFileModal() {
+  document.getElementById('editFileModal').style.display = 'none';
+}
+document.querySelector(".date-range").innerText=new Date();
+</script>
+<script>
+document.querySelectorAll('.delete-file-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    
+    const fileId = btn.getAttribute('data-id');
+    const fileUrl = btn.getAttribute('data-fileurl');
+    const textSpan = btn.querySelector('.delete-btn-text');
+    const loaderSpan = btn.querySelector('.delete-btn-loader');
+
+    // Show loader, hide text
+    textSpan.style.display = 'none';
+    loaderSpan.style.display = 'inline';
+
+    fetch('/delete-file', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileId, fileUrl })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        btn.closest('li').remove();
+      } else {
+        // Restore button state
+        textSpan.style.display = 'inline';
+        loaderSpan.style.display = 'none';
+        alert('Failed to delete file: ' + (data.message || 'Unknown error'));
+      }
+    })
+    .catch(() => {
+      textSpan.style.display = 'inline';
+      loaderSpan.style.display = 'none';
+      alert('Failed to delete file!');
+    });
+  });
+});
+</script>
+</html>
