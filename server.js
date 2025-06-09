@@ -13,7 +13,7 @@ const session = require('express-session');
 require("dotenv").config();
 const mongoose = require("mongoose");
 const dayjs = require('dayjs');   // npm install dayjs
-const uploadtodir = multer({ dest: 'C:/Users/prasa/Music/uploads' });
+
 // C:\Users\prasa\Music\uploads
 const app = express();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
