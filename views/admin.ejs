@@ -824,7 +824,11 @@ document.addEventListener('DOMContentLoaded', function () {
     <form id="uploadFileForm" method="POST" action="/upload-file" enctype="multipart/form-data">
       <div style="margin-bottom:14px;">
         <label for="uploadFileInput" style="font-weight:500;">Choose File</label><br>
-        <input type="file" id="uploadFileInput" name="file" required style="margin-top:4px;">
+        <input type="file" id="uploadFileInput" name="file" accept="application/pdf" required style="margin-top:4px;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="uploadFileImage" style="font-weight:500;">Choose Preview Image</label><br>
+        <input type="file" id="uploadFileImage" name="previewImage" accept="image/*" required style="margin-top:4px;">
       </div>
       <div style="margin-bottom:14px;">
         <label for="uploadFileName" style="font-weight:500;">File Name</label><br>

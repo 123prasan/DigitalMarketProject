@@ -1,9 +1,10 @@
+console.log("Server is starting...");
 const express = require("express");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const path = require("path");
 const Order = require('./Order');
-const pdfPoppler = require("pdf-poppler");
+// const pdfPoppler = require("pdf-poppler");
 const fs = require("fs");
 const Message=require("./message")
 const multer = require('multer');
@@ -337,71 +338,44 @@ app.post("/send-notification", requireAdmin, async (req, res) => {
 
 // const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
-app.post('/upload-file', upload.single('file'), async (req, res) => {
+app.post('/upload-file', upload.fields([
+  { name: 'file', maxCount: 1 },
+  { name: 'previewImage', maxCount: 1 }
+]), async (req, res) => {
   const { filename, filedescription, price, category } = req.body;
-  const file = req.file;
-  if (!file) return res.status(400).send('No file uploaded');
+  const pdfFile = req.files['file']?.[0];
+  const imageFile = req.files['previewImage']?.[0];
+  if (!pdfFile || !imageFile) return res.status(400).send('PDF and image are required');
 
-  // Upload to Supabase Storage
-  const { data, error } = await supabase.storage
+  // 1. Upload PDF to Supabase
+  const { data: pdfData, error: pdfError } = await supabase.storage
     .from('files')
-    .upload(`${Date.now()}_${file.originalname}`, file.buffer, {
-      contentType: file.mimetype,
+    .upload(`${Date.now()}_${pdfFile.originalname}`, pdfFile.buffer, {
+      contentType: pdfFile.mimetype,
       upsert: false
     });
+  if (pdfError) return res.status(500).send('Supabase PDF upload failed');
 
-  if (error) return res.status(500).send('Supabase upload failed');
-
-  // Save metadata in MongoDB (or Supabase Postgres if you want)
+  // 2. Save metadata in MongoDB
   const newFile = await File.create({
     filename,
     filedescription,
     price,
     category,
-    fileUrl: data.path, // Supabase storage path
+    fileUrl: pdfData.path,
     uploadedAt: new Date(),
     user: req.user ? req.user.name : 'Admin'
   });
 
-  // --- PDF to Image Preview Generation ---
-  try {
-    // 1. Save PDF temporarily to disk
-    const os = require('os');
-    const tempPdfPath = path.join(os.tmpdir(), `${newFile._id}.pdf`);
-    fs.writeFileSync(tempPdfPath, file.buffer);
-
-    // 2. Convert first page to image
-    const outputDir = os.tmpdir();
-    const options = {
-      format: "jpeg",
-      out_dir: outputDir,
-      out_prefix: `${newFile._id}`,
-      page: 1,
-    };
-    await pdfPoppler.convert(tempPdfPath, options);
-
-    // 3. Read the generated image
-    const imagePath = path.join(outputDir, `${newFile._id}-1.jpg`);
-    if (fs.existsSync(imagePath)) {
-      const imageBuffer = fs.readFileSync(imagePath);
-
-      // 4. Upload image to Supabase Storage (previews folder)
-      const { error: imgError } = await supabase.storage
-        .from('files')
-        .upload(`previews/${newFile._id}.jpg`, imageBuffer, {
-          contentType: 'image/jpeg',
-          upsert: true
-        });
-
-      if (imgError) {
-        console.error('Preview upload failed:', imgError);
-      }
-      // 5. Clean up temp files
-      fs.unlinkSync(tempPdfPath);
-      fs.unlinkSync(imagePath);
-    }
-  } catch (err) {
-    console.error('PDF to image conversion failed:', err);
+  // 3. Upload image to Supabase with the same file ID
+  const { error: imgError } = await supabase.storage
+    .from('files')
+    .upload(`previews/${newFile._id}.jpg`, imageFile.buffer, {
+      contentType: imageFile.mimetype,
+      upsert: true
+    });
+  if (imgError) {
+    console.error('Preview image upload failed:', imgError);
   }
 
   res.redirect('/admin?fileUploaded=1');
@@ -536,3 +510,32 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+const { createCanvas } = require('canvas');
+const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.js');
+
+async function pdfFirstPageToImage(pdfBuffer, outputPath) {
+  const fontPath = path.join(
+    require.resolve('pdfjs-dist/package.json'),
+    '..',
+    'standard_fonts'
+  );
+
+  const pdf = await pdfjsLib.getDocument({
+    data: pdfBuffer,
+    standardFontDataUrl: fontPath
+  }).promise;
+
+  const page = await pdf.getPage(1);
+  const viewport = page.getViewport({ scale: 2 });
+  const canvas = createCanvas(viewport.width, viewport.height);
+  const context = canvas.getContext('2d');
+  await page.render({ canvasContext: context, viewport }).promise;
+  const out = fs.createWriteStream(outputPath);
+  const stream = canvas.createJPEGStream();
+  await new Promise((resolve, reject) => {
+    stream.pipe(out);
+    out.on('finish', resolve);
+    out.on('error', reject);
+  });
+}
