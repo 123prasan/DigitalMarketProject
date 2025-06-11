@@ -6,7 +6,7 @@ const Order = require('./models/Order');
 // const pdfPoppler = require("pdf-poppler"); // Commented out in original, remains commented
 const fs = require("fs");
 const Message = require("./models/message");
-const multer = require('multer');
+
 const upload = multer({ storage: multer.memoryStorage() });
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
