@@ -34,13 +34,14 @@ function getcategories() {
 }
 
 
-const fetch = require("node-fetch");
+// const fetch = require("node-fetch");
 
 app.post("/save-location", async (req, res) => {
   let ip=req.body.ip;
   
   // Handle localhost IPs for development
-   const check=Location.findOne({ ip: ip });
+   const check= await Location.findOne({ ip: ip });
+    
     if (!check) {
    try {
     const geoRes = await fetch(`http://ip-api.com/json/${ip}`);
@@ -61,7 +62,7 @@ app.post("/save-location", async (req, res) => {
     });
      savedLocation.save();
        
-    
+    console.log("Location saved:", savedLocation);
         } catch (err) {
             console.error("Location error:", err);
            
