@@ -1,26 +1,84 @@
-console.log("Server is starting...");
+
 const express = require("express");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const path = require("path");
-const Order = require('./Order');
+const Order = require('./models/Order');
 // const pdfPoppler = require("pdf-poppler"); // Commented out in original, remains commented
 const fs = require("fs");
-const Message = require("./message");
+const Message = require("./models/message");
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 require("dotenv").config();
+// const useLocalStorage = process.env.USE_LOCAL_STORAGE === 'true';
 const mongoose = require("mongoose");
 const dayjs = require('dayjs');
 const bcrypt = require('bcrypt');
 const mime = require('mime-types');
 const axios = require('axios');
+// const logVisitorMiddleware = require("./middlewares/ipmiddleware");
+const categories = require('./models/categories'); // Assuming categories.js exports a Mongoose model
 const { createClient } = require('@supabase/supabase-js');
+const Location = require('./models/userlocation'); // Assuming Location.js exports a Mongoose model
+
 
 const app = express();
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.json());
+const cors = require('cors');
+app.use(cors());
+
+function getcategories() {
+    return categories.find({}).then(cats => cats.map(cat => cat.name));
+    
+}
+
+
+const fetch = require("node-fetch");
+
+app.post("/save-location", async (req, res) => {
+  let ip=req.body.ip;
+  
+  // Handle localhost IPs for development
+   const check=Location.findOne({ ip: ip });
+    if (!check) {
+   try {
+    const geoRes = await fetch(`http://ip-api.com/json/${ip}`);
+    const geoData = await geoRes.json();
+     
+    
+    
+    const savedLocation = await Location.create({
+      ip: ip,
+      city: geoData.city,
+      region: geoData.regionName,
+      country: geoData.country,
+      postal_code: geoData.zip,
+      latitude: geoData.lat,
+      longitude: geoData.lon,
+      full_address: `${geoData.city}, ${geoData.regionName}, ${geoData.country} - ${geoData.zip}`,
+      createdAt: new Date(),
+    });
+     savedLocation.save();
+       
+    
+        } catch (err) {
+            console.error("Location error:", err);
+           
+        }
+        
+    }else{
+        console.log("Location already exists for this IP:", ip);
+        
+    }
+
+//    const ipadd=await axios.get('https://api64.ipify.org?format=json');
+//    console.log("IP Address:", ipadd);
+  
+});
+
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB with error handling
 mongoose.connect(process.env.MONGODB_URI, {
@@ -176,6 +234,7 @@ app.post("/verify-payment", async (req, res) => {
 app.get("/", async (req, res) => {
     try {
         const files = await File.find();
+        const categories = await getcategories(); // Fetch categories from MongoDB
         const filesWithPreviews = await Promise.all(
             files.map(async file => {
                 const { data: previewData } = await supabase
@@ -195,7 +254,7 @@ app.get("/", async (req, res) => {
                 };
             })
         );
-        res.render('index', { files: filesWithPreviews });
+        res.render('index', { files: filesWithPreviews,categories });
     } catch (err) {
         console.error("DB fetch error:", err);
         res.status(500).send("Failed to load files");
@@ -323,6 +382,11 @@ app.get('/logout', (req, res) => {
 // const dayjs = require('dayjs');
 const quarterOfYear = require('dayjs/plugin/quarterOfYear'); // Import the plugin
 dayjs.extend(quarterOfYear); // Extend dayjs with the plugin
+async function  fetchaddress(){
+  const allAddresses=await Location.find({}).sort({ createdAt: -1 });
+  return allAddresses; // Fetch last 100 addresses
+}
+ // Fetch last 100 addresses
 
 app.get("/admin", authenticateJWT, async (req, res) => {
     const now = dayjs();
@@ -479,7 +543,8 @@ app.get("/admin", authenticateJWT, async (req, res) => {
         aovLabels.push(dayjs(quarterStart).format('Q [Q] YYYY')); // e.g., "2 Q 2024"
     }
 
-
+   const categories = await getcategories(); // Fetch c
+   const allAddresses= await fetchaddress(); // Fetch last 100 addresses
     res.render("admin", {
         orders: await Order.find({}).sort({ dateTime: -1 }), // Ensure orders are sorted for "Recent Orders"
         uploadedFiles: filesWithUrls,
@@ -491,7 +556,7 @@ app.get("/admin", authenticateJWT, async (req, res) => {
         successfulOrdersTrend: successfulOrdersTrend || 0,
         fileUpdated,
         totalAmount: totalAmount || 0,
-
+        categories,
         // NEW DATA FOR CHARTS
         monthlyLabels: monthlyLabels,
         monthlyTotalOrdersData: monthlyTotalOrdersData,
@@ -501,6 +566,7 @@ app.get("/admin", authenticateJWT, async (req, res) => {
         orderStatusCounts: orderStatusCounts,
         aovLabels: aovLabels,
         aovData: aovDataPoints,
+        allAddresses
     });
 });
 
@@ -642,13 +708,26 @@ app.get('/file/:id', async (req, res) => {
 // Delete File - NOW PROTECTED BY JWT
 app.post('/delete-file', authenticateJWT, async (req, res) => {
     const { fileId, fileUrl } = req.body;
+    console.log({ fileId, fileUrl });
     try {
+        // Find the file document to get the preview image path
+        const file = await File.findById(fileId);
+        if (!file) return res.json({ success: false, message: 'File not found' });
+
+        // Prepare paths to delete: main file and preview image
+        const pathsToDelete = [fileUrl];
+        // If you store the preview image as `previews/<fileId>.jpg`
+        pathsToDelete.push(`previews/${file._id}.jpg`);
+        
+        // Remove both files from Supabase Storage
         const { error: supabaseError } = await supabase
             .storage
             .from('files')
-            .remove([fileUrl]);
+            .remove(pathsToDelete);
+
         if (supabaseError) return res.json({ success: false, message: 'Supabase delete failed' });
 
+        // Delete the file record from MongoDB
         await File.deleteOne({ _id: fileId });
 
         res.json({ success: true });
@@ -707,3 +786,7 @@ app.get('/viewfile/:id', async (req, res) => {
     res.setHeader('Content-Type', fileResponse.headers['content-type'] || 'application/octet-stream');
     fileResponse.data.pipe(res);
 });
+app.use((req, res) => {
+    res.status(404).render('404');
+});
+// Error handling middleware

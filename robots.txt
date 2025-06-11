@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pdfstore-qm6h.onrender.com/sitemap.xml

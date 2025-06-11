@@ -1,0 +1,129 @@
+<meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU" />
+<style>
+    #notificationBox {
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 8px 32px rgba(124,58,237,0.18);
+      border-radius: 16px;
+      border: 1.5px solid #ede9fe;
+      padding: 0;
+      overflow: hidden;
+      min-width: 340px;
+    }
+    #notificationBox > div:first-child {
+      background: linear-gradient(90deg, #7c3aed 0%, #6366f1 100%);
+      color: #fff;
+      padding: 18px 24px;
+      font-weight: 800;
+      font-size: 1.18em;
+      letter-spacing: 0.5px;
+    }
+</style>
+<header style="background:rgba(255,255,255,0.85);backdrop-filter:blur(8px);box-shadow:0 4px 24px rgba(124,58,237,0.10);position:sticky;top:0;z-index:100;">
+  <div class="container-fluid py-3 px-4 d-flex align-items-center justify-content-between flex-wrap">
+    <div class="d-flex align-items-center gap-3">
+      <img src="/images/logo.svg" alt="PDF Store Logo" style="height:38px;width:38px;border-radius:10px;box-shadow:0 1px 4px rgba(124,58,237,0.08);" onerror="this.style.display='none'">
+      <span style="font-size:1.7rem;font-weight:800;letter-spacing:1px;color:#7c3aed;">PDF Store</span>
+    </div>
+    <nav class="d-flex align-items-center gap-4 flex-wrap">
+      <!-- Notification Bell -->
+       <button class="btn btn-outline-primary ms-2" type="button" style="font-weight:600;">
+    
+        <a href="/" style="text-decoration: none; color: rgb(0, 0, 0);">Home</a>
+      </button>
+      <button id="notificationBellBtn" type="button" style="background:none;border:black solid 1px;position:relative;cursor:pointer; font-weight:600; padding:6px 12px; border-radius:8px; display:flex; align-items:center; gap:8px;">
+        <i class="fa fa-bell" style="font-size:1.5em;color:#7c3aed;"></i> Notifications
+        <span id="notificationDot" style="display:none;position:absolute;top:4px;right:4px;width:8px;height:8px;background:#ef4444;border-radius:50%;"></span>
+      </button>
+      <button class="btn btn-outline-primary ms-2" type="button" style="font-weight:600;">
+        <i class="fa fa-user me-1"></i>
+        <a href="/login" style="text-decoration: none; color: rgb(0, 0, 0);">Admin Login</a>
+      </button>
+    </nav>
+  </div>
+</header>
+<div id="notificationBox" style="display:none;position:fixed;top:70px;right:30px;z-index:2000;min-width:320px;max-width:95vw;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:0 0 0 0;overflow:hidden;">
+    <div style="background:#7c3aed;color:#fff;padding:16px 20px;font-weight:700;font-size:1.15em;">Notifications
+      <button onclick="closeNotificationBox()" style="background:none;border:none;float:right;color:#fff;font-size:1.2em;cursor:pointer;">&times;</button>
+    </div>
+    <div id="notificationList" style="max-height:320px;overflow-y:auto;padding:12px 20px 16px 20px;">
+      <div style="color:#888;">Loading...</div>
+    </div>
+  </div>
+
+<script>
+     // Notification Bell Logic
+      const notificationBellBtn = document.getElementById('notificationBellBtn');
+      const notificationBox = document.getElementById('notificationBox');
+      const notificationList = document.getElementById('notificationList');
+      const notificationDot = document.getElementById('notificationDot');
+
+      // Show notification box and fetch notifications
+      notificationBellBtn.addEventListener('click', function () {
+        if (notificationBox.style.display === 'block') {
+          notificationBox.style.display = 'none';
+          return;
+        }
+        notificationBox.style.display = 'block';
+        notificationList.innerHTML = '<div style="color:#888;">Loading...</div>';
+        fetch('/notifications')
+          .then(res => res.json())
+          .then(data => {
+            if (data.notifications && data.notifications.length > 0) {
+              notificationList.innerHTML = data.notifications.map(n =>
+                `<div style="padding:10px 0;border-bottom:1px solid #f3f4f6;">
+                  <span style="color:#7c3aed;font-weight:600;">${n.message}</span>
+                  <div style="font-size:0.93em;color:#888;margin-top:2px;">${new Date(n.DateTime).toLocaleString()}</div>
+                </div>`
+              ).join('');
+            } else {
+              notificationList.innerHTML = '<div style="color:#888;">No notifications.</div>';
+            }
+            notificationDot.style.display = 'none';
+          })
+          .catch(() => {
+            notificationList.innerHTML = '<div style="color:#ef4444;">Failed to load notifications.</div>';
+          });
+      });
+
+      // Close notification box when clicking outside
+      document.addEventListener('click', function (e) {
+        if (!notificationBox.contains(e.target) && !notificationBellBtn.contains(e.target)) {
+          notificationBox.style.display = 'none';
+        }
+      });
+
+      // Close button logic
+      window.closeNotificationBox = function() {
+        notificationBox.style.display = 'none';
+      };
+
+      // Optionally, show red dot if there are unseen notifications (fetch on load)
+      fetch('/notifications?unseen=1')
+        .then(res => res.json())
+        .then(data => {
+          if (data.notifications && data.notifications.length > 0) {
+            notificationDot.style.display = 'block';
+          }
+        });
+</script>
+<script>
+  async function getUserIP() {
+    try {
+      const res = await fetch('https://api64.ipify.org?format=json');
+      const data = await res.json();
+       await fetch('http://localhost:8000/save-location', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ip: data.ip })
+        })
+        .then(() => {
+          console.log("IP saved successfully");
+        })
+      console.log("Your IP:", data.ip);
+    } catch (err) {
+      console.error("Failed to fetch IP", err);
+    }
+  }
+
+  getUserIP();
+</script>

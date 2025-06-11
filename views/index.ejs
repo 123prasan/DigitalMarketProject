@@ -3,11 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Buy PDF</title>
+  <title></title>
+  <title>Buy Premium PDFs for Study | PDF Store</title>
+<meta name="description" content="Buy and download premium study PDFs, notes, and resources for students. Fast, secure, and affordable PDF downloads.">
+<meta name="keywords" content="PDF, study, notes, download, buy, premium, education, resources, Bengaluru, India, students, academic, notes, ebooks, study materials, educational PDFs, premium PDFs, buy PDFs, download PDFs, study resources, academic resources, student notes, educational materials,engineering, bsc nursing ,sslc,neet, kcet ,jee,cbse,icse,ugc net,ugc net commerce,ugc net management,ugc net english">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Buy Premium PDFs for Study | PDF Store">
+<meta property="og:description" content="Buy and download premium study PDFs, notes, and resources for students.">
+<meta property="og:image" content="https://pdfstore-qm6h.onrender.com/images/logo.png">
+<meta property="og:url" content="https://pdfstore-qm6h.onrender.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://pdfstore-qm6h.onrender.com/">
   <link rel="icon" href="/images/logo.png" type="image/png" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "PDF Store",
+  "url": "https://pdfstore-qm6h.onrender.com/",
+  "description": "Buy and download premium study PDFs, notes, and resources for students.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "PDF Store"
+  }
+}
+</script>
   <style>
     body {
       font-family: 'Inter', Arial, sans-serif;
@@ -301,12 +325,8 @@
       color: #7c3aed !important;
       box-shadow: 0 2px 8px rgba(124,58,237,0.10);
     }
-    .category-btn.active[data-category="engineering"] {
-      background: linear-gradient(90deg, #a5b4fc 0%, #6366f1 100%) !important;
-      color: #fff !important;
-      box-shadow: 0 2px 8px rgba(99,102,241,0.13);
-    }
-    .category-btn.active[data-category="bsc nursing"] {
+  
+    .category-btn.active {
       background: linear-gradient(90deg, #fbcfe8 0%, #a7f3d0 100%) !important;
       color: #7c3aed !important;
       box-shadow: 0 2px 8px rgba(16,185,129,0.13);
@@ -426,7 +446,7 @@
         background: transparent !important;
       }
     }
-    #notificationBox {
+    /* #notificationBox {
       background: rgba(255,255,255,0.95);
       box-shadow: 0 8px 32px rgba(124,58,237,0.18);
       border-radius: 16px;
@@ -442,7 +462,7 @@
       font-weight: 800;
       font-size: 1.18em;
       letter-spacing: 0.5px;
-    }
+    } */
     footer {
       background: #f8fafc;
       border-top: 1.5px solid #ececec;
@@ -491,32 +511,16 @@
   </svg>
 
   <!-- HEADER -->
-<header style="background:rgba(255,255,255,0.85);backdrop-filter:blur(8px);box-shadow:0 4px 24px rgba(124,58,237,0.10);position:sticky;top:0;z-index:100;">
-  <div class="container-fluid py-3 px-4 d-flex align-items-center justify-content-between flex-wrap">
-    <div class="d-flex align-items-center gap-3">
-      <img src="/images/logo.svg" alt="PDF Store Logo" style="height:38px;width:38px;border-radius:10px;box-shadow:0 1px 4px rgba(124,58,237,0.08);" onerror="this.style.display='none'">
-      <span style="font-size:1.7rem;font-weight:800;letter-spacing:1px;color:#7c3aed;">PDF Store</span>
-    </div>
-    <nav class="d-flex align-items-center gap-4 flex-wrap">
-      <!-- Notification Bell -->
-      <button id="notificationBellBtn" type="button" style="background:none;border:black solid 1px;position:relative;cursor:pointer; font-weight:600; padding:6px 12px; border-radius:8px; display:flex; align-items:center; gap:8px;">
-        <i class="fa fa-bell" style="font-size:1.5em;color:#7c3aed;"></i> Notifications
-        <span id="notificationDot" style="display:none;position:absolute;top:4px;right:4px;width:8px;height:8px;background:#ef4444;border-radius:50%;"></span>
-      </button>
-      <button class="btn btn-outline-primary ms-2" type="button" style="font-weight:600;">
-        <i class="fa fa-user me-1"></i>
-        <a href="/login" style="text-decoration: none; color: rgb(0, 0, 0);">Admin Login</a>
-      </button>
-    </nav>
-  </div>
-</header>
+<%-include('header')%>
 
   <div class="container" style="margin-top: 18px;">
     <div id="categoryFilter" style="display: flex; gap: 16px; justify-content: center; margin-bottom: 18px;">
       <div class="category-scrollbar">
         <button class="category-btn active" data-category="all">All</button>
-        <button class="category-btn" data-category="engineering">Engineering</button>
-        <button class="category-btn" data-category="bsc nursing">BSC Nursing</button>
+        <% categories.forEach(category => { %>  
+        <button class="category-btn" data-category="<%= category.toLowerCase() %>"><%= category %></button>
+        <% }); %>
+       
         <!-- Add more buttons as needed -->
       </div>
     </div>
@@ -670,88 +674,7 @@
         }, 3500);
       }
 
-      // async function payNow(fileId, filename, price) {
-      //   try {
-      //     const response = await fetch("/create-order", {
-      //       method: "POST",
-      //       headers: {
-      //         "Content-Type": "application/json"
-      //       },
-      //       body: JSON.stringify({ fileId, filename, price })
-      //     });
-
-      //     if (!response.ok) {
-      //       throw new Error("Failed to create order");
-      //     }
-
-      //     const order = await response.json();
-      //     const options = {
-      //       key: "rzp_test_Z79OzrfOIHLO6K",
-      //       amount: order.amount,
-      //       currency: order.currency,
-      //       order_id: order.id,
-      //       name: "PDF Store",
-      //       description: `Purchase of ${filename}`,
-      //       handler: async function (response) {
-      //         try {
-      //           const verifyResponse = await fetch("/verify-payment", {
-      //             method: "POST",
-      //             headers: {
-      //               "Content-Type": "application/json"
-      //             },
-      //             body: JSON.stringify({
-      //               razorpay_payment_id: response.razorpay_payment_id,
-      //               razorpay_order_id: response.razorpay_order_id,
-      //               razorpay_signature: response.razorpay_signature,
-      //               fileId
-      //             })
-      //           });
-
-      //           const data = await verifyResponse.json();
-
-      //           if (data.success) {
-      //             showToast("Payment successful!");
-      //             // Automatically download the file without redirect or visible link
-      //             const downloadUrl = `/viewfile/${fileId}`;
-      //             fetch(downloadUrl, {
-      //               method: 'GET',
-      //               credentials: 'same-origin'
-      //             })
-      //               .then(res => res.blob())
-      //               .then(blob => {
-      //                 const url = window.URL.createObjectURL(blob);
-      //                 const a = document.createElement('a');
-      //                 a.style.display = 'none';
-      //                 a.href = url;
-      //                 // Optionally, set a filename (if you have it)
-      //                 a.download = filename || 'download.pdf';
-      //                 document.body.appendChild(a);
-      //                 a.click();
-      //                 window.URL.revokeObjectURL(url);
-      //                 a.remove();
-      //               });
-      //           } else {
-      //             showToast("Payment verification failed!", true);
-      //           }
-      //         } catch (verifyError) {
-      //           showToast("Payment verification error!", true);
-      //           console.error("Verification error:", verifyError);
-      //         }
-      //       },
-      //       modal: {
-      //         ondismiss: function () {
-      //           showToast("Payment cancelled", true);
-      //         }
-      //       }
-      //     };
-
-      //     const rzp = new Razorpay(options);
-      //     rzp.open();
-      //   } catch (error) {
-      //     showToast("Error initiating payment. Please try again.", true);
-      //     console.error("Payment error:", error);
-      //   }
-      // }
+      
 
       // Buy Now button loading
       document.querySelectorAll(".btn-buy").forEach(button => {
@@ -799,7 +722,7 @@
 
           fileCards.forEach(card => {
             const cardCategory = card.getAttribute("data-category");
-            if (category === "all" || cardCategory === category) {
+            if (category === "all" || cardCategory.toLocaleLowerCase() === category.toLocaleLowerCase()) {
               card.style.display = "";
             } else {
               card.style.display = "none";
@@ -808,60 +731,60 @@
         });
       });
 
-      // Notification Bell Logic
-      const notificationBellBtn = document.getElementById('notificationBellBtn');
-      const notificationBox = document.getElementById('notificationBox');
-      const notificationList = document.getElementById('notificationList');
-      const notificationDot = document.getElementById('notificationDot');
+      // // Notification Bell Logic
+      // const notificationBellBtn = document.getElementById('notificationBellBtn');
+      // const notificationBox = document.getElementById('notificationBox');
+      // const notificationList = document.getElementById('notificationList');
+      // const notificationDot = document.getElementById('notificationDot');
 
-      // Show notification box and fetch notifications
-      notificationBellBtn.addEventListener('click', function () {
-        if (notificationBox.style.display === 'block') {
-          notificationBox.style.display = 'none';
-          return;
-        }
-        notificationBox.style.display = 'block';
-        notificationList.innerHTML = '<div style="color:#888;">Loading...</div>';
-        fetch('/notifications')
-          .then(res => res.json())
-          .then(data => {
-            if (data.notifications && data.notifications.length > 0) {
-              notificationList.innerHTML = data.notifications.map(n =>
-                `<div style="padding:10px 0;border-bottom:1px solid #f3f4f6;">
-                  <span style="color:#7c3aed;font-weight:600;">${n.message}</span>
-                  <div style="font-size:0.93em;color:#888;margin-top:2px;">${new Date(n.DateTime).toLocaleString()}</div>
-                </div>`
-              ).join('');
-            } else {
-              notificationList.innerHTML = '<div style="color:#888;">No notifications.</div>';
-            }
-            notificationDot.style.display = 'none';
-          })
-          .catch(() => {
-            notificationList.innerHTML = '<div style="color:#ef4444;">Failed to load notifications.</div>';
-          });
-      });
+      // // Show notification box and fetch notifications
+      // notificationBellBtn.addEventListener('click', function () {
+      //   if (notificationBox.style.display === 'block') {
+      //     notificationBox.style.display = 'none';
+      //     return;
+      //   }
+      //   notificationBox.style.display = 'block';
+      //   notificationList.innerHTML = '<div style="color:#888;">Loading...</div>';
+      //   fetch('/notifications')
+      //     .then(res => res.json())
+      //     .then(data => {
+      //       if (data.notifications && data.notifications.length > 0) {
+      //         notificationList.innerHTML = data.notifications.map(n =>
+      //           `<div style="padding:10px 0;border-bottom:1px solid #f3f4f6;">
+      //             <span style="color:#7c3aed;font-weight:600;">${n.message}</span>
+      //             <div style="font-size:0.93em;color:#888;margin-top:2px;">${new Date(n.DateTime).toLocaleString()}</div>
+      //           </div>`
+      //         ).join('');
+      //       } else {
+      //         notificationList.innerHTML = '<div style="color:#888;">No notifications.</div>';
+      //       }
+      //       notificationDot.style.display = 'none';
+      //     })
+      //     .catch(() => {
+      //       notificationList.innerHTML = '<div style="color:#ef4444;">Failed to load notifications.</div>';
+      //     });
+      // });
 
-      // Close notification box when clicking outside
-      document.addEventListener('click', function (e) {
-        if (!notificationBox.contains(e.target) && !notificationBellBtn.contains(e.target)) {
-          notificationBox.style.display = 'none';
-        }
-      });
+      // // Close notification box when clicking outside
+      // document.addEventListener('click', function (e) {
+      //   if (!notificationBox.contains(e.target) && !notificationBellBtn.contains(e.target)) {
+      //     notificationBox.style.display = 'none';
+      //   }
+      // });
 
-      // Close button logic
-      window.closeNotificationBox = function() {
-        notificationBox.style.display = 'none';
-      };
+      // // Close button logic
+      // window.closeNotificationBox = function() {
+      //   notificationBox.style.display = 'none';
+      // };
 
-      // Optionally, show red dot if there are unseen notifications (fetch on load)
-      fetch('/notifications?unseen=1')
-        .then(res => res.json())
-        .then(data => {
-          if (data.notifications && data.notifications.length > 0) {
-            notificationDot.style.display = 'block';
-          }
-        });
+      // // Optionally, show red dot if there are unseen notifications (fetch on load)
+      // fetch('/notifications?unseen=1')
+      //   .then(res => res.json())
+      //   .then(data => {
+      //     if (data.notifications && data.notifications.length > 0) {
+      //       notificationDot.style.display = 'block';
+      //     }
+      //   });
 
       document.querySelectorAll('.btn-copy-link').forEach(btn => {
         btn.addEventListener('click', function () {

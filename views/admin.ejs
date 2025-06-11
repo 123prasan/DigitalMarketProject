@@ -47,7 +47,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      justify-content: space-between;
+      /* justify-content: space-between; */
      padding-top: 20px;
      padding-bottom: 20px;
      padding-left: 20px;
@@ -55,12 +55,18 @@
       background: #fff;
       border-bottom: 1px solid var(--border);
     }
-    .header .search {
+     .search {
       flex: 1;
       max-width: 400px;
       position: relative;
+      border: #10b981 solid 1px;
+      border-radius: 6px;
+      margin-right: 20px;
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
     }
-    .header .search input {
+     .search input {
       width: 100%;
       padding: 10px 36px 10px 16px;
       border: 1px solid var(--border);
@@ -68,7 +74,7 @@
       font-size: 1rem;
       background: #f8fafc;
     }
-    .header .search-icon {
+     .search-icon {
       position: absolute;
       right: 12px;
       top: 50%;
@@ -298,17 +304,15 @@
     <!-- Sidebar removed -->
     <div class="main" style="width:100%;">
       <div class="header">
-        <div class="search">
-          <input type="text" placeholder="Search By order ID, Transaction ID, Customer Name...">
-          <span class="search-icon">
-            <!-- Google-style SVG search icon -->
-            <svg height="20" width="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </span>
-        </div>
+       
         <div class="actions">
+          <button id="viewAllAddressesBtn" style="background:#ede9fe; border:none; border-radius:6px; padding:5px 5px; color:#7c3aed; font-weight:600; cursor:pointer; font-size:1em;">
+  <svg width="18" height="18" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:5px;">
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
+  </svg>
+  User Addresses
+</button>
+           <button class="home-button"><a href="/">Home</a></button>
           <button id="exportBtn">Export</button>
           <button id="uploadedFilesBtn" class="uploaded-files-btn">Uploaded Files</button>
           <button class="primary">Upload file</button>
@@ -330,6 +334,21 @@
           </button>
         </div>
       </div>
+      <div style="display:flex; align-items:center; justify-content:center; padding:0 20px; height: 50px; margin-top:20px;">
+       
+
+      
+       <div class="search">
+          <input type="text" placeholder="Search By order ID, Transaction ID, Customer Name...">
+          <span class="search-icon">
+            <!-- Google-style SVG search icon -->
+            <svg height="20" width="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+        </div>
+        </div>
       <div class="dashboard">
         <div class="title-row">
           <h2>Orders</h2>
@@ -356,6 +375,16 @@
             <div class="label">Total Amount</div>
             <div class="value" style="color:  #10b981;">
               ₹<%= totalAmount %>
+            </div>
+            <div class="trend <%= successfulOrdersTrend < 0 ? 'negative' : '' %>">
+              <span><%= successfulOrdersTrend >= 0 ? '↑' : '↓' %></span>
+              <%= Math.abs(successfulOrdersTrend) %>% last week
+            </div>
+          </div>
+             <div class="card">
+            <div class="label">Unique Customers</div>
+            <div class="value" style="color:  #10b981;">
+              <%= allAddresses.length %>
             </div>
             <div class="trend <%= successfulOrdersTrend < 0 ? 'negative' : '' %>">
               <span><%= successfulOrdersTrend >= 0 ? '↑' : '↓' %></span>
@@ -424,14 +453,44 @@
       </div>
     </div>
   </div>
+
+  <div id="allAddressesModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:15000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:32px 24px; min-width:340px; max-width:95vw; max-height:85vh; overflow:auto; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+    <h2 style="margin-top:0; margin-bottom:20px; color:#7c3aed;">All User Addresses</h2>
+    <div id="allAddressesModalContent" style="font-size:1.1em; color:#444; margin-bottom:18px; max-height:400px; overflow:auto;">
+      <% if (allAddresses && allAddresses.length > 0) { %>
+        <% allAddresses.forEach(function(addr, idx) { %>
+          <div style="margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #eee;">
+            <b>Address <%= idx + 1 %>:</b><br>
+            <%= addr.full_address ? addr.full_address : '' %>
+            <% if (addr.city) { %><br>City: <%= addr.city %><% } %>
+            <% if (addr.region) { %><br>Region: <%= addr.region %><% } %>
+            <% if (addr.country) { %><br>Country: <%= addr.country %><% } %>
+            <% if (addr.postal_code) { %><br>Postal Code: <%= addr.postal_code %><% } %>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <i>No addresses available.</i>
+      <% } %>
+    </div>
+    <button onclick="document.getElementById('allAddressesModal').style.display='none'" style="background:#7c3aed; color:#fff; border:none; border-radius:6px; padding:10px 28px; font-size:1.1em; font-weight:600; cursor:pointer;">Close</button>
+  </div>
+</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
  
 </body>
  <script>
+
+
+// user addresses modal logic
+document.getElementById('viewAllAddressesBtn').addEventListener('click', function () {
+  document.getElementById('allAddressesModal').style.display = 'flex';
+});
+// 
 document.addEventListener('DOMContentLoaded', function () {
   // Enhanced Search
-  document.querySelector('.header .search input').addEventListener('input', function () {
+  document.querySelector('.search input').addEventListener('input', function () {
     const filter = this.value.toLowerCase();
     document.querySelectorAll('.table-container tbody tr').forEach(row => {
       const tds = row.getElementsByTagName('td');
@@ -660,7 +719,7 @@ document.addEventListener('DOMContentLoaded', function () {
               <div style="margin-top:8px;">
                 <% if (file.downloadUrl && file.downloadUrl !== '#') { %>
                   <a href="<%= file.downloadUrl %>" target="_blank" style="color:#7c3aed; text-decoration:underline; font-weight:500;">
-                    Download/View
+                    Download
                   </a>
                 <% } else { %>
                   <span style="color:red;">File missing in storage</span>
@@ -840,14 +899,14 @@ document.addEventListener('DOMContentLoaded', function () {
         <textarea id="uploadFileDescription" name="filedescription" style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;" rows="3"></textarea>
       </div>
       <div style="margin-bottom:14px;">
-        <label for="uploadFileCategory" style="font-weight:500;">Category</label><br>
-        <select id="uploadFileCategory" name="category" required style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;">
-          <option value="">Select Category</option>
-          <option value="Engineering">Engineering</option>
-          <option value="BSC Nursing">BSC Nursing</option>
-          <!-- Add more categories as needed -->
-        </select>
-      </div>
+  <label for="uploadFileCategory" style="font-weight:500;">Category</label><br>
+  <select id="uploadFileCategory" name="category" required style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;">
+    <option value="">Select Category</option>
+    <% categories.forEach(function(cat) { %>
+      <option value="<%= cat %>"><%= cat %></option>
+    <% }); %>
+  </select>
+</div>
       <div style="margin-bottom:18px;">
         <label for="uploadFilePrice" style="font-weight:500;">Price</label><br>
         <input type="number" id="uploadFilePrice" name="price" style="width:100%;padding:8px;margin-top:4px;border:1px solid #e5e7eb;border-radius:6px;">
