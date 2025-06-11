@@ -1,4 +1,3 @@
-
 const express = require("express");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
@@ -108,6 +107,8 @@ const fileSchema = new mongoose.Schema({
     price: Number,
     uploadedAt: { type: Date, default: Date.now },
     category: { type: String, required: true },
+    fileSize: Number,
+    downloadCount: { type: Number, default: 0 } // <-- Add this line
 });
 
 const File = mongoose.model('doccollection', fileSchema);
@@ -297,6 +298,9 @@ app.post("/download-pdf", async (req, res) => {
 
     const file = await File.findById(fileId);
     if (!file) return res.status(404).send("File not found");
+
+    // Increment download count here
+    await File.updateOne({ _id: file._id }, { $inc: { downloadCount: 1 } });
 
     const { data, error } = await supabase
         .storage
@@ -639,7 +643,7 @@ app.post('/upload-file', upload.fields([
         });
     if (pdfError) return res.status(500).send('Supabase PDF upload failed');
 
-    // 2. Save metadata in MongoDB
+    // 2. Save metadata in MongoDB, including file size
     const newFile = await File.create({
         filename,
         filedescription,
@@ -647,11 +651,13 @@ app.post('/upload-file', upload.fields([
         category,
         fileUrl: pdfData.path,
         uploadedAt: new Date(),
-        user: req.user ? req.user.username : 'Admin'
+        user: req.user ? req.user.username : 'Admin',
+        fileSize: pdfFile.size // <-- Add this line
     });
-
-    // 3. Upload image to Supabase with the same file ID
-    const { error: imgError } = await supabase.storage
+  //notification update
+  const newMessage = new Message({ message: `New file uploaded: ${filename} by ${req.user ? req.user.username : 'Admin'}` });
+  await newMessage.save();
+ const { error: imgError } = await supabase.storage
         .from('files')
         .upload(`previews/${newFile._id}.jpg`, imageFile.buffer, {
             contentType: imageFile.mimetype,
@@ -662,6 +668,7 @@ app.post('/upload-file', upload.fields([
     }
 
     res.redirect('/admin?fileUploaded=1');
+    // ...rest of your code...
 });
 
 
@@ -774,6 +781,9 @@ app.get('/viewfile/:id', async (req, res) => {
     const file = await File.findById(req.params.id);
     if (!file) return res.status(404).send('File not found');
 
+    // Increment download count
+    await File.updateOne({ _id: file._id }, { $inc: { downloadCount: 1 } });
+
     const { data, error } = await supabase
         .storage
         .from('files')
@@ -782,7 +792,21 @@ app.get('/viewfile/:id', async (req, res) => {
     if (error || !data?.signedUrl) return res.status(404).send('File not found in storage');
 
     const fileResponse = await axios.get(data.signedUrl, { responseType: 'stream' });
-    res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`);
+
+    // ...existing code for filename and headers...
+    let extension = '';
+    if (file.filename && file.filename.includes('.')) {
+        extension = file.filename.split('.').pop();
+    } else if (file.fileUrl && file.fileUrl.includes('.')) {
+        extension = file.fileUrl.split('.').pop();
+    }
+
+    let baseName = file.filename ? file.filename.split('.')[0] : 'file';
+    const safeFilename = extension
+        ? `${baseName}.${extension}`
+        : file.filename || 'file.pdf';
+
+    res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
     res.setHeader('Content-Type', fileResponse.headers['content-type'] || 'application/octet-stream');
     fileResponse.data.pipe(res);
 });
