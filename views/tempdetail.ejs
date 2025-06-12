@@ -37,9 +37,8 @@
       padding: 0;
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, var(--light-bg), #e0f2f7);
-      /* min-height: 100vh;  */
-      width: 100%;
-      /* /* display: flex;
+      /* min-height: 100vh; */
+      /* display: flex;
       align-items: center; */
       /* justify-content: center; */
       /* overflow-x: hidden; */
@@ -374,7 +373,41 @@
       letter-spacing: 1px;
       font-family: 'Poppins', sans-serif;
     }
-    
+    .dlp-container {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+      text-align: center;
+      max-width: 450px;
+    }
+
+    .dlp-icon {
+      width: 48px;
+      height: 48px;
+      color: #0d6efd;
+      margin-bottom: 16px;
+      animation: dlp-pulse 1.5s infinite;
+    }
+
+    @keyframes dlp-pulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
+    }
+
+    .dlp-message {
+      font-size: 1.1rem;
+      color: #212529;
+      margin-bottom: 12px;
+    }
+
+    .dlp-warning {
+      font-size: 0.95rem;
+      color: #dc3545;
+      font-weight: 500;
+    }
   </style>
 </head>
 <body>
@@ -521,6 +554,7 @@
           name: "<%= file.filename %>",
           order_id: order.id, // <-- THIS IS REQUIRED!
           handler: function (response) {
+            
             // Now you'll get all three: order_id, payment_id, signature
             fetch('/verify-payment', {
               method: 'POST',
@@ -536,6 +570,7 @@
             .then(data => {
               if (data.success) {
                 startRedirectCountdownAndDownload();
+                // startRedirectCountdownAndDownload();
                 // triggerDownload("<%= file._id %>", response.razorpay_payment_id);
               } else {
                 alert("Payment verification failed.");
@@ -553,33 +588,13 @@
   let countdown = 3;
   const tickAudio = document.getElementById('tickSound');
   const downloadAudio = document.getElementById('downloadSound');
-  const downloadUrl = '/viewfile/<%= file._id %>'; // Your download route
+  const downloadUrl = '/viewfile/<%= file._id %>';
 
-  // Create and show countdown overlay
-  const countdownDiv = document.createElement('div');
-  countdownDiv.style.position = 'fixed';
-  countdownDiv.style.top = '40%';
-  countdownDiv.style.left = '50%';
-  countdownDiv.style.transform = 'translate(-50%, -50%)';
-  countdownDiv.style.background = '#fff';
-  countdownDiv.style.padding = '32px 48px';
-  countdownDiv.style.borderRadius = '16px';
-  countdownDiv.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
-  countdownDiv.style.fontSize = '2em';
-  countdownDiv.style.fontWeight = 'bold';
-  countdownDiv.style.zIndex = '9999';
-  countdownDiv.style.color = 'green';
-  countdownDiv.style.border = '2px solid #007bff';
-  countdownDiv.style.display = 'flex';
-  countdownDiv.style.alignItems = 'center';
-  countdownDiv.style.justifyContent = 'center';
-  countdownDiv.style.backgroundColor = '#f0f8ff';
-  countdownDiv.style.transition = 'opacity 0.3s ease-in-out';
-  countdownDiv.style.opacity = '0.9';
-
-  countdownDiv.innerText = `Downloading File in ${countdown}.. please don't close this page`;
-  countdownDiv.style.textAlign = 'center';
-  document.body.appendChild(countdownDiv);
+  // Show the modal
+  const dlpModal = document.getElementById('dlpModal');
+  const dlpMessage = document.getElementById('dlpMessage');
+  dlpModal.style.display = 'block';
+  dlpMessage.innerText = `Downloading File in ${countdown}... Please wait...`;
 
   // Play tick sound ONCE for 3 seconds
   if (tickAudio) {
@@ -591,24 +606,22 @@
     }, 3000); // Stop after 3 seconds
   }
 
-  // Countdown overlay logic
+  // Countdown logic
   const interval = setInterval(() => {
     countdown--;
     if (countdown > 0) {
-      countdownDiv.innerText = `Downloading File in ${countdown}... please don't close this page`;
+      dlpMessage.innerText = `Downloading File in ${countdown}... Please wait...`;
     } else {
       clearInterval(interval);
-      countdownDiv.remove();
+      dlpModal.style.display = 'none';
       // Play download sound
       if (downloadAudio) {
         playDownloadSound();
-      } else {
-        console.warn("Download sound element not found.");
       }
       // Start download after a short delay so sound can play
       setTimeout(() => {
         window.location.href = downloadUrl;
-      }, 500); // 0.5s delay for the sound
+      }, 500);
     }
   }, 1000);
 }
@@ -663,7 +676,7 @@ function playDownloadSound() {
     try {
       const res = await fetch('https://api64.ipify.org?format=json');
       const data = await res.json();
-       await fetch('/save-location', {
+       await fetch('http://localhost:8000/save-location', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ip: data.ip })
@@ -681,5 +694,16 @@ function playDownloadSound() {
 </script>
 <audio id="tickSound" src="/sounds/slow-cinematic-clock-ticking-357979.mp3" preload="auto"></audio>
 <audio id="downloadSound" src="/sounds/fresh-notification-357954.mp3" preload="auto"></audio>
+<div id="dlpModal" class="dlp-container" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999;">
+  <i data-lucide="download-cloud" class="dlp-icon"></i>
+  <div id="dlpMessage" class="dlp-message">
+    Your file is downloading. Please wait...
+  </div>
+  <div class="dlp-warning">
+    Do not close or refresh this page.
+  </div>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
 </body>
 </html>

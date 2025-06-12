@@ -600,7 +600,7 @@
               <a
                 href="/viewfile/<%= file._id %>"
                 class="btn btn-success btn-sm"
-                id="downloadBtn-<%= file._id %>"
+                id="downloadBtn-<%= file._id %>"   onclick="playDownloadSound()"
                 download
                 aria-label="Download <%= file.filename %>.pdf"
                 style="font-weight:700;display:flex;align-items:center;gap:7px;"
@@ -653,7 +653,7 @@
     try {
       const res = await fetch('https://api64.ipify.org?format=json');
       const data = await res.json();
-       await fetch('http://localhost:8000/save-location', {
+       await fetch('/save-location', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ip: data.ip })
@@ -848,6 +848,16 @@
         });
       });
     });
+
+
+
+    function playDownloadSound() {
+  const downloadAudio = document.getElementById('downloadSound');
+  if (downloadAudio) {
+    downloadAudio.currentTime = 0; // Reset to start
+    downloadAudio.play();
+  }
+}
   </script>
 
   <footer style="display: flex; flex-direction: column; align-items: center; background:#f8fafc;border-top:1.5px solid #ececec;margin-bottom: 0px; margin-top:64px;box-shadow:0 -2px 8px rgba(124,58,237,0.04);">
@@ -857,5 +867,6 @@
     <br>
     
   </footer>
+  <audio id="downloadSound" src="/sounds/fresh-notification-357954.mp3" preload="auto"></audio>
 </body>
 </html>
