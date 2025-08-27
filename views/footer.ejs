@@ -1,18 +1,163 @@
-<style>
-    footer {
-      background: #f8fafc;
-      border-top: 1.5px solid #ececec;
-      padding: 32px 0 24px 0;
-      margin-top: 64px;
-      box-shadow: 0 -2px 8px rgba(124,58,237,0.04);
-    }
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
-</style>
-<footer style="display: flex; flex-direction: column; align-items: center; background:#f8fafc;border-top:1.5px solid #ececec;margin-bottom: 0px; margin-top:64px;box-shadow:0 -2px 8px rgba(124,58,237,0.04);">
-     <span style="color:#7c3aed;font-weight:600;font-size:1.08em;">&copy; <%= new Date().getFullYear() %> PDF Store</span>
-    <span style="color:#888;font-size:0.98em;margin-left:8px;">All rights reserved.</span>
-    <br>
-    <span style="color:#6366f1;font-size:0.98em; display:flex; align-items:center; justify-content:center; gap:4px;">
-      Created by <b>Prasanna M</b> &mdash; <a href="mailto:prasannaprasanna35521@gmail.com" style="color:#7c3aed;text-decoration:underline;">prasannaprasanna35521@example.com</a>
-    </span>
-  </footer>
+    <style>
+        /* Define a clean and modern color palette */
+        
+
+        .main-content {
+            flex-grow: 1; /* Pushes the footer to the bottom of the page */
+        }
+
+        footer {
+          font-family: 'Poppins', sans-serif;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            padding: 40px 20px;
+            margin-top: 80px;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            /* max-width: 1200px; */
+            margin-left: auto;
+            margin-right: auto;
+            color: #333333; /* Default text color */
+            margin-bottom: 0;
+        }
+        
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-grow: 1;
+            min-width: 180px;
+        }
+
+        .footer-logo img {
+            height: 45px;
+            width: auto;
+            border-radius: 4px;
+        }
+
+        .footer-brand-name {
+            font-weight: 700;
+            color: #007bff; /* Primary blue for brand name */
+            font-size: 1.3em;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-center {
+            text-align: center;
+            flex-grow: 2;
+            font-size: 0.95em;
+        }
+
+        .footer-center p {
+            margin: 5px 0;
+        }
+
+        .footer-right {
+            text-align: right;
+            flex-grow: 1;
+            min-width: 180px;
+            font-size: 0.9em;
+            color: #555555;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .footer-links a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #0056b3; /* Darker blue on hover */
+            text-decoration: underline;
+        }
+
+        .creator-info {
+            display: block;
+            margin-top: 8px;
+        }
+
+        .creator-info a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .creator-info a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            footer {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+                padding: 25px 15px;
+                gap: 25px;
+            }
+
+            .footer-left, .footer-center, .footer-right {
+                flex-grow: unset;
+                min-width: unset;
+                width: 100%;
+                text-align: center;
+            }
+
+            .footer-left {
+                justify-content: center;
+            }
+            
+            .footer-links {
+                justify-content: center;
+            }
+        }
+    </style>
+
+
+    <!-- Main Content Area to Push Footer Down -->
+   
+    <!-- The Corrected and Cleaned Footer -->
+    <footer>
+        <div class="footer-left">
+            <a href="/" class="footer-logo">
+                <img src="./images/logo.png" alt="PDF Store Logo">
+            </a>
+            <span class="footer-brand-name">PDF Store</span>
+        </div>
+        
+        <div class="footer-center">
+            <p>&copy; <%= new Date().getFullYear() %> PDF Store. All rights reserved.</p>
+            <p>Bengaluru, Karnataka, India.</p>
+            <div class="footer-links">
+                <a href="/privacy-policy">Privacy Policy</a>
+                <a href="/refund-policy">Refund Policy</a>
+                <a href="/terms-and-conditions">Terms & Conditions</a>
+            </div>
+        </div>
+        
+        <div class="footer-right">
+            <span class="creator-info">Created by <b>Prasanna M</b></span><br>
+            <a href="mailto:prasannaprasanna35521@gmail.com">prasannaprasanna35521@gmail.com</a>
+        </div>
+    </footer>
+

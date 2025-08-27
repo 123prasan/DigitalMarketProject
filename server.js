@@ -173,7 +173,15 @@ app.post("/create-order", async (req, res) => {
         res.status(500).json({ error: "Failed to create order" });
     }
 });
-
+app.get("/privacy-policy",(req,res)=>{
+    res.render("privacy-policy");
+})
+app.get("/refund-policy",(req,res)=>{
+    res.render("refundpolicy");
+})
+app.get("/terms-and-conditions",(req,res)=>{
+    res.render("terms&conditions")
+});
 // Razorpay Payment Verification - No auth needed (public)
 app.post("/verify-payment", async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, fileId } = req.body;
@@ -780,6 +788,9 @@ async function pdfFirstPageToImage(pdfBuffer, outputPath) {
 // View File Route
 app.get('/viewfile/:id', async (req, res) => {
     const file = await File.findById(req.params.id);
+    if(file.price!=0){
+        return res.redirect(`/file/${req.params.id}`);
+    }
     if (!file) return res.status(404).send('File not found');
 
     // Increment download count
