@@ -868,7 +868,7 @@ app.get('/viewfile/:slug/:id', async (req, res) => {
         const { data, error } = await supabase
             .storage
             .from('files')
-            .createSignedUrl(`public/${file.fileUrl}`, 30); // Using the corrected 'public/' path
+            .createSignedUrl(`${file.fileUrl}`, 30); // Using the corrected 'public/' path
 
         if (error || !data?.signedUrl) {
             console.error('Supabase error:', error);
