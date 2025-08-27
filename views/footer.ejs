@@ -1,163 +1,174 @@
-
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <style>
-        /* Define a clean and modern color palette */
-        
+<style>
+    /* --- Galactic Dark Footer Theme --- */
+    :root {
+        --font-family-footer: 'Sora', sans-serif;
+        --color-primary: #8b5cf6;
+        --color-text-light: #e5e7eb;
+        --color-text-muted: #9ca3af;
+        --color-bg-footer: rgba(17, 24, 39, 0.8); /* Slightly different from main BG for separation */
+        --color-border: rgba(255, 255, 255, 0.1);
+        --transition: 0.3s ease-in-out;
+    }
 
-        .main-content {
-            flex-grow: 1; /* Pushes the footer to the bottom of the page */
-        }
+    .site-footer {
+        font-family: var(--font-family-footer);
+        background-color: var(--color-bg-footer);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-top: 1px solid var(--color-border);
+        padding: 50px 20px;
+        margin-top: auto; /* Pushes footer to bottom in a flex container */
+        color: var(--color-text-muted);
+    }
+    
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
 
-        footer {
-          font-family: 'Poppins', sans-serif;
-            background-color: #ffffff;
-            border-top: 1px solid #e0e0e0;
-            padding: 40px 20px;
-            margin-top: 80px;
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-            display: flex;
-            width: 100%;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px 40px;
-            /* max-width: 1200px; */
-            margin-left: auto;
-            margin-right: auto;
-            color: #333333; /* Default text color */
-            margin-bottom: 0;
-        }
-        
-        .footer-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-grow: 1;
-            min-width: 180px;
-        }
+    .footer-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
 
-        .footer-logo img {
-            height: 45px;
-            width: auto;
-            border-radius: 4px;
-        }
+    .footer-logo img {
+        height: 80px;
+        width: 80px;
+        border-radius: 10px;
+    }
 
-        .footer-brand-name {
-            font-weight: 700;
-            color: #007bff; /* Primary blue for brand name */
-            font-size: 1.3em;
-            letter-spacing: 0.5px;
-        }
+    .footer-brand-name {
+        font-weight: 700;
+        color: var(--color-primary);
+        font-size: 1.4em;
+    }
 
-        .footer-center {
+    .footer-center {
+        text-align: center;
+    }
+
+    .footer-center p {
+        margin: 0;
+        font-size: 0.95em;
+    }
+    
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+        margin-top: 15px;
+    }
+
+    .footer-links a {
+        color: var(--color-text-muted);
+        text-decoration: none;
+        font-size: 0.9em;
+        font-weight: 600;
+        transition: color var(--transition);
+    }
+
+    .footer-links a:hover {
+        color: var(--color-primary);
+        text-decoration: none;
+    }
+
+    .footer-right {
+        text-align: right;
+    }
+
+    /* NEW: Social Links */
+    .footer-socials {
+        display: flex;
+        gap: 20px;
+        margin-top: 15px;
+        justify-content: center; /* Center on mobile */
+    }
+
+    .footer-socials a {
+        color: var(--color-text-muted);
+        font-size: 1.3rem;
+        transition: color var(--transition), transform var(--transition);
+    }
+
+    .footer-socials a:hover {
+        color: var(--color-primary);
+        transform: scale(1.1);
+    }
+    
+    .creator-info {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.9em;
+    }
+
+    .creator-info a {
+        color: var(--color-text);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color var(--transition);
+    }
+
+    .creator-info a:hover {
+        color: var(--color-primary);
+    }
+    
+    @media (max-width: 768px) {
+        .footer-container {
+            flex-direction: column;
             text-align: center;
-            flex-grow: 2;
-            font-size: 0.95em;
+            gap: 35px;
         }
 
-        .footer-center p {
-            margin: 5px 0;
-        }
-
-        .footer-right {
-            text-align: right;
-            flex-grow: 1;
-            min-width: 180px;
-            font-size: 0.9em;
-            color: #555555;
-        }
-
-        .footer-links {
-            display: flex;
+        .footer-left, .footer-right {
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 15px;
+            text-align: center;
+            width: 100%;
         }
+    }
+</style>
 
-        .footer-links a {
-            color: #007bff;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s, text-decoration 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: #0056b3; /* Darker blue on hover */
-            text-decoration: underline;
-        }
-
-        .creator-info {
-            display: block;
-            margin-top: 8px;
-        }
-
-        .creator-info a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .creator-info a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Responsive adjustments for smaller screens */
-        @media (max-width: 768px) {
-            footer {
-                flex-direction: column;
-                text-align: center;
-                align-items: center;
-                padding: 25px 15px;
-                gap: 25px;
-            }
-
-            .footer-left, .footer-center, .footer-right {
-                flex-grow: unset;
-                min-width: unset;
-                width: 100%;
-                text-align: center;
-            }
-
-            .footer-left {
-                justify-content: center;
-            }
-            
-            .footer-links {
-                justify-content: center;
-            }
-        }
-    </style>
-
-
-    <!-- Main Content Area to Push Footer Down -->
-   
-    <!-- The Corrected and Cleaned Footer -->
-    <footer>
+<footer class="site-footer">
+    <div class="footer-container">
         <div class="footer-left">
             <a href="/" class="footer-logo">
-                <img src="./images/logo.png" alt="PDF Store Logo">
+                <img src="/images/logo.png" alt="PDF Store Logo">
             </a>
-            <span class="footer-brand-name">PDF Store</span>
+            <div>
+                <span class="footer-brand-name">PDF Store</span>
+                <p class="mb-0 mt-1 small">© <%= new Date().getFullYear() %>. All Rights Reserved.</p>
+            </div>
         </div>
         
         <div class="footer-center">
-            <p>&copy; <%= new Date().getFullYear() %> PDF Store. All rights reserved.</p>
-            <p>Bengaluru, Karnataka, India.</p>
             <div class="footer-links">
                 <a href="/privacy-policy">Privacy Policy</a>
                 <a href="/refund-policy">Refund Policy</a>
                 <a href="/terms-and-conditions">Terms & Conditions</a>
+                <a href="/contact-us">Contact Us</a>
+            </div>
+            <div class="footer-socials">
+                <a href="#" title="Twitter / X" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                <a href="#" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                <a href="#" title="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
         
         <div class="footer-right">
-            <span class="creator-info">Created by <b>Prasanna M</b></span><br>
-            <a href="mailto:prasannaprasanna35521@gmail.com">prasannaprasanna35521@gmail.com</a>
+            <div><strong>Location:</strong> Bengaluru, Karnataka, India</div>
+            <div class="creator-info">
+                <span>Created by <a href="#" target="_blank" rel="noopener noreferrer">Prasanna M</a></span>
+            </div>
         </div>
-    </footer>
-
+    </div>
+</footer>

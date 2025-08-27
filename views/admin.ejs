@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
       fetch('/logout', { method: 'GET', credentials: 'same-origin' })
         .then(() => {
-          window.location.href = '/login';
+          window.location.href = '/admin-login';
         })
         .catch(() => {
           spinner.style.display = 'none';
@@ -852,7 +852,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
       fetch('/logout', { method: 'GET', credentials: 'same-origin' })
         .then(() => {
-          window.location.href = '/login';
+          window.location.href = '/admin-login';
         })
         .catch(() => {
           spinner.style.display = 'none';

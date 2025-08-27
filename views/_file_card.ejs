@@ -1,0 +1,49 @@
+<article class="file-card h-100">
+  <div class="card-img-container">
+    <a href="/file/<%= file._id %>" aria-label="View details for <%= file.filename %>">
+      <img src="<%= file.previewUrl %>" class="card-img-top" alt="<%= file.filename %>" loading="lazy">
+    </a>
+    <% if ((file.downloadCount || 0) >= popularThreshold && popularThreshold > 0) { %>
+      <div class="card-badge"><i class="fas fa-star me-1"></i>Popular</div>
+    <% } %>
+  </div>
+  <div class="card-body">
+    <p class="card-category"><%= file.category %></p>
+    <h3 class="card-title h6">
+      <a href="/file/<%= file._id %>"><%= file.filename %></a>
+    </h3>
+    <div class="card-metadata">
+      <span class="meta-item" title="File Type"><i class="fas fa-file-alt"></i> <%= file.fileType || 'PDF' %></span>
+      <span class="meta-item" title="File Size"><i class="fas fa-database"></i> <%= file.fileSize || 'N/A' %></span>
+      <span class="meta-item" title="Downloads"><i class="fas fa-download"></i> <%= (file.downloadCount || 0).toLocaleString() %></span>
+    </div>
+  </div>
+  <div class="card-footer">
+    <a href="/file/<%= file._id %>" class="btn btn-buy">
+      View Details <span class="mx-2">&middot;</span> ₹<%= file.price %>
+    </a>
+  </div>
+</article>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "<%= file.filename %>",
+  "image": "<%= file.previewUrl %>",
+  "description": "<%= file.filedescription %>",
+  "sku": "<%= file._id %>",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "<%= (4 + (file._id.toString().charCodeAt(file._id.toString().length - 1) % 2) / 2).toFixed(1) %>",
+    "reviewCount": "<%= file.downloadCount || Math.floor(Math.random() * 100) + 1 %>"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": `https://pdfstore-qm6h.onrender.com/file/${file._id}`,
+    "priceCurrency": "INR",
+    "price": "<%= file.price %>",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>

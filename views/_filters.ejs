@@ -1,0 +1,35 @@
+<aside class="filters-sidebar">
+  <div class="filters-header">
+    <h3 class="filters-title"><i class="fas fa-filter me-2"></i>Filters</h3>
+    <button class="btn-close d-lg-none" id="closeFiltersBtn" aria-label="Close filters"></button>
+  </div>
+
+  <div class="filter-group">
+    <h4 class="filter-group-title">Category</h4>
+    <div class="filter-group-content" id="categoryFilters">
+      <% categories.forEach(category => { %>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="<%= category.toLowerCase() %>" id="cat-<%= category.toLowerCase().replace(/\s+/g, '-') %>">
+          <label class="form-check-label" for="cat-<%= category.toLowerCase().replace(/\s+/g, '-') %>">
+            <%= category %>
+          </label>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <h4 class="filter-group-title">Price Range</h4>
+    <div class="filter-group-content">
+      <input type="range" class="form-range" id="priceRange" min="0" max="1000" step="10" value="1000">
+      <div class="price-range-label">
+        <span>₹0</span>
+        <span id="priceRangeValue">₹1000</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-actions">
+    <button class="btn btn-primary-outline w-100" id="clearFiltersBtn">Clear All Filters</button>
+  </div>
+</aside>

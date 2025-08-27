@@ -99,6 +99,23 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
 // Define Mongoose schema and model for Files
+// In your file model (e.g., models/File.js)
+
+
+
+// This is a helper function to create a clean, URL-safe string
+function slugify(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
+}
+
 const fileSchema = new mongoose.Schema({
     filedescription: String,
     user: String,
@@ -109,11 +126,31 @@ const fileSchema = new mongoose.Schema({
     uploadedAt: { type: Date, default: Date.now },
     category: { type: String, required: true },
     fileSize: Number,
-    downloadCount: { type: Number, default: 0 } // <-- Add this line
+    downloadCount: { type: Number, default: 0 },
+    fileType: String,
+    
+    // 1. ADD THE NEW SLUG FIELD
+    slug: { 
+        type: String, 
+        unique: true // Slugs should be unique
+    }
 });
 
+// 2. ADD THIS FUNCTION to automatically create a slug before saving
+// This will work for all NEW files you upload in the future.
+fileSchema.pre('save', function(next) {
+    if (this.isModified('filename') || this.isNew) {
+        // Create the slug from the filename and add a unique suffix
+        const randomSuffix = (Math.random() + 1).toString(36).substring(7);
+        this.slug = `${slugify(this.filename)}-${randomSuffix}`;
+    }
+    next();
+});
+
+// This must match the collection name in your database
 const File = mongoose.model('doccollection', fileSchema);
 
+module.exports = File;
 // Razorpay instance from env variables
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -300,51 +337,51 @@ app.get("/save", async (req, res) => {
 });
 
 // Download PDF - No auth needed (public, post-payment)
-app.post("/download-pdf", async (req, res) => {
-    const { fileId, paymentId } = req.body;
+// app.post("/download-pdf", async (req, res) => {
+//     const { fileId, paymentId } = req.body;
 
-    if (!fileId) return res.status(400).send("Missing fileId");
+//     if (!fileId) return res.status(400).send("Missing fileId");
 
-    const file = await File.findById(fileId);
-    if (!file) return res.status(404).send("File not found");
+//     const file = await File.findById(fileId);
+//     if (!file) return res.status(404).send("File not found");
 
-    // Increment download count here
-    await File.updateOne({ _id: file._id }, { $inc: { downloadCount: 1 } });
+//     // Increment download count here
+//     await File.updateOne({ _id: file._id }, { $inc: { downloadCount: 1 } });
 
-    const { data, error } = await supabase
-        .storage
-        .from('files')
-        .createSignedUrl(file.fileUrl.replace(/^\/+/, ''), 30);
+//     const { data, error } = await supabase
+//         .storage
+//         .from('files')
+//         .createSignedUrl(file.fileUrl.replace(/^\/+/, ''), 30);
 
-    if (error || !data?.signedUrl) return res.status(404).send("File not found in storage");
+//     if (error || !data?.signedUrl) return res.status(404).send("File not found in storage");
 
-    try {
-        const fileResponse = await axios.get(data.signedUrl, { responseType: 'stream' });
-        const contentType = fileResponse.headers['content-type'];
-        let extension = mime.extension(contentType) || 'pdf';
-        let baseName = file.filename ? file.filename.split('.')[0] : 'file';
-        const safeFilename = encodeURIComponent(`${baseName}.${extension}`);
+//     try {
+//         const fileResponse = await axios.get(data.signedUrl, { responseType: 'stream' });
+//         const contentType = fileResponse.headers['content-type'];
+//         let extension = mime.extension(contentType) || 'pdf';
+//         let baseName = file.filename ? file.filename.split('.')[0] : 'file';
+//         const safeFilename = encodeURIComponent(`${baseName}.${extension}`);
 
-        res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
-        res.setHeader('Content-Type', contentType || 'application/octet-stream');
+//         res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
+//         res.setHeader('Content-Type', contentType || 'application/octet-stream');
 
-        fileResponse.data.on('error', (err) => {
-            console.error('Stream error:', err);
-            res.status(500).send('Error streaming file');
-        });
+//         fileResponse.data.on('error', (err) => {
+//             console.error('Stream error:', err);
+//             res.status(500).send('Error streaming file');
+//         });
 
-        fileResponse.data.pipe(res);
+//         fileResponse.data.pipe(res);
 
-    } catch (err) {
-        console.error('Axios download error:', err);
-        res.status(500).send('Failed to download file');
-    }
-});
+//     } catch (err) {
+//         console.error('Axios download error:', err);
+//         res.status(500).send('Failed to download file');
+//     }
+// });
 
 // --- Admin Authentication & Routes ---
 
 // Login Page (GET)
-app.get('/login', (req, res) => {
+app.get('/admin-login', (req, res) => {
     // If a valid JWT cookie exists, redirect to admin immediately
     if (req.cookies.jwt) {
         try {
@@ -705,20 +742,37 @@ app.get('/notifications', async (req, res) => {
 });
 
 // File Details Page
-app.get('/file/:id', async (req, res) => {
-    const file = await File.findById(req.params.id);
-    if (!file) return res.status(404).send('File not found');
+// The route now expects a slug and an id
+app.get('/file/:slug/:id', async (req, res) => {
+    try {
+        // We still use the ID for the database lookup because it's the fastest and most reliable
+        const file = await File.findById(req.params.id);
 
-    const { data: previewData } = await supabase
-        .storage
-        .from('files')
-        .createSignedUrl(`previews/${file._id}.jpg`, 60 * 5);
+        if (!file) {
+            return res.status(404).render('404', { message: 'File not found' }); 
+        }
 
-    res.render('file-details', {
-        file,
-        razorpayKey: process.env.RAZORPAY_KEY_ID,
-        previewUrl: previewData?.signedUrl || null
-    });
+        // Optional but recommended: Check if the slug matches and redirect if not.
+        // This ensures the URL is always the "correct" one for SEO.
+        if (file.slug !== req.params.slug) {
+            return res.redirect(301, `/file/${file.slug}/${file._id}`);
+        }
+
+        const { data: previewData } = await supabase
+            .storage
+            .from('files')
+            .createSignedUrl(`previews/${file._id}.jpg`, 60 * 5);
+
+        res.render('file-details', {
+            file,
+            razorpayKey: process.env.RAZORPAY_KEY_ID,
+            previewUrl: previewData?.signedUrl || null
+        });
+
+    } catch (error) {
+        console.error('Error fetching file:', error);
+        res.status(500).send('Server error');
+    }
 });
 
 // Delete File - NOW PROTECTED BY JWT
@@ -786,43 +840,81 @@ async function pdfFirstPageToImage(pdfBuffer, outputPath) {
 }
 
 // View File Route
-app.get('/viewfile/:id', async (req, res) => {
-    const file = await File.findById(req.params.id);
-    if(file.price!=0){
-        return res.redirect(`/file/${req.params.id}`);
+// You will need axios and path for this route
+// const axios = require('axios');
+// const path = require('path');
+
+app.get('/viewfile/:slug/:id', async (req, res) => {
+    try {
+        const file = await File.findById(req.params.id);
+
+        // --- Protection Logic ---
+        if (!file) {
+            return res.status(404).send('File not found');
+        }
+        if (file.price > 0) {
+            return res.redirect(`/file/${file.slug}/${file._id}`);
+        }
+        if (file.slug !== req.params.slug) {
+            return res.redirect(301, `/viewfile/${file.slug}/${file._id}`);
+        }
+
+        // --- Download Logic ---
+
+        // UPDATED: Using the more efficient File.updateOne method to increment download count
+        await File.updateOne({ _id: file._id }, { $inc: { downloadCount: 1 } });
+
+        // Get a temporary signed URL from Supabase
+        const { data, error } = await supabase
+            .storage
+            .from('files')
+            .createSignedUrl(`public/${file.fileUrl}`, 30); // Using the corrected 'public/' path
+
+        if (error || !data?.signedUrl) {
+            console.error('Supabase error:', error);
+            return res.status(500).send('Could not retrieve file from storage.');
+        }
+
+        // Stream the file from the secure Supabase URL to the user
+        const fileResponse = await axios.get(data.signedUrl, { responseType: 'stream' });
+
+        // Reliably get the file extension from the stored fileUrl
+        const extension = path.extname(file.fileUrl).toLowerCase();
+        const baseName = path.basename(file.filename, path.extname(file.filename));
+        const finalFilename = `${baseName}${extension}`;
+
+        // Determine the correct MIME Content-Type based on the extension
+        let contentType = 'application/octet-stream';
+        switch (extension) {
+            case '.pdf': contentType = 'application/pdf'; break;
+            case '.docx': contentType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'; break;
+            case '.pptx': contentType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'; break;
+            case '.zip': contentType = 'application/zip'; break;
+            case '.jpg': case '.jpeg': contentType = 'image/jpeg'; break;
+            case '.png': contentType = 'image/png'; break;
+        }
+
+        // Set the corrected headers
+        res.setHeader('Content-Disposition', `attachment; filename="${finalFilename}"`);
+        res.setHeader('Content-Type', contentType);
+        
+        // Send the file to the user
+        fileResponse.data.pipe(res);
+
+    } catch (error) {
+        console.error('Error in /viewfile route:', error);
+        res.status(500).send('An internal server error occurred.');
     }
-    if (!file) return res.status(404).send('File not found');
-
-    // Increment download count
-    await File.updateOne({ _id: file._id }, { $inc: { downloadCount: 1 } });
-
-    const { data, error } = await supabase
-        .storage
-        .from('files')
-        .createSignedUrl(file.fileUrl, 30); // 30 seconds
-
-    if (error || !data?.signedUrl) return res.status(404).send('File not found in storage');
-
-    const fileResponse = await axios.get(data.signedUrl, { responseType: 'stream' });
-
-    // ...existing code for filename and headers...
-    let extension = '';
-    if (file.filename && file.filename.includes('.')) {
-        extension = file.filename.split('.').pop();
-    } else if (file.fileUrl && file.fileUrl.includes('.')) {
-        extension = file.fileUrl.split('.').pop();
-    }
-
-    let baseName = file.filename ? file.filename.split('.')[0] : 'file';
-    const safeFilename = extension
-        ? `${baseName}.${extension}`
-        : file.filename || 'file.pdf';
-
-    res.setHeader('Content-Disposition', `attachment; filename="${safeFilename}"`);
-    res.setHeader('Content-Type', fileResponse.headers['content-type'] || 'application/octet-stream');
-    fileResponse.data.pipe(res);
 });
 app.use((req, res) => {
     res.status(404).render('404');
+});app.use((err, req, res, next) => {
+  // 1. Log the error to your console for debugging
+  console.error("==================== SERVER ERROR ====================");
+  console.error(err.stack);
+  console.error("======================================================");
+
+  // 2. Send the 500 status code and render your new error page
+  res.status(500).render('500');
 });
 // Error handling middleware
