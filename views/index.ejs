@@ -9,8 +9,11 @@
     <meta name="description" content="Search, find, and download the best study PDFs and notes. Optimized resources for engineering, nursing, competitive exams (NEET, JEE, KCET), and school boards (SSLC, CBSE, ICSE) to help you succeed in Bengaluru and across India.">
     <meta name="keywords" content="buy pdf, study notes, engineering notes, bsc nursing pdf, neet study material, jee resources, kcet notes, sslc guide, cbse notes, icse study material, ugc net commerce, ugc net management, educational resources, bengaluru, india, pdf download, premium study material">
     <meta name="author" content="PDF Store">
+
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    
     <link rel="canonical" href="https://pdfstore-qm6h.onrender.com/">
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pdfstore-qm6h.onrender.com/">
     <meta property="og:title" content="Buy Premium Study PDFs, Notes & Resources | PDF Store">
@@ -20,14 +23,17 @@
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="PDF Store">
     <meta property="og:locale" content="en_IN">
+
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://pdfstore-qm6h.onrender.com/">
     <meta property="twitter:title" content="Buy Premium Study PDFs, Notes & Resources | PDF Store">
     <meta property="twitter:description" content="Search, find, and download the best study PDFs and notes for engineering, nursing, competitive exams, and more.">
     <meta property="twitter:image" content="https://pdfstore-qm6h.onrender.com/images/logo.png">
+
     <link rel="icon" href="/images/favicon.ico" sizes="any">
     <link rel="icon" href="/images/logo.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+
     <meta name="theme-color" content="#111827">
 
     <script type="application/ld+json">
@@ -43,10 +49,58 @@
           "urlTemplate": "https://pdfstore-qm6h.onrender.com/?search={search_term_string}"
         },
         "query-input": "required name=search_term_string"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "PDF Store",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://pdfstore-qm6h.onrender.com/images/logo.png"
+        }
       }
     }
     </script>
-    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://pdfstore-qm6h.onrender.com/"
+      }]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Study Material PDFs",
+      "description": "A collection of premium and free study notes available for download.",
+      "itemListElement": [
+        <% files.slice(0, 12).forEach((file, index) => { %>
+          {
+            "@type": "ListItem",
+            "position": <%= index + 1 %>,
+            "item": {
+              "@type": "Product",
+              "name": "<%- file.filename.replace(/"/g, '\\"') %>",
+              "url": "https://pdfstore-qm6h.onrender.com/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>",
+              "image": "<%= file.previewUrl %>",
+              "description": "<%- file.filedescription.replace(/"/g, '\\"') %>",
+              "offers": {
+                "@type": "Offer",
+                "price": "<%= file.price %>",
+                "priceCurrency": "INR"
+              }
+            }
+          }
+          <%= (index < files.slice(0, 12).length - 1) ? ',' : '' %>
+        <% }); %>
+      ]
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
@@ -60,39 +114,106 @@
         --color-primary: #8b5cf6;
         --color-secondary: #ec4899;
         --color-success: #16a34a;
+        --shadow-glow: 0 0 25px -5px rgba(139, 92, 246, 0.3);
+        --gradient-buy: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        --gradient-download: linear-gradient(90deg, rgba(77, 54, 208, 1) 0%, rgba(132, 116, 254, 1) 100%);
+        --transition: 0.3s ease-in-out;
+        --radius-xl: 1.25rem;
+
+        /* Dark Theme (Default) */
         --color-text: #e5e7eb;
         --color-text-muted: #9ca3af;
         --color-bg-dark: #111827;
         --color-bg-card: rgba(31, 41, 55, 0.5);
         --color-border: rgba(255, 255, 255, 0.1);
-        --radius-xl: 1.25rem;
         --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-        --shadow-glow: 0 0 25px -5px rgba(139, 92, 246, 0.3);
-        --transition: 0.3s ease-in-out;
-        --gradient-buy: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-        --gradient-download: linear-gradient(90deg, rgba(77, 54, 208, 1) 0%, rgba(132, 116, 254, 1) 100%);
+        --bg-dots: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g fill="%231f2937" fill-opacity="0.4"><rect x="0" y="0" width="20" height="20"/><rect x="20" y="20" width="20" height="20"/></g></svg>');
       }
+
+      html[data-theme='light'] {
+        --color-text: #1f2937;
+        --color-text-muted: #6b7280;
+        --color-bg-dark: #f9fafb;
+        --color-bg-card: rgba(255, 255, 255, 0.5);
+        --color-border: rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        --bg-dots: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g fill="%23e5e7eb" fill-opacity="0.4"><rect x="0" y="0" width="20" height="20"/><rect x="20" y="20" width="20" height="20"/></g></svg>');
+      }
+
       body {
-        font-family: var(--font-family); color: var(--color-text); background-color: var(--color-bg-dark);
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%231f2937"><circle cx="20" cy="20" r="1.5"/><circle cx="50" cy="50" r="1"/><circle cx="80" cy="30" r="1.2"/><circle cx="10" cy="70" r="1"/><circle cx="90" cy="80" r="1.5"/></g></svg>');
+        font-family: var(--font-family); 
+        color: var(--color-text); 
+        background-color: var(--color-bg-dark);
+        background-image: var(--bg-dots);
+        overflow-x: hidden; /* Fixes background extending on mobile */
+        transition: background-color var(--transition), color var(--transition);
       }
       .page-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
       main { flex-grow: 1; }
-      .hero-section { padding: 4rem 1rem; text-align: center; border-bottom: 1px solid var(--color-border); }
-      .hero-title { font-weight: 800; font-size: clamp(2rem, 5vw, 3.5rem); color: #fff; margin-bottom: 0.5rem; }
+      
+      .hero-section {
+        padding: 4rem 1rem;
+        text-align: center;
+        border-bottom: 1px solid var(--color-border);
+        position: relative;
+        z-index: 2; 
+      }
+      /* .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background-image: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15), transparent 35%),
+                          radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.1), transparent 35%);
+        z-index: 0;
+        animation: rotate-glow 20s linear infinite;
+      } */
+      @keyframes rotate-glow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      .hero-section .container { position: relative; z-index: 1; }
+      .hero-title { font-weight: 800; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--color-text); margin-bottom: 0.5rem; }
       .hero-subtitle { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--color-text-muted); margin-bottom: 2.5rem; max-width: 650px; margin: 0 auto 2.5rem; }
-      .search-bar { margin: 0 auto; max-width: 600px; display: flex; align-items: center; background: var(--color-bg-card); backdrop-filter: blur(10px); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); transition: all var(--transition); }
+      #typed-text-container { color: var(--color-primary); }
+      #typed-cursor { animation: blink 0.7s infinite; }
+      @keyframes blink { 50% { opacity: 0; } }
+      
+      .search-wrapper { position: relative; margin: 0 auto; max-width: 600px; }
+      .search-bar { display: flex; align-items: center; background: var(--color-bg-card); backdrop-filter: blur(10px); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); transition: all var(--transition); }
       .search-bar:focus-within { box-shadow: var(--shadow-glow); border-color: var(--color-primary); }
       .search-bar .search-icon { color: var(--color-primary); font-size: 1.1rem; margin: 0 0.75rem 0 1.25rem; }
       .search-bar input { border: none; outline: none; flex: 1; font-size: 1.1rem; padding: 1rem 0; background: transparent; color: var(--color-text); }
       .search-bar input::placeholder { color: var(--color-text-muted); }
-      .content-section { padding: 3rem 0; }
-      .section-title { font-weight: 800; font-size: 1.75rem; margin-bottom: 0.5rem; color: #fff; }
+
+      .search-suggestions { position: absolute; top: calc(100% + 10px); left: 0; right: 0; background-color: rgba(31, 41, 55, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); max-height: 400px; overflow-y: auto; z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease; }
+      html[data-theme='light'] .search-suggestions { background-color: rgba(255, 255, 255, 0.8); }
+      .search-suggestions.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
+      .suggestion-group-title { padding: 0.6rem 1.25rem 0.4rem; font-size: 0.7rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--color-border); }
+      .suggestion-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.25rem; text-decoration: none; border-bottom: 1px solid var(--color-border); transition: background-color var(--transition); }
+      .suggestion-item:last-child { border-bottom: none; }
+      .suggestion-item:hover { background-color: rgba(139, 92, 246, 0.1); }
+      .suggestion-item .thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 0.5rem; background-color: #374151; flex-shrink: 0; }
+      .suggestion-item .info { flex-grow: 1; overflow: hidden; }
+      .suggestion-item .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; color: var(--color-text); font-weight: 600; }
+      .suggestion-item .title strong { color: var(--color-primary); font-weight: 700; }
+      .suggestion-item .category { font-size: 0.8rem; color: var(--color-text-muted); }
+      .suggestion-item .price { font-size: 0.85rem; color: var(--color-success); font-weight: 600; white-space: nowrap; margin-left: auto; padding-left: 1rem; }
+      .suggestion-item .price.free { color: var(--color-primary); }
+      
+      .content-section { padding: 3rem 0; position: relative; z-index: 1; }
+      .section-title { font-weight: 800; font-size: 1.75rem; margin-bottom: 0.5rem; color: var(--color-text); }
       .section-subtitle { font-size: 1.1rem; color: var(--color-text-muted); max-width: 600px; margin-bottom: 2rem; }
-      .popular-section { background-color: rgba(0,0,0,0.2); }
-      .scrolling-wrapper { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1.5rem; scrollbar-width: none; }
+      
+      .category-card { display: block; padding: 1.5rem 1rem; background-color: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-xl); text-align: center; text-decoration: none; transition: all var(--transition); backdrop-filter: blur(10px); }
+      .category-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-glow); border-color: var(--color-primary); }
+      .category-card .icon-wrapper { width: 60px; height: 60px; margin: 0 auto 1rem; border-radius: 50%; background: linear-gradient(145deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05)); display: flex; align-items: center; justify-content: center; color: var(--color-primary); transition: all var(--transition); }
+      .category-card:hover .icon-wrapper { transform: scale(1.1); }
+      .category-card .category-title { font-size: 1rem; font-weight: 600; color: var(--color-text); }
+      
+      .popular-section { background-color: rgba(0,0,0,0.05); }
+      html[data-theme='light'] .popular-section { background-color: rgba(0,0,0,0.02); }
+      
+      .scrolling-wrapper { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1.5rem; scrollbar-width: none; }
       .scrolling-wrapper::-webkit-scrollbar { display: none; }
-      .scrolling-wrapper .file-card-wrapper { flex: 0 0 340px; }
+      .scrolling-wrapper .file-card-wrapper { flex: 0 0 260px; }
       @keyframes card-fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
       .file-card-wrapper { animation: card-fade-in 0.6s ease-out forwards; opacity: 0; animation-fill-mode: both; }
       .file-card { background-color: var(--color-bg-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); transition: all 0.4s ease-out; overflow: hidden; height: 100%; display: flex; flex-direction: column; }
@@ -103,40 +224,74 @@
       .preview-btn-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all var(--transition); cursor: pointer; background-color: rgba(0,0,0,0.4); }
       .file-card:hover .preview-btn-overlay { opacity: 1; }
       .preview-btn-bg { background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); border-radius: 99px; padding: 0.75rem; color: white; transition: background-color var(--transition); }
-      .card-body-content { padding: 1.25rem; display: flex; flex-direction: column; flex-grow: 1; }
-      .card-title { font-weight: 700; font-size: 1rem; line-height: 1.4; margin-bottom: 0.5rem; transition: color var(--transition); }
+      .card-body-content { padding: 0.8rem; display: flex; flex-direction: column; flex-grow: 1; }
+      .card-title { font-weight: 600; font-size: 0.85rem; line-height: 1.3; margin-bottom: 0.5rem; transition: color var(--transition); height: 2.6em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
       .file-card:hover .card-title a { color: var(--color-primary); }
       a.text-inherit { color: inherit; text-decoration: none; }
-      .card-metadata { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: var(--color-text-muted); margin: 1rem 0; }
+      .card-metadata { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.7rem; color: var(--color-text-muted); margin: 0.6rem 0; }
       .card-metadata .meta-item { display: flex; align-items: center; gap: 0.35rem; }
       .card-metadata .meta-item i { color: var(--color-primary); }
-      .card-footer-actions { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--color-border); }
-      .btn-uiverse { line-height: 1; background-color: transparent; cursor: pointer; display: flex; align-items: center; gap: 0.5em; padding: 0.75em 1.25em; color: #fff; border: 1px solid transparent; font-weight: 700; border-radius: 2em; font-size: 0.9rem; box-shadow: 0 0.7em 1.5em -0.5em hsla(249, 62%, 51%, 0.5); transition: transform 0.3s; width: 100%; text-decoration: none; justify-content: center; }
-      .btn-uiverse:hover { border-color: rgba(255,255,255,0.8); }
+      .card-footer-actions { margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--color-border); }
+      .btn-uiverse { line-height: 1; background-color: transparent; cursor: pointer; display: flex; align-items: center; gap: 0.5em; padding: 0.6em 1em; color: #fff; border: 1px solid transparent; font-weight: 700; border-radius: 2em; font-size: 0.8rem; box-shadow: 0 0.7em 1.5em -0.5em hsla(249, 62%, 51%, 0.5); transition: transform 0.3s; width: 100%; text-decoration: none; justify-content: center; }
+      .btn-uiverse:hover { border-color: rgba(139, 92, 246, 0.5); }
       .btn-uiverse:active { transform: scale(0.98); }
-      .btn-uiverse__icon { width: 1.5em; height: 1.5em; }
+      .btn-uiverse__icon { width: 1.3em; height: 1.3em; }
       .btn-uiverse__text { letter-spacing: 0.5px; }
       .btn-uiverse.download { background: var(--gradient-download); }
       .btn-uiverse.buy { background: var(--gradient-buy); }
-      .copy-link-btn { position: absolute; top: 1rem; right: 1rem; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--color-border); background-color: var(--color-bg-card); backdrop-filter: blur(5px); color: var(--color-text); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all var(--transition); }
-      .copy-link-btn:hover { background-color: var(--color-primary); color: #fff; transform: scale(1.1); }
+      .copy-link-btn, .wishlist-btn { position: absolute; top: 0.75rem; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--color-border); background-color: var(--color-bg-card); backdrop-filter: blur(5px); color: var(--color-text); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all var(--transition); }
+      .copy-link-btn { right: 0.75rem; }
+      .wishlist-btn { left: 0.75rem; }
+      .copy-link-btn:hover, .wishlist-btn:hover { background-color: var(--color-primary); color: #fff; transform: scale(1.1); }
       .copy-link-btn.copied { background-color: var(--color-success); color: #fff; }
-      .modal.dark-modal .modal-content { background-color: #1f2937; border: 1px solid var(--color-border); color: var(--color-text); }
+      .wishlist-btn.saved i { font-weight: 900; color: var(--color-secondary); animation: heart-pulse 0.5s ease-out; }
+      @keyframes heart-pulse { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
+      .card-badge { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--color-primary); color: #fff; padding: 0.25rem 0.6rem; font-size: 0.65rem; font-weight: 700; border-radius: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; }
+      .card-badge.bestseller { background: var(--gradient-buy); }
+      
+      #filterModal.fade .modal-dialog { transform: translateX(50px); transition: transform 0.3s ease-out; }
+      #filterModal.show .modal-dialog { transform: translateX(0); }
+
+      .modal.dark-modal .modal-content { background-color: #1f2937; border: 1px solid var(--color-border); color: #e5e7eb; }
       .modal.dark-modal .modal-header, .modal.dark-modal .modal-footer { border-color: var(--color-border); }
       .modal.dark-modal .btn-close { filter: invert(1); }
-      .modal.dark-modal .form-control, .modal.dark-modal .form-select, .modal.dark-modal .form-check-input { background-color: #374151; border-color: #4b5563; color: var(--color-text); }
-      .modal.dark-modal .form-check-input:checked { background-color: var(--color-primary); border-color: var(--color-primary); }
-      .preview-modal .modal-content { border-radius: var(--radius-xl); overflow: hidden; border: none; background-color: #fff; color: #1f2937; }
-      .preview-modal-header { padding: 1.5rem; border-bottom: 1px solid #e5e7eb; background-image: linear-gradient(to right, #f5f3ff, #fdf2f8); }
-      .preview-modal-iframe-container { padding: 1rem; flex: 1; }
-      .preview-modal-iframe { background-color: #f3f4f6; border-radius: 1rem; overflow: hidden; min-height: 400px; height: 100%; width: 100%; }
-      .preview-modal-sidebar { width: 320px; padding: 1.5rem; background-color: #f9fafb; border-left: 1px solid #e5e7eb; }
-      .sidebar-price .price-value { font-size: 2rem; font-weight: 800; }
-      .sidebar-section-title { font-weight: 700; margin-bottom: 0.75rem; color: #374151; }
-      #loadMoreTrigger .spinner-border { width: 3rem; height: 3rem; }
-    </style>
+      html[data-theme='light'] .modal.dark-modal .modal-content { background-color: #fff; color: #1f2937; }
+      html[data-theme='light'] .modal.dark-modal .modal-header, html[data-theme='light'] .modal.dark-modal .modal-footer { border-color: #e5e7eb; }
+      html[data-theme='light'] .modal.dark-modal .btn-close { filter: none; }
+      html[data-theme='light'] .btn-outline-light { color: #4b5563; border-color: #d1d5db; }
+      html[data-theme='light'] .btn-outline-light:hover { color: #111827; background-color: #f3f4f6; border-color: #d1d5db; }
+
+      /* Skeleton Loader Styles */
+      .skeleton-card { background-color: var(--color-bg-card); border-radius: var(--radius-xl); overflow: hidden; }
+      .skeleton-card .skeleton-img { width: 100%; aspect-ratio: 16 / 9; background-color: var(--color-text-muted); opacity: 0.2; }
+      .skeleton-card .skeleton-body { padding: 0.8rem; }
+      .skeleton-card .skeleton-line { height: 1em; background-color: var(--color-text-muted); border-radius: 0.25rem; opacity: 0.2; }
+      .skeleton-card .skeleton-line:last-child { width: 60%; }
+      .shimmer-wrapper { position: relative; overflow: hidden; }
+      .shimmer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%); animation: shimmer 1.5s infinite; }
+      @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+      /* Theme Toggle Styles */
+      .theme-switch-wrapper { display: flex; align-items: center; }
+      .theme-switch { display: inline-block; height: 24px; position: relative; width: 48px; }
+      .theme-switch input { display:none; }
+      .slider { background-color: #374151; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; }
+      .slider:before { background-color: #fff; bottom: 4px; content: ""; height: 16px; left: 4px; position: absolute; transition: .4s; width: 16px; }
+      input:checked + .slider { background-color: var(--color-primary); }
+      input:checked + .slider:before { transform: translateX(24px); }
+      .slider.round { border-radius: 34px; }
+      .slider.round:before { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: "Font Awesome 6 Free"; font-size: 10px; font-weight: 900; content: '\f186'; color: #374151;}
+      input:checked + .slider.round:before { content: '\f185'; }
+</style>
 </head>
 <body>
+    <script>
+      // Apply theme immediately to prevent flashing
+      (function() {
+        const theme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
 
     <% 
       const slugify = (text) => {
@@ -145,12 +300,31 @@
       };
       const formatBytes = (bytes, decimals = 2) => {
         if (!+bytes) return '0 Bytes';
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const k = 1024; const dm = decimals < 0 ? 0 : decimals; const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
       };
+      const getCategoryIcon = (categoryName) => {
+        const name = (categoryName || '').toLowerCase().trim();
+        const iconMap = { 'engineering': 'fas fa-cogs', 'nursing': 'fas fa-stethoscope', 'neet': 'fas fa-dna', 'jee': 'fas fa-atom', 'kcet': 'fas fa-graduation-cap', 'sslc': 'fas fa-book-open', 'cbse': 'fas fa-school', 'icse': 'fas fa-university', 'commerce': 'fas fa-chart-line', 'management': 'fas fa-users-cog' };
+        return iconMap[name] || 'fas fa-file-alt';
+      };
+
+      // --- Badge Logic ---
+      const downloadCounts = files.map(f => f.downloadCount || 0).sort((a,b) => b-a);
+      const bestsellerThreshold = downloadCounts.length > 10 ? downloadCounts[Math.floor(files.length * 0.1)] : (downloadCounts[0] > 1000 ? downloadCounts[0] : 1000);
+      const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      
+      const getBadge = (file) => {
+          if ((file.downloadCount || 0) >= bestsellerThreshold && bestsellerThreshold > 0) {
+              return `<div class="card-badge bestseller">Bestseller</div>`;
+          }
+          if (new Date(file.uploadedAt).getTime() > oneWeekAgo) {
+              return `<div class="card-badge">New</div>`;
+          }
+          return '';
+      };
+
       const allTypes = files.map(f => f.fileType || 'Other');
       const uniqueTypes = [...new Set(allTypes)];
       const popularFiles = [...files].sort((a, b) => (b.downloadCount || 0) - (a.downloadCount || 0)).slice(0, 5);
@@ -164,14 +338,36 @@
       <main>
         <section class="hero-section">
           <div class="container">
-            <h1 class="hero-title">Unlock Your Knowledge</h1>
+            <h1 class="hero-title">Unlock Your <span id="typed-text-container"><span id="typed-text"></span><span id="typed-cursor">|</span></span></h1>
             <p class="hero-subtitle">Instantly access premium notes, study guides, and resources. Search for your subject and get ahead today.</p>
-            <div class="search-bar">
-                <i class="fa fa-search search-icon"></i>
-                <input type="text" id="searchInput" placeholder="Search by name, category, or description..." />
+            <div class="search-wrapper" id="searchWrapper">
+              <div class="search-bar">
+                  <i class="fa fa-search search-icon"></i>
+                  <input type="text" id="searchInput" placeholder="Search by name, category, or description..." autocomplete="off" />
+              </div>
+              <div class="search-suggestions" id="searchSuggestions"></div>
             </div>
           </div>
         </section>
+
+        <% if (categories && categories.length > 0) { %>
+        <section class="content-section">
+            <div class="container">
+                <h2 class="section-title">Browse by Category</h2>
+                <p class="section-subtitle">Find resources tailored to your specific field of study.</p>
+                <div class="row g-3">
+                    <% categories.slice(0, 8).forEach(category => { %>
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-6">
+                            <a href="javascript:void(0)" class="category-card" onclick="filterByCategory('<%= category %>')">
+                                <div class="icon-wrapper"> <i class="<%= getCategoryIcon(category) %> fa-2x"></i> </div>
+                                <h3 class="category-title"><%= category %></h3>
+                            </a>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </section>
+        <% } %>
 
         <section class="content-section popular-section">
           <div class="container">
@@ -179,16 +375,16 @@
             <p class="section-subtitle">Explore resources that are helping thousands of students succeed right now.</p>
             <div class="scrolling-wrapper">
               <% popularFiles.forEach(file => { %>
-                <div class="file-card-wrapper" style="width: 340px;">
+                <div class="file-card-wrapper" data-file-id="<%= file._id %>">
                    <article class="file-card h-100">
                       <div class="card-image-container">
+                          <%- getBadge(file) %>
                           <img src="<%= file.previewUrl %>" alt="<%= file.filename %>" class="card-img-top">
                           <div class="preview-btn-overlay" onclick="handlePreviewClick(this)" data-file-json='<%- JSON.stringify(file) %>'>
                               <div class="preview-btn-bg"><i class="fas fa-eye fa-lg"></i></div>
                           </div>
-                          <button class="copy-link-btn" onclick="copyFileLink(event, this, '<%= file._id %>', '<%= file.filename %>')" title="Copy link">
-                            <i class="fas fa-link"></i>
-                          </button>
+                          <!-- <button class="wishlist-btn" onclick="toggleWishlist(event, this, '<%= file._id %>')" title="Add to Wishlist"> <i class="far fa-heart"></i> </button> -->
+                          <button class="copy-link-btn" onclick="copyFileLink(event, this, '<%= file._id %>', '<%= file.filename %>')" title="Copy link"> <i class="fas fa-link"></i> </button>
                       </div>
                       <div class="card-body-content">
                           <h3 class="card-title"><a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="text-inherit"><%= file.filename %></a></h3>
@@ -199,19 +395,13 @@
                           </div>
                           <div class="card-footer-actions">
                               <% if (file.price > 0) { %>
-                                  <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse buy">
-                                      <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
-                                      <span class="btn-uiverse__text">Buy for ₹<%= file.price %></span>
-                                  </a>
+                                  <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse buy"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg> <span class="btn-uiverse__text">Buy for ₹<%= file.price %></span> </a>
                               <% } else { %>
-                                  <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download">
-                                      <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-                                      <span class="btn-uiverse__text">Download</span>
-                                  </a>
+                                  <a href="/download/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg> <span class="btn-uiverse__text">Download</span> </a>
                               <% } %>
                           </div>
                       </div>
-                    </article>
+                   </article>
                 </div>
               <% }); %>
             </div>
@@ -220,35 +410,42 @@
 
         <section class="content-section">
           <div class="container">
-            <div class="grid-header">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
               <div>
-                <h2 id="grid-main-title" class="section-title">Explore All Notes</h2>
+                <h2 id="grid-main-title" class="section-title mb-0">Explore All Notes</h2>
                 <p class="text-muted mb-0" id="resultsCounter"></p>
               </div>
-              <div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="theme-switch-wrapper">
+                    <label class="theme-switch" for="theme-toggle">
+                        <input type="checkbox" id="theme-toggle" />
+                        <div class="slider round"></div>
+                    </label>
+                </div>
                 <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fas fa-filter me-2"></i>Filter & Sort</button>
               </div>
             </div>
-            <div class="row g-4" id="fileCards">
+            <div class="row g-3" id="fileCards">
               <% initialFiles.forEach((file, index) => { %>
-                <div class="col-xl-3 col-lg-4 col-md-6 file-card-wrapper" 
+                <div class="col-lg-3 col-md-4 col-sm-6 col-6 file-card-wrapper" 
                   style="animation-delay: <%= index * 50 %>ms"
+                  data-file-id="<%= file._id %>"
                   data-price="<%= file.price %>"
                   data-category="<%= (file.category || '').toLowerCase() %>"
                   data-type="<%= (file.fileType || 'other').toLowerCase() %>"
                   data-timestamp="<%= file.uploadedAt ? new Date(file.uploadedAt).getTime() : Date.now() - index %>"
                   data-downloads="<%= file.downloadCount || 0 %>"
-                  data-search-terms="<%= `${file.filename} ${file.filedescription} ${file.category}`.toLowerCase() %>">
+                  data-search-terms="<%= `${file.filename} ${file.filedescription} ${file.category} ${file.user}`.toLowerCase() %>">
                   
                     <article class="file-card h-100">
                       <div class="card-image-container">
+                          <%- getBadge(file) %>
                           <img src="<%= file.previewUrl %>" alt="<%= file.filename %>" class="card-img-top">
                           <div class="preview-btn-overlay" onclick="handlePreviewClick(this)" data-file-json='<%- JSON.stringify(file) %>'>
                               <div class="preview-btn-bg"><i class="fas fa-eye fa-lg"></i></div>
                           </div>
-                          <button class="copy-link-btn" onclick="copyFileLink(event, this, '<%= file._id %>', '<%= file.filename %>')" title="Copy link">
-                            <i class="fas fa-link"></i>
-                          </button>
+                          <!-- <button class="wishlist-btn" onclick="toggleWishlist(event, this, '<%= file._id %>')" title="Add to Wishlist"> <i class="far fa-heart"></i> </button> -->
+                          <button class="copy-link-btn" onclick="copyFileLink(event, this, '<%= file._id %>', '<%= file.filename %>')" title="Copy link"> <i class="fas fa-link"></i> </button>
                       </div>
                       <div class="card-body-content">
                           <h3 class="card-title"><a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="text-inherit"><%= file.filename %></a></h3>
@@ -259,15 +456,9 @@
                           </div>
                           <div class="card-footer-actions">
                               <% if (file.price > 0) { %>
-                                  <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse buy">
-                                      <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
-                                      <span class="btn-uiverse__text">Buy for ₹<%= file.price %></span>
-                                  </a>
+                                  <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse buy"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg> <span class="btn-uiverse__text">Buy for ₹<%= file.price %></span> </a>
                               <% } else { %>
-                                  <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download">
-                                      <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-                                      <span class="btn-uiverse__text">Download</span>
-                                  </a>
+                                  <a href="/download/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg> <span class="btn-uiverse__text">Download</span> </a>
                               <% } %>
                           </div>
                       </div>
@@ -275,10 +466,14 @@
                 </div>
               <% }); %>
             </div>
+
+            <div id="noResultsBlock" class="text-center py-5 my-5" style="display: none;"> <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 2C16.7467 2 21 6.25329 21 11.5C21 16.7467 16.7467 21 11.5 21C6.25329 21 2 16.7467 2 11.5C2 6.25329 6.25329 2 11.5 2ZM11.5 4C7.35786 4 4 7.35786 4 11.5C4 15.6421 7.35786 19 11.5 19C15.6421 19 19 15.6421 19 11.5C19 7.35786 15.6421 4 11.5 4Z" fill="var(--color-primary)" fill-opacity="0.3"/><path d="M18.3913 19.3957C18.7818 18.9926 18.7818 18.375 18.3913 17.9719L14.4194 14C14.0289 13.6069 13.4113 13.6069 13.0208 14C12.6302 14.3931 12.6302 15.0107 13.0208 15.4038L16.9927 19.3957C17.3832 19.7888 18.0008 19.7888 18.3913 19.3957Z" fill="var(--color-primary)" fill-opacity="0.3"/><path fill-rule="evenodd" clip-rule="evenodd" d="M15.5 11.5C15.5 13.7091 13.7091 15.5 11.5 15.5C9.29086 15.5 7.5 13.7091 7.5 11.5C7.5 9.29086 9.29086 7.5 11.5 7.5C13.7091 7.5 15.5 9.29086 15.5 11.5ZM13.5 11.5C13.5 12.6046 12.6046 13.5 11.5 13.5C10.3954 13.5 9.5 12.6046 9.5 11.5C9.5 10.3954 10.3954 9.5 11.5 9.5C12.6046 9.5 13.5 10.3954 13.5 11.5Z" fill="var(--color-primary)"/></svg>
+                <h4 class="mt-4 fw-bold">No Notes Found</h4>
+                <p class="text-muted">We couldn't find any results. Try a different keyword or adjust your filters.</p>
+            </div>
+
             <div id="loadMoreTrigger" class="text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
+                <div class="spinner-border text-primary" role="status"> <span class="visually-hidden">Loading...</span> </div>
             </div>
           </div>
         </section>
@@ -320,6 +515,7 @@
     
     <script>
       const allFilesData = <%- JSON.stringify(files) %>;
+      const allCategories = <%- JSON.stringify(categories) %>;
     </script>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
@@ -335,13 +531,10 @@
         };
         const formatBytesJS = (bytes, decimals = 2) => {
             if (!+bytes) return '0 Bytes';
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const k = 1024; const dm = decimals < 0 ? 0 : decimals; const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
         };
-
         const copyFileLink = (event, buttonElement, fileId, filename) => {
             event.stopPropagation();
             const slug = slugifyJS(filename);
@@ -354,7 +547,36 @@
                 }, 2000);
             }).catch(err => { console.error('Failed to copy text: ', err); });
         };
-
+        const toggleWishlist = (event, btn, fileId) => {
+            event.stopPropagation();
+            let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+            const icon = btn.querySelector('i');
+            if (wishlist.includes(fileId)) {
+                wishlist = wishlist.filter(id => id !== fileId);
+                btn.classList.remove('saved');
+                btn.title = 'Add to Wishlist';
+            } else {
+                wishlist.push(fileId);
+                btn.classList.add('saved');
+                btn.title = 'Remove from Wishlist';
+            }
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        };
+        const filterByCategory = (category) => {
+            const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
+            const checkbox = document.getElementById(`cat-${categorySlug}`);
+            if (checkbox) {
+                document.querySelectorAll('#categoryFilters input[type="checkbox"]').forEach(cb => cb.checked = false);
+                checkbox.checked = true;
+                const filterModalEl = document.getElementById('filterModal');
+                if (filterModalEl) {
+                    const filterModal = bootstrap.Modal.getInstance(filterModalEl);
+                    if (filterModal) filterModal.hide();
+                }
+                document.getElementById('applyFiltersBtn').click();
+                document.getElementById('grid-main-title').scrollIntoView({ behavior: 'smooth' });
+            }
+        };
         const handlePreviewClick = (element) => {
             try {
                 const fileJson = element.dataset.fileJson;
@@ -362,25 +584,24 @@
                 showPreviewModal(fileObject);
             } catch (e) { console.error("Could not parse file data for preview modal:", e); }
         };
-
         const showPreviewModal = (file) => {
             document.getElementById('modalFileName').textContent = file.filename;
-            document.getElementById('modalCategoryUser').textContent = `${file.category} • ${file.user || 'PDF Store'}`;
+            document.getElementById('modalCategoryUser').textContent = `${file.category || 'General'} • By ${file.user || 'PDF Store'}`;
             document.getElementById('modalIframe').src = file.previewUrl;
             const priceEl = document.getElementById('modalPrice');
             const priceSubtextEl = document.getElementById('modalPriceSubtext');
             const actionBtn = document.getElementById('modalActionBtn');
             const actionText = document.getElementById('modalActionText');
             const fileUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
-            const downloadUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
+            const downloadUrl = `/download/${file.slug || slugifyJS(file.filename)}/${file._id}`;
             if (file.price > 0) {
                 priceEl.textContent = `₹${file.price}`; priceEl.style.color = '#16a34a'; priceSubtextEl.textContent = 'One-time purchase';
                 actionBtn.href = fileUrl; actionBtn.className = 'btn-uiverse buy w-100 py-3 fs-6';
-                actionText.innerHTML = `<svg class="btn-uiverse__icon" ...></svg><span class="btn-uiverse__text">Buy Now - ₹${file.price}</span>`;
+                actionText.innerHTML = `<svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span class="btn-uiverse__text">Buy Now - ₹${file.price}</span>`;
             } else {
                 priceEl.textContent = 'FREE'; priceEl.style.color = '#2563eb'; priceSubtextEl.textContent = 'Free download';
                 actionBtn.href = downloadUrl; actionBtn.className = 'btn-uiverse download w-100 py-3 fs-6';
-                actionText.innerHTML = `<svg class="btn-uiverse__icon" ...></svg><span class="btn-uiverse__text">Download Free</span>`;
+                actionText.innerHTML = `<svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg><span class="btn-uiverse__text">Download Free</span>`;
             }
             document.getElementById('modalDescription').textContent = file.filedescription || 'No description available.';
             pdfPreviewModal.show();
@@ -388,7 +609,94 @@
         
         document.addEventListener('DOMContentLoaded', () => {
             pdfPreviewModal = new bootstrap.Modal(document.getElementById('pdfPreviewModal'));
+            
+            const themeToggle = document.getElementById('theme-toggle');
+            if (localStorage.getItem('theme') === 'light') {
+                themeToggle.checked = true;
+            }
+            themeToggle.addEventListener('change', function() {
+                if(this.checked) {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            const typedTextSpan = document.getElementById("typed-text");
+            const cursorSpan = document.getElementById("typed-cursor");
+            const textArray = ["Engineering", "Medical", "Commerce", "KCET Prep"];
+            const typingDelay = 100, erasingDelay = 50, newTextDelay = 2000;
+            let textArrayIndex = 0, charIndex = 0;
+            function type() { if (charIndex < textArray[textArrayIndex].length) { typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex); charIndex++; setTimeout(type, typingDelay); } else { setTimeout(erase, newTextDelay); } }
+            function erase() { if (charIndex > 0) { typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex-1); charIndex--; setTimeout(erase, erasingDelay); } else { textArrayIndex++; if(textArrayIndex>=textArray.length) textArrayIndex=0; setTimeout(type, typingDelay + 1100); } }
+            if (textArray.length) setTimeout(type, newTextDelay + 250);
+
+            const searchWrapper = document.getElementById('searchWrapper');
             const searchInput = document.getElementById('searchInput');
+            const searchSuggestions = document.getElementById('searchSuggestions');
+            let searchTimeout;
+            const popularSuggestions = [...allFilesData].sort((a, b) => (b.downloadCount || 0) - (a.downloadCount || 0)).slice(0, 4);
+            const highlightMatch = (text, query) => {
+                if (!query || !text) return text;
+                const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const regex = new RegExp(`(${escapedQuery})`, 'gi');
+                return text.replace(regex, '<strong>$1</strong>');
+            };
+            const updateSuggestions = (isTrending = false) => {
+                const query = searchInput.value.trim().toLowerCase();
+                const rawQuery = searchInput.value.trim();
+                searchSuggestions.innerHTML = '';
+                if (isTrending) {
+                    if (popularSuggestions.length > 0) {
+                        let suggestionHTML = `<div class="suggestion-group-title">Trending Resources</div>`;
+                        popularSuggestions.forEach(file => {
+                            const slug = file.slug || slugifyJS(file.filename);
+                            const priceHTML = file.price > 0 ? `<span class="price">₹${file.price}</span>` : `<span class="price free">FREE</span>`;
+                            let subtitle = file.category || 'General';
+                            if (file.user) subtitle = `By ${file.user} in ${subtitle}`;
+                            suggestionHTML += `<a href="/file/${slug}/${file._id}" class="suggestion-item"><img src="${file.previewUrl}" alt="${file.filename}" class="thumb"><div class="info"><span class="title">${file.filename}</span><span class="category">${subtitle}</span></div>${priceHTML}</a>`;
+                        });
+                        searchSuggestions.innerHTML = suggestionHTML;
+                        searchSuggestions.classList.add('is-open');
+                    }
+                    return;
+                }
+                if (query.length < 2) { searchSuggestions.classList.remove('is-open'); return; }
+                const searchResults = [];
+                allFilesData.forEach(file => {
+                    let score = 0;
+                    const filename = (file.filename || '').toLowerCase();
+                    const description = (file.filedescription || '').toLowerCase();
+                    const category = (file.category || '').toLowerCase();
+                    const user = (file.user || '').toLowerCase();
+                    if (filename.includes(query)) { score += 10; if (filename.startsWith(query)) score += 5; }
+                    if (category.includes(query)) score += 5;
+                    if (user.includes(query)) score += 3;
+                    if (description.includes(query)) score += 1;
+                    if (score > 0) searchResults.push({ file, score });
+                });
+                searchResults.sort((a, b) => b.score - a.score);
+                const matches = searchResults.map(res => res.file).slice(0, 5);
+                if (matches.length > 0) {
+                    let suggestionHTML = `<div class="suggestion-group-title">Smart Suggestions</div>`;
+                    matches.forEach(file => {
+                        const slug = file.slug || slugifyJS(file.filename);
+                        const priceHTML = file.price > 0 ? `<span class="price">₹${file.price}</span>` : `<span class="price free">FREE</span>`;
+                        const highlightedTitle = highlightMatch(file.filename, rawQuery);
+                        let subtitle = file.category || 'General';
+                        if (file.user) subtitle = `By ${file.user} in ${subtitle}`;
+                        suggestionHTML += `<a href="/file/${slug}/${file._id}" class="suggestion-item"><img src="${file.previewUrl}" alt="${file.filename}" class="thumb"><div class="info"><span class="title">${highlightedTitle}</span><span class="category">${subtitle}</span></div>${priceHTML}</a>`;
+                    });
+                    searchSuggestions.innerHTML = suggestionHTML;
+                    searchSuggestions.classList.add('is-open');
+                } else { searchSuggestions.classList.remove('is-open'); }
+            };
+            searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => updateSuggestions(false), 250); });
+            searchInput.addEventListener('focus', () => { if (searchInput.value.trim().length < 2) { updateSuggestions(true); } else { updateSuggestions(false); } });
+            document.addEventListener('click', (event) => { if (!searchWrapper.contains(event.target)) { searchSuggestions.classList.remove('is-open'); } });
+            
             const fileCardsContainer = document.getElementById('fileCards');
             const resultsCounter = document.getElementById('resultsCounter');
             const gridTitle = document.getElementById('grid-main-title');
@@ -400,134 +708,111 @@
             const clearFiltersBtn = document.getElementById('clearFiltersBtn');
             const applyFiltersBtn = document.getElementById('applyFiltersBtn');
             const loadMoreTrigger = document.getElementById('loadMoreTrigger');
-
+            const badgeData = { bestsellerThreshold: allFilesData.map(f => f.downloadCount || 0).sort((a,b) => b-a)[Math.floor(allFilesData.length * 0.1)] || 1000, oneWeekAgo: Date.now() - 7 * 24 * 60 * 60 * 1000 };
+            const getBadgeJS = (file) => { if ((file.downloadCount || 0) >= badgeData.bestsellerThreshold && badgeData.bestsellerThreshold > 0) { return `<div class="card-badge bestseller">Bestseller</div>`; } if (new Date(file.uploadedAt).getTime() > badgeData.oneWeekAgo) { return `<div class="card-badge">New</div>`; } return ''; };
             const createFileCardHTML = (file) => {
                 const wrapper = document.createElement('div');
-                wrapper.className = 'col-xl-3 col-lg-4 col-md-6 file-card-wrapper';
+                wrapper.className = 'col-lg-3 col-md-4 col-sm-6 col-6 file-card-wrapper';
+                wrapper.dataset.fileId = file._id;
                 wrapper.dataset.price = file.price;
                 wrapper.dataset.category = (file.category || '').toLowerCase();
                 wrapper.dataset.type = (file.fileType || 'other').toLowerCase();
                 wrapper.dataset.timestamp = file.uploadedAt ? new Date(file.uploadedAt).getTime() : Date.now();
                 wrapper.dataset.downloads = file.downloadCount || 0;
-                wrapper.dataset.searchTerms = `${file.filename} ${file.filedescription} ${file.category}`.toLowerCase();
-                
+                wrapper.dataset.searchTerms = `${file.filename} ${file.filedescription} ${file.category} ${file.user}`.toLowerCase();
                 const fileUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
-                const downloadUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
-
+                const downloadUrl = `/download/${file.slug || slugifyJS(file.filename)}/${file._id}`;
                 const actionButtonHTML = file.price > 0
-                    ? `<a href="${fileUrl}" class="btn-uiverse buy">
-                         <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
-                         <span class="btn-uiverse__text">Buy for ₹${file.price}</span>
-                       </a>`
-                    : `<a href="${downloadUrl}" class="btn-uiverse download">
-                         <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-                         <span class="btn-uiverse__text">Download</span>
-                       </a>`;
-
-                wrapper.innerHTML = `
-                    <article class="file-card h-100">
-                        <div class="card-image-container">
-                            <img src="${file.previewUrl}" alt="${file.filename}" class="card-img-top">
-                            <div class="preview-btn-overlay" onclick="handlePreviewClick(this)" data-file-json='${JSON.stringify(file)}'>
-                                <div class="preview-btn-bg"><i class="fas fa-eye fa-lg"></i></div>
-                            </div>
-                            <button class="copy-link-btn" onclick="copyFileLink(event, this, '${file._id}', '${file.filename}')" title="Copy link"><i class="fas fa-link"></i></button>
-                        </div>
-                        <div class="card-body-content">
-                            <h3 class="card-title"><a href="${fileUrl}" class="text-inherit">${file.filename}</a></h3>
-                            <div class="card-metadata">
-                                <span class="meta-item"><i class="fas fa-file-alt"></i> ${file.fileType || 'PDF'}</span>
-                                <span class="meta-item"><i class="fas fa-database"></i> ${file.fileSize ? formatBytesJS(file.fileSize) : 'N/A'}</span>
-                                <span class="meta-item"><i class="fas fa-download"></i> ${(file.downloadCount || 0).toLocaleString()}</span>
-                            </div>
-                            <div class="card-footer-actions">
-                                ${actionButtonHTML}
-                            </div>
-                        </div>
-                    </article>`;
+                    ? `<a href="${fileUrl}" class="btn-uiverse buy"><svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span class="btn-uiverse__text">Buy for ₹${file.price}</span></a>`
+                    : `<a href="${downloadUrl}" class="btn-uiverse download"><svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg><span class="btn-uiverse__text">Download</span></a>`;
+                wrapper.innerHTML = `<article class="file-card h-100"><div class="card-image-container">${getBadgeJS(file)}<img src="${file.previewUrl}" alt="${file.filename}" class="card-img-top"><div class="preview-btn-overlay" onclick="handlePreviewClick(this)" data-file-json='${JSON.stringify(file)}'><div class="preview-btn-bg"><i class="fas fa-eye fa-lg"></i></div></div><button class="copy-link-btn" onclick="copyFileLink(event, this, '${file._id}', '${file.filename}')" title="Copy link"><i class="fas fa-link"></i></button></div><div class="card-body-content"><h3 class="card-title"><a href="${fileUrl}" class="text-inherit">${file.filename}</a></h3><div class="card-metadata"><span class="meta-item"><i class="fas fa-file-alt"></i> ${file.fileType || 'PDF'}</span><span class="meta-item"><i class="fas fa-database"></i> ${file.fileSize ? formatBytesJS(file.fileSize) : 'N/A'}</span><span class="meta-item"><i class="fas fa-download"></i> ${(file.downloadCount || 0).toLocaleString()}</span></div><div class="card-footer-actions">${actionButtonHTML}</div></div></article>`;
                 return wrapper;
             };
-
+            const initWishlistIcons = () => {
+                const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                wishlist.forEach(fileId => {
+                    document.querySelectorAll(`.file-card-wrapper[data-file-id="${fileId}"]`).forEach(card => {
+                        const btn = card.querySelector('.wishlist-btn');
+                        if (btn) { btn.classList.add('saved'); btn.title = 'Remove from Wishlist'; }
+                    });
+                });
+            };
+            const showSkeletonLoaders = () => {
+                fileCardsContainer.innerHTML = '';
+                const skeletonHTML = `<div class="col-lg-3 col-md-4 col-sm-6 col-6"><div class="skeleton-card shimmer-wrapper"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line mb-2"></div><div class="skeleton-line"></div></div><div class="shimmer"></div></div></div>`;
+                const count = window.innerWidth < 768 ? 4 : 8;
+                for(let i = 0; i < count; i++) { fileCardsContainer.insertAdjacentHTML('beforeend', skeletonHTML); }
+            };
             const loadMoreFiles = () => {
-                const chunkSize = window.innerWidth < 768 ? 3 : 8;
+                if (currentIndex === 0) { fileCardsContainer.innerHTML = ''; }
+                const chunkSize = 8;
                 const nextFiles = activeFiles.slice(currentIndex, currentIndex + chunkSize);
-                if (nextFiles.length === 0) {
-                    loadMoreTrigger.style.display = 'none';
-                    if(observer) observer.disconnect();
-                    return;
-                }
+                if (nextFiles.length === 0) { loadMoreTrigger.style.display = 'none'; if(observer) observer.disconnect(); return; }
                 const fragment = document.createDocumentFragment();
                 nextFiles.forEach(file => { fragment.appendChild(createFileCardHTML(file)); });
                 fileCardsContainer.appendChild(fragment);
                 currentIndex += nextFiles.length;
-                if (currentIndex >= activeFiles.length) {
-                    loadMoreTrigger.style.display = 'none';
-                    if(observer) observer.disconnect();
-                }
+                if (currentIndex >= activeFiles.length) { loadMoreTrigger.style.display = 'none'; if(observer) observer.disconnect(); }
+                initWishlistIcons();
             };
-
             const runFilterAndSort = () => {
-                const searchTerm = searchInput.value.trim().toLowerCase();
-                const selectedCategories = Array.from(categoryCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-                const selectedTypes = Array.from(fileTypeCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-                const priceFilterValue = document.querySelector('input[name="priceFilter"]:checked').value;
-                const maxPrice = parseFloat(priceRange.value);
-                const sortValue = sortBy.value;
-
-                let filtered = allFilesData.filter(file => {
-                    const searchTerms = `${file.filename} ${file.filedescription} ${file.category}`.toLowerCase();
-                    const searchMatch = searchTerm === '' || searchTerms.includes(searchTerm);
-                    const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes((file.category || '').toLowerCase());
-                    const typeMatch = selectedTypes.length === 0 || selectedTypes.includes((file.fileType || 'other').toLowerCase());
-                    const priceMatch = (priceFilterValue === 'all') || (priceFilterValue === 'paid' && file.price > 0) || (priceFilterValue === 'free' && file.price <= 0);
-                    const priceRangeMatch = file.price <= maxPrice;
-                    return searchMatch && categoryMatch && typeMatch && priceMatch && priceRangeMatch;
-                });
-                
-                filtered.sort((a, b) => {
-                    switch(sortValue) {
-                        case 'price-asc': return a.price - b.price;
-                        case 'price-desc': return b.price - a.price;
-                        case 'newest': return new Date(b.uploadedAt) - new Date(a.uploadedAt);
-                        case 'popular': default: return (b.downloadCount || 0) - (a.downloadCount || 0);
+                showSkeletonLoaders();
+                setTimeout(() => {
+                    const searchTerm = searchInput.value.trim().toLowerCase();
+                    const selectedCategories = Array.from(categoryCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+                    const selectedTypes = Array.from(fileTypeCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+                    const priceFilterValue = document.querySelector('input[name="priceFilter"]:checked').value;
+                    const maxPrice = parseFloat(priceRange.value);
+                    const sortValue = sortBy.value;
+                    let filtered = allFilesData.filter(file => {
+                        const searchTerms = `${file.filename} ${file.filedescription} ${file.category} ${file.user}`.toLowerCase();
+                        const searchMatch = searchTerm === '' || searchTerms.includes(searchTerm);
+                        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes((file.category || '').toLowerCase());
+                        const typeMatch = selectedTypes.length === 0 || selectedTypes.includes((file.fileType || 'other').toLowerCase());
+                        const priceMatch = (priceFilterValue === 'all') || (priceFilterValue === 'paid' && file.price > 0) || (priceFilterValue === 'free' && file.price <= 0);
+                        const priceRangeMatch = file.price <= maxPrice;
+                        return searchMatch && categoryMatch && typeMatch && priceMatch && priceRangeMatch;
+                    });
+                    filtered.sort((a, b) => {
+                        switch(sortValue) {
+                            case 'price-asc': return a.price - b.price;
+                            case 'price-desc': return b.price - a.price;
+                            case 'newest': return new Date(b.uploadedAt) - new Date(a.uploadedAt);
+                            case 'popular': default: return (b.downloadCount || 0) - (a.downloadCount || 0);
+                        }
+                    });
+                    activeFiles = filtered;
+                    const noResultsBlock = document.getElementById('noResultsBlock');
+                    const isFiltered = searchTerm !== '' || selectedCategories.length > 0 || selectedTypes.length > 0 || priceFilterValue !== 'all' || parseFloat(priceRange.value) < parseFloat(priceRange.max);
+                    gridTitle.textContent = isFiltered ? 'Filtered Results' : 'Explore All Notes';
+                    resultsCounter.textContent = `Showing ${activeFiles.length} results`;
+                    if (activeFiles.length === 0) {
+                        fileCardsContainer.innerHTML = '';
+                        noResultsBlock.style.display = 'block';
+                        loadMoreTrigger.style.display = 'none';
+                        if(observer) observer.disconnect();
+                    } else {
+                        noResultsBlock.style.display = 'none';
+                        currentIndex = 0;
+                        loadMoreTrigger.style.display = 'block';
+                        if(observer) observer.disconnect();
+                        loadMoreFiles(); 
+                        if (activeFiles.length > currentIndex) { observer.observe(loadMoreTrigger); }
                     }
-                });
-
-                activeFiles = filtered;
-                fileCardsContainer.innerHTML = '';
-                resultsCounter.textContent = `Showing ${activeFiles.length} of ${allFilesData.length} results`;
-                const isFiltered = searchTerm !== '' || selectedCategories.length > 0 || selectedTypes.length > 0 || priceFilterValue !== 'all' || parseFloat(priceRange.value) < parseFloat(priceRange.max);
-                gridTitle.textContent = isFiltered ? 'Filtered Results' : 'Explore All Notes';
-                
-                currentIndex = 0;
-                loadMoreTrigger.style.display = 'block';
-                if(observer) observer.disconnect();
-                loadMoreFiles(); 
-                if (activeFiles.length > currentIndex) { observer.observe(loadMoreTrigger); }
+                }, 300);
             };
-            
-            observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) { loadMoreFiles(); }
-            }, { rootMargin: '0px 0px 500px 0px' });
-            
-            searchInput.addEventListener('input', () => {
-                clearTimeout(searchInput.timer);
-                searchInput.timer = setTimeout(runFilterAndSort, 300);
-            });
+            observer = new IntersectionObserver((entries) => { if (entries[0].isIntersecting) { loadMoreFiles(); } }, { rootMargin: '0px 0px 500px 0px' });
             applyFiltersBtn.addEventListener('click', runFilterAndSort);
             priceRange.addEventListener('input', () => { priceRangeValue.textContent = `₹${priceRange.value}`; });
             clearFiltersBtn.addEventListener('click', () => {
-                categoryCheckboxes.forEach(cb => cb.checked = false);
-                fileTypeCheckboxes.forEach(cb => cb.checked = false);
+                categoryCheckboxes.forEach(cb => cb.checked = false); fileTypeCheckboxes.forEach(cb => cb.checked = false);
                 document.getElementById('priceAll').checked = true;
-                priceRange.value = priceRange.max;
-                priceRangeValue.textContent = `₹${priceRange.max}`;
-                sortBy.value = 'popular';
-                searchInput.value = '';
+                priceRange.value = priceRange.max; priceRangeValue.textContent = `₹${priceRange.max}`;
+                sortBy.value = 'popular'; searchInput.value = '';
                 runFilterAndSort();
             });
-            
             runFilterAndSort();
+            initWishlistIcons();
         });
     </script>
 </body>
