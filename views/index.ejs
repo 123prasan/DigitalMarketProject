@@ -397,7 +397,7 @@
                               <% if (file.price > 0) { %>
                                   <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse buy"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg> <span class="btn-uiverse__text">Buy for ₹<%= file.price %></span> </a>
                               <% } else { %>
-                                  <a href="/file/%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg> <span class="btn-uiverse__text">Download</span> </a>
+                                  <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg> <span class="btn-uiverse__text">Download</span> </a>
                               <% } %>
                           </div>
                       </div>
@@ -720,7 +720,7 @@
                 wrapper.dataset.downloads = file.downloadCount || 0;
                 wrapper.dataset.searchTerms = `${file.filename} ${file.filedescription} ${file.category} ${file.user}`.toLowerCase();
                 const fileUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
-                const downloadUrl = `/download/${file.slug || slugifyJS(file.filename)}/${file._id}`;
+                const downloadUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
                 const actionButtonHTML = file.price > 0
                     ? `<a href="${fileUrl}" class="btn-uiverse buy"><svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span class="btn-uiverse__text">Buy for ₹${file.price}</span></a>`
                     : `<a href="${downloadUrl}" class="btn-uiverse download"><svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg><span class="btn-uiverse__text">Download</span></a>`;
