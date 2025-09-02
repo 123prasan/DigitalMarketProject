@@ -253,7 +253,7 @@
       #filterModal.show .modal-dialog { transform: translateX(0); }
 
       .modal.dark-modal .modal-content { background-color: #1f2937; border: 1px solid var(--color-border); color: #e5e7eb; }
-      .modal.dark-modal .modal-header, .modal.dark-modal .modal-footer { border-color: var(--color-border); }
+      .modal.dark-modal .modal-headerdownloadwnload.modal.dark-modal .modal-footer { border-color: var(--color-border); }
       .modal.dark-modal .btn-close { filter: invert(1); }
       html[data-theme='light'] .modal.dark-modal .modal-content { background-color: #fff; color: #1f2937; }
       html[data-theme='light'] .modal.dark-modal .modal-header, html[data-theme='light'] .modal.dark-modal .modal-footer { border-color: #e5e7eb; }
@@ -397,7 +397,7 @@
                               <% if (file.price > 0) { %>
                                   <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse buy"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg> <span class="btn-uiverse__text">Buy for ₹<%= file.price %></span> </a>
                               <% } else { %>
-                                  <a href="/download/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg> <span class="btn-uiverse__text">Download</span> </a>
+                                  <a href="/file/%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg> <span class="btn-uiverse__text">Download</span> </a>
                               <% } %>
                           </div>
                       </div>
@@ -458,7 +458,7 @@
                               <% if (file.price > 0) { %>
                                   <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse buy"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg> <span class="btn-uiverse__text">Buy for ₹<%= file.price %></span> </a>
                               <% } else { %>
-                                  <a href="/download/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg> <span class="btn-uiverse__text">Download</span> </a>
+                                  <a href="/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>" class="btn-uiverse download"> <svg class="btn-uiverse__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg> <span class="btn-uiverse__text">Download</span> </a>
                               <% } %>
                           </div>
                       </div>
@@ -593,7 +593,7 @@
             const actionBtn = document.getElementById('modalActionBtn');
             const actionText = document.getElementById('modalActionText');
             const fileUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
-            const downloadUrl = `/download/${file.slug || slugifyJS(file.filename)}/${file._id}`;
+            const downloadUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
             if (file.price > 0) {
                 priceEl.textContent = `₹${file.price}`; priceEl.style.color = '#16a34a'; priceSubtextEl.textContent = 'One-time purchase';
                 actionBtn.href = fileUrl; actionBtn.className = 'btn-uiverse buy w-100 py-3 fs-6';
@@ -654,8 +654,7 @@
                         popularSuggestions.forEach(file => {
                             const slug = file.slug || slugifyJS(file.filename);
                             const priceHTML = file.price > 0 ? `<span class="price">₹${file.price}</span>` : `<span class="price free">FREE</span>`;
-                            let subtitle = file.category || 'General';
-                            if (file.user) subtitle = `By ${file.user} in ${subtitle}`;
+                            let subtitle = file.category || 'General';                    if (file.user) subtitle = `By ${file.user} in ${subtitle}`;
                             suggestionHTML += `<a href="/file/${slug}/${file._id}" class="suggestion-item"><img src="${file.previewUrl}" alt="${file.filename}" class="thumb"><div class="info"><span class="title">${file.filename}</span><span class="category">${subtitle}</span></div>${priceHTML}</a>`;
                         });
                         searchSuggestions.innerHTML = suggestionHTML;
