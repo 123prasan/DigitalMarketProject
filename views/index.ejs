@@ -303,7 +303,7 @@
       #filterModal.show .modal-dialog { transform: translateX(0); }
 
       .modal.dark-modal .modal-content { background-color: #1f2937; border: 1px solid var(--color-border); color: #e5e7eb; }
-      .modal.dark-modal .modal-header, .modal.dark-modal .modal-footer { border-color: var(--color-border); }
+      .modal.dark-modal .modal-headerdownloadwnload.modal.dark-modal .modal-footer { border-color: var(--color-border); }
       .modal.dark-modal .btn-close { filter: invert(1); }
       html[data-theme='light'] .modal.dark-modal .modal-content { background-color: #fff; color: #1f2937; }
       html[data-theme='light'] .modal.dark-modal .modal-header, html[data-theme='light'] .modal.dark-modal .modal-footer { border-color: #e5e7eb; }
@@ -704,8 +704,7 @@
                         popularSuggestions.forEach(file => {
                             const slug = file.slug || slugifyJS(file.filename);
                             const priceHTML = file.price > 0 ? `<span class="price">₹${file.price}</span>` : `<span class="price free">FREE</span>`;
-                            let subtitle = file.category || 'General';
-                            if (file.user) subtitle = `By ${file.user} in ${subtitle}`;
+                            let subtitle = file.category || 'General';                    if (file.user) subtitle = `By ${file.user} in ${subtitle}`;
                             suggestionHTML += `<a href="/file/${slug}/${file._id}" class="suggestion-item"><img src="${file.previewUrl}" alt="${file.filename}" class="thumb"><div class="info"><span class="title">${file.filename}</span><span class="category">${subtitle}</span></div>${priceHTML}</a>`;
                         });
                         searchSuggestions.innerHTML = suggestionHTML;
