@@ -1,0 +1,22 @@
+# robots.txt for Vidyari.com
+
+User-agent: *
+# Block backend & sensitive pages
+
+Disallow: /admin-login/
+Disallow: /download
+Disallow: /admin
+
+
+
+
+# Allow everything else
+Allow: /
+
+# Crawl-delay (optional for heavy servers)
+# Crawl-delay: 5
+
+# Sitemap locations
+Sitemap: https://vidyari.com/sitemap.xml
+Sitemap: https://vidyari.com/sitemap-pages.xml
+Sitemap: https://vidyari.com/sitemap-files.xml

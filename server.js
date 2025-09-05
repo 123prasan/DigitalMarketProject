@@ -3,6 +3,7 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const path = require("path");
 const Order = require("./models/Order");
+
 // const pdfPoppler = require("pdf-poppler"); // Commented out in original, remains commented
 const fs = require("fs");
 const Message = require("./models/message");
@@ -21,7 +22,7 @@ const axios = require("axios");
 const categories = require("./models/categories"); // Assuming categories.js exports a Mongoose model
 const { createClient } = require("@supabase/supabase-js");
 const Location = require("./models/userlocation"); // Assuming Location.js exports a Mongoose model
-
+const chatRoutes = require('./routes/chat.js');
 const app = express();
 app.use(express.json());
 const cors = require("cors");
@@ -31,7 +32,6 @@ function getcategories() {
   return categories.find({}).then((cats) => cats.map((cat) => cat.name));
 }
 
-// const fetch = require("node-fetch");
 
 app.post("/save-location", async (req, res) => {
   let ip = req.body.ip;
@@ -89,7 +89,7 @@ app.use(cookieParser()); // Use cookie-parser middleware
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use('/api/chat', chatRoutes);
 // Define Mongoose schema and model for Files
 // In your file model (e.g., models/File.js)
 
@@ -118,7 +118,8 @@ const fileSchema = new mongoose.Schema({
   fileSize: Number,
   downloadCount: { type: Number, default: 0 },
   fileType: String,
-
+  likes: { type: Number, default: 0 },
+ 
   // 1. ADD THE NEW SLUG FIELD
   slug: {
     type: String,
@@ -183,6 +184,31 @@ const ADMIN_USER = {
 };
 
 // --- Routes ---
+app.get("/:id/:impression", async (req, res) => {
+  if(req.params.impression=="like"){
+    const file = await File.findById(req.params.id);
+    if (file) {
+      file.likes += 1;
+      await file.save();
+      console.log(file.likes);
+      res.json({ likes: file.likes });
+    } else {
+    
+      res.status(404).json({ error: "File not found" });
+    }
+  }
+  if(req.params.impression=="dislike" ){
+    const file = await File.findById(req.params.id);
+    if (file&& file.likes > 0) {
+      file.likes -= 1;
+      await file.save();
+      console.log(file.likes);
+      res.json({ likes: file.likes });
+    } else {
+      res.status(404).json({ error: "File not found" });
+    }
+  }
+});
 
 // Razorpay Order Creation - No auth needed (public)
 app.post("/create-order", async (req, res) => {

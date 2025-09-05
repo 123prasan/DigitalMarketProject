@@ -1,309 +1,481 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title><%= file.filename || 'File Checkout' %> • Secure Checkout</title>
-    
-    <meta name="description" content="Securely purchase and instantly download '<%= file.filename %>'. <%= file.filedescription %>">
-    <meta name="keywords" content="<%= file.filename %>, <%= file.category %>, pdf download, study notes purchase">
-    <meta name="robots" content="noindex, nofollow">
-    
-    <link rel="icon" href="/images/logo.png" type="image/png" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-      /* --- Galactic Dark Checkout Theme --- */
-      :root {
-        --font-family: 'Sora', sans-serif;
-        --color-primary: #8b5cf6; /* Purple */
-        --color-secondary: #ec4899; /* Pink */
-        --color-text: #e5e7eb; /* Light Gray */
-        --color-text-muted: #9ca3af; /* Medium Gray */
-        --color-bg-dark: #111827; /* Darkest Gray/Navy */
-        --color-border: rgba(255, 255, 255, 0.1);
-        --radius-xl: 1.25rem;
-        --shadow-glow: 0 0 35px -5px rgba(139, 92, 246, 0.25);
-        --transition: 0.3s ease-in-out;
-        --gradient-buy: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-        --gradient-download: linear-gradient(90deg, rgba(77, 54, 208, 1) 0%, rgba(132, 116, 254, 1) 100%);
-      }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
 
-      body {
-        font-family: var(--font-family);
-        color: var(--color-text);
-        background-color: var(--color-bg-dark);
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%231f2937"><circle cx="20" cy="20" r="1.5"/><circle cx="50" cy="50" r="1"/><circle cx="80" cy="30" r="1.2"/><circle cx="10" cy="70" r="1"/><circle cx="90" cy="80" r="1.5"/></g></svg>');
-        overflow-x: hidden;
-      }
-      
-      .checkout-container {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem 1rem;
-      }
+  <title>
+    <%if(file.price==0){%>
+      <%= file.filename || 'File Download' %> • Download | Vidyari
+        <%}else{%>
+          <%= file.filename || 'File Checkout' %> • Secure Checkout | Vidyari
+            <%}%>
+  </title>
 
-      .pdf-preview {
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-glow);
-        border: 1px solid var(--color-border);
-        transition: transform var(--transition);
-        max-width: 100%;
-      }
-      .pdf-preview:hover {
-        transform: scale(1.03);
-      }
+  <!-- Description & Keywords -->
+  <meta name="description"
+    content="Securely purchase and instantly download '<%= file.filename %>'. <%= file.filedescription %> | Vidyari Checkout">
+  <meta name="keywords"
+    content="<%= file.filename %>, <%= file.category %>, secure checkout, study material download, premium notes purchase">
 
-      .file-details h1 {
-        font-weight: 800;
-        color: #fff;
-        font-size: clamp(1.8rem, 4vw, 2.5rem);
-      }
-      
-      .category-badge {
-        display: inline-block;
-        padding: 0.3rem 1rem;
-        background-image: linear-gradient(to right, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
-        color: var(--color-primary);
-        border-radius: 99px;
-        font-size: 0.9rem;
-        font-weight: 600;
-      }
+  <!-- Robots (noindex for checkout page) -->
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <meta name="bingbot" content="index, follow">
 
-      .stats-bar {
-        display: flex;
-        gap: 1.5rem;
-        color: var(--color-text-muted);
-        font-size: 0.9rem;
-      }
-      .stats-bar .stars { color: #f59e0b; }
+  <!-- Author & App -->
+  <meta name="author" content="Vidyari">
+  <meta name="application-name" content="Vidyari">
+  <meta name="apple-mobile-web-app-title" content="Vidyari">
 
-      .description-box {
-        background-color: rgba(31, 41, 55, 0.5);
-        padding: 1rem;
-        border-radius: 0.75rem;
-        border-left: 3px solid var(--color-primary);
-        color: var(--color-text-muted);
-      }
+  <!-- Open Graph (for sharing if link is copied) -->
+  <meta property="og:type" content="product">
+  <meta property="og:url"
+    content="https://vidyari.com/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>/checkout">
+  <meta property="og:title" content="Checkout • <%= file.filename %> | Vidyari">
+  <meta property="og:description"
+    content="Instant and secure checkout for '<%= file.filename %>' on Vidyari. Download your study notes safely.">
+  <meta property="og:image" content="<%= file.previewUrl || 'https://vidyari.com/images/logo-1200x630.png' %>">
+  <meta property="og:site_name" content="Vidyari">
+  <meta property="og:locale" content="en_IN">
 
-      .details-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      .detail-item {
-        background-color: rgba(31, 41, 55, 0.5);
-        padding: 1rem;
-        border-radius: 0.75rem;
-        font-size: 0.9rem;
-      }
-      .detail-item .label {
-        display: block;
-        color: var(--color-text-muted);
-        font-size: 0.8rem;
-        margin-bottom: 0.25rem;
-      }
-      .detail-item .value {
-        font-weight: 600;
-        color: var(--color-text);
-      }
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url"
+    content="https://vidyari.com/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>/checkout">
+  <meta name="twitter:title" content="Checkout • <%= file.filename %> | Vidyari">
+  <meta name="twitter:description"
+    content="Secure payment and instant download for '<%= file.filename %>' study notes.">
+  <meta name="twitter:image" content="<%= file.previewUrl || 'https://vidyari.com/images/logo-1200x630.png' %>">
 
-      .price {
-        font-size: 3rem;
-        font-weight: 800;
-        color: rgb(70, 230, 70);
-      }
-      
-      .btn-purchase {
-        line-height: 1; background-color: transparent; cursor: pointer;
-        display: flex; align-items: center; gap: 0.75em; padding: 1em 1.5em;
-        color: #fff; border: none; font-weight: 700; text-decoration: none;
-        border-radius: 2em; font-size: 1.1rem;
-        box-shadow: 0 0.7em 1.5em -0.5em hsla(249, 62%, 51%, 0.5);
-        transition: transform var(--transition);
-        width: 100%; justify-content: center;
-      }
-      .btn-purchase:hover { transform: scale(1.03); }
-      .btn-purchase.download { background: var(--gradient-download); }
-      .btn-purchase.buy { background: var(--gradient-buy); }
-      .btn-purchase__icon { width: 1.5em; height: 1.5em; }
-      
-      .trust-badges {
-        display: flex;
-        justify-content: space-around;
-        text-align: center;
-        gap: 1rem;
-        color: var(--color-text-muted);
-        font-size: 0.8rem;
-      }
-      .trust-badges i {
-        color: var(--color-primary);
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-      }
-    </style>
+  <!-- Favicons -->
+  <link rel="icon" href="/images/logo.svg" type="image/svg" />
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
+
+  <!-- Theme -->
+  <meta name="theme-color" content="#111827">
+
+  <!-- Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//www.google-analytics.com">
+
+  <!-- Fonts & CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- Galactic Dark Checkout Theme --- */
+    :root {
+      --font-family: 'Sora', sans-serif;
+      --color-primary: #8b5cf6;
+      /* Purple */
+      --color-secondary: #ec4899;
+      /* Pink */
+      --color-text: #e5e7eb;
+      /* Light Gray */
+      --color-text-muted: #9ca3af;
+      /* Medium Gray */
+      --color-bg-dark: #111827;
+      /* Darkest Gray/Navy */
+      --color-border: rgba(255, 255, 255, 0.1);
+      --radius-xl: 1.25rem;
+      --shadow-glow: 0 0 35px -5px rgba(139, 92, 246, 0.25);
+      --transition: 0.3s ease-in-out;
+      --gradient-buy: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      --gradient-download: linear-gradient(90deg, rgba(77, 54, 208, 1) 0%, rgba(132, 116, 254, 1) 100%);
+    }
+
+    body {
+      font-family: var(--font-family);
+      color: var(--color-text);
+      background-color: var(--color-bg-dark);
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%231f2937"><circle cx="20" cy="20" r="1.5"/><circle cx="50" cy="50" r="1"/><circle cx="80" cy="30" r="1.2"/><circle cx="10" cy="70" r="1"/><circle cx="90" cy="80" r="1.5"/></g></svg>');
+      overflow-x: hidden;
+    }
+
+    .checkout-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .pdf-preview {
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-glow);
+      border: 1px solid var(--color-border);
+      transition: transform var(--transition);
+      max-width: 100%;
+    }
+
+    .pdf-preview:hover {
+      transform: scale(1.03);
+    }
+
+    .file-details h1 {
+      font-weight: 800;
+      color: #fff;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+    }
+
+    .category-badge {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      background-image: linear-gradient(to right, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+      color: var(--color-primary);
+      border-radius: 99px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 1.5rem;
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+    }
+
+    .stats-bar .stars {
+      color: #f59e0b;
+    }
+
+    .description-box {
+      background-color: rgba(31, 41, 55, 0.5);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border-left: 3px solid var(--color-primary);
+      color: var(--color-text-muted);
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .detail-item {
+      background-color: rgba(31, 41, 55, 0.5);
+      padding: 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .detail-item .label {
+      display: block;
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-item .value {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .price {
+      font-size: 3rem;
+      font-weight: 800;
+      color: rgb(70, 230, 70);
+    }
+
+    .btn-purchase {
+      line-height: 1;
+      background-color: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75em;
+      padding: 1em 1.5em;
+      color: #fff;
+      border: none;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 2em;
+      font-size: 1.1rem;
+      box-shadow: 0 0.7em 1.5em -0.5em hsla(249, 62%, 51%, 0.5);
+      transition: transform var(--transition);
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-purchase:hover {
+      transform: scale(1.03);
+    }
+
+    .btn-purchase.download {
+      background: var(--gradient-download);
+    }
+
+    .btn-purchase.buy {
+      background: var(--gradient-buy);
+    }
+
+    .btn-purchase__icon {
+      width: 1.5em;
+      height: 1.5em;
+    }
+
+    .trust-badges {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+      gap: 1rem;
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+    }
+
+    .trust-badges i {
+      color: var(--color-primary);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .LikesBtn-file {
+      font-size: 50px;
+      cursor: pointer;
+      /* color: #fff; */
+    }
+  </style>
 </head>
+
 <body>
-    <% 
-      const formatBytes = (bytes, decimals = 2) => {
-        if (!+bytes) return '0 Bytes';
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-      };
-    %>
+  <% const formatBytes=(bytes, decimals=2)=> {
+    if (!+bytes) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals; const sizes=['Bytes', 'KB' , 'MB' , 'GB' , 'TB' ]; const
+      i=Math.floor(Math.log(bytes) / Math.log(k)); return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}
+      ${sizes[i]}`; }; %>
 
-    <%-include('header')%>
+      <%-include('header')%>
 
-    <div class="checkout-container">
-        <div class="container">
+        <div class="checkout-container">
+          <div class="container">
             <div class="row align-items-center g-5">
-                <div class="col-lg-7">
-                    <% if (previewUrl) { %>
-                      <img class="pdf-preview" src="<%= previewUrl %>" alt="PDF Preview of <%= file.filename %>">
-                    <% } else { %>
-                      <div class="p-5 text-center bg-dark rounded-3">No Preview Available</div>
+              <div class="col-lg-7">
+                <% if (previewUrl) { %>
+                  <img class="pdf-preview" src="<%= previewUrl %>" alt="PDF Preview of <%= file.filename %>">
+                  <% } else { %>
+                    <div class="p-5 text-center bg-dark rounded-3">No Preview Available</div>
                     <% } %>
-                </div>
-                <div class="col-lg-5">
-                    <div class="file-details">
-                        <div class="mb-3">
-                            <span class="category-badge"><%= file.category %></span>
-                        </div>
-                        <h1 class="mb-3"><%= file.filename || 'Untitled File' %></h1>
-                        <div class="stats-bar mb-4">
-                            <span class="stars" title="Rating"><i class="fas fa-star"></i> 4.5</span>
-                            <span>|</span>
-                            <span title="Total Downloads"><i class="fas fa-download me-1"></i> <%= (file.downloadCount || 0).toLocaleString() %></span>
-                        </div>
-                        <% if (file.filedescription) { %>
-                            <div class="description-box mb-4"><%= file.filedescription %></div>
-                        <% } %>
-                        <div class="details-grid my-4">
-                            <div class="detail-item">
-                                <span class="label">File Type</span>
-                                <span class="value"><%= file.fileType || 'PDF' %></span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">File Size</span>
-                                <span class="value"><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span>
-                            </div>
-                            <div class="detail-item">
-                                <span class="label">Uploaded</span>
-                                <span class="value"><%= file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'N/A' %></span>
-                            </div>
-                             <div class="detail-item">
-                                <span class="label">Seller</span>
-                                <span class="value"><%= file.user || 'Admin' %></span>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between my-4">
-                            <div>
-                                <span class="text-muted">Price</span>
-                                <div class="price">₹<%= file.price %></div>
-                            </div>
-                        </div>
-                        <% if (Number(file.price) > 0) { %>
-                            <button id="rzp-button" class="btn-purchase buy" type="button">
-                                <svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
-                                <span>Buy Now</span>
-                            </button>
-                        <% } else { %>
-                            <a href="/download?file_id=<%=file._id%>"  class="btn-purchase download" id="downloadBtn" >
-                                <svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-                                <span>Download Now</span>
-                            </a>
-                        <% } %>
-                        <div class="trust-badges mt-4 pt-4 border-top border-secondary">
-                            <div><i class="fas fa-shield-alt"></i><br>Secure Payment</div>
-                            <div><i class="fas fa-bolt"></i><br>Instant Download</div>
-                            <div><i class="fas fa-thumbs-up"></i><br>Trusted Quality</div>
-                        </div>
+              </div>
+              <div class="col-lg-5">
+                <div class="file-details">
+                  <div class="mb-3">
+                    <span class="category-badge">
+                      <%= file.category %>
+                    </span>
+                  </div>
+                  <h1 class="mb-3">
+                    <%= file.filename || 'Untitled File' %>
+                  </h1>
+                  <div class="stats-bar mb-4">
+                    <span class="stars" title="Rating"><i class="fas fa-star"></i> 4.5</span>
+                    <span>|</span>
+                    <span title="Total Downloads"><i class="fas fa-download me-1"></i>
+                      <%= (file.downloadCount || 0).toLocaleString() %>
+                    </span>
+                  </div>
+                  <% if (file.filedescription) { %>
+                    <div class="description-box mb-4">
+                      <%= file.filedescription %>
                     </div>
+                    <% } %>
+                      <div class="details-grid my-4">
+                        <div class="detail-item">
+                          <span class="label">File Type</span>
+                          <span class="value">
+                            <%= file.fileType || 'PDF' %>
+                          </span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label">File Size</span>
+                          <span class="value">
+                            <%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %>
+                          </span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label">Uploaded</span>
+                          <span class="value">
+                            <%= file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'N/A' %>
+                          </span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label">Seller</span>
+                          <span class="value">
+                            <%= file.user || 'Admin' %>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center justify-content-between w-100 p-2">
+                          <span class="LikesBtn-file">
+                            <i class="fa-regular fa-thumbs-up"></i>
+
+                          </span>
+
+                          <div class="price">₹<%= file.price %>
+                          </div>
+                        </div>
+
+
+                      </div>
+                      <% if (Number(file.price)> 0) { %>
+                        <button id="rzp-button" class="btn-purchase buy" type="button">
+                          <svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                            <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                            <path d="M17 17h-11v-14h-2" />
+                            <path d="M6 5l14 1l-1 7h-13" />
+                          </svg>
+                          <span>Buy Now</span>
+                        </button>
+                        <% } else { %>
+                          <a href="/download?file_id=<%=file._id%>" class="btn-purchase download" id="downloadBtn">
+                            <svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                              stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
+                              stroke-linejoin="round">
+                              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                              <path d="M7 11l5 5l5 -5" />
+                              <path d="M12 4l0 12" />
+                            </svg>
+                            <span>Download Now</span>
+                          </a>
+                          <% } %>
+                            <div class="trust-badges mt-4 pt-4 border-top border-secondary">
+                              <div><i class="fas fa-shield-alt"></i><br>Secure Payment</div>
+                              <div><i class="fas fa-bolt"></i><br>Instant Download</div>
+                              <div><i class="fas fa-thumbs-up"></i><br>Trusted Quality</div>
+                            </div>
                 </div>
+
+              </div>
+              <div>
+
+
+              </div>
+              <%-include("chat")%>
             </div>
+          </div>
         </div>
-    </div>
 
-    <%-include('footer')%>
-    
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script>
-      const buyButton = document.getElementById('rzp-button');
-      if (buyButton) {
-        buyButton.onclick = function(e) {
-            e.preventDefault();
-            buyButton.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Processing...</span>`;
-            buyButton.disabled = true;
+        <%-include('footer')%>
 
-            fetch('/create-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+          <script>
+
+           const likeBtnfile = document.querySelector(".LikesBtn-file");
+const fileId = "<%=file._id%>";
+let fileLikes = <%=file.likes%>;
+
+// Get existing likes or initialize
+let allFiles = JSON.parse(localStorage.getItem("fileData")) || {};
+
+// Set initial icon based on localStorage
+if (allFiles[fileId] && allFiles[fileId].liked) {
+  likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${fileLikes}`;
+} else {
+  likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes}`;
+}
+
+// Click handler
+likeBtnfile.onclick = function () {
+
+  // Toggle like
+  if (allFiles[fileId] && allFiles[fileId].liked) {
+    fileLikes--; // decrement first
+    allFiles[fileId].liked = false;
+    likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes}`;
+    localStorage.setItem("fileData", JSON.stringify(allFiles));
+    fetch(`/${fileId}/dislike`).catch(err => console.error(err));
+
+  } else {
+    fileLikes++; // increment first
+    allFiles[fileId] = { liked: true };
+    likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${fileLikes}`;
+    localStorage.setItem("fileData", JSON.stringify(allFiles));
+    fetch(`/${fileId}/like`).catch(err => console.error(err));
+  }
+
+  console.log("liked state updated", allFiles, "likes:", fileLikes);
+};
+
+
+            const buyButton = document.getElementById('rzp-button');
+            if (buyButton) {
+              buyButton.onclick = function (e) {
+                e.preventDefault();
+                buyButton.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Processing...</span>`;
+                buyButton.disabled = true;
+
+                fetch('/create-order', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
                     fileId: "<%= file._id %>",
                     price: <%= file.price %>,
-                    filename:"<%= file.filename %>"
+                    filename: "<%= file.filename %>"
+                  })
                 })
-            })
-      
-            .then(res => res.json())
-            .then(order => {
-              console.log(order);
-                var options = {
-                    key: "<%= razorpayKey %>",
-                    amount: order.amount,
-                    currency: order.currency,
-                    name: "<%= file.filename %>",
-                    description: "PDF Document Purchase",
-                    order_id: order.id,
-                    handler: function (response) {
+
+                  .then(res => res.json())
+                  .then(order => {
+
+                    var options = {
+                      key: "<%= razorpayKey %>",
+                      amount: order.amount,
+                      currency: order.currency,
+                      name: "<%= file.filename %>",
+                      description: "PDF Document Purchase",
+                      order_id: order.id,
+                      handler: function (response) {
                         fetch('/verify-payment', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                                fileId: "<%= file._id %>"
-                            })
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            fileId: "<%= file._id %>"
+                          })
                         })
-                        .then(res => res.json())
-                        .then(data => {
-                         
+                          .then(res => res.json())
+                          .then(data => {
+
                             if (data.success) {
-    window.location.href=data.downloadUrl;
-} else {
-                                alert("Payment verification failed. Please contact support.");
-                                buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                                buyButton.disabled = false;
+                              window.location.href = data.downloadUrl;
+                            } else {
+                              alert("Payment verification failed. Please contact support.");
+                              buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+                              buyButton.disabled = false;
                             }
-                        });
-                    },
-                    modal: {
-                        ondismiss: function() {
-                            buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                            buyButton.disabled = false;
+                          });
+                      },
+                      modal: {
+                        ondismiss: function () {
+                          buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+                          buyButton.disabled = false;
                         }
-                    }
-                };
-                var rzp1 = new Razorpay(options);
-                rzp1.open();
-            }).catch(err => {
-                console.error("Error creating order", err);
-                alert("Could not initiate payment. Please try again.");
-                buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                buyButton.disabled = false;
-            });
-        }
-      }
-    </script>
+                      }
+                    };
+                    var rzp1 = new Razorpay(options);
+                    rzp1.open();
+                  }).catch(err => {
+                    console.error("Error creating order", err);
+                    alert("Could not initiate payment. Please try again.");
+                    buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+                    buyButton.disabled = false;
+                  });
+              }
+            }
+          </script>
 </body>
+
 </html>
