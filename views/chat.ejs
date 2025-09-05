@@ -405,7 +405,7 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         // --- CONFIGURATION ---
-        const API_BASE_URL = 'http://localhost:8000';
+        const API_BASE_URL = '';
         const CHAT_ROOM_ID = "<%=file._id%>";
 
         // --- DOM ELEMENTS ---
@@ -587,7 +587,7 @@
                 return;
             }
             try {
-                const response = await fetch(`${API_BASE_URL}/api/chat/react`, {
+                const response = await fetch(`/api/chat/react`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ messageId, replyId, userId: currentUser.userId, reactionType })
@@ -609,7 +609,7 @@
             if (!msgInput.value.trim()) return;
             const payload = { author: currentUser, text: msgInput.value.trim() };
             try {
-                const response = await fetch(`${API_BASE_URL}/api/chat/${CHAT_ROOM_ID}/messages`, {
+                const response = await fetch(`/api/chat/${CHAT_ROOM_ID}/messages`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -629,7 +629,7 @@
         async function submitReply(parentId, text) {
             const payload = { author: currentUser, text };
             try {
-                const response = await fetch(`${API_BASE_URL}/api/chat/messages/${parentId}/replies`, {
+                const response = await fetch(`/api/chat/messages/${parentId}/replies`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -657,7 +657,7 @@
 
         async function startChat() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/chat/${CHAT_ROOM_ID}/messages`);
+                const response = await fetch(`/api/chat/${CHAT_ROOM_ID}/messages`);
                 if (!response.ok) throw new Error('Could not fetch chat history');
                 chatMessages = await response.json();
                 if (chatMessages.length == 0) {
