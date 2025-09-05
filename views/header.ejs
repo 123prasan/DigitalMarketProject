@@ -25,18 +25,29 @@
     padding: 0.75rem 1.5rem;
   }
 
-  .brand-logo {
-    height: 50px;
-    width: 50px;
-    border-radius: 10px;
-  }
+ .brand-logo {
+  height: 50px;
+  width: 50px;
+  border-radius: 12px;
+  object-fit: contain;
+  transition: transform 0.25s ease-in-out;
+}
+.brand-logo:hover {
+  transform: scale(1.05);
+}
 
-  .brand-name {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    color: var(--color-primary);
-  }
+.brand-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+ color: white;
+  font-family: 'Sora', 'Segoe UI', sans-serif;
+  transition: opacity var(--transition);
+}
+.brand-name:hover {
+  opacity: 0.9;
+}
+
   
   .header-btn {
     display: inline-flex;
@@ -149,10 +160,11 @@
 
 <header class="site-header">
   <div class="container-fluid d-flex align-items-center justify-content-between">
-    <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
-      <img src="/images/logo.png" alt="PDF Store Logo" class="brand-logo">
-      <span class="brand-name" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">PDF Store</span>
-    </a>
+    <a href="/" class="d-flex align-items-center gap-2 text-decoration-none">
+  <img src="/images/logo.svg" alt="Vidyari Logo" class="brand-logo">
+  <span class="brand-name">Vidyari</span>
+</a>
+
 
     <div class="d-flex align-items-center gap-2">
         <nav class="d-none d-lg-flex align-items-center gap-2" id="desktopNav">

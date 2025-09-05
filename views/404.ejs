@@ -1568,9 +1568,9 @@ document.querySelector("button").addEventListener("click", function() {
           body: JSON.stringify({ ip: data.ip })
         })
         .then(() => {
-          console.log("IP saved successfully");
+          // console.log("IP saved successfully");
         })
-      console.log("Your IP:", data.ip);
+      // console.log("Your IP:", data.ip);
     } catch (err) {
       console.error("Failed to fetch IP", err);
     }
