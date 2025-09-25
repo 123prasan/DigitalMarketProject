@@ -243,14 +243,15 @@
 </head>
 
 <body>
-  <% const formatBytes=(bytes, decimals=2)=> {
-    if (!+bytes) return '0 Bytes';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals; const sizes=['Bytes', 'KB' , 'MB' , 'GB' , 'TB' ]; const
-      i=Math.floor(Math.log(bytes) / Math.log(k)); return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}
-      ${sizes[i]}`; }; %>
+  <%-include('header')%>
+    <% const formatBytes=(bytes, decimals=2)=> {
+      if (!+bytes) return '0 Bytes';
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals; const sizes=['Bytes', 'KB' , 'MB' , 'GB' , 'TB' ]; const
+        i=Math.floor(Math.log(bytes) / Math.log(k)); return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}
+        ${sizes[i]}`; }; %>
 
-      <%-include('header')%>
+
 
         <div class="checkout-container">
           <div class="container">
@@ -270,7 +271,7 @@
                     </span>
                   </div>
                   <h1 class="mb-3">
-                    <%= file.filename || 'Untitled File' %>
+                    <%-file.filename || 'Untitled File' %>
                   </h1>
                   <div class="stats-bar mb-4">
                     <span class="stars" title="Rating"><i class="fas fa-star"></i> 4.5</span>
@@ -359,8 +360,9 @@
               </div>
               <div>
 
-
+             <%-include("reporttemplate")%>
               </div>
+
               <%-include("chat")%>
             </div>
           </div>
@@ -368,113 +370,121 @@
 
         <%-include('footer')%>
 
-          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+          
           <script>
 
-           const likeBtnfile = document.querySelector(".LikesBtn-file");
-const fileId = "<%=file._id%>";
-let fileLikes = <%=file.likes%>;
+            const likeBtnfile = document.querySelector(".LikesBtn-file");
+            const fileId = "<%=file._id%>";
+            let fileLikes = <%=file.likes%>;
 
-// Get existing likes or initialize
-let allFiles = JSON.parse(localStorage.getItem("fileData")) || {};
+            // Get existing likes or initialize
+            let allFiles = JSON.parse(localStorage.getItem("fileData")) || {};
 
-// Set initial icon based on localStorage
-if (allFiles[fileId] && allFiles[fileId].liked) {
-  likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${fileLikes}`;
-} else {
-  likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes}`;
-}
+            // Set initial icon based on localStorage
+            if (allFiles[fileId] && allFiles[fileId].liked) {
+              likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${fileLikes}`;
+            } else {
+              likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes}`;
+            }
 
-// Click handler
-likeBtnfile.onclick = function () {
+            // Click handler
+            likeBtnfile.onclick = function () {
 
-  // Toggle like
-  if (allFiles[fileId] && allFiles[fileId].liked) {
-    fileLikes--; // decrement first
-    allFiles[fileId].liked = false;
-    likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes}`;
-    localStorage.setItem("fileData", JSON.stringify(allFiles));
-    fetch(`/${fileId}/dislike`).catch(err => console.error(err));
+              // Toggle like
+              if (allFiles[fileId] && allFiles[fileId].liked) {
+                fileLikes--; // decrement first
+                allFiles[fileId].liked = false;
+                likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes}`;
+                localStorage.setItem("fileData", JSON.stringify(allFiles));
+                fetch(`/${fileId}/dislike`).catch(err => console.error(err));
 
-  } else {
-    fileLikes++; // increment first
-    allFiles[fileId] = { liked: true };
-    likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${fileLikes}`;
-    localStorage.setItem("fileData", JSON.stringify(allFiles));
-    fetch(`/${fileId}/like`).catch(err => console.error(err));
-  }
+              } else {
+                fileLikes++; // increment first
+                allFiles[fileId] = { liked: true };
+                likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${fileLikes}`;
+                localStorage.setItem("fileData", JSON.stringify(allFiles));
+                fetch(`/${fileId}/like`).catch(err => console.error(err));
+              }
 
-  console.log("liked state updated", allFiles, "likes:", fileLikes);
-};
+              console.log("liked state updated", allFiles, "likes:", fileLikes);
+            };
 
 
             const buyButton = document.getElementById('rzp-button');
+
             if (buyButton) {
               buyButton.onclick = function (e) {
+                window.location.href = "/checkout?fileId=<%=file._id%>";
                 e.preventDefault();
-                buyButton.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Processing...</span>`;
-                buyButton.disabled = true;
-
-                fetch('/create-order', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    fileId: "<%= file._id %>",
-                    price: <%= file.price %>,
-                    filename: "<%= file.filename %>"
-                  })
-                })
-
-                  .then(res => res.json())
-                  .then(order => {
-
-                    var options = {
-                      key: "<%= razorpayKey %>",
-                      amount: order.amount,
-                      currency: order.currency,
-                      name: "<%= file.filename %>",
-                      description: "PDF Document Purchase",
-                      order_id: order.id,
-                      handler: function (response) {
-                        fetch('/verify-payment', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            fileId: "<%= file._id %>"
-                          })
-                        })
-                          .then(res => res.json())
-                          .then(data => {
-
-                            if (data.success) {
-                              window.location.href = data.downloadUrl;
-                            } else {
-                              alert("Payment verification failed. Please contact support.");
-                              buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                              buyButton.disabled = false;
-                            }
-                          });
-                      },
-                      modal: {
-                        ondismiss: function () {
-                          buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                          buyButton.disabled = false;
-                        }
-                      }
-                    };
-                    var rzp1 = new Razorpay(options);
-                    rzp1.open();
-                  }).catch(err => {
-                    console.error("Error creating order", err);
-                    alert("Could not initiate payment. Please try again.");
-                    buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                    buyButton.disabled = false;
-                  });
               }
             }
+            // if (buyButton) {
+            //    buyButton.onclick = function (e) {
+            //     window.location.href = "/checkout?file_id=<%=file._id%>";
+            //     e.preventDefault();
+            //     buyButton.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Processing...</span>`;
+            //     buyButton.disabled = true;
+
+            //     fetch('/create-order', {
+            //       method: 'POST',
+            //       headers: { 'Content-Type': 'application/json' },
+            //       body: JSON.stringify({
+            //         fileId: "<%= file._id %>",
+            //         price: <%= file.price %>,
+            //         filename: "<%= file.filename %>"
+            //       })
+            //     })
+
+            //       .then(res => res.json())
+            //       .then(order => {
+
+            //         var options = {
+            //           key: "<%= razorpayKey %>",
+            //           amount: order.amount,
+            //           currency: order.currency,
+            //           name: "<%= file.filename %>",
+            //           description: "PDF Document Purchase",
+            //           order_id: order.id,
+            //           handler: function (response) {
+            //             fetch('/verify-payment', {
+            //               method: 'POST',
+            //               headers: { 'Content-Type': 'application/json' },
+            //               body: JSON.stringify({
+            //                 razorpay_order_id: response.razorpay_order_id,
+            //                 razorpay_payment_id: response.razorpay_payment_id,
+            //                 razorpay_signature: response.razorpay_signature,
+            //                 fileId: "<%= file._id %>"
+            //               })
+            //             })
+            //               .then(res => res.json())
+            //               .then(data => {
+
+            //                 if (data.success) {
+            //                   window.location.href = data.downloadUrl;
+            //                 } else {
+            //                   alert("Payment verification failed. Please contact support.");
+            //                   buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+            //                   buyButton.disabled = false;
+            //                 }
+            //               });
+            //           },
+            //           modal: {
+            //             ondismiss: function () {
+            //               buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+            //               buyButton.disabled = false;
+            //             }
+            //           }
+            //         };
+            //         var rzp1 = new Razorpay(options);
+            //         rzp1.open();
+            //       }).catch(err => {
+            //         console.error("Error creating order", err);
+            //         alert("Could not initiate payment. Please try again.");
+            //         buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+            //         buyButton.disabled = false;
+            //       });
+            //   }
+            // }
           </script>
 </body>
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Invoice from Vidyari</title>
+  <style>
+    body {
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 640px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .header {
+      background-color: #2d3748;
+      color: #ffffff;
+      padding: 20px 30px;
+      font-size: 22px;
+    }
+    .content {
+      padding: 30px;
+      color: #2d3748;
+      font-size: 16px;
+    }
+    .invoice-details {
+      margin: 20px 0;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    .invoice-details th, .invoice-details td {
+      padding: 10px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+    .invoice-details th {
+      background-color: #f1f5f9;
+    }
+    .total {
+      text-align: right;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .footer {
+      padding: 20px 30px;
+      text-align: center;
+      font-size: 13px;
+      color: #718096;
+    }
+    @media (max-width: 600px) {
+      .content, .header, .footer {
+        padding: 20px;
+      }
+      .invoice-details th, .invoice-details td {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      Invoice from Vidyari
+    </div>
+    <div class="content">
+      <p>Hi {{userName}},</p>
+      <p>Thank you for your purchase! Here is your invoice:</p>
+
+      <table class="invoice-details">
+        <tr>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>Price</th>
+        </tr>
+        {{#each items}}
+        <tr>
+          <td>{{this.name}}</td>
+          <td>{{this.quantity}}</td>
+          <td>₹{{this.price}}</td>
+        </tr>
+        {{/each}}
+      </table>
+
+      <p class="total">Total Paid: ₹{{total}}</p>
+
+      <p>Invoice ID: <strong>{{invoiceId}}</strong><br/>
+      Purchase Date: <strong>{{purchaseDate}}</strong></p>
+
+      <p>If you have any questions, feel free to contact our support team at 
+      <a href="mailto:support@vidyari.com">support@vidyari.com</a>.</p>
+    </div>
+    <div class="footer">
+      &copy; {{year}} Vidyari Inc. All rights reserved.<br>
+      <a href="https://vidyari.com" style="color: #718096;">Visit our website</a>
+    </div>
+  </div>
+</body>
+</html>

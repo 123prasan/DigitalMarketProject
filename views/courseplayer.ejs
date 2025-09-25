@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Player</title>
+    <!-- Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #030712; color: #f9fafb; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #111827; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        
+        .active-lesson { background-color: #1f2937 !important; border-left: 3px solid #3b82f6; }
+        .active-lesson .text-gray-400 { color: #d1d5db; }
+        
+        .completed-icon { color: #22c55e; animation: popIn 0.3s ease-out forwards; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 80% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+
+        .loader { border: 4px solid #374151; border-top: 4px solid #3b82f6; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- Custom Video Player Controls Styles --- */
+        video::-webkit-media-controls-enclosure { display: none !important; }
+        .video-container.paused .pause-icon, .video-container:not(.paused) .play-icon { display: none; }
+        .custom-controls { transition: opacity 0.3s ease-in-out; }
+        .video-container:not(.controls-active) .custom-controls { opacity: 0; pointer-events: none; }
+        input[type="range"].progress-bar { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; height: 15px; }
+        input[type="range"].progress-bar::-webkit-slider-runnable-track { background: linear-gradient(to right, #60a5fa var(--progress-percent, 0%), rgba(255, 255, 255, 0.3) var(--progress-percent, 0%)); height: 5px; border-radius: 5px; }
+        input[type="range"].progress-bar::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -5px; height: 15px; width: 15px; background-color: #ffffff; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        .control-menu { bottom: 50px; right: 0px; min-width: 100px; background-color: rgba(17, 24, 39, 0.8); backdrop-filter: blur(5px); }
+        .control-menu-item.active { background-color: #3b82f6; color: white; }
+    </style>
+</head>
+<body class="antialiased">
+    <%# EJS helper logic to prepare data for rendering %>
+    <%
+        const lessons = course.modules.flatMap(m => m.submodules);
+        const completedCount = userProgress.progress.filter(p => p.status === 'completed').length;
+        const totalLessons = lessons.length;
+        const overallPercentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+        const getLessonProgress = (lessonId) => {
+            if (!lessonId) return null;
+            return userProgress.progress.find(p => p && p.lessonId && p.lessonId.toString() === lessonId.toString());
+        };
+    %>
+
+    <div class="relative min-h-screen lg:flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed top-0 left-0 w-80 h-full bg-gray-900 border-r border-gray-800 flex flex-col custom-scrollbar overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out z-30">
+            <div class="p-5 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
+                <h2 id="course-title" class="text-xl font-bold text-white truncate"><%= course.title %></h2>
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm text-gray-400 mb-1">
+                        <span>Progress</span>
+                        <span id="progress-percentage"><%= overallPercentage %>%</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div id="progress-bar" class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: <%= overallPercentage %>%"></div>
+                    </div>
+                </div>
+            </div>
+            <nav id="module-list" class="flex-grow p-3 space-y-3">
+                <% course.modules.sort((a, b) => a.order - b.order).forEach(module => { %>
+                    <div class="module-container border border-gray-800 rounded-lg overflow-hidden">
+                        <button class="module-toggle-button w-full flex items-center justify-between text-left p-3 bg-gray-900/50 hover:bg-gray-800 transition-colors">
+                            <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wider"><%= module.unit %></h3>
+                            <i class="fa-solid fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                        </button>
+                        <div class="submodule-list hidden bg-gray-900/20">
+                            <% module.submodules.sort((a, b) => a.order - b.order).forEach(lesson => { %>
+                                <% const lessonProgress = getLessonProgress(lesson._id); %>
+                                <% const isCompleted = lessonProgress && lessonProgress.status === 'completed'; %>
+                                <div class="lesson-item flex items-center justify-between p-3 cursor-pointer hover:bg-gray-800 transition-colors border-t border-gray-800" data-lesson-id="<%= lesson._id %>">
+                                    <div class="flex items-center space-x-3 min-w-0">
+                                        <i class="fa-solid <%= isCompleted ? 'fa-check-circle completed-icon' : (lesson.type === 'Video' ? 'fa-play-circle' : 'fa-file-alt') %> text-gray-400 w-4 text-center"></i>
+                                        <span class="text-sm font-medium text-gray-200 truncate"><%= lesson.title %></span>
+                                    </div>
+                                    <span class="text-xs text-gray-500 flex-shrink-0 ml-2"><%= lesson.duration || '?' %> min</span>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% }); %>
+            </nav>
+        </aside>
+
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden lg:hidden"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-80">
+            <header class="flex items-center justify-between p-4 border-b border-gray-800 bg-gray-900 shadow-sm flex-shrink-0">
+                <div class="flex items-center">
+                    <button id="sidebar-toggle" class="lg:hidden mr-4 p-2 rounded-md hover:bg-gray-700">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 id="content-title" class="text-lg md:text-2xl font-semibold text-white truncate">Select a lesson to begin</h1>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="prev-btn" class="px-3 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"><i class="fa-solid fa-chevron-left"></i><span class="hidden md:inline ml-2">Previous</span></button>
+                    <button id="next-btn" class="px-3 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"><span class="hidden md:inline mr-2">Next</span><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </header>
+
+            <div id="content-viewer" style="height: 100vh;" class="flex-1 flex items-center justify-center p-0 md:p-4 bg-black relative">
+                <div id="initial-message" class="text-center"><div class="loader mx-auto"></div><p class="text-gray-400 mt-4">Loading content...</p></div>
+                <div id="video-player-container" class="video-container w-full h-full hidden relative controls-active paused">
+                    <video id="video-player" class="w-full h-full object-contain" oncontextmenu="return false;"></video>
+                    <div id="custom-controls" class="custom-controls absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent z-10">
+                        <input id="seek-bar" type="range" min="0" value="0" step="0.1" class="w-full progress-bar">
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="flex items-center space-x-4">
+                                <button id="play-pause-btn" class="w-8"><i class="play-icon fa-solid fa-play text-xl"></i><i class="pause-icon fa-solid fa-pause text-xl"></i></button>
+                                <div class="flex items-center space-x-2 group">
+                                    <button id="volume-btn" class="w-8"><i class="fa-solid fa-volume-high"></i></button>
+                                    <input id="volume-bar" type="range" min="0" max="1" step="0.01" value="1" class="w-0 group-hover:w-20 transition-all duration-300 progress-bar">
+                                </div>
+                                <div class="text-xs font-mono"><span id="current-time">00:00</span> / <span id="duration">00:00</span></div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div id="speed-selector" class="relative"><button id="speed-btn" class="w-14 text-sm font-semibold p-1 hover:bg-white/10 rounded-md">1x</button><div id="speed-menu" class="control-menu absolute rounded-md shadow-lg py-1 hidden"></div></div>
+                                <div id="quality-selector" class="relative"><button id="quality-btn" class="p-1 hover:bg-white/10 rounded-full"><i class="fa-solid fa-gear text-lg"></i></button><div id="quality-menu" class="control-menu absolute rounded-md shadow-lg py-1 hidden"></div></div>
+                                <button id="fullscreen-btn" class="w-8"><i class="fa-solid fa-expand"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="document-viewer-container" class="w-full h-full bg-white rounded-lg hidden">
+                    <iframe id="document-frame" class="w-full h-full border-none rounded-lg" title="Document Viewer"></iframe>
+                    <div id="document-fallback" class="p-8 text-center text-gray-800 hidden"><i class="fa-solid fa-file-arrow-down text-5xl mb-4"></i><p class="font-semibold">This document cannot be previewed.</p><a id="download-link" href="#" class="mt-2 text-blue-600 hover:underline" download>Click here to download the file</a></div>
+                </div>
+            </div>
+            
+            <footer class="p-2 border-t border-gray-800 bg-gray-900 flex-shrink-0">
+                <!-- Footer is empty for automatic completion -->
+            </footer>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const courseData = <%-JSON.stringify(course)%>;
+        const userProgressData = <%-JSON.stringify(userProgress)%>;
+        const API_BASE_URL = '/api/progress';
+
+        const sidebar = document.getElementById('sidebar'), sidebarToggle = document.getElementById('sidebar-toggle'), sidebarOverlay = document.getElementById('sidebar-overlay');
+        const progressBarEl = document.getElementById('progress-bar'), progressPercentageEl = document.getElementById('progress-percentage');
+        const contentTitleEl = document.getElementById('content-title'), initialMessageEl = document.getElementById('initial-message');
+        const docViewerContainerEl = document.getElementById('document-viewer-container'), docFrame = document.getElementById('document-frame'), docFallback = document.getElementById('document-fallback'), downloadLink = document.getElementById('download-link');
+        const prevBtn = document.getElementById('prev-btn'), nextBtn = document.getElementById('next-btn');
+        const moduleToggleButtons = document.querySelectorAll('.module-toggle-button');
+        const videoPlayerContainerEl = document.getElementById('video-player-container'), videoPlayer = document.getElementById('video-player');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const volumeBtn = document.getElementById('volume-btn'), volumeBar = document.getElementById('volume-bar');
+        const currentTimeEl = document.getElementById('current-time'), durationEl = document.getElementById('duration');
+        const seekBar = document.getElementById('seek-bar');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const qualitySelectorEl = document.getElementById('quality-selector'), qualityBtn = document.getElementById('quality-btn'), qualityMenu = document.getElementById('quality-menu');
+        const speedSelectorEl = document.getElementById('speed-selector'), speedBtn = document.getElementById('speed-btn'), speedMenu = document.getElementById('speed-menu');
+        
+        const appState = { course: null, progress: null, activeLessonId: null, lessonsFlat: [], hls: null, controlsTimeout: null, lessonCompletedFlag: false };
+
+        const findLessonById = (id) => id ? appState.lessonsFlat.find(l => l?._id?.toString() === id.toString()) : null;
+        const getLessonProgress = (id) => id ? appState.progress.progress.find(p => p?.lessonId?.toString() === id.toString()) : null;
+        const throttle = (func, limit) => { let inThrottle; return function(...args) { if (!inThrottle) { func.apply(this, args); inThrottle = true; setTimeout(() => inThrottle = false, limit); } }; };
+        
+        function initializeState() {
+            appState.course = courseData;
+            appState.progress = userProgressData || { courseId: courseData._id, progress: [], lastAccessed: null };
+            appState.lessonsFlat = courseData.modules.flatMap(m => m.submodules).sort((a, b) => {
+                const moduleAOrder = courseData.modules.find(m => m.submodules.some(s => s._id === a._id)).order;
+                const moduleBOrder = courseData.modules.find(m => m.submodules.some(s => s._id === b._id)).order;
+                return (moduleAOrder * 1000 + a.order) - (moduleBOrder * 1000 + b.order);
+            });
+        }
+
+        function openParentModule(lessonId) {
+            const lessonEl = document.querySelector(`.lesson-item[data-lesson-id="${lessonId}"]`);
+            if (!lessonEl) return;
+            const parentContainer = lessonEl.closest('.module-container');
+            if (parentContainer) {
+                const submoduleList = parentContainer.querySelector('.submodule-list');
+                const chevron = parentContainer.querySelector('.fa-chevron-down');
+                if (submoduleList.classList.contains('hidden')) {
+                    submoduleList.classList.remove('hidden');
+                    chevron.classList.add('rotate-180');
+                }
+            }
+        }
+
+        function updateSidebarUI() {
+            document.querySelectorAll('.lesson-item').forEach(el => {
+                const lessonId = el.dataset.lessonId;
+                const icon = el.querySelector('.fa-solid');
+                const lessonProgress = getLessonProgress(lessonId);
+                el.classList.toggle('active-lesson', lessonId === appState.activeLessonId);
+                if (lessonProgress?.status === 'completed') {
+                    icon.className = 'fa-solid fa-check-circle completed-icon w-4 text-center';
+                } else {
+                    const lesson = findLessonById(lessonId);
+                    icon.className = `fa-solid ${lesson.type === 'Video' ? 'fa-play-circle' : 'fa-file-alt'} text-gray-400 w-4 text-center`;
+                }
+            });
+            if (appState.activeLessonId) openParentModule(appState.activeLessonId);
+            updateProgressBar();
+        }
+
+        function playLesson(lessonId) {
+            const lesson = findLessonById(lessonId);
+            if (!lesson) return;
+            
+            appState.activeLessonId = lessonId;
+            appState.lessonCompletedFlag = false; // --- FIX: Reset completion flag for new lesson ---
+            initialMessageEl.classList.add('hidden');
+            contentTitleEl.textContent = lesson.title;
+            const lessonUrl = lesson.fileUrl || lesson.externalUrl;
+            console.log(lessonUrl)
+            qualitySelectorEl.classList.add('hidden');
+
+            if (!videoPlayer.paused) videoPlayer.pause();
+            if (appState.hls) appState.hls.destroy();
+
+            if (lesson.type === 'Video' && lessonUrl) {
+                videoPlayerContainerEl.classList.remove('hidden');
+                docViewerContainerEl.classList.add('hidden');
+                if (Hls.isSupported()) {
+                    appState.hls = new Hls();
+                    appState.hls.loadSource(lessonUrl);
+                    appState.hls.attachMedia(videoPlayer);
+                    appState.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                        setupQualitySelector();
+                        seekToProgress(lessonId);
+                        videoPlayer.play().catch(e => console.error("Playback prevented:", e));
+                    });
+                    appState.hls.on(Hls.Events.ERROR, (e, data) => { if (data.fatal) showError("Could not load video.", "Check source or network."); });
+                } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                    videoPlayer.src = lessonUrl;
+                    videoPlayer.load();
+                    videoPlayer.oncanplay = () => { seekToProgress(lessonId); videoPlayer.play().catch(e => console.error("Playback prevented:", e)); };
+                    videoPlayer.onerror = () => showError("Could not load video.", "A network or CORS error may have occurred.");
+                } else {
+                    showError("Your browser doesn't support this video format.");
+                }
+            } else if (lesson.type === 'Document' && lessonUrl) {
+                videoPlayerContainerEl.classList.add('hidden');
+                docViewerContainerEl.classList.remove('hidden');
+                const canPreview = lessonUrl.endsWith('.pdf');
+                docFrame.src = canPreview ? lessonUrl : '';
+                docFrame.classList.toggle('hidden', !canPreview);
+                docFallback.classList.toggle('hidden', canPreview);
+                downloadLink.href = lessonUrl;
+                
+                const progress = getLessonProgress(lessonId);
+                if (progress?.status !== 'completed') {
+                    saveProgress(lessonId, 'completed', 100).then(() => {
+                        updateSidebarUI();
+                        setTimeout(playNextLesson, 1200);
+                    });
+                }
+            } else {
+                showError("Content for this lesson is not available.");
+            }
+            updateNavigationButtons();
+            updateSidebarUI();
+            saveProgress(lessonId, 'in_progress');
+        }
+
+        async function saveProgress(lessonId, status, percentage = -1) {
+            let lessonProgress = getLessonProgress(lessonId);
+            if (!lessonProgress) {
+                lessonProgress = { lessonId, status, percentage: 0 };
+                appState.progress.progress.push(lessonProgress);
+            }
+            if (lessonProgress.status === 'completed' && status !== 'completed') return;
+            lessonProgress.status = status;
+            if (percentage >= 0) lessonProgress.percentage = percentage;
+            appState.progress.lastAccessed = lessonId;
+            try {
+                await fetch(`${API_BASE_URL}/update`, { 
+                    method: 'POST', 
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ 
+                        courseId: appState.course._id, 
+                        lessonId, 
+                        status, 
+                        percentage: percentage >= 0 ? percentage : lessonProgress.percentage 
+                    }) 
+                });
+            } catch (error) { console.error("Error saving progress:", error); }
+            updateProgressBar();
+        }
+        
+        const playNextLesson = () => playLessonByIndexOffset(1);
+        const playPrevLesson = () => playLessonByIndexOffset(-1);
+        
+        function playLessonByIndexOffset(offset) {
+            const currentIndex = appState.lessonsFlat.findIndex(l => l._id === appState.activeLessonId);
+            const nextIndex = currentIndex + offset;
+            if (nextIndex >= 0 && nextIndex < appState.lessonsFlat.length) {
+                playLesson(appState.lessonsFlat[nextIndex]._id);
+            }
+        }
+        
+        function updateNavigationButtons() {
+            const currentIndex = appState.lessonsFlat.findIndex(l => l._id === appState.activeLessonId);
+            prevBtn.disabled = currentIndex <= 0;
+            nextBtn.disabled = currentIndex >= appState.lessonsFlat.length - 1;
+        }
+
+        function updateProgressBar() {
+            const completedLessons = appState.progress.progress.filter(p => p.status === 'completed').length;
+            const totalLessons = appState.lessonsFlat.length;
+            const percentage = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+            progressBarEl.style.width = `${percentage}%`;
+            progressPercentageEl.textContent = `${percentage}%`;
+        }
+        
+        function seekToProgress(lessonId) {
+            const progress = getLessonProgress(lessonId);
+            if (progress?.status === 'in_progress' && progress.percentage > 0) {
+                const seekTime = (videoPlayer.duration * progress.percentage) / 100;
+                if (isFinite(seekTime)) videoPlayer.currentTime = seekTime;
+            }
+        }
+
+        function showError(message, subtext = '') {
+            videoPlayerContainerEl.classList.add('hidden');
+            docViewerContainerEl.classList.add('hidden');
+            initialMessageEl.classList.remove('hidden');
+            initialMessageEl.innerHTML = `<p class="text-red-400 font-semibold">${message}</p>${subtext ? `<p class="text-gray-400 text-sm mt-2">${subtext}</p>` : ''}`;
+        }
+        
+        function formatTime(timeInSeconds) {
+            const time = Math.round(timeInSeconds);
+            const hours = Math.floor(time / 3600);
+            const minutes = Math.floor((time % 3600) / 60);
+            const seconds = time % 60;
+            const pad = (num) => String(num).padStart(2, '0');
+            return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+        }
+        
+        function initializeVideoPlayer() {
+            const togglePlay = () => videoPlayer.paused ? videoPlayer.play() : videoPlayer.pause();
+            playPauseBtn.addEventListener('click', togglePlay);
+            videoPlayer.addEventListener('click', togglePlay);
+            videoPlayer.addEventListener('play', () => videoPlayerContainerEl.classList.remove('paused'));
+            videoPlayer.addEventListener('pause', () => videoPlayerContainerEl.classList.add('paused'));
+            videoPlayer.addEventListener('loadedmetadata', () => {
+                seekBar.max = videoPlayer.duration;
+                durationEl.textContent = formatTime(videoPlayer.duration);
+            });
+            videoPlayer.addEventListener('timeupdate', () => {
+                seekBar.value = videoPlayer.currentTime;
+                currentTimeEl.textContent = formatTime(videoPlayer.currentTime);
+                seekBar.style.setProperty('--progress-percent', `${(videoPlayer.currentTime / videoPlayer.duration) * 100}%`);
+            });
+            seekBar.addEventListener('input', () => videoPlayer.currentTime = seekBar.value);
+            volumeBtn.addEventListener('click', () => { videoPlayer.muted = !videoPlayer.muted; });
+            videoPlayer.addEventListener('volumechange', () => {
+                volumeBar.value = videoPlayer.muted ? 0 : videoPlayer.volume;
+                const icon = volumeBtn.querySelector('i');
+                if (videoPlayer.muted || videoPlayer.volume === 0) icon.className = 'fa-solid fa-volume-xmark';
+                else if (videoPlayer.volume < 0.5) icon.className = 'fa-solid fa-volume-low';
+                else icon.className = 'fa-solid fa-volume-high';
+                volumeBar.style.setProperty('--progress-percent', `${volumeBar.value * 100}%`);
+            });
+            volumeBar.addEventListener('input', (e) => { videoPlayer.muted = false; videoPlayer.volume = e.target.value; });
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) videoPlayerContainerEl.requestFullscreen();
+                else document.exitFullscreen();
+            });
+            document.addEventListener('fullscreenchange', () => {
+                fullscreenBtn.querySelector('i').className = `fa-solid ${document.fullscreenElement ? 'fa-compress' : 'fa-expand'}`;
+            });
+            const showControls = () => {
+                videoPlayerContainerEl.classList.add('controls-active');
+                clearTimeout(appState.controlsTimeout);
+                appState.controlsTimeout = setTimeout(() => { if (!videoPlayer.paused) videoPlayerContainerEl.classList.remove('controls-active'); }, 3000);
+            };
+            videoPlayerContainerEl.addEventListener('mousemove', showControls);
+            videoPlayerContainerEl.addEventListener('touchstart', showControls);
+            showControls();
+        }
+
+        function initializeSpeedSelector() {
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+            speedMenu.innerHTML = '';
+            speeds.forEach(speed => {
+                const item = document.createElement('div');
+                item.textContent = `${speed}x`;
+                item.dataset.speed = speed;
+                item.className = 'control-menu-item px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-700/80';
+                if(speed === 1) item.classList.add('active');
+                item.onclick = () => {
+                    videoPlayer.playbackRate = speed;
+                    speedBtn.textContent = `${speed}x`;
+                    speedMenu.querySelectorAll('.control-menu-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    speedMenu.classList.add('hidden');
+                };
+                speedMenu.appendChild(item);
+            });
+        }
+        
+function setupQualitySelector() {
+    const qualityLevels = appState.hls?.levels;
+    if (!qualityLevels || qualityLevels.length <= 1) {
+        qualitySelectorEl.classList.add('hidden');
+        return;
+    }
+
+    qualitySelectorEl.classList.remove('hidden');
+    qualityMenu.innerHTML = '';
+
+    // Helper to create menu items
+    const createMenuItem = (label, levelIndex) => {
+        const item = document.createElement('div');
+        item.textContent = label;
+        item.dataset.level = levelIndex;
+        item.className = 'control-menu-item px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-700/80';
+        item.onclick = () => {
+            appState.hls.currentLevel = levelIndex; // -1 = Auto
+            qualityMenu.classList.add('hidden');
+            updateQualityMenuUI();
+        };
+        qualityMenu.appendChild(item);
+    };
+
+    // Add "Auto" option
+    createMenuItem('Auto', -1);
+
+    // Add entries for each level
+    qualityLevels.forEach((level, index) => {
+        // fallback: if resolution is missing, show bitrate
+        const label = level.height
+            ? `${level.height}p`
+            : `${Math.round(level.bitrate / 1000)} kbps`;
+        createMenuItem(label, index);
+    });
+
+    updateQualityMenuUI();
+}
+
+
+        function updateQualityMenuUI() {
+            if (!appState.hls) return;
+            const currentLevel = appState.hls.currentLevel;
+            document.querySelectorAll('#quality-menu .control-menu-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.level == currentLevel);
+            });
+        }
+
+        function initializePlayer() {
+            try {
+                initializeState();
+                
+                sidebarToggle.addEventListener('click', () => { sidebar.classList.toggle('-translate-x-full'); sidebarOverlay.classList.toggle('hidden'); });
+                sidebarOverlay.addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); sidebarOverlay.classList.add('hidden'); });
+                
+                moduleToggleButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        button.nextElementSibling.classList.toggle('hidden');
+                        button.querySelector('.fa-chevron-down').classList.toggle('rotate-180');
+                    });
+                });
+                
+                document.querySelectorAll('.lesson-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        playLesson(el.dataset.lessonId);
+                        if (window.innerWidth < 1024) { sidebar.classList.add('-translate-x-full'); sidebarOverlay.classList.add('hidden'); }
+                    });
+                });
+
+                initializeVideoPlayer();
+                initializeSpeedSelector();
+                
+                let lessonToPlay = findLessonById(appState.progress.lastAccessed) || (appState.lessonsFlat.length > 0 ? appState.lessonsFlat[0] : null);
+                if (lessonToPlay) playLesson(lessonToPlay._id);
+                else initialMessageEl.innerHTML = '<p class="text-gray-400">This course has no lessons.</p>';
+                
+                nextBtn.addEventListener('click', playNextLesson);
+                prevBtn.addEventListener('click', playPrevLesson);
+
+                qualityBtn.addEventListener('click', (e) => { e.stopPropagation(); speedMenu.classList.add('hidden'); qualityMenu.classList.toggle('hidden'); });
+                speedBtn.addEventListener('click', (e) => { e.stopPropagation(); qualityMenu.classList.add('hidden'); speedMenu.classList.toggle('hidden'); });
+                document.addEventListener('click', () => { qualityMenu.classList.add('hidden'); speedMenu.classList.add('hidden'); });
+
+                // --- START: MODIFIED PROGRESS LOGIC ---
+                // This listener checks for completion on every update
+                videoPlayer.addEventListener('timeupdate', (e) => {
+                    if (!appState.activeLessonId || appState.lessonCompletedFlag) return;
+                    const { currentTime, duration } = e.target;
+                    if (!isFinite(duration) || duration === 0) return;
+
+                    const percentage = (currentTime / duration) * 100;
+                    const progress = getLessonProgress(appState.activeLessonId);
+
+                    if (percentage >= 80 && progress?.status !== 'completed') {
+                        appState.lessonCompletedFlag = true; // Prevent this from firing multiple times
+                        saveProgress(appState.activeLessonId, 'completed', 100).then(() => {
+                            updateSidebarUI();
+                            setTimeout(playNextLesson, 500);
+                        });
+                    }
+                });
+
+                // This throttled listener saves the 'in_progress' status periodically
+                const throttledSave = throttle((e) => {
+                    if (!appState.activeLessonId) return;
+                    const { currentTime, duration } = e.target;
+                    if (!isFinite(duration) || duration === 0) return;
+
+                    const percentage = (currentTime / duration) * 100;
+                    const progress = getLessonProgress(appState.activeLessonId);
+                    
+                    if (progress?.status !== 'completed' && isFinite(percentage)) {
+                        saveProgress(appState.activeLessonId, 'in_progress', percentage);
+                    }
+                }, 5000); // Saves 'in_progress' status at most every 5 seconds
+                videoPlayer.addEventListener('timeupdate', throttledSave);
+                // --- END: MODIFIED PROGRESS LOGIC ---
+
+            } catch (error) {
+                console.error("Failed to initialize player:", error);
+                showError("An error occurred while loading the player.", error.message);
+            }
+        }
+        
+        initializePlayer();
+    });
+    </script>
+</body>
+</html>
+

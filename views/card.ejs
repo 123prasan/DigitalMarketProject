@@ -1,0 +1,146 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+
+<div class="all-courses-container">
+  <% courses.forEach(function(course) { %>
+    <div class="course-card">
+      <div class="course-card-image">
+        <img src="<%=course.thumbnailUrl%>" alt="Course Image">
+        <button class="course-card-edit-btn">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </button>
+      </div>
+      <div class="course-card-content">
+        <h3 class="course-card-title"><%= course.title %></h3>
+        <p class="course-card-description">
+          <%= course.description %>
+        </p>
+        <div class="course-card-rating">
+          <span class="course-card-stars">★★★★☆</span>
+          <span class="course-card-reviews">(<%=course.rating%>)</span>
+        </div>
+        <div class="course-card-footer">
+          <div class="course-card-price"><%= course.price %></div>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>
+<style>
+/* This new class makes the container responsive */
+.all-courses-container {
+  display: flex;
+  flex-wrap: wrap; /* This is the key for responsiveness! */
+  justify-content: center; /* Centers the cards horizontally */
+  gap: 24px; /* Creates space between the cards */
+  padding: 24px;
+}
+
+.course-card {
+  background: #1c1c1c;
+  color: #fff;
+  width: 340px; /* Set a fixed width for consistency */
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.course-card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/10;
+  overflow: hidden;
+}
+
+.course-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.course-card-edit-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ffffff;
+  border: none;
+  border-radius: 50%;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.course-card-edit-btn:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.course-card-content {
+  padding: 16px;
+  flex-grow: 1; /* Allows content to fill available space */
+  display: flex;
+  flex-direction: column;
+}
+
+.course-card-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 6px;
+}
+
+.course-card-description {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+  color: #ccc;
+  flex-grow: 1; /* Pushes the rating/footer to the bottom */
+}
+
+.course-card-rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.course-card-stars {
+  color: gold;
+  font-size: 16px;
+  margin-right: 6px;
+}
+
+.course-card-reviews {
+  font-size: 13px;
+  color: #aaa;
+}
+
+.course-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course-card-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #4cafef;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 400px) {
+  .course-card {
+    width: 100%; /* Make card full-width on very small screens */
+    max-width: 320px;
+  }
+}
+</style>

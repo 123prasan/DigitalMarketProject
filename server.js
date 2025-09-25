@@ -1,9 +1,21 @@
+/**
+ * The code is a Node.js application that uses Express to create a server for handling file uploads,
+ * user authentication, order processing with Razorpay, MongoDB database interactions, and various
+ * routes for managing files, admin dashboard, notifications, and error handling.
+ * @returns The code provided is a Node.js application using Express framework. It includes routes for
+ * handling file uploads, user authentication, file management, order processing, notifications, and
+ * admin functionalities. The application interacts with MongoDB for data storage and Supabase for file
+ * storage. It also integrates with Razorpay for payment processing.
+ */
+
 const express = require("express");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const path = require("path");
 const Order = require("./models/Order");
+const { fileroute } = require("./fileupload.js");
 
+const { authRouter } = require("./routes/authentication/googleAuth");
 // const pdfPoppler = require("pdf-poppler"); // Commented out in original, remains commented
 const fs = require("fs");
 const Message = require("./models/message");
@@ -11,7 +23,7 @@ const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-require("dotenv").config();
+// require("dotenv").config();
 // const useLocalStorage = process.env.USE_LOCAL_STORAGE === 'true';
 const mongoose = require("mongoose");
 const dayjs = require("dayjs");
@@ -22,17 +34,35 @@ const axios = require("axios");
 const categories = require("./models/categories"); // Assuming categories.js exports a Mongoose model
 const { createClient } = require("@supabase/supabase-js");
 const Location = require("./models/userlocation"); // Assuming Location.js exports a Mongoose model
-const chatRoutes = require('./routes/chat.js');
+const chatRoutes = require("./routes/chat.js");
+const File = require("./models/File");
+const courseRoutes = require("./routes/courseRoutes");
+const progressRoutes = require("./routes/progressRoutes");
+const authenticateJWT_user = require("./routes/authentication/jwtAuth.js");
+const User = require("./models/userData.js");
+const UserDownloads = require("./models/userDownloads.js");
+const Userpurchases = require("./models/userperchase.js");
+const requireAuth = require("./routes/authentication/reaquireAuth.js");
+const Usernotifications = require("./models/usernotifications.js");
+const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
+const Usertransaction = require("./models/userTransactions.js");
 const app = express();
 app.use(express.json());
 const cors = require("cors");
 app.use(cors());
-
+app.use("/api/courses", courseRoutes);
+app.use("/api/progress", progressRoutes);
+// app.use(cookieParser())
 function getcategories() {
   return categories.find({}).then((cats) => cats.map((cat) => cat.name));
 }
 
-
+app.use(authRouter);
+app.use((req, res, next) => {
+  // console.log('Cookies Received by Server:', req.cookies);
+  next();
+});
+app.use(fileroute);
 app.post("/save-location", async (req, res) => {
   let ip = req.body.ip;
 
@@ -57,7 +87,7 @@ app.post("/save-location", async (req, res) => {
       });
       savedLocation.save();
 
-      console.log("Location saved:", savedLocation);
+      // console.log("Location saved:", savedLocation);
     } catch (err) {
       console.error("Location error:", err);
     }
@@ -81,6 +111,8 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Middlewares
+require("./routes/bots/cleanUpAcc.js");
+require("./video-trans/sql.js");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Parse JSON bodies
 app.use(cookieParser()); // Use cookie-parser middleware
@@ -89,7 +121,7 @@ app.use(cookieParser()); // Use cookie-parser middleware
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-app.use('/api/chat', chatRoutes);
+app.use("/api/chat", chatRoutes);
 // Define Mongoose schema and model for Files
 // In your file model (e.g., models/File.js)
 
@@ -106,42 +138,8 @@ function slugify(text) {
     .replace(/-+$/, ""); // Trim - from end of text
 }
 
-const fileSchema = new mongoose.Schema({
-  filedescription: String,
-  user: String,
-  filename: String,
-  fileUrl: String,
-  storedFilename: String,
-  price: Number,
-  uploadedAt: { type: Date, default: Date.now },
-  category: { type: String, required: true },
-  fileSize: Number,
-  downloadCount: { type: Number, default: 0 },
-  fileType: String,
-  likes: { type: Number, default: 0 },
- 
-  // 1. ADD THE NEW SLUG FIELD
-  slug: {
-    type: String,
-    unique: true, // Slugs should be unique
-  },
-});
-
-// 2. ADD THIS FUNCTION to automatically create a slug before saving
-// This will work for all NEW files you upload in the future.
-fileSchema.pre("save", function (next) {
-  if (this.isModified("filename") || this.isNew) {
-    // Create the slug from the filename and add a unique suffix
-    const randomSuffix = (Math.random() + 1).toString(36).substring(7);
-    this.slug = `${slugify(this.filename)}-${randomSuffix}`;
-  }
-  next();
-});
-
 // This must match the collection name in your database
-const File = mongoose.model("doccollection", fileSchema);
 
-module.exports = File;
 // Razorpay instance from env variables
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -185,31 +183,32 @@ const ADMIN_USER = {
 
 // --- Routes ---
 app.get("/:id/:impression", async (req, res) => {
-  if(req.params.impression=="like"){
+  if (req.params.impression == "like") {
     const file = await File.findById(req.params.id);
     if (file) {
       file.likes += 1;
       await file.save();
-      console.log(file.likes);
+      // console.log(file.likes);
       res.json({ likes: file.likes });
     } else {
-    
       res.status(404).json({ error: "File not found" });
     }
   }
-  if(req.params.impression=="dislike" ){
+  if (req.params.impression == "dislike") {
     const file = await File.findById(req.params.id);
-    if (file&& file.likes > 0) {
+    if (file && file.likes > 0) {
       file.likes -= 1;
       await file.save();
-      console.log(file.likes);
+      // console.log(file.likes);
       res.json({ likes: file.likes });
     } else {
       res.status(404).json({ error: "File not found" });
     }
   }
 });
-
+app.get("/dashboard", (req, res) => {
+  res.render("createcourse");
+});
 // Razorpay Order Creation - No auth needed (public)
 app.post("/create-order", async (req, res) => {
   try {
@@ -227,7 +226,7 @@ app.post("/create-order", async (req, res) => {
       receipt: `receipt_${fileId}`,
     };
     const order = await razorpay.orders.create(options);
-    console.log(order);
+    // console.log(order);
     res.json(order);
   } catch (error) {
     console.error("Order creation failed:", error);
@@ -244,75 +243,151 @@ app.get("/terms-and-conditions", (req, res) => {
   res.render("terms&conditions");
 });
 let token;
-// Razorpay Payment Verification - No auth needed (public)
-app.post("/verify-payment", async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, fileId } =
-    req.body;
+const Adminbal = require("./models/admin/adminBal.js");
 
+// Razorpay Payment Verification - No auth needed (public)
+app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    fileId,
+    totalprice,
+    filename,
+  } = req.body;
+
+  // Validate required payment fields
   if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Incomplete payment details" });
+    return res.status(400).json({
+      success: false,
+      message: "Incomplete payment details",
+    });
   }
 
+  // Verify Razorpay signature
   const body = razorpay_order_id + "|" + razorpay_payment_id;
   const expectedSignature = crypto
     .createHmac("sha256", process.env.RAZORPAY_SECRET)
     .update(body)
     .digest("hex");
 
-  if (expectedSignature === razorpay_signature) {
-    let paymentDetails;
-    try {
-      paymentDetails = await razorpay.payments.fetch(razorpay_payment_id);
-    } catch (err) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to fetch payment details" });
-    }
+  if (expectedSignature !== razorpay_signature) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid signature" });
+  }
 
+  try {
+    // Fetch payment details from Razorpay
+    const paymentDetails = await razorpay.payments.fetch(razorpay_payment_id);
+
+    // Fetch file details
     const file = await File.findById(fileId);
     if (!file) {
       return res
         .status(404)
         .json({ success: false, message: "File not found" });
     }
+    const price = totalprice * 0.3;
+    const totalPriceaftercut = totalprice - price;
+    const updatetransaction = new Usertransaction({
+      userId: file.userId,
+      ProductId: file._id,
+      totalAmount: totalPriceaftercut,
+      ProductName: file.filename,
+      purchaserId: req.user._id,
+      transactionId: razorpay_payment_id,
+    });
+    await updatetransaction.save();
+    await Adminbal.findOneAndUpdate(
+      {}, // condition (empty if you only have one Admin balance doc)
+      {
+        $inc: {
+          totalAmount: price, // add price to existing totalAmount
+          cutOffbal: totalPriceaftercut, // add totalPriceAfterCut to existing cutOffbal
+        },
+      },
+      { upsert: true, new: true } // create if not exists, return updated doc
+    );
 
+    // Save order details
     const orderData = {
       orderId: razorpay_order_id,
       transactionId: razorpay_payment_id,
       customer:
         paymentDetails.email || paymentDetails.contact || "Online Customer",
       payment: paymentDetails.method,
-      total: file.price,
+      total: totalprice,
+      productId: file._id,
+      productName: file.filename,
       items: [{ name: file.filename, quantity: 1, price: file.price }],
       status: "Successfull",
       dateTime: new Date(),
     };
     const order = new Order(orderData);
-    console.log(order);
     await order.save();
-    token = jwt.sign(
-      { fileId: fileId, orderId: order.orderId ,transactionId:order.transactionId},
+
+    // Save user purchase
+    const userPurchase = new Userpurchases({
+      userId: req.user._id,
+      productId: file._id,
+      price: file.price,
+      totalPrice: totalprice,
+      productName: file.filename,
+    });
+    await userPurchase.save();
+
+    // Add file to user's downloads (ignore duplicates)
+    if (fileId) {
+      await UserDownloads.findOneAndUpdate(
+        { userId: req.user._id, fileId: file._id },
+        {
+          userId: req.user._id,
+          fileId: file._id,
+          filename: file.filename,
+          fileUrl: file.fileUrl,
+          fileType: file.fileType || "pdf",
+        },
+        { upsert: true, setDefaultsOnInsert: true }
+      );
+
+      // Send notification
+      const userNotification = new Usernotifications({
+        userId: req.user._id,
+        type: "purchase",
+        message: `Your purchase of the file <strong>${file.filename}</strong> has been successful.`,
+        targetId: file._id,
+      });
+      await userNotification.save();
+    }
+
+    // Generate temporary token for direct file access
+    const token = jwt.sign(
+      {
+        fileId: fileId,
+        orderId: order.orderId,
+        transactionId: order.transactionId,
+      },
       process.env.JWT_SECRET_FILE_PURCHASE,
-      { expiresIn: "2m" } // 👈 expires in 2 minutes
+      { expiresIn: "2m" } // expires in 2 minutes
     );
 
-    // res.json({  });
-    res.json({
+    // Return download URL
+    return res.json({
       success: true,
       downloadUrl: `/viewfile/${file.slug}/${file._id}?token=${token}`,
     });
-  } else {
-    res.status(400).json({ success: false, message: "Invalid signature" });
+  } catch (err) {
+    console.error("Error in /verify-payment:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Payment verification failed" });
   }
 });
-
 // Home Page - Render files
-app.get("/", async (req, res) => {
+app.get("/", authenticateJWT_user, async (req, res) => {
   try {
-    const files = await File.find();
-    const categories = await getcategories(); // Fetch categories from MongoDB
+    const files = await File.find().sort({ downloadCount: -1 }).limit(5);
     const filesWithPreviews = await Promise.all(
       files.map(async (file) => {
         const { data: previewData } = await supabase.storage
@@ -330,10 +405,27 @@ app.get("/", async (req, res) => {
         };
       })
     );
-    res.render("index", { files: filesWithPreviews, categories });
+
+    let user = null;
+
+    if (req.user) {
+      const userId = req.user._id;
+      // Fetch only the necessary fields
+      user = await User.findById(userId).select("profilePicUrl username email");
+      if (user) {
+        console.log("User profile pic URL:", user.profilePicUrl);
+      }
+    }
+    res.render("landing", {
+      popularFiles: filesWithPreviews,
+      isLoggedin: !!req.user,
+      profileUrl: user?.profilePicUrl || null,
+      username: user?.username || null,
+      useremail: user?.email || null,
+    });
   } catch (err) {
     console.error("DB fetch error:", err);
-    res.status(500).send("Failed to load files");
+    res.status(500).send("Something Went Wrong");
   }
 });
 
@@ -423,7 +515,9 @@ app.get("/admin-login", (req, res) => {
   }
   res.render("login", { error: null });
 });
-
+app.get("/user-login", (req, res) => {
+  res.render("user-login.ejs");
+});
 // Handle Login (POST) - No auth check needed here, this is auth itself
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -832,33 +926,47 @@ app.get("/notifications", async (req, res) => {
 
 // File Details Page
 // The route now expects a slug and an id
-app.get("/file/:slug/:id", async (req, res) => {
-  try {
-    // We still use the ID for the database lookup because it's the fastest and most reliable
-    if(req.params.id.length!=24){
-        res.render("file-not-found");
-        return;
-    }
-    const file = await File.findById(req.params.id);
+// const CF_DOMAIN = process.env.CF_DOMAIN; // e.g., https://d123abcd.cloudfront.net
 
+app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
+  try {
+    // Validate ID length
+    if (req.params.id.length !== 24) {
+      return res.render("file-not-found");
+    }
+
+    const file = await File.findById(req.params.id);
     if (!file) {
       return res.status(404).render("404", { message: "File not found" });
     }
 
-    // Optional but recommended: Check if the slug matches and redirect if not.
-    // This ensures the URL is always the "correct" one for SEO.
+    // Redirect if slug is incorrect
     if (file.slug !== req.params.slug) {
       return res.redirect(301, `/file/${file.slug}/${file._id}`);
     }
 
-    const { data: previewData } = await supabase.storage
-      .from("files")
-      .createSignedUrl(`previews/${file._id}.jpg`, 60 * 5);
+    // Use CloudFront URLs for preview and PDF
+    const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${
+      file.imageType || "jpg"
+    }`;
+    const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
+
+    let user = null;
+    if (req.user) {
+      user = await User.findById(req.user._id).select(
+        "profilePicUrl username email"
+      );
+    }
 
     res.render("file-details", {
       file,
       razorpayKey: process.env.RAZORPAY_KEY_ID,
-      previewUrl: previewData?.signedUrl || null,
+      previewUrl,
+      pdfUrl,
+      isLoggedin: !!req.user,
+      profileUrl: user?.profilePicUrl || null,
+      username: user?.username || null,
+      useremail: user?.email || null,
     });
   } catch (error) {
     console.error("Error fetching file:", error);
@@ -869,7 +977,7 @@ app.get("/file/:slug/:id", async (req, res) => {
 // Delete File - NOW PROTECTED BY JWT
 app.post("/delete-file", authenticateJWT, async (req, res) => {
   const { fileId, fileUrl } = req.body;
-  console.log({ fileId, fileUrl });
+  // console.log({ fileId, fileUrl });
   try {
     // Find the file document to get the preview image path
     const file = await File.findById(fileId);
@@ -896,6 +1004,7 @@ app.post("/delete-file", authenticateJWT, async (req, res) => {
     res.json({ success: false, message: "Server error" });
   }
 });
+//user-notifications
 
 // Start Server
 const PORT = process.env.PORT || 3000;
@@ -953,13 +1062,13 @@ app.get("/viewfile/:slug/:id", async (req, res) => {
     }
     const file = await File.findById(payload.fileId);
     // ✅ Generate Supabase signed URL
-    const { data, error } = await supabase.storage
-      .from("files")
-      .createSignedUrl(file.fileUrl, 60); // link valid 1 min
+    // const { data, error } = await supabase.storage
+    //   .from("files")
+    //   .createSignedUrl(file.fileUrl, 60); // link valid 1 min
 
-    if (error || !data?.signedUrl) {
-      return res.status(500).send("Could not fetch file");
-    }
+    // if (error || !data?.signedUrl) {
+    //   return res.status(500).send("Could not fetch file");
+    // }
 
     res.render("thank-you", { file, expiry: 120 });
   } catch (err) {
@@ -967,109 +1076,351 @@ app.get("/viewfile/:slug/:id", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+// const path = require("path");
+// const fs = require("fs");
+// const fs = require("fs");
+const AWS = require("aws-sdk");
+// const path = require("path");
+// const mime = require("mime-types");
 
-app.get("/download", async (req, res) => {
+// AWS S3 config
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION || "ap-south-1",
+});
+
+// Route
+app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
   try {
-    // ✅ Free file download (no JWT)
-    if (req.query.file_id) {
-      if (req.query.file_id.length !== 24) {
-        console.log("Invalid file_id length:", req.query.file_id.length);
-        return res.render("file-not-found");
-      }
-
-      const file = await File.findById(req.query.file_id);
-      if (!file) {
-        return res.render("file-not-found");
-      }
-
-      if (file.price === 0) {
-        const { data, error } = await supabase.storage
-          .from("files")
-          .createSignedUrl(file.fileUrl, 30);
-
-        if (error || !data?.signedUrl) {
-          console.error("Supabase error:", error);
-          return res.status(500).send("Could not retrieve file from storage.");
-        }
-
-        // Pipe file from Supabase
-        const fileResponse = await axios.get(data.signedUrl, { responseType: "stream" });
-        const extension = path.extname(file.fileUrl).toLowerCase();
-        const baseName = path.basename(file.filename, path.extname(file.filename));
-        const finalFilename = `${baseName}${extension}`;
-
-        res.setHeader("Content-Disposition", `attachment; filename="${finalFilename}"`);
-        res.setHeader("Content-Type", getMimeType(extension));
-        return fileResponse.data.pipe(res);
-      }
-    }
-
-    // ✅ Paid file download (JWT protected)
-    // const { token } = req.query;
-    if (!token) {
-      return res.render("404");
-    }
-
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET_FILE_PURCHASE);
-    } catch (err) {
-      console.error("JWT error:", err);
-      return res.status(401).send("Link expired or invalid");
-    }
-
-    const { fileId, orderId, transactionId } = decoded;
-
-    // Double-check in DB
-    const order = await Order.findOne({ orderId, transactionId});
-    
-    if (!order) {
-      res.render("404");
-    }
-    // console.log(order,orderId,transactionId);
+    const fileId = req.query.file_id;
+    if (!fileId || fileId.length !== 24) return res.render("file-not-found");
 
     const file = await File.findById(fileId);
-    if (!file) {
-      return res.render("file-not-found");
+    if (!file) return res.render("file-not-found");
+
+    // Purchase check
+    if (file.price > 0) {
+      const purchase = await Userpurchases.findOne({
+        userId: req.user._id,
+        productId: fileId,
+      });
+      if (!purchase) return res.render("404");
     }
 
-    const { data, error } = await supabase.storage
-      .from("files")
-      .createSignedUrl(file.fileUrl, 120);
-
-    if (error || !data?.signedUrl) {
-      console.error("Supabase error:", error);
-      return res.status(500).send("Could not retrieve file from storage.");
-    }
-
-    const fileResponse = await axios.get(data.signedUrl, { responseType: "stream" });
+    const fileKey = `main-files/${file.fileUrl}`;
     const extension = path.extname(file.fileUrl).toLowerCase();
     const baseName = path.basename(file.filename, path.extname(file.filename));
     const finalFilename = `${baseName}${extension}`;
 
-    res.setHeader("Content-Disposition", `attachment; filename="${finalFilename}"`);
-    res.setHeader("Content-Type", getMimeType(extension));
-    return fileResponse.data.pipe(res);
+    // Log download
+    const existing = await UserDownloads.findOne({
+      userId: req.user._id,
+      fileId: file._id,
+    });
+    if (!existing) {
+      await new UserDownloads({
+        filename: file.filename,
+        userId: req.user._id,
+        fileId: file._id,
+        fileUrl: file.fileUrl,
+        fileType: extension,
+      }).save();
+      console.log("Download saved");
+    }
 
+    // Get S3 object stream
+    const s3Stream = s3
+      .getObject({
+        Bucket: "vidyarimain",
+        Key: fileKey,
+      })
+      .createReadStream();
+
+    // Set headers for direct download
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${finalFilename}"`
+    );
+    res.setHeader(
+      "Content-Type",
+      mime.lookup(extension) || "application/octet-stream"
+    );
+
+    // Pipe S3 stream directly to response
+    s3Stream.pipe(res).on("error", (err) => {
+      console.error("S3 stream error:", err);
+      res.status(500).render("500");
+    });
   } catch (error) {
     console.error("Error in /download route:", error);
-    return res.render("500");
+    res.status(500).render("500");
   }
 });
 
+const dotenv = require("dotenv");
+const usernotifications = require("./models/usernotifications.js");
+dotenv.config();
+
+app.get("/documents", authenticateJWT_user, async (req, res) => {
+  try {
+    const files = await File.find();
+    const categories = await getcategories();
+
+    const filesWithPreviews = files.map((file) => {
+      const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${
+        files.imageType || "jpg"
+      }`;
+      const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
+
+      return {
+        ...file.toObject(),
+        previewUrl,
+        pdfUrl,
+      };
+    });
+
+    let user = null;
+    if (req.user) {
+      user = await User.findById(req.user._id).select(
+        "profilePicUrl username email"
+      );
+    }
+
+    res.render("index", {
+      files: filesWithPreviews,
+      categories,
+      isLoggedin: !!req.user,
+      profileUrl: user?.profilePicUrl || null,
+      username: user?.username || null,
+      useremail: user?.email || null,
+    });
+  } catch (err) {
+    console.error("DB fetch error:", err);
+    res.status(500).send("Failed to load files");
+  }
+});
+
+// Checkout route
+app.get("/checkout", authenticateJWT_user, requireAuth, async (req, res) => {
+  try {
+    const { fileId, couponCode } = req.query;
+
+    const file = await File.findById(fileId);
+    if (!file) {
+      return res.status(404).send("File with id not found");
+    }
+
+    // Apply coupon if present
+    let discountPercent = 0;
+    if (couponCode) {
+      const coupon = await Coupon.findOne({
+        code: couponCode.toUpperCase(),
+        file: fileId,
+      });
+
+      if (coupon) {
+        if (coupon.expiry && coupon.expiry < new Date()) {
+          // expired
+          discountPercent = 0;
+        } else {
+          discountPercent = coupon.discountValue;
+        }
+      }
+    }
+
+    // Generate price breakdown
+    const priceDetails = GenCheckOutPrice(file.price, { discountPercent });
+
+    // Render checkout with all price info
+    res.render("checkout", {
+      razorpayKey: process.env.RAZORPAY_KEY_ID,
+      file,
+      priceDetails,
+      couponCode: couponCode || null,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+// Coupon check API
+app.get("/check/coupon", async (req, res) => {
+  try {
+    const { couponCode, fileId } = req.query;
+
+    if (!couponCode || !fileId) {
+      return res
+        .status(400)
+        .json({ error: "Coupon code and fileId are required" });
+    }
+
+    const coupon = await Coupon.findOne({
+      code: couponCode.toUpperCase(),
+      file: fileId,
+    });
+
+    if (!coupon) {
+      return res.json({ valid: false, message: "Invalid coupon" });
+    }
+
+    if (coupon.expiry && coupon.expiry < new Date()) {
+      return res.json({ valid: false, message: "Coupon expired" });
+    }
+
+    const file = await File.findById(fileId);
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    const priceDetails = GenCheckOutPrice(file.price, {
+      discountPercent: coupon.discountValue,
+    });
+
+    res.json({ valid: true, priceDetails });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Price generator
+function GenCheckOutPrice(price, options = {}) {
+  const { discountPercent = 0, shippingFee = 0, rounding = "ceil" } = options;
+
+  // Safe discount
+  const safeDiscount = Math.min(Math.max(discountPercent, 0), 90);
+
+  // Step 1: Apply coupon
+  const discountedPrice = +(price * (1 - safeDiscount / 100)).toFixed(2);
+
+  // Step 2: Tiered service fee
+  let serviceFeeRate = 0.02;
+  if (discountedPrice < 100) serviceFeeRate = 0.05;
+  else if (discountedPrice > 500) serviceFeeRate = 0.015;
+  const serviceFee = +(discountedPrice * serviceFeeRate).toFixed(2);
+
+  // Step 3: Taxes
+  const rawTax = serviceFee * 0.18;
+  const luxuryTax = discountedPrice > 1000 ? discountedPrice * 0.05 : 0;
+
+  const round = (num) => {
+    if (rounding === "ceil") return Math.ceil(num * 100) / 100;
+    if (rounding === "floor") return Math.floor(num * 100) / 100;
+    return +num.toFixed(2);
+  };
+
+  const gstTax = round(rawTax);
+  const luxuryTaxRounded = round(luxuryTax);
+
+  // Step 4: Final total
+  const total = +(
+    discountedPrice +
+    serviceFee +
+    gstTax +
+    luxuryTaxRounded +
+    shippingFee
+  ).toFixed(2);
+
+  return {
+    originalPrice: price,
+    discountedPrice,
+    discountPercent: safeDiscount,
+    serviceFee,
+    gstTax,
+    luxuryTax: luxuryTaxRounded,
+    shippingFee,
+    total,
+  };
+}
+
+/* Output example:
+{
+  originalPrice: 350,
+  discountedPrice: 280,
+  discountPercent: 20,
+  serviceFee: 5.6,
+  gstTax: 1.01,
+  luxuryTax: 0,
+  shippingFee: 15,
+  total: 301.61
+}
+*/
+app.get(
+  "/transactions",
+  authenticateJWT_user,
+  requireAuth,
+  async (req, res) => {
+    try {
+      // Fetch data from MongoDB for a specific user, for example
+      // The .lean() method is used for performance, as we only need plain JS objects
+      const purchases = await Userpurchases.find({
+        userId: req.user._id,
+      }).lean();
+
+      // Add mock productDetails for the example to work
+      // In a real app, you would use Mongoose's .populate() method
+      const processedPurchases = purchases.map((p) => {
+        // Safely get the first 3 letters of productName, or use 'N/A' as a fallback
+        const placeholderText = p.productName?.substring(0, 3) ?? "N/A";
+
+        return {
+          ...p,
+          productDetails: {
+            // This data would come from populating the 'productId'
+            category: "Software",
+            imageUrl: `https://placehold.co/120x120/6366f1/ffffff?text=${placeholderText}`,
+          },
+        };
+      });
+      let user = null;
+
+      if (req.user) {
+        const userId = req.user._id;
+        // Fetch only the necessary fields
+        user = await User.findById(userId).select(
+          "profilePicUrl username email"
+        );
+        if (user) {
+          console.log("User profile pic URL:", user.profilePicUrl);
+        }
+      }
+
+      // Render the EJS template and pass the 'purchases' data to it
+      res.render("perchasehistory", {
+        purchases: processedPurchases,
+        isLoggedin: !!req.user,
+        profileUrl: user?.profilePicUrl || null,
+        username: user?.username || null,
+        useremail: user?.email || null,
+      });
+    } catch (error) {
+      console.error("Error fetching purchase history:", error);
+      res.status(500).send("Error loading page.");
+    }
+  }
+);
 // Helper to cleanly return MIME type
 function getMimeType(extension) {
   switch (extension) {
-    case ".pdf": return "application/pdf";
-    case ".docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    case ".pptx": return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-    case ".zip": return "application/zip";
-    case ".jpg": case ".jpeg": return "image/jpeg";
-    case ".png": return "image/png";
-    default: return "application/octet-stream";
+    case ".pdf":
+      return "application/pdf";
+    case ".docx":
+      return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    case ".pptx":
+      return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+    case ".zip":
+      return "application/zip";
+    case ".jpg":
+    case ".jpeg":
+      return "image/jpeg";
+    case ".png":
+      return "image/png";
+    default:
+      return "application/octet-stream";
   }
 }
-
 
 app.use((req, res) => {
   res.status(404).render("404");

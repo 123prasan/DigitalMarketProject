@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verified - BrandLogo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    /* Base styles from your login page for consistency */
+    :root {
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #141414;
+        --bg-card: #1a1a1a;
+        --text-primary: #ffffff;
+        --text-secondary: #b3b3b3;
+        --accent-primary: #6366f1;
+        --accent-hover: #5855eb;
+        --success: #10b981;
+        --border-color: #333333;
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+        --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --border-radius: 8px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: var(--font-family);
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow-x: hidden;
+    }
+
+    /* Animated gradient background */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 15% 85%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+            radial-gradient(circle at 85% 20%, rgba(22, 163, 74, 0.1) 0%, transparent 40%);
+        z-index: -1;
+        animation: backgroundShift 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes backgroundShift {
+        0% { transform: translateX(-10px) translateY(-10px); }
+        100% { transform: translateX(10px) translateY(10px); }
+    }
+
+    .container {
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+    }
+
+    .verification-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 48px 40px;
+        box-shadow: var(--shadow-xl);
+        backdrop-filter: blur(10px);
+        animation: slideUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Your Brand Logo */
+    .brand-logo {
+        margin-bottom: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .logo-icon img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .brand-name {
+        font-size: 28px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Success Icon */
+    .success-icon-wrapper {
+        margin-bottom: 24px;
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--success), #15803d);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 40px;
+        animation: iconPopIn 0.8s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+
+    @keyframes iconPopIn {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        70% {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Content Text */
+    h1 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: var(--text-primary);
+    }
+
+    p {
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 32px;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Button */
+    .btn-primary {
+        width: 100%;
+        padding: 14px 24px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
+        .verification-card {
+            padding: 40px 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+    }
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="verification-card">
+
+            <!-- Replace with your brand logo -->
+            <div class="brand-logo">
+                <div class="logo-icon">
+                    <!-- IMPORTANT: Replace './images/logo.svg' with the actual path to your logo -->
+                    <img src="./images/logo.svg" alt="Brand Logo">
+                </div>
+                <span class="brand-name">Vidyari</span>
+            </div>
+
+            <!-- Animated Success Icon -->
+            <div class="success-icon-wrapper">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <h1>Email Verified!</h1>
+            <p>Thank you. Your email has been successfully verified. You can now access all the features.</p>
+            
+            <!-- Call to Action Button -->
+            <!-- IMPORTANT: Change the href attribute to your dashboard or login page URL -->
+            <a href="/dashboard" class="btn-primary">Continue to Dashboard</a>
+
+        </div>
+    </div>
+
+</body>
+</html>

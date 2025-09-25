@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile - Vidyari</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        @keyframes vidyari-fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes vidyari-neon-flicker{0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 5px #00f6ff,0 0 10px #00f6ff,0 0 20px #00f6ff;opacity:1}20%,24%,55%{text-shadow:none;opacity:.8}}@keyframes vidyari-pulse-glow{0%{box-shadow:0 0 8px rgba(240,56,255,.5)}50%{box-shadow:0 0 16px rgba(240,56,255,.9)}100%{box-shadow:0 0 8px rgba(240,56,255,.5)}}.vidyari-profile-body{background-color:#0a011c;font-family:Poppins,sans-serif;color:#e0d5f5;font-size:1rem;overflow-x:hidden}.vidyari-profile-container{max-width:900px;margin:40px auto;padding:0 20px}.vidyari-profile-header{background:#14052e;border:3px solid #4a1a8a;border-radius:10px;padding:2.5rem;display:flex;align-items:center;gap:2rem;animation:vidyari-fadeIn .6s ease-out;box-shadow:0 10px 40px rgba(0,0,0,.5)}.vidyari-profile-avatar-wrapper{flex-shrink:0}.vidyari-profile-avatar{width:110px;height:110px;border-radius:50%;border:4px solid #00f6ff;padding:4px;object-fit:cover;transition:transform .3s ease;box-shadow:0 0 20px rgba(0,246,255,.4)}.vidyari-profile-avatar:hover{transform:scale(1.08)}.vidyari-profile-info{flex-grow:1}.vidyari-profile-name{font-size:1.8rem;font-weight:700;color:#00f6ff;margin:0;animation:vidyari-neon-flicker 4s infinite alternate}.vidyari-profile-username{color:#a496c2;margin-bottom:.5rem}.vidyari-profile-bio{margin-bottom:1.5rem}.vidyari-profile-extra-info{display:flex;gap:1.5rem;color:#a496c2;font-size:.9rem}.vidyari-edit-profile-button{background:linear-gradient(45deg,#f038ff,#c225d6);border:2px solid #ff9bff;color:#fff;padding:.7rem 1.5rem;border-radius:10px;transition:all .3s ease;font-weight:600;font-size:.9rem;align-self:flex-start;animation:vidyari-pulse-glow 3s infinite}.vidyari-edit-profile-button:hover{transform:translateY(-4px)}.vidyari-stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5rem;margin-top:2rem}.vidyari-stat-item{background-color:#14052e;border:2px solid #4a1a8a;border-radius:10px;padding:1.5rem;text-align:center;transition:all .3s ease}.vidyari-stat-item:hover{transform:translateY(-5px);border-color:#00f6ff;box-shadow:0 5px 20px rgba(0,246,255,.2)}.vidyari-stat-value{font-size:2.2rem;color:#00f6ff;font-weight:700;text-shadow:0 0 5px #00f6ff}.vidyari-stat-label{font-size:.9rem;color:#a496c2;text-transform:uppercase}.vidyari-main-content{margin-top:2rem;background-color:#14052e;border:2px solid #4a1a8a;border-radius:10px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.5)}.vidyari-nav-tabs{border-bottom:2px solid #4a1a8a;padding:0 1.5rem}.vidyari-nav-tabs .nav-link{background:0 0;border:none;color:#a496c2;font-weight:600;padding:1rem 0;margin:0 1rem;border-bottom:4px solid transparent;transition:all .3s ease}.vidyari-nav-tabs .nav-link:first-child{margin-left:0}.vidyari-nav-tabs .nav-link.active,.vidyari-nav-tabs .nav-link:hover{color:#f038ff;border-bottom-color:#f038ff}.vidyari-tab-content{padding:2.5rem}.vidyari-detail-group label{display:block;color:#a496c2;font-size:.9rem;margin-bottom:.25rem}.vidyari-detail-group p{font-size:1.1rem;margin:0}.vidyari-social-links a{color:#a496c2;font-size:2rem;margin-right:1.5rem;transition:all .3s ease}.vidyari-social-links a:hover{color:#f038ff;transform:scale(1.2)}.vidyari-modal-content{background-color:#0a011c;border:3px solid #4a1a8a;border-radius:10px}.vidyari-modal-header,.vidyari-modal-footer{border-color:#4a1a8a}.vidyari-modal-title{font-weight:700;color:#00f6ff}.vidyari-form-control{background-color:#14052e;border:1px solid #4a1a8a;color:#e0d5f5;border-radius:5px;padding:.75rem}.vidyari-form-control:focus{background-color:#14052e;border-color:#00f6ff;box-shadow:0 0 0 .25rem rgba(0,246,255,.25);color:#e0d5f5}.vidyari-primary-button{background-color:#f038ff;border:none;font-weight:600;font-size:.9rem}.vidyari-image-preview{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #4a1a8a}@media (max-width:768px){.vidyari-profile-header{flex-direction:column;text-align:center}.vidyari-edit-profile-button{align-self:center;margin-top:1rem}.vidyari-profile-extra-info{justify-content:center}}
+    </style>
+</head>
+<body class="vidyari-profile-body">
+    <%-include("header")%>
+
+    <div class="vidyari-profile-container">
+        <div class="vidyari-profile-header">
+            <div class="vidyari-profile-avatar-wrapper">
+                <img 
+                    src="<%= userData.profilepicUrl || './images/avatar.jpg' %>" 
+                    alt="User Avatar" 
+                    class="vidyari-profile-avatar" 
+                    id="profileAvatar"
+                    onerror="this.onerror=null; this.src='./images/avatar.jpg';"
+                />
+            </div>
+            <div class="vidyari-profile-info">
+                <h1 class="vidyari-profile-name" id="profileName"><%= userData.fullname || userData.username %></h1>
+                <p class="vidyari-profile-username" id="profileUsername">@<%= userData.username %></p>
+                <p class="vidyari-profile-bio" id="profileBio"><%= userData.bio || 'No bio yet. Click edit to add one!' %></p>
+                <div class="vidyari-profile-extra-info">
+                    <div><i class="fas fa-users me-1"></i><strong><%= userData.followers.length %></strong> Followers</div>
+                    <div><i class="fas fa-user-plus me-1"></i><strong><%= userData.following.length %></strong> Following</div>
+                </div>
+            </div>
+            <button class="btn vidyari-edit-profile-button" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                <i class="fas fa-pen-alt me-2"></i>Edit
+            </button>
+        </div>
+
+        <div class="vidyari-stats-bar">
+            <div class="vidyari-stat-item">
+                <div class="vidyari-stat-value" data-value="<%=numOfCourses%>">0</div>
+                <div class="vidyari-stat-label">Courses Launched</div>
+            </div>
+            <div class="vidyari-stat-item">
+                <div class="vidyari-stat-value" data-value="<%=numsOfDocs%>">0</div>
+                <div class="vidyari-stat-label">Files Uploaded</div>
+            </div>
+            
+        </div>
+
+        <div class="vidyari-main-content">
+            <ul class="nav nav-tabs vidyari-nav-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile" type="button">Details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#security" type="button">Security</button>
+                </li>
+            </ul>
+            <div class="vidyari-tab-content">
+                <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-6 mb-4 vidyari-detail-group">
+                            <label>Full Name</label>
+                            <p id="detailsFullName"><%= userData.fullname || 'Not Set' %></p>
+                        </div>
+                        <div class="col-md-6 mb-4 vidyari-detail-group">
+                            <label>Username</label>
+                            <p id="detailsUsername">@<%= userData.username %></p>
+                        </div>
+                        <div class="col-md-6 mb-4 vidyari-detail-group">
+                            <label>Email</label>
+                            <p id="detailsEmail"><%= userData.email %></p>
+                        </div>
+                        <div class="col-md-6 mb-4 vidyari-detail-group">
+                            <label>Date of Birth</label>
+                            <p id="detailsDob"><%= userData.DOB || 'Not Set' %></p>
+                        </div>
+                        <div class="col-12 vidyari-detail-group">
+                            <label>Social Links</label>
+                            <div class="vidyari-social-links" id="socialLinksContainer">
+                                <a title="Instagram" href="<%= userData.instagramUrl || '#' %>" id="socialInstagram" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                                <a title="GitHub" href="<%= userData.githubUrl || '#' %>" id="socialGithub" target="_blank"><i class="fab fa-github"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <% if (hasPassword) { %>
+                        <div id="change-password-container">
+                            <h5 class="mb-3">Change Password</h5>
+                            <form id="changePasswordForm" class="row g-3">
+                                <div class="col-md-12">
+                                    <label for="currentPassword" class="form-label">Current Password</label>
+                                    <input type="password" class="form-control vidyari-form-control" id="currentPassword" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="newPasswordChange" class="form-label">New Password</label>
+                                    <input type="password" class="form-control vidyari-form-control" id="newPasswordChange" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="confirmNewPasswordChange" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control vidyari-form-control" id="confirmNewPasswordChange" required>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary vidyari-primary-button">Update Password</button>
+                                </div>
+                            </form>
+                        </div>
+                    <% } else { %>
+                        <div id="set-password-container">
+                             <h5 class="mb-3">Set Your Password</h5>
+                             <p class="text-white-50 small">You signed up using a social account. Set a password to enable logging in with your email address.</p>
+                            <form id="setPasswordForm" class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="newPasswordSet" class="form-label">New Password</label>
+                                    <input type="password" class="form-control vidyari-form-control" id="newPasswordSet" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="confirmNewPasswordSet" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control vidyari-form-control" id="confirmNewPasswordSet" required>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary vidyari-primary-button">Set Password</button>
+                                </div>
+                            </form>
+                        </div>
+                    <% } %>
+                    <div class="col-12 mt-3">
+                        <div id="password-feedback" class="d-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content vidyari-modal-content">
+                <div class="modal-header vidyari-modal-header">
+                    <h5 class="modal-title vidyari-modal-title">Edit Your Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editProfileForm" novalidate>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <img src="" alt="Avatar Preview" id="imagePreview" class="mb-3 vidyari-image-preview" />
+                                <input type="file" id="avatarUpload" class="form-control vidyari-form-control" accept="image/*" />
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="fullNameInput" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control vidyari-form-control" id="fullNameInput" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="bioInput" class="form-label">Bio</label>
+                                    <textarea class="form-control vidyari-form-control" id="bioInput" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="dobInput" class="form-label">Date of Birth</label>
+                                    <input type="date" class="form-control vidyari-form-control" id="dobInput" />
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-4" style="color: #4a1a8a;" />
+                        <h6>Social Links</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fab fa-github fa-fw"></i></span>
+                            <input type="text" class="form-control vidyari-form-control" id="githubInput" placeholder="https://github.com/username" />
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-brands fa-instagram"></i></span>
+                            <input type="text" class="form-control vidyari-form-control" id="instagramInput" placeholder="https://www.instagram.com/username/" />
+                        </div>
+                    </div>
+                    <div class="modal-footer vidyari-modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary vidyari-primary-button">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%-include("footer")%>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Stats Counter
+        const animateValue = (obj, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        };
+        document.querySelectorAll(".vidyari-stat-value").forEach(stat => {
+            const endValue = parseInt(stat.getAttribute("data-value"), 10);
+            if (!isNaN(endValue)) {
+                 animateValue(stat, 0, endValue, 1500);
+            }
+        });
+
+        // Edit Profile Modal Logic
+        const editModalElement = document.getElementById("editProfileModal");
+        if (editModalElement) {
+            const editProfileModal = new bootstrap.Modal(editModalElement);
+            const editProfileForm = document.getElementById("editProfileForm");
+            const avatarUpload = document.getElementById("avatarUpload");
+            const imagePreview = document.getElementById("imagePreview");
+            let initialProfileData = {};
+
+            editModalElement.addEventListener("show.bs.modal", () => {
+                initialProfileData = {
+                    fullname: document.getElementById("profileName").textContent.trim(),
+                    bio: document.getElementById("profileBio").textContent.trim(),
+                    dob: document.getElementById("detailsDob").textContent.trim(),
+                    avatarSrc: document.getElementById("profileAvatar").src,
+                    githubUrl: document.getElementById("socialGithub").href,
+                    instagramUrl: document.getElementById("socialInstagram").href,
+                };
+                document.getElementById("fullNameInput").value = initialProfileData.fullname;
+                document.getElementById("bioInput").value = initialProfileData.bio.includes('No bio yet') ? '' : initialProfileData.bio;
+                document.getElementById("dobInput").value = initialProfileData.dob === 'Not Set' ? '' : initialProfileData.dob;
+                document.getElementById("githubInput").value = initialProfileData.githubUrl.includes('#') ? '' : initialProfileData.githubUrl;
+                document.getElementById("instagramInput").value = initialProfileData.instagramUrl.includes('#') ? '' : initialProfileData.instagramUrl;
+                imagePreview.src = initialProfileData.avatarSrc;
+            });
+
+            avatarUpload.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => (imagePreview.src = e.target.result);
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            editProfileForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const saveButton = editProfileForm.querySelector('button[type="submit"]');
+                saveButton.disabled = true;
+                saveButton.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Saving...`;
+                
+                const formData = new FormData();
+                const changedData = {};
+                const newValues = {
+                    fullname: document.getElementById("fullNameInput").value,
+                    bio: document.getElementById("bioInput").value,
+                    dob: document.getElementById("dobInput").value,
+                    githubUrl: document.getElementById("githubInput").value,
+                    instagramUrl: document.getElementById("instagramInput").value,
+                };
+                for (const key in newValues) {
+                    if (newValues[key] !== initialProfileData[key]) {
+                        formData.append(key, newValues[key]);
+                        changedData[key] = newValues[key];
+                    }
+                }
+                if (avatarUpload.files[0]) {
+                    formData.append('profilepic', avatarUpload.files[0]);
+                    changedData.profilepic = true;
+                }
+
+                if (Object.keys(changedData).length > 0) {
+                    try {
+                        const response = await fetch("/update/user-detail", { method: "POST", body: formData });
+                        if (!response.ok) throw new Error('Update failed');
+                        const result = await response.json();
+                        
+                        if (changedData.fullname) {
+                            document.getElementById("profileName").textContent = changedData.fullname;
+                            document.getElementById("detailsFullName").textContent = changedData.fullname;
+                        }
+                        if (changedData.bio !== undefined) document.getElementById("profileBio").textContent = changedData.bio || 'No bio yet.';
+                        if (changedData.dob !== undefined) document.getElementById("detailsDob").textContent = changedData.dob || 'Not Set';
+                        if (changedData.githubUrl !== undefined) document.getElementById("socialGithub").href = changedData.githubUrl || '#';
+                        if (changedData.instagramUrl !== undefined) document.getElementById("socialInstagram").href = changedData.instagramUrl || '#';
+                        if (result.newProfilePicUrl) document.getElementById("profileAvatar").src = result.newProfilePicUrl;
+                    } catch(error) { console.error('Error:', error); }
+                }
+                
+                // BUG FIX: Force modal cleanup in a 'finally' block
+                saveButton.disabled = false;
+                saveButton.innerHTML = 'Save Changes';
+                editProfileModal.hide();
+                
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) backdrop.remove();
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            });
+        }
+        
+        const feedbackEl = document.getElementById("password-feedback");
+        const showFeedback = (message, type) => {
+            feedbackEl.textContent = message;
+            feedbackEl.className = `alert alert-${type} mt-3`;
+        };
+
+        // Change Password Form Logic
+        const changePasswordForm = document.getElementById("changePasswordForm");
+        if (changePasswordForm) {
+            changePasswordForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                feedbackEl.className = "d-none";
+                const submitBtn = changePasswordForm.querySelector('button[type="submit"]');
+                const currentPassword = document.getElementById("currentPassword").value;
+                const newPassword = document.getElementById("newPasswordChange").value;
+                const confirmNewPassword = document.getElementById("confirmNewPasswordChange").value;
+
+                if (!currentPassword || !newPassword || !confirmNewPassword) return showFeedback("Please fill in all fields.", "danger");
+                if (newPassword.length < 8) return showFeedback("Password must be at least 8 characters.", "warning");
+                if (newPassword !== confirmNewPassword) return showFeedback("New passwords do not match.", "danger");
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Updating...`;
+                
+                try {
+                    const response = await fetch("/update/user-password", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ currentPassword, newPassword }),
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || "An error occurred.");
+                    showFeedback(result.message || "Password updated successfully!", "success");
+                    changePasswordForm.reset();
+                } catch (error) {
+                    showFeedback(error.message, "danger");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Update Password";
+                }
+            });
+        }
+
+        // Set Password Form Logic
+        const setPasswordForm = document.getElementById("setPasswordForm");
+        if (setPasswordForm) {
+            setPasswordForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                feedbackEl.className = "d-none";
+                const submitBtn = setPasswordForm.querySelector('button[type="submit"]');
+                const newPassword = document.getElementById("newPasswordSet").value;
+                const confirmNewPassword = document.getElementById("confirmNewPasswordSet").value;
+                
+                if (!newPassword || !confirmNewPassword) return showFeedback("Please fill in all fields.", "danger");
+                if (newPassword.length < 8) return showFeedback("Password must be at least 8 characters.", "warning");
+                if (newPassword !== confirmNewPassword) return showFeedback("Passwords do not match.", "danger");
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Setting...`;
+                
+                try {
+                    const response = await fetch("/set/user-password", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ newPassword }),
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || "An error occurred.");
+                    
+                    showFeedback(result.message || "Password set successfully!", "success");
+                    setPasswordForm.style.display = 'none';
+                    // Reload the page to show the "Change Password" form
+                    setTimeout(() => window.location.reload(), 1500);
+                } catch (error) {
+                    showFeedback(error.message, "danger");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Set Password";
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>

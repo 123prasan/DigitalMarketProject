@@ -55,7 +55,7 @@
 
       .thank-you-card {
         width: 100%;
-        max-width: 600px;
+        max-width: 800px;
         background-color: var(--color-bg-card);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
@@ -138,13 +138,13 @@
 <body>
 
     <div class="page-wrapper">
-        <%- include('header') %>
+        
       
         <main>
+          
             <div class="thank-you-card">
-                <div class="thank-you-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
+              <img src="./images/Confirmed-bro.svg">
+                
                 <h1 class="thank-you-title">Thank You!</h1>
                 <p class="thank-you-subtitle">
                     Your purchase is complete. You can now download 
@@ -178,7 +178,7 @@
             const timerDisplay = document.getElementById('timerDisplay');
             const countdownContainer = document.getElementById('countdownTimer');
             downloadButton.onclick = () => {
-       window.location.href="/download";
+       window.location.href="/download/?file_id=<%=file._id%>";
          
       // a.download = "<%=file.filename%>";
       // document.body.appendChild(a);

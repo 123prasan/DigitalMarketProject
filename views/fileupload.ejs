@@ -1,0 +1,1236 @@
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<div class="upload-form-scope-xyz">
+
+  <div id="upload-form-app-container">
+  </div>
+
+  <template id="template-upload-form">
+    <main class="upload-form__main">
+      <div class="upload-form__card">
+        <h1 class="upload-form__main-title">Upload Study Material</h1>
+        <form class="upload-form__form" id="upload-form-main">
+          <div class="upload-form__input-group">
+            <label for="uploadFormTitle" class="upload-form__label"><span
+                class="upload-form__required-indicator">*</span>Title</label>
+            <input id="uploadFormTitle" required placeholder="e.g., Advanced JavaScript Notes"
+              class="upload-form__input" maxlength="100" />
+          </div>
+          <div class="upload-form__input-group">
+            <label class="upload-form__label"><span class="upload-form__required-indicator">*</span>Description</label>
+            <div id="descriptionEditorContainer" class="upload-form__editor-container"></div>
+            <div id="descriptionCharCounter" class="upload-form__char-counter">0 / 500</div>
+          </div>
+          <div class="upload-form__grid-container">
+            <div class="upload-form__input-group">
+              <label for="uploadFormPrice" class="upload-form__label"><span
+                  class="upload-form__required-indicator">*</span>Price (₹)</label>
+              <input id="uploadFormPrice" required type="number" placeholder="e.g., 299" class="upload-form__input"
+                min="0" max="100000" />
+            </div>
+            <div class="upload-form__input-group">
+              <label for="uploadFormCategory" class="upload-form__label"><span
+                  class="upload-form__required-indicator">*</span>Category</label>
+              <div class="upload-form__select-wrapper">
+                <select id="uploadFormCategory" required class="upload-form__select">
+                  <option value="" disabled selected>Select a Category</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Medical">Medical</option>
+                  <option value="Arts & Humanities">Arts & Humanities</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="upload-form__coupon-section">
+            <div class="upload-form__checkbox-group">
+              <input type="checkbox" id="couponToggleCheckbox" class="upload-form__checkbox-input" />
+              <label for="couponToggleCheckbox" class="upload-form__checkbox-label">Add a discount coupon</label>
+            </div>
+            <div id="couponDetailsContainer" class="upload-form__coupon-details">
+              <div class="upload-form__grid-container">
+                <div class="upload-form__input-group">
+                  <label for="couponCode" class="upload-form__label">Coupon Code</label>
+                  <input id="couponCode" placeholder="e.g., FIRST100" class="upload-form__input" />
+                </div>
+                <div class="upload-form__input-group">
+                  <label for="couponPercentage" class="upload-form__label">Discount (%)</label>
+                  <input id="couponPercentage" type="number" placeholder="e.g., 25" class="upload-form__input" min="1"
+                    max="100" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="upload-form__grid-container">
+            <div class="upload-form__input-group">
+              <label class="upload-form__label"><span class="upload-form__required-indicator">*</span>Cover
+                Image</label>
+              <div id="imageUploadArea" class="upload-form__drop-area">
+                <div class="upload-form__drop-area-content">
+                  <i class="fa-solid fa-image upload-form__drop-area-icon"></i>
+                  <p id="imageUploadText" class="upload-form__drop-area-text">Click or drag & drop</p>
+                </div>
+              </div>
+              <input type="file" id="imageUploadInput" hidden accept="image/*" required />
+            </div>
+            <div class="upload-form__input-group">
+              <label class="upload-form__label"><span class="upload-form__required-indicator">*</span>Main File</label>
+              <div id="fileUploadArea" class="upload-form__drop-area">
+                <div class="upload-form__drop-area-content">
+                  <i class="fa-solid fa-file-arrow-up upload-form__drop-area-icon"></i>
+                  <p id="fileUploadText" class="upload-form__drop-area-text">PDF, ZIP, PPT, DOCS</p>
+                </div>
+              </div>
+              <input type="file" id="fileUploadInput" hidden accept=".pdf,.mp4,.ppt,.docs,.zip" required />
+            </div>
+          </div>
+          <div class="upload-form__checkbox-group upload-form__checkbox-group--agreement">
+            <input type="checkbox" id="copyrightCheck" required class="upload-form__checkbox-input" />
+            <label for="copyrightCheck" class="upload-form__checkbox-label upload-form__checkbox-label--small">I confirm
+              I have the rights to upload this content and it does not violate copyright laws.</label>
+          </div>
+          <button id="reviewUploadBtn" disabled class="upload-form__action-btn">
+            Review & Upload
+          </button>
+        </form>
+      </div>
+    </main>
+  </template>
+
+  <template id="template-preview">
+    <main class="upload-form__main">
+      <div class="upload-form__card">
+        <div class="upload-form__preview-header">
+          <button id="backToFormBtn" class="upload-form__back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <h1 class="upload-form__main-title upload-form__main-title--preview">Review & Publish</h1>
+        </div>
+
+        <section class="upload-form__section">
+          <h3 class="upload-form__section-title">Preview</h3>
+          <div class="upload-form__preview-box">
+            <div id="previewImage" class="upload-form__preview-image"></div>
+            <div class="upload-form__preview-file-info">
+              <p class="upload-form__preview-file-title">Main File</p>
+              <p id="previewFileName" class="upload-form__preview-file-name"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="upload-form__section">
+          <h3 class="upload-form__section-title">Metadata</h3>
+          <div class="upload-form__metadata-grid">
+            <p class="upload-form__metadata-key">Title</p>
+            <p id="previewTitle" class="upload-form__metadata-value"></p>
+            <p class="upload-form__metadata-key">Description</p>
+            <div id="previewDescription"
+              class="upload-form__metadata-value upload-form__metadata-value--description ql-snow">
+              <div class="ql-editor"></div>
+            </div>
+            <p class="upload-form__metadata-key">Price</p>
+            <p id="previewPrice" class="upload-form__metadata-value"></p>
+            <p class="upload-form__metadata-key">Category</p>
+            <p id="previewCategory" class="upload-form__metadata-value"></p>
+            <div id="previewCouponRow" class="upload-form__metadata-coupon-row">
+              <p class="upload-form__metadata-key">Coupon</p>
+              <p id="previewCoupon" class="upload-form__metadata-value"></p>
+            </div>
+          </div>
+        </section>
+
+        <button id="publishBtn" class="upload-form__action-btn">
+          Publish
+        </button>
+      </div>
+    </main>
+  </template>
+
+  <template id="template-upload-progress">
+    <main class="upload-form__main upload-form__main--centered">
+      <div class="upload-form__card upload-form__card--progress">
+        <div class="upload-form__progress-loader">
+          <svg class="upload-form__progress-spinner" viewBox="25 25 50 50">
+            <circle class="upload-form__progress-spinner-circle" r="20" cy="50" cx="50"></circle>
+          </svg>
+        </div>
+        <h1 id="uploadHeading" class="upload-form__main-title">Uploading...</h1>
+        <p id="uploadStatusMessage" class="upload-form__progress-status">Initializing...</p>
+        <div class="upload-form__progress-bar-wrapper">
+          <div class="upload-form__progress-bar-info">
+            <span id="uploadProgressText" class="upload-form__progress-bar-text">0%</span>
+            <span id="uploadBytesText" class="upload-form__progress-bar-bytes">0 B / 0 B</span>
+          </div>
+          <progress id="uploadProgressBar" value="0" max="100" class="upload-form__progress-bar"></progress>
+        </div>
+        <div class="upload-form__progress-stats-grid">
+          <p>Speed: <span id="uploadSpeed">0 B/s</span></p>
+          <p>Time Left: <span id="uploadTime">--:--</span></p>
+        </div>
+        <div class="upload-form__progress-controls">
+          <button id="pauseResumeBtn" class="upload-form__progress-btn">Pause</button>
+          <button id="cancelBtn" class="upload-form__progress-btn upload-form__progress-btn--danger">Cancel</button>
+        </div>
+      </div>
+    </main>
+  </template>
+
+  <template id="template-modal">
+    <div id="successModalContainer" class="upload-form__modal-container">
+      <div id="successModalContent" class="upload-form__modal-content">
+        <div class="upload-form__modal-icon-wrapper">
+          <svg viewBox="0 0 52 52" class="upload-form__modal-svg" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="26" cy="26" r="25" class="upload-form__modal-circle" />
+            <path d="M14.1 27.2l7.1 7.2 16.7-16.8" class="upload-form__modal-tick" />
+          </svg>
+        </div>
+        <h2 class="upload-form__modal-title">Success!</h2>
+        <p class="upload-form__modal-text">Your files have been uploaded successfully.</p>
+        <button id="dismissModalBtn" class="upload-form__modal-btn">Back to Home</button>
+      </div>
+    </div>
+  </template>
+</div>
+
+<style>
+  /* * All styles are scoped within .upload-form-scope-xyz to prevent
+ * affecting any other elements on the page, like the header and footer.
+ */
+  /* --- Success Modal (Updated) --- */
+  .upload-form-scope-xyz {
+    --bg-main: #121212;
+    --bg-card: #1e1e1e;
+    --bg-input: #2a2a2a;
+    --bg-input-focus: #333333;
+    --bg-hover: #252525;
+    --text-primary: #f5f5f5;
+    --text-secondary: #a0a0a0;
+    --text-placeholder: #6b7280;
+    --accent-primary: #3b82f6;
+    --accent-hover: #2563eb;
+    --border-color: #404040;
+    --border-focus: #3b82f6;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --success-color: #22c55e;
+    --font-family: 'Public Sans', 'Noto Sans', sans-serif;
+    --border-radius-md: 8px;
+    --border-radius-lg: 16px;
+    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    font-family: var(--font-family);
+    background: var(--bg-main);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .upload-form-scope-xyz *,
+  .upload-form-scope-xyz *::before,
+  .upload-form-scope-xyz *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .upload-form__modal-container {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+  }
+
+  .upload-form__modal-container.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .upload-form__modal-content {
+    background: var(--bg-card);
+    padding: 2.5rem;
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .upload-form__modal-container.visible .upload-form__modal-content {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .upload-form__modal-icon-wrapper {
+    margin: 0 auto 1rem auto;
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .upload-form__modal-svg {
+    color: var(--success-color);
+  }
+
+  .upload-form__modal-circle {
+    stroke-dasharray: 157;
+    stroke-dashoffset: 157;
+    animation: upload-form-drawCircle 0.9s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  .upload-form__modal-tick {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: upload-form-drawTick 0.8s cubic-bezier(0.65, 0, 0.45, 1) 0.9s forwards;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .upload-form__modal-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .upload-form__modal-text {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+
+  .upload-form__modal-btn {
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    border: none;
+    padding: 0.625rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+
+  .upload-form__modal-btn:hover {
+    background: var(--accent-hover);
+  }
+
+  /* --- Main Layout & Card --- */
+  .upload-form-scope-xyz .upload-form__main {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__main--centered {
+    align-items: center;
+  }
+
+  .upload-form-scope-xyz .upload-form__card {
+    width: 100%;
+    max-width: 800px;
+    background: var(--bg-card);
+    border-radius: var(--border-radius-lg);
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    animation: upload-form-fadeIn 0.5s ease-out;
+  }
+
+  @keyframes upload-form-fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .upload-form-scope-xyz .upload-form__main-title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  /* --- Generic Form Elements --- */
+  .upload-form-scope-xyz .upload-form__input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .upload-form-scope-xyz .upload-form__required-indicator {
+    color: var(--danger-color);
+    margin-right: 0.25rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__input,
+  .upload-form-scope-xyz .upload-form__select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: var(--transition-fast);
+  }
+
+  .upload-form-scope-xyz .upload-form__input::placeholder {
+    color: var(--text-placeholder);
+  }
+
+  .upload-form-scope-xyz .upload-form__input:focus,
+  .upload-form-scope-xyz .upload-form__select:focus,
+  .upload-form-scope-xyz .upload-form__editor-container:focus-within {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    background-color: var(--bg-input-focus);
+  }
+
+  .upload-form-scope-xyz .upload-form__select-wrapper {
+    position: relative;
+  }
+
+  .upload-form-scope-xyz .upload-form__select {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%23a0a0a0' viewBox='0 0 256 256'%3E%3Cpath d='M215.39,92.94a8,8,0,0,0-11.31,0L128,169.37,51.94,92.94a8,8,0,0,0-11.32,11.32l80,80a8,8,0,0,0,11.32,0l80-80A8,8,0,0,0,215.39,92.94Z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.5rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  /* --- Rich Text Editor (Quill.js) --- */
+  .upload-form-scope-xyz .upload-form__editor-container {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    transition: var(--transition-fast);
+  }
+
+  .upload-form-scope-xyz .upload-form__editor-container .ql-toolbar {
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    border-top-left-radius: var(--border-radius-md);
+    border-top-right-radius: var(--border-radius-md);
+  }
+
+  .upload-form-scope-xyz .upload-form__editor-container .ql-container {
+    border: none;
+    min-height: 150px;
+    font-size: 1rem;
+  }
+
+  .upload-form-scope-xyz .ql-snow .ql-stroke {
+    stroke: var(--text-secondary);
+  }
+
+  .upload-form-scope-xyz .ql-snow .ql-fill {
+    fill: var(--text-secondary);
+  }
+
+  .upload-form-scope-xyz .ql-snow .ql-picker-label {
+    color: var(--text-secondary);
+  }
+
+  .upload-form-scope-xyz .upload-form__char-counter {
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  /* --- Coupon & Checkbox --- */
+  .upload-form-scope-xyz .upload-form__coupon-section {
+    background: var(--bg-input);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+  }
+
+  .upload-form-scope-xyz .upload-form__coupon-details {
+    display: none;
+    margin-top: 1rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__coupon-details.visible {
+    display: block;
+  }
+
+  .upload-form-scope-xyz .upload-form__checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__checkbox-input {
+    height: 1.25rem;
+    width: 1.25rem;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 2px solid var(--text-secondary);
+    background-color: transparent;
+    color: var(--accent-primary);
+    cursor: pointer;
+  }
+
+  .upload-form-scope-xyz .upload-form__checkbox-input:focus {
+    ring-offset: 0;
+    ring: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+
+  .upload-form-scope-xyz .upload-form__checkbox-label {
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .upload-form-scope-xyz .upload-form__checkbox-label--small {
+    font-size: 0.875rem;
+  }
+
+  /* --- Drop Area --- */
+  .upload-form-scope-xyz .upload-form__drop-area {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+
+  .upload-form-scope-xyz .upload-form__drop-area:hover,
+  .upload-form-scope-xyz .upload-form__drop-area.dragover {
+    border-color: var(--accent-primary);
+    background-color: var(--bg-hover);
+  }
+
+  .upload-form-scope-xyz .upload-form__drop-area-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+  }
+
+  .upload-form-scope-xyz .upload-form__drop-area-icon {
+    font-size: 2rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__drop-area-text {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .upload-form-scope-xyz .upload-form__drop-area.file-selected {
+    border-color: var(--success-color);
+    border-style: solid;
+  }
+
+  /* --- Action Button --- */
+  .upload-form-scope-xyz .upload-form__action-btn {
+    width: 100%;
+    height: 3rem;
+    padding: 0 1.25rem;
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+    font-weight: 700;
+    transition: var(--transition-fast);
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    border: none;
+    cursor: pointer;
+  }
+
+  .upload-form-scope-xyz .upload-form__action-btn:hover {
+    background: var(--accent-hover);
+  }
+
+  .upload-form-scope-xyz .upload-form__action-btn:disabled {
+    background: var(--bg-input);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+  }
+
+  /* --- Preview Screen --- */
+  .upload-form-scope-xyz .upload-form__preview-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__back-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: var(--transition-fast);
+  }
+
+  .upload-form-scope-xyz .upload-form__back-btn:hover {
+    color: var(--accent-primary);
+  }
+
+  .upload-form-scope-xyz .upload-form__main-title--preview {
+    margin-bottom: 0;
+    flex-grow: 1;
+    text-align: center;
+    padding-right: 2rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__section {
+    margin-bottom: 2rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__preview-box {
+    display: flex;
+    gap: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__preview-image {
+    width: 120px;
+    height: 70px;
+    border-radius: var(--border-radius-md);
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+  }
+
+  .upload-form-scope-xyz .upload-form__preview-file-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .upload-form-scope-xyz .upload-form__preview-file-title {
+    font-weight: 600;
+  }
+
+  .upload-form-scope-xyz .upload-form__preview-file-name {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__metadata-grid {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__metadata-key {
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .upload-form-scope-xyz .upload-form__metadata-value--description {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 0.5rem;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
+  .upload-form-scope-xyz .upload-form__metadata-value--description .ql-editor {
+    padding: 0;
+  }
+
+  .upload-form-scope-xyz .upload-form__metadata-coupon-row {
+    display: contents;
+  }
+
+  /* Allows grid layout to continue */
+
+  /* --- Upload Progress Screen --- */
+  .upload-form-scope-xyz .upload-form__card--progress {
+    max-width: 500px;
+    text-align: center;
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-loader {
+    margin: 0 auto 1.5rem auto;
+    width: 4rem;
+    height: 4rem;
+    color: var(--accent-primary);
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-spinner {
+    transform-origin: center;
+    animation: upload-form-rotate 2s linear infinite;
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-spinner-circle {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 4;
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    stroke-linecap: round;
+    animation: upload-form-dash 1.5s ease-in-out infinite;
+  }
+
+  @keyframes upload-form-rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes upload-form-dash {
+    0% {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+    }
+
+    50% {
+      stroke-dasharray: 90, 200;
+      stroke-dashoffset: -35px;
+    }
+
+    100% {
+      stroke-dashoffset: -125px;
+    }
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-status {
+    margin-top: 1rem;
+    color: var(--text-secondary);
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-bar-wrapper {
+    width: 100%;
+    margin: 1.5rem 0;
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-bar-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-bar {
+    width: 100%;
+    height: 0.5rem;
+    border-radius: 4px;
+    appearance: none;
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-bar::-webkit-progress-bar {
+    background-color: var(--bg-input);
+    border-radius: 4px;
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-bar::-webkit-progress-value {
+    background-color: var(--accent-primary);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-btn {
+    padding: 0.5rem 1.5rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-weight: 600;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-btn:hover {
+    background: var(--bg-hover);
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-btn--danger {
+    background: var(--danger-color);
+    border-color: var(--danger-color);
+  }
+
+  .upload-form-scope-xyz .upload-form__progress-btn--danger:hover {
+    background: var(--danger-hover);
+  }
+
+
+  /* --- Success Modal --- */
+  .upload-form-scope-xyz .upload-form__modal-container {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-container.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-content {
+    background: var(--bg-card);
+    padding: 2.5rem;
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    transform: scale(0.9);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-container.visible .upload-form__modal-content {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-icon-wrapper {
+    margin: 0 auto 1rem auto;
+    width: 6rem;
+    height: 6rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-svg {
+    color: var(--success-color);
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-circle {
+    stroke-dasharray: 157;
+    stroke-dashoffset: 157;
+    animation: upload-form-drawCircle 0.9s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-tick {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: upload-form-drawTick 0.8s cubic-bezier(0.65, 0, 0.45, 1) 0.9s forwards;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  @keyframes upload-form-drawCircle {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes upload-form-drawTick {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-text {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-btn {
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    border: none;
+    padding: 0.625rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+  }
+
+  .upload-form-scope-xyz .upload-form__modal-btn:hover {
+    background: var(--accent-hover);
+  }
+</style>
+
+<script>
+    // Self-executing function to avoid polluting the global scope and ensure all code is contained.
+    (function() {
+        // Stop the script if the main component wrapper isn't on the page.
+        if (!document.querySelector('.upload-form-scope-xyz')) return;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Dynamically load Quill.js if it's not already on the page.
+            if (typeof Quill === 'undefined') {
+                console.warn("Quill.js not found. Loading it dynamically...");
+                const quillJs = document.createElement('script');
+                quillJs.src = 'https://cdn.quilljs.com/1.3.6/quill.js';
+                quillJs.onload = () => initializeComponent(true); // Initialize after the script loads
+                document.body.appendChild(quillJs);
+            } else {
+                initializeComponent(true);
+            }
+        });
+
+        function initializeComponent(isQuillAvailable) {
+            
+            // This class handles switching between the HTML <template> stages.
+            class UIHandler {
+                constructor(containerId) { this.appContainer = document.getElementById(containerId); }
+                render(templateId, onRender) {
+                    this.appContainer.innerHTML = '';
+                    const template = document.getElementById(templateId);
+                    if (!template) return;
+                    const clone = template.content.cloneNode(true);
+                    this.appContainer.appendChild(clone);
+                    if (onRender) onRender();
+                }
+                showModal(onDismiss) {
+                    const template = document.getElementById('template-modal');
+                    if (!template) return;
+                    const clone = template.content.cloneNode(true);
+                    document.body.appendChild(clone);
+                    const modalContainer = document.getElementById('successModalContainer');
+                    const dismissBtn = document.getElementById('dismissModalBtn');
+                    setTimeout(() => modalContainer.classList.add('visible'), 10);
+                    dismissBtn.addEventListener('click', () => {
+                        modalContainer.classList.remove('visible');
+                        setTimeout(() => modalContainer.remove(), 300);
+                        if (onDismiss) onDismiss();
+                    });
+                }
+            }
+
+            // The complete, real Uploader class for multipart uploads.
+            class Uploader {
+                constructor() {
+                    this.CHUNK_SIZE_MB = 5; this.queue = []; this.currentIndex = 0; this.state = this._resetState();
+                }
+                _resetState() {
+                    return { file: null, fileType: null, fileId: null, key: null, generatedFileName: null, uploadId: null, completedParts: [], bytesUploadedFromCompletedParts: 0, isUploading: false, isPaused: false, currentXhr: null, uploadStartTime: null };
+                }
+                enqueueFiles(files) { this.queue = files; this.currentIndex = 0; }
+                async startNext(onSuccess, onFail, onProgressUpdate) {
+                    if (this.currentIndex >= this.queue.length) { if (onSuccess) onSuccess(); return; }
+                    this.state = this._resetState();
+                    const currentFile = this.queue[this.currentIndex];
+                    this.state.file = currentFile.file;
+                    this.state.fileType = currentFile.type;
+                    this.state.fileId = currentFile.id;
+
+                    try {
+                        onProgressUpdate({ type: 'status', message: `Preparing to upload ${this.state.file.name}...` });
+                        const response = await fetch(`/start-multipart-upload`, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ fileName: this.state.file.name, contentType: this.state.file.type, fileType: this.state.fileType, fileId: this.state.fileId })
+                        });
+                        if (!response.ok) throw new Error("Failed to initiate multipart upload.");
+                        const data = await response.json();
+                        this.state.uploadId = data.uploadId;
+                        this.state.key = data.key;
+                        this.state.generatedFileName = data.generatedFileName;
+                        this.state.uploadStartTime = Date.now();
+                        await this._uploadChunks(onProgressUpdate);
+                        if (this.state.isPaused) { return; }
+                        await this._completeUpload(onProgressUpdate);
+                        this.currentIndex++;
+                        await this.startNext(onSuccess, onFail, onProgressUpdate);
+                    } catch (error) { if (onFail) onFail(error); }
+                }
+                _uploadChunks(onProgressUpdate) {
+                    return new Promise(async (resolve, reject) => {
+                        this.state.isUploading = true;
+                        const chunkSize = this.CHUNK_SIZE_MB * 1024 * 1024;
+                        const totalChunks = Math.ceil(this.state.file.size / chunkSize);
+                        for (let partNumber = this.state.completedParts.length + 1; partNumber <= totalChunks; partNumber++) {
+                            if (this.state.isPaused) { this.state.isUploading = false; return resolve(); }
+                            const start = (partNumber - 1) * chunkSize;
+                            const end = Math.min(start + chunkSize, this.state.file.size);
+                            const chunk = this.state.file.slice(start, end);
+                            onProgressUpdate({ type: 'status', message: `Uploading ${this.state.file.name} (part ${partNumber} of ${totalChunks})...` });
+                            try { await this._uploadPart(partNumber, chunk, onProgressUpdate); } catch (error) { this.state.isUploading = false; return reject(error); }
+                        }
+                        this.state.isUploading = false;
+                        resolve();
+                    });
+                }
+                _uploadPart(partNumber, chunk, onProgressUpdate) {
+                    return new Promise(async (resolve, reject) => {
+                        try {
+                            const queryString = `?key=${encodeURIComponent(this.state.key)}&uploadId=${this.state.uploadId}&partNumber=${partNumber}&fileType=${this.state.fileType}`;
+                            const response = await fetch(`/get-presigned-part-url${queryString}`);
+                            if (!response.ok) return reject(new Error("Failed to get presigned URL."));
+                            const { url } = await response.json();
+                            const xhr = new XMLHttpRequest();
+                            this.state.currentXhr = xhr;
+                            xhr.upload.onprogress = (e) => {
+                                const totalBytesUploaded = this.state.bytesUploadedFromCompletedParts + e.loaded;
+                                const totalProgress = (totalBytesUploaded / this.state.file.size) * 100;
+                                const elapsedTime = (Date.now() - this.state.uploadStartTime) / 1000;
+                                const speed = totalBytesUploaded / elapsedTime;
+                                const timeRemaining = speed > 0 ? (this.state.file.size - totalBytesUploaded) / speed : Infinity;
+                                onProgressUpdate({ type: 'progress', progress: totalProgress, speed, timeRemaining, uploadedBytes: totalBytesUploaded, totalBytes: this.state.file.size });
+                            };
+                            xhr.onload = () => {
+                                if (xhr.status === 200) {
+                                    this.state.completedParts.push({ ETag: xhr.getResponseHeader("ETag"), PartNumber: partNumber });
+                                    this.state.bytesUploadedFromCompletedParts += chunk.size;
+                                    resolve();
+                                } else { reject(new Error(`Part upload failed with status ${xhr.status}.`)); }
+                            };
+                            xhr.onerror = () => reject(new Error("Network error during part upload."));
+                            xhr.onabort = () => resolve();
+                            xhr.open("PUT", url);
+                            xhr.setRequestHeader("Content-Type", "application/octet-stream");
+                            xhr.send(chunk);
+                        } catch (error) { reject(error); }
+                    });
+                }
+                async _completeUpload(onProgressUpdate) {
+                    onProgressUpdate({ type: 'status', message: "Finalizing upload..." });
+                    const response = await fetch("/complete-multipart-upload", {
+                        method: "POST", headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            key: this.state.key,
+                            uploadId: this.state.uploadId,
+                            parts: this.state.completedParts,
+                            fileType: this.state.fileType,
+                            fileId: this.state.fileId,
+                            generatedFileName: this.state.generatedFileName,
+                            fileSize: this.state.file.size
+                        }),
+                    });
+                    if (!response.ok) throw new Error("Failed to complete upload.");
+                }
+                togglePause(onProgressUpdate) {
+                    this.state.isPaused = !this.state.isPaused;
+                    if(this.state.isPaused) {
+                        if (this.state.currentXhr) this.state.currentXhr.abort();
+                        onProgressUpdate({ type: 'status', message: 'Upload paused.' });
+                    } else {
+                        onProgressUpdate({ type: 'status', message: 'Resuming upload...' });
+                        this._uploadChunks(onProgressUpdate);
+                    }
+                }
+                cancel(onCancel) {
+                    if (this.state.currentXhr) this.state.currentXhr.abort();
+                    this.state = this._resetState(); this.queue = []; this.currentIndex = 0;
+                    if(onCancel) onCancel();
+                }
+            }
+
+            const ui = new UIHandler('upload-form-app-container');
+            const uploader = new Uploader();
+            let formData = {};
+            let imageFile, mainFile, quillEditor;
+
+            const formatBytes = (bytes) => (bytes === 0 ? '0 B' : ( (k=1024, sizes=['B', 'KB', 'MB', 'GB'], i=Math.floor(Math.log(bytes)/Math.log(k))) => `${parseFloat((bytes/Math.pow(k,i)).toFixed(2))} ${sizes[i]}`)() );
+            const formatRate = (bytes) => `${formatBytes(bytes)}/s`;
+            const formatTime = (seconds) => (seconds === Infinity || seconds < 0 ? "--:--" : `${Math.floor(seconds/60)}m ${Math.floor(seconds%60)}s`);
+
+            const updateProgressUI = (event) => {
+                const status=document.getElementById('uploadStatusMessage'), progressText=document.getElementById('uploadProgressText'), progressBar=document.getElementById('uploadProgressBar'), bytesText=document.getElementById('uploadBytesText'), speedText=document.getElementById('uploadSpeed'), timeText=document.getElementById('uploadTime');
+                if (event.type === 'status' && status) status.textContent = event.message;
+                if (event.type === 'progress') {
+                    if(progressBar) progressBar.value = event.progress;
+                    if(progressText) progressText.textContent = `${event.progress.toFixed(1)}%`;
+                    if(bytesText) bytesText.textContent = `${formatBytes(event.uploadedBytes)} / ${formatBytes(event.totalBytes)}`;
+                    if(speedText) speedText.textContent = formatRate(event.speed);
+                    if(timeText) timeText.textContent = formatTime(event.timeRemaining);
+                }
+            };
+            
+            const initializeFormStage = () => {
+                ui.render('template-upload-form', () => {
+                    if (isQuillAvailable) { quillEditor = new Quill('#descriptionEditorContainer', { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }]] } }); }
+                    const form = document.getElementById('upload-form-main'), reviewBtn = document.getElementById('reviewUploadBtn'), imageInput = document.getElementById('imageUploadInput'), fileInput = document.getElementById('fileUploadInput'), couponToggle = document.getElementById('couponToggleCheckbox'), couponDetails = document.getElementById('couponDetailsContainer'), charCounter = document.getElementById('descriptionCharCounter');
+                    const truncateFilename = (name, max=25) => name.length <= max ? name : `${name.slice(0, max-4)}...${name.split('.').pop()}`;
+                    const checkFormValidity = () => {
+                        let isValid = true;
+                        form.querySelectorAll('[required]').forEach(input => { if ((input.type === 'checkbox' && !input.checked) || !input.value.trim()) isValid = false; });
+                        if (quillEditor && quillEditor.getLength() <= 1) isValid = false;
+                        reviewBtn.disabled = !isValid;
+                    };
+                    form.addEventListener('input', checkFormValidity);
+                    if (quillEditor) {
+                        quillEditor.on('text-change', () => {
+                            const len = quillEditor.getLength() - 1;
+                            charCounter.textContent = `${len} / 500`;
+                            if (len > 500) { quillEditor.deleteText(500, len); charCounter.style.color = 'var(--danger-color)'; } else { charCounter.style.color = 'var(--text-secondary)'; }
+                            checkFormValidity();
+                        });
+                    }
+                    couponToggle.addEventListener('change', () => couponDetails.classList.toggle('visible', couponToggle.checked));
+                    const setupDropArea = (areaId, inputId, textId) => {
+                        const area = document.getElementById(areaId), input = document.getElementById(inputId), text = document.getElementById(textId);
+                        const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024 * 1024; // 8 GB
+                        area.addEventListener('click', () => input.click());
+                        ['dragenter', 'dragover'].forEach(eName => area.addEventListener(eName, e => { e.preventDefault(); area.classList.add('dragover'); }));
+                        ['dragleave', 'drop'].forEach(eName => area.addEventListener(eName, e => { e.preventDefault(); area.classList.remove('dragover'); }));
+                        area.addEventListener('drop', e => { input.files = e.dataTransfer.files; input.dispatchEvent(new Event('change')); });
+                        input.addEventListener('change', () => {
+                            if (input.files.length > 0) {
+                                const file = input.files[0];
+                                // --- NEW: File Size Check ---
+                                if (inputId === 'fileUploadInput' && file.size > MAX_FILE_SIZE_BYTES) {
+                                    alert(`File is too large (${formatBytes(file.size)}). The maximum allowed size is 8 GB.`);
+                                    input.value = ''; // Clear the selected file
+                                    area.classList.remove('file-selected');
+                                    text.textContent = 'PDF, ZIP, PPT, DOCS';
+                                    return;
+                                }
+                                text.textContent = truncateFilename(file.name);
+                                area.classList.add('file-selected');
+                            }
+                            checkFormValidity();
+                        });
+                    };
+                    setupDropArea('imageUploadArea', 'imageUploadInput', 'imageUploadText');
+                    setupDropArea('fileUploadArea', 'fileUploadInput', 'fileUploadText');
+                    reviewBtn.addEventListener('click', (e) => {
+                        e.preventDefault(); if (reviewBtn.disabled) return;
+                        formData = {
+                            title: document.getElementById('uploadFormTitle').value,
+                            descriptionHTML: isQuillAvailable ? quillEditor.root.innerHTML : "Description not available.",
+                            price: document.getElementById('uploadFormPrice').value,
+                            category: document.getElementById('uploadFormCategory').value,
+                            fileSize: document.getElementById('fileUploadInput').files[0].size, // Send file size for backend validation
+                            couponCode: couponToggle.checked ? document.getElementById('couponCode').value : null,
+                            couponPercentage: couponToggle.checked ? document.getElementById('couponPercentage').value : null,
+                            imageType: document.getElementById('imageUploadInput').files[0].type.split('/')[1]
+                        };
+                        imageFile = imageInput.files[0]; mainFile = fileInput.files[0];
+                        goToPreviewStage();
+                    });
+                });
+            };
+
+            const goToPreviewStage = () => {
+                ui.render('template-preview', () => {
+                    document.getElementById('backToFormBtn').addEventListener('click', initializeFormStage);
+                    document.getElementById('previewImage').style.backgroundImage = `url(${URL.createObjectURL(imageFile)})`;
+                    document.getElementById('previewFileName').textContent = mainFile.name;
+                    document.getElementById('previewTitle').textContent = formData.title;
+                    document.getElementById('previewDescription').querySelector('.ql-editor').innerHTML = formData.descriptionHTML;
+                    document.getElementById('previewPrice').textContent = `₹ ${formData.price}`;
+                    document.getElementById('previewCategory').textContent = formData.category;
+                    const couponRow = document.getElementById('previewCouponRow');
+                    if (formData.couponCode) {
+                        couponRow.style.display = 'contents';
+                        document.getElementById('previewCoupon').textContent = `${formData.couponCode} (${formData.couponPercentage}%)`;
+                    } else {
+                        couponRow.style.display = 'none';
+                    }
+                    const publishBtn = document.getElementById('publishBtn');
+                    publishBtn.addEventListener('click', async () => {
+                        try {
+                            publishBtn.disabled = true; publishBtn.textContent = 'Preparing...';
+                            const response = await fetch('/api/create-file-record', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json'},
+                                body: JSON.stringify(formData)
+                            });
+                            if (!response.ok) {
+                                const errData = await response.json();
+                                throw new Error(errData.error || 'Could not create file record on server.');
+                            }
+                            const { fileId } = await response.json();
+                            uploader.enqueueFiles([
+                                { type: 'main', file: mainFile, id: fileId },
+                                { type: 'image', file: imageFile, id: fileId }
+                            ]);
+                            goToUploadProgressStage();
+                        } catch (error) {
+                            alert(`Error: ${error.message}`);
+                            publishBtn.disabled = false; publishBtn.textContent = 'Publish';
+                        }
+                    });
+                });
+            };
+
+            const goToUploadProgressStage = () => {
+                ui.render('template-upload-progress', () => {
+                    document.getElementById('pauseResumeBtn').addEventListener('click', (e) => {
+                        uploader.togglePause(updateProgressUI);
+                        e.target.textContent = uploader.state.isPaused ? 'Resume' : 'Pause';
+                    });
+                    document.getElementById('cancelBtn').addEventListener('click', () => uploader.cancel(() => {
+                        alert("Upload cancelled.");
+                        initializeFormStage();
+                    }));
+                    uploader.startNext(
+                        () => ui.showModal(initializeFormStage), // On success, reset the form
+                        (err) => { alert(`Upload failed: ${err.message}`); initializeFormStage(); },
+                        updateProgressUI
+                    );
+                });
+            };
+            
+            initializeFormStage();
+        }
+    })();
+</script>
