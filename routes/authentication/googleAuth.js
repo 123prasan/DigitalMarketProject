@@ -21,7 +21,7 @@ const reaquireAuth = require("./reaquireAuth.js");
 const Notification = require("../../models/userNotifications");
 const File = require("../../models/file.js");
 const UserDownloads = require("../../models/userDownloads");
-const Report = require("../../models/userreports");
+const Report = require("../../models/userReports");
 
 router.use(express.json());
 router.use(cookieParser());
