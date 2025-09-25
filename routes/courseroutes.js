@@ -4,7 +4,7 @@ const {
   generatePresignedUrl,
   createCourse,
   getCourseById,
-} = require("../controllers/courseController");
+} = require("../controllers/coursecontroller");
 const authenticateJWT_user = require("./authentication/jwtAuth.js");
 const jwt = require("jsonwebtoken");
 const UserProgress = require("../models/courseProgress");
