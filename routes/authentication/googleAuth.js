@@ -70,7 +70,7 @@ passport.use(
     {
       clientID: `999822886943-57g7g478kmkq4aqebukvlei2mijppqof.apps.googleusercontent.com`,
       clientSecret: `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`,
-      callbackURL: `http://localhost:8000/auth/google/callback`,
+      callbackURL: `https://www.vidyari.com/auth/google/callback`,
       state: true,
     },
     async (accessToken, refreshToken, profile, done) => {
