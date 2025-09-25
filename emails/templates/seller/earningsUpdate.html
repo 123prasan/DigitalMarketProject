@@ -1,0 +1,19 @@
+<html>
+<head><style>
+  body { font-family: Arial; }
+  .box { max-width: 600px; margin: auto; padding: 30px; background: #fff; border: 1px solid #ddd; }
+</style></head>
+<body>
+  <div class="box">
+    <h2>Your Monthly Earnings Report</h2>
+    <p>Hello {{seller_name}},</p>
+    <p>Here is a summary of your earnings for {{month}}:</p>
+    <ul>
+      <li>Total Sales: ₹{{sales}}</li>
+      <li>Total Earnings: ₹{{earnings}}</li>
+      <li>Pending Payouts: ₹{{pending}}</li>
+    </ul>
+    <p>Visit your dashboard to see more detailed analytics.</p>
+  </div>
+</body>
+</html>

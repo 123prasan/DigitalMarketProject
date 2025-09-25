@@ -1,0 +1,18 @@
+<html>
+<head><style>
+  body { font-family: sans-serif; color: #222; }
+  .card { max-width: 600px; margin: auto; border: 1px solid #ccc; padding: 30px; }
+  .success { color: green; }
+</style></head>
+<body>
+  <div class="card">
+    <h2 class="success">Your Order is Confirmed 🎉</h2>
+    <p>Hi {{buyer_name}},</p>
+    <p>Thank you for purchasing <strong>{{item_name}}</strong> from Vidyari.</p>
+    <p>Order ID: {{order_id}}</p>
+    <p>You can download your item here:</p>
+    <a href="{{download_link}}">{{download_link}}</a>
+    <p>If you have issues, contact us at support@vidyari.com</p>
+  </div>
+</body>
+</html>

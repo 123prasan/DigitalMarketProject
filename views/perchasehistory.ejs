@@ -1,0 +1,464 @@
+<%-include("header")%>
+<div class="purchase-history-scope-xyz">
+
+    <div class="purchase-history__container">
+        <div class="purchase-history__card">
+            <div class="purchase-history__header">
+                <h1 class="purchase-history__title">Purchase History</h1>
+                <div class="purchase-history__logo-icon">
+                    <img class="purchase-history__logo-img" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="Brand Logo">
+                </div>
+            </div>
+
+            <div class="purchase-history__controls">
+                <div class="purchase-history__search-wrapper">
+                    <i class="fas fa-search purchase-history__search-icon"></i>
+                    <input type="text" id="purchaseHistorySearchInput" class="purchase-history__search-input" placeholder="Search by name or product type...">
+                </div>
+                <div class="purchase-history__export-wrapper">
+                    <button class="purchase-history__export-btn">
+                        <i class="fas fa-download"></i>
+                        <span class="purchase-history__export-btn-text">Export</span>
+                    </button>
+                    <ul class="purchase-history__export-dropdown" id="purchaseHistoryExportOptions">
+                        <li class="purchase-history__export-option" data-format="pdf"><i class="fas fa-file-pdf"></i> Export as PDF</li>
+                        <li class="purchase-history__export-option" data-format="csv"><i class="fas fa-file-csv"></i> Export as CSV</li>
+                        <li class="purchase-history__export-option" data-format="json"><i class="fas fa-file-code"></i> Export as JSON</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="purchase-history__filter-bar">
+                <div class="purchase-history__filter-group">
+                    <label for="purchaseHistoryCategoryFilter" class="purchase-history__filter-label">Product Type</label>
+                    <select id="purchaseHistoryCategoryFilter" class="purchase-history__filter-select">
+                        <option value="all">All Types</option>
+                    </select>
+                </div>
+                <div class="purchase-history__filter-group">
+                    <label for="purchaseHistoryStatusFilter" class="purchase-history__filter-label">Status</label>
+                    <select id="purchaseHistoryStatusFilter" class="purchase-history__filter-select">
+                        <option value="all">All Statuses</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="processing">Processing</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="purchase-history__filter-group">
+                    <label for="purchaseHistoryStartDateFilter" class="purchase-history__filter-label">Start Date</label>
+                    <input type="date" id="purchaseHistoryStartDateFilter" class="purchase-history__filter-input">
+                </div>
+                <div class="purchase-history__filter-group">
+                    <label for="purchaseHistoryPriceFilter" class="purchase-history__filter-label">Max Price: <span id="purchaseHistoryPriceValue">$1000</span></label>
+                    <input type="range" id="purchaseHistoryPriceFilter" class="purchase-history__filter-input" min="0" max="1000" value="1000">
+                </div>
+            </div>
+
+            <ul class="purchase-history__list" id="purchaseHistoryList">
+                 <% if (purchases && purchases.length > 0) { %>
+                    <% purchases.forEach(item => { %>
+                        <li class="purchase-history__item" data-item='<%- JSON.stringify(item) %>'>
+                            <img src="<%= item.productDetails.imageUrl %>" alt="<%= item.productName || 'Product' %>" class="purchase-history__item-image">
+                            <div class="purchase-history__item-info">
+                                <div class="purchase-history__item-name"><%= item.productName || 'Unnamed Product' %></div>
+                                <div class="purchase-history__item-category"><%= item.productType || 'N/A' %></div>
+                            </div>
+                            <div class="purchase-history__item-details">
+                                <div class="purchase-history__item-price">$<%= item.totalPrice.toFixed(2) %></div>
+                                <div class="purchase-history__item-date"><%= new Date(item.purchaseDate).toLocaleDateString() %></div>
+                            </div>
+                        </li>
+                    <% }) %>
+                <% } else { %>
+                    <div class="purchase-history__empty-state">
+                        <i class="fas fa-box-open purchase-history__empty-state-icon"></i>
+                        <p class="purchase-history__empty-state-text">No purchase history found.</p>
+                    </div>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+
+    <div class="purchase-history__modal" id="purchaseHistoryDetailsModal">
+      <div class="purchase-history__modal-content">
+          <div class="purchase-history__modal-header">
+              <h2 id="purchaseHistoryModalTitle" class="purchase-history__modal-title"></h2>
+              <button class="purchase-history__modal-close-btn" id="purchaseHistoryModalCloseBtn">&times;</button>
+          </div>
+          <div class="purchase-history__modal-body">
+              <img src="" alt="Product Image" class="purchase-history__modal-image" id="purchaseHistoryModalImage">
+              <div class="purchase-history__modal-details-wrapper">
+                  <ul class="purchase-history__modal-details-list">
+                      <li class="purchase-history__modal-detail-item"><strong>Purchase ID:</strong> <span id="purchaseHistoryModalPurchaseId"></span></li>
+                      <li class="purchase-history__modal-detail-item"><strong>Price:</strong> <span id="purchaseHistoryModalPrice"></span></li>
+                      <li class="purchase-history__modal-detail-item"><strong>Date:</strong> <span id="purchaseHistoryModalDate"></span></li>
+                      <li class="purchase-history__modal-detail-item"><strong>Status:</strong> <span id="purchaseHistoryModalStatus"></span></li>
+                  </ul>
+              </div>
+          </div>
+          <div class="purchase-history__modal-footer">
+            <button class="purchase-history__invoice-btn" id="purchaseHistoryDownloadInvoiceBtn">Download Invoice</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<style>
+    .purchase-history-scope-xyz {
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #141414;
+        --bg-card: #1a1a1a;
+        --bg-input: #2a2a2a;
+        --bg-hover: #222222;
+        --text-primary: #f0f0f0;
+        --text-secondary: #a0a0a0;
+        --text-muted: #666666;
+        --accent-primary: #6366f1;
+        --accent-hover: #4f46e5;
+        --border-color: #333333;
+        --border-focus: #6366f1;
+        --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.2);
+        --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --border-radius-lg: 16px;
+        --border-radius-md: 8px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        font-family: var(--font-family);
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        color: var(--text-primary);
+    }
+    .purchase-history-scope-xyz *,
+    .purchase-history-scope-xyz *::before,
+    .purchase-history-scope-xyz *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .purchase-history-scope-xyz .purchase-history__container {
+        width: 100%;
+        padding: 0; /* Changed for full width */
+    }
+    .purchase-history-scope-xyz .purchase-history__card {
+        background: var(--bg-card);
+        padding: 40px;
+        min-height: 100vh; /* Changed for full page feel */
+        width: 100%; /* Changed for full width */
+        border-radius: 0; /* Changed for full width */
+        border: none; /* Changed for full width */
+        box-shadow: var(--shadow-glow);
+        animation: purchase-history-fadeIn 0.6s ease-out;
+    }
+    @keyframes purchase-history-fadeIn {
+        from { opacity: 0; transform: scale(0.98); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    .purchase-history-scope-xyz .purchase-history__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .purchase-history-scope-xyz .purchase-history__title { font-size: 28px; font-weight: 700; }
+    .purchase-history-scope-xyz .purchase-history__logo-img { height: 36px; filter: invert(1); }
+    .purchase-history-scope-xyz .purchase-history__controls { display: flex; gap: 16px; margin-bottom: 24px; }
+    .purchase-history-scope-xyz .purchase-history__search-wrapper { flex-grow: 1; position: relative; }
+    .purchase-history-scope-xyz .purchase-history__search-input {
+        width: 100%;
+        padding: 14px 16px 14px 44px;
+        background-color: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-md);
+        color: var(--text-primary);
+        transition: var(--transition);
+        font-size: 16px;
+    }
+    .purchase-history-scope-xyz .purchase-history__search-input:focus {
+        outline: none;
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    .purchase-history-scope-xyz .purchase-history__search-icon {
+        position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);
+    }
+    .purchase-history-scope-xyz .purchase-history__filter-bar {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color);
+    }
+    .purchase-history-scope-xyz .purchase-history__filter-group { display: flex; flex-direction: column; }
+    .purchase-history-scope-xyz .purchase-history__filter-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
+    .purchase-history-scope-xyz .purchase-history__filter-select, .purchase-history-scope-xyz .purchase-history__filter-input {
+        padding: 10px; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); color: var(--text-primary); font-size: 14px;
+    }
+    .purchase-history-scope-xyz .purchase-history__filter-input[type="range"] { padding: 0; }
+    .purchase-history-scope-xyz .purchase-history__export-wrapper { position: relative; }
+    .purchase-history-scope-xyz .purchase-history__export-btn {
+        padding: 0 20px; background-color: var(--accent-primary); color: white; border: none; border-radius: var(--border-radius-md); cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; font-size: 16px; height: 100%;
+    }
+    .purchase-history-scope-xyz .purchase-history__export-btn:hover { background-color: var(--accent-hover); }
+    .purchase-history-scope-xyz .purchase-history__export-dropdown {
+        position: absolute; top: 110%; right: 0; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); list-style: none; z-index: 10; overflow: hidden; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: var(--transition); width: max-content;
+    }
+    .purchase-history-scope-xyz .purchase-history__export-wrapper:hover .purchase-history__export-dropdown {
+        opacity: 1; visibility: visible; transform: translateY(0);
+    }
+    .purchase-history-scope-xyz .purchase-history__export-option {
+        padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px;
+    }
+    .purchase-history-scope-xyz .purchase-history__export-option:hover { background-color: var(--accent-primary); }
+    .purchase-history-scope-xyz .purchase-history__list {
+        list-style: none; max-height: 450px; overflow-y: auto; padding-right: 12px;
+    }
+    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar { width: 8px; }
+    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar-track { background: transparent; }
+    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    .purchase-history-scope-xyz .purchase-history__item {
+        display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; padding: 16px 8px; border-bottom: 1px solid var(--border-color); transition: background-color var(--transition); cursor: pointer; border-radius: var(--border-radius-md);
+    }
+    .purchase-history-scope-xyz .purchase-history__item:hover { background-color: var(--bg-hover); }
+    .purchase-history-scope-xyz .purchase-history__item-image {
+        width: 56px; height: 56px; border-radius: var(--border-radius-md); object-fit: cover; background-color: var(--bg-input);
+    }
+    .purchase-history-scope-xyz .purchase-history__item-name { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+    .purchase-history-scope-xyz .purchase-history__item-category { font-size: 13px; color: var(--text-secondary); }
+    .purchase-history-scope-xyz .purchase-history__item-details { text-align: right; }
+    .purchase-history-scope-xyz .purchase-history__item-price { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+    .purchase-history-scope-xyz .purchase-history__item-date { font-size: 13px; color: var(--text-secondary); }
+    .purchase-history-scope-xyz .purchase-history__empty-state { text-align: center; padding: 60px; color: var(--text-secondary); }
+    .purchase-history-scope-xyz .purchase-history__empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+    .purchase-history-scope-xyz .purchase-history__modal {
+        position: fixed; inset: 0; background-color: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; z-index: 1000;
+    }
+    .purchase-history-scope-xyz .purchase-history__modal.show { opacity: 1; visibility: visible; }
+    .purchase-history-scope-xyz .purchase-history__modal-content {
+        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s;
+    }
+    .purchase-history-scope-xyz .purchase-history__modal.show .purchase-history__modal-content { transform: scale(1); }
+    .purchase-history-scope-xyz .purchase-history__modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .purchase-history-scope-xyz .purchase-history__modal-title { font-size: 20px; }
+    .purchase-history-scope-xyz .purchase-history__modal-close-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+    .purchase-history-scope-xyz .purchase-history__modal-body { display: flex; gap: 24px; }
+    .purchase-history-scope-xyz .purchase-history__modal-image { width: 120px; height: 120px; border-radius: var(--border-radius-md); object-fit: cover; }
+    .purchase-history-scope-xyz .purchase-history__modal-details-list { list-style: none; }
+    .purchase-history-scope-xyz .purchase-history__modal-detail-item { margin-bottom: 12px; font-size: 14px; }
+    .purchase-history-scope-xyz .purchase-history__modal-detail-item strong { color: var(--text-secondary); min-width: 100px; display: inline-block; }
+    .purchase-history-scope-xyz .purchase-history__modal-footer { margin-top: 24px; text-align: right; }
+    .purchase-history-scope-xyz .purchase-history__invoice-btn { padding: 10px 16px; background-color: var(--accent-primary); color: white; border: none; border-radius: var(--border-radius-md); cursor: pointer; transition: var(--transition); }
+    .purchase-history-scope-xyz .purchase-history__invoice-btn:hover { background-color: var(--accent-hover); }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const allPurchases = Array.isArray(<%- JSON.stringify(purchases) %>) ? <%- JSON.stringify(purchases) %> : [];
+    let currentFilteredData = [...allPurchases];
+    let currentItemInModal = null;
+    
+    const historyList = document.getElementById('purchaseHistoryList');
+    const searchInput = document.getElementById('purchaseHistorySearchInput');
+    const categoryFilter = document.getElementById('purchaseHistoryCategoryFilter');
+    const statusFilter = document.getElementById('purchaseHistoryStatusFilter');
+    const startDateFilter = document.getElementById('purchaseHistoryStartDateFilter');
+    const priceFilter = document.getElementById('purchaseHistoryPriceFilter');
+    const priceValue = document.getElementById('purchaseHistoryPriceValue');
+    const modal = document.getElementById('purchaseHistoryDetailsModal');
+    const modalCloseBtn = document.getElementById('purchaseHistoryModalCloseBtn');
+    const exportOptions = document.getElementById('purchaseHistoryExportOptions');
+    const downloadInvoiceBtn = document.getElementById('purchaseHistoryDownloadInvoiceBtn');
+    
+    const filters = {
+        searchTerm: '', category: 'all', status: 'all', startDate: null, maxPrice: 1000
+    };
+
+    const formatDate = (dateString) => new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    const formatCurrency = (amount) => `$${(amount || 0).toFixed(2)}`;
+    const debounce = (func, delay) => {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    };
+
+    const populateFilters = () => {
+        const categories = [...new Set(allPurchases.map(p => p.productType))];
+        categories.forEach(cat => {
+            if (!cat) return;
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat;
+            categoryFilter.appendChild(option);
+        });
+        
+        const maxPrice = Math.ceil(Math.max(...allPurchases.map(p => p.totalPrice || 0), 0));
+        priceFilter.max = maxPrice > 0 ? maxPrice : 1000;
+        priceFilter.value = maxPrice > 0 ? maxPrice : 1000;
+        filters.maxPrice = maxPrice > 0 ? maxPrice : 1000;
+        priceValue.textContent = formatCurrency(filters.maxPrice);
+    };
+
+    const renderHistory = (data) => {
+        historyList.innerHTML = '';
+        if (data.length === 0) {
+            historyList.innerHTML = `<div class="purchase-history__empty-state"><i class="fas fa-search purchase-history__empty-state-icon"></i><p class="purchase-history__empty-state-text">No results match your filters.</p></div>`;
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        data.forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'purchase-history__item';
+            li.dataset.item = JSON.stringify(item);
+            li.innerHTML = `
+                <img src="${item.productDetails?.imageUrl || ''}" alt="${item.productName || 'Product'}" class="purchase-history__item-image">
+                <div class="purchase-history__item-info">
+                    <div class="purchase-history__item-name">${item.productName || 'Unnamed Product'}</div>
+                    <div class="purchase-history__item-category">${item.productType || 'N/A'}</div>
+                </div>
+                <div class="purchase-history__item-details">
+                    <div class="purchase-history__item-price">${formatCurrency(item.totalPrice)}</div>
+                    <div class="purchase-history__item-date">${formatDate(item.purchaseDate)}</div>
+                </div>
+            `;
+            fragment.appendChild(li);
+        });
+        historyList.appendChild(fragment);
+    };
+
+    const applyFilters = () => {
+        currentFilteredData = allPurchases.filter(item => {
+            const searchTermLower = filters.searchTerm.toLowerCase();
+            const searchMatch = filters.searchTerm === '' ||
+                (item.productName || '').toLowerCase().includes(searchTermLower) ||
+                (item.productType || '').toLowerCase().includes(searchTermLower);
+            const categoryMatch = filters.category === 'all' || item.productType === filters.category;
+            const statusMatch = filters.status === 'all' || item.status === filters.status;
+            const priceMatch = (item.totalPrice || 0) <= filters.maxPrice;
+            const dateMatch = !filters.startDate || new Date(item.purchaseDate) >= filters.startDate;
+            return searchMatch && categoryMatch && statusMatch && priceMatch && dateMatch;
+        });
+        renderHistory(currentFilteredData);
+    };
+
+    const populateAndShowModal = (item) => {
+        currentItemInModal = item;
+        document.getElementById('purchaseHistoryModalTitle').textContent = item.productName || 'Product Details';
+        document.getElementById('purchaseHistoryModalImage').src = item.productDetails?.imageUrl || '';
+        document.getElementById('purchaseHistoryModalPurchaseId').textContent = item._id || 'N/A';
+        document.getElementById('purchaseHistoryModalPrice').textContent = formatCurrency(item.totalPrice);
+        document.getElementById('purchaseHistoryModalDate').textContent = formatDate(item.purchaseDate);
+        document.getElementById('purchaseHistoryModalStatus').textContent = (item.status || 'N/A').charAt(0).toUpperCase() + (item.status || 'N/A').slice(1);
+        modal.classList.add('show');
+    };
+    const hideModal = () => {
+        modal.classList.remove('show');
+        currentItemInModal = null;
+    }
+
+    const downloadFile = (content, fileName, contentType) => {
+        const a = document.createElement("a");
+        const file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    };
+    
+    const generateInvoicePdf = (item) => {
+        if (!item) return;
+        const doc = new window.jspdf.jsPDF();
+        doc.setFontSize(20);
+        doc.text("Invoice", 105, 20, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text(`Invoice ID: ${item._id || 'N/A'}`, 14, 40);
+        doc.text(`Date: ${formatDate(item.purchaseDate)}`, 14, 46);
+        doc.line(14, 60, 196, 60);
+        doc.autoTable({
+            startY: 65,
+            head: [['Description', 'Type', 'Status', 'Total']],
+            body: [[ item.productName || 'N/A', item.productType || 'N/A', item.status || 'N/A', formatCurrency(item.totalPrice) ]],
+            theme: 'striped'
+        });
+        doc.save(`invoice-${item._id}.pdf`);
+    };
+
+    const exportToPdf = () => {
+        const doc = new window.jspdf.jsPDF();
+        doc.text("Purchase History Report", 14, 22);
+        doc.autoTable({
+            startY: 30,
+            head: [['Date', 'Product Name', 'Type', 'Status', 'Price']],
+            body: currentFilteredData.map(item => [
+                formatDate(item.purchaseDate), item.productName || 'N/A', item.productType || 'N/A', item.status || 'N/A', formatCurrency(item.totalPrice)
+            ]),
+            theme: 'striped', headStyles: { fillColor: [30, 30, 30] }
+        });
+        doc.save(`purchase-history-${Date.now()}.pdf`);
+    };
+
+    const exportToCsv = () => {
+        const headers = ['Date', 'ProductName', 'ProductType', 'Status', 'Price'];
+        const rows = currentFilteredData.map(item => [
+            formatDate(item.purchaseDate), `"${(item.productName || '').replace(/"/g, '""')}"`, item.productType || '', item.status || '', (item.totalPrice || 0).toFixed(2)
+        ]);
+        const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+        downloadFile(csvContent, `purchase-history-${Date.now()}.csv`, 'text/csv;charset=utf-8;');
+    };
+
+    const exportToJson = () => {
+        const jsonContent = JSON.stringify(currentFilteredData, null, 2);
+        downloadFile(jsonContent, `purchase-history-${Date.now()}.json`, 'application/json');
+    };
+
+    searchInput.addEventListener('input', debounce((e) => {
+        filters.searchTerm = e.target.value;
+        applyFilters();
+    }, 300));
+    categoryFilter.addEventListener('change', (e) => {
+        filters.category = e.target.value;
+        applyFilters();
+    });
+    statusFilter.addEventListener('change', (e) => {
+        filters.status = e.target.value;
+        applyFilters();
+    });
+    startDateFilter.addEventListener('change', (e) => {
+        filters.startDate = e.target.value ? new Date(e.target.value) : null;
+        applyFilters();
+    });
+    priceFilter.addEventListener('input', debounce((e) => {
+        filters.maxPrice = parseFloat(e.target.value);
+        priceValue.textContent = formatCurrency(filters.maxPrice);
+        applyFilters();
+    }, 100));
+    historyList.addEventListener('click', (e) => {
+        const itemElement = e.target.closest('.purchase-history__item');
+        if (itemElement?.dataset.item) {
+            try {
+                const item = JSON.parse(itemElement.dataset.item);
+                populateAndShowModal(item);
+            } catch (error) {
+                console.error("Failed to parse item data:", error);
+            }
+        }
+    });
+    exportOptions.addEventListener('click', (e) => {
+        const targetLi = e.target.closest('.purchase-history__export-option');
+        if (!targetLi) return;
+        const format = targetLi.dataset.format;
+        switch (format) {
+            case 'pdf': exportToPdf(); break;
+            case 'csv': exportToCsv(); break;
+            case 'json': exportToJson(); break;
+        }
+    });
+    downloadInvoiceBtn.addEventListener('click', () => generateInvoicePdf(currentItemInModal));
+    modalCloseBtn.addEventListener('click', hideModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
+
+    if (allPurchases && allPurchases.length > 0) {
+        populateFilters();
+        // renderHistory is not called here because the initial render is done by EJS
+    }
+});
+</script>
+<%-include("footer")%>

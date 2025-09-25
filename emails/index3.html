@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resumable S3 Multipart Upload</title>
+  <style>
+  /* --- CSS Variables --- */
+  :root {
+    --color-primary: #2563eb;
+    --color-primary-dark: #1e40af;
+    --color-text-main: #111827;
+    --color-text-secondary: #4b5563;
+    --color-text-light: #9ca3af;
+    --color-bg-light: #f9fafb;
+    --color-bg-card: #fff;
+    --color-progress-bar: #e5e7eb;
+    --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --border-radius-main: 12px;
+    --border-radius-small: 8px;
+  }
+
+  /* --- Base Styles --- */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: "Segoe UI", Roboto, sans-serif;
+    background: var(--color-bg-light);
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  /* --- Upload Module Component --- */
+  .upload-module {
+    background: var(--color-bg-card);
+    padding: 2rem;
+    border-radius: var(--border-radius-main);
+    box-shadow: var(--shadow-card);
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .upload-module__heading {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-main);
+  }
+
+  .upload-module__file-input {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .upload-module__btn-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .upload-module__button {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--border-radius-small);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .upload-module__button:hover:enabled {
+    background: var(--color-primary-dark);
+  }
+
+  .upload-module__button:disabled {
+    background: var(--color-text-light);
+    cursor: not-allowed;
+  }
+
+  .upload-module__status-message {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+  }
+
+  .upload-module__progress {
+    width: 100%;
+    height: 16px;
+    margin-top: 1rem;
+    border-radius: var(--border-radius-small);
+    overflow: hidden;
+    appearance: none;
+  }
+
+  .upload-module__progress::-webkit-progress-bar {
+    background-color: var(--color-progress-bar);
+    border-radius: var(--border-radius-small);
+  }
+
+  .upload-module__progress::-webkit-progress-value {
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius-small);
+  }
+
+  .upload-module__progress::-moz-progress-bar {
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius-small);
+  }
+
+  .upload-module__stats-container {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+  }
+
+  .upload-module__progress-text {
+    font-weight: 600;
+    color: var(--color-text-main);
+  }
+</style>
+
+<div class="upload-module" id="upload-module-container" >
+  <h1 class="upload-module__heading">Resumable Multipart Upload to S3</h1>
+  <input type="file" id="upload-module-file-input" class="upload-module__file-input" />
+  <div class="upload-module__btn-group">
+    <button id="upload-module-start-btn" class="upload-module__button">Start Upload</button>
+    <button id="upload-module-pause-btn" class="upload-module__button" disabled>Pause</button>
+    <button id="upload-module-resume-btn" class="upload-module__button" disabled>Resume</button>
+  </div>
+  
+  <p id="upload-module-status-message" class="upload-module__status-message">Awaiting file selection...</p>
+
+  <progress id="upload-module-progress-bar" value="0" max="100" class="upload-module__progress"></progress>
+
+  <p class="upload-module__stats-container">
+    <span id="upload-module-progress-text" class="upload-module__progress-text">0%</span> Complete |
+    Transfer Rate: <span id="upload-module-speed-display">0.00 B/s</span> |
+    Time Remaining: <span id="upload-module-time-remaining">--:--</span> |
+    Uploaded: <span id="upload-module-uploaded-bytes">--</span>
+  </p>
+</div>
+  <!-- Your script stays unchanged -->
+ <script>// --- Constants and State Variables ---
+const CHUNK_SIZE_MB = 5;
+const MAX_RETRIES = 3;
+
+let fileToUpload = null;
+let uploadId = null;
+let completedParts = [];
+let bytesUploadedFromCompletedParts = 0;
+let isUploading = false;
+let isPaused = false;
+let currentXhr = null;
+let uploadStartTime = null;
+let progressOnPause = 0; // To save progress at the moment of pause
+
+// --- DOM Elements (Centralized Selection) ---
+const getDomElements = () => {
+  return {
+    fileInput: document.getElementById('upload-module-file-input'),
+    startButton: document.getElementById('upload-module-start-btn'),
+    pauseButton: document.getElementById('upload-module-pause-btn'),
+    resumeButton: document.getElementById('upload-module-resume-btn'),
+    statusMessage: document.getElementById('upload-module-status-message'),
+    progressBar: document.getElementById('upload-module-progress-bar'),
+    progressBarText: document.getElementById('upload-module-progress-text'),
+    speedDisplay: document.getElementById('upload-module-speed-display'),
+    timeRemainingDisplay: document.getElementById('upload-module-time-remaining'),
+    uploadedBytes: document.getElementById('upload-module-uploaded-bytes')
+  };
+};
+
+// --- Helper Functions for Formatting ---
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 B/s';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['B/s', 'KB/s', 'MB/s', 'GB/s', 'TB/s', 'PB/s', 'EB/s', 'ZB/s', 'YB/s'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function formatTime(seconds) {
+  if (seconds < 0) return "--:--";
+  if (seconds < 60) return `${Math.floor(seconds)} sec`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes} min ${remainingSeconds} sec`;
+}
+
+// --- UI Update Functions ---
+function updateProgressBar(progress) {
+  const { progressBar, progressBarText } = getDomElements();
+  progressBar.value = progress;
+  progressBarText.textContent = `${progress.toFixed(2)}%`;
+}
+
+function updateSpeedDisplay(speed) {
+  const { speedDisplay } = getDomElements();
+  speedDisplay.textContent = formatBytes(speed);
+}
+
+function updateRemainingTime(timeInSeconds) {
+  const { timeRemainingDisplay } = getDomElements();
+  timeRemainingDisplay.textContent = formatTime(timeInSeconds);
+}
+
+function updateStatus(message) {
+  const { statusMessage } = getDomElements();
+  statusMessage.textContent = message;
+}
+
+function updateButtonState(start, pause, resume) {
+  const { startButton, pauseButton, resumeButton } = getDomElements();
+  startButton.disabled = start;
+  pauseButton.disabled = pause;
+  resumeButton.disabled = resume;
+}
+
+function resetUI() {
+  updateButtonState(false, true, true);
+  updateStatus("Upload complete or failed. Ready for a new upload.");
+}
+
+// --- Control Functions ---
+function pauseUpload() {
+  if (isUploading && !isPaused) {
+    isPaused = true;
+    updateButtonState(true, true, false);
+    updateStatus("Pausing upload...");
+    if (currentXhr) {
+      currentXhr.abort();
+    }
+  }
+}
+
+function resumeUpload() {
+  if (!isUploading && isPaused) {
+    isPaused = false;
+    updateButtonState(true, false, true);
+    updateProgressBar(progressOnPause);
+    console.log(`Resuming upload. Progress at start of resume: ${progressOnPause.toFixed(2)}%`);
+    updateStatus("Upload resuming...");
+    uploadFileChunks();
+  }
+}
+
+async function startUpload() {
+  const { fileInput } = getDomElements();
+  fileToUpload = fileInput.files[0];
+
+  if (!fileToUpload) {
+    updateStatus("Please select a file first.");
+    return;
+  }
+
+  isPaused = false;
+  completedParts = [];
+  bytesUploadedFromCompletedParts = 0;
+  updateProgressBar(0);
+  updateSpeedDisplay(0);
+  updateRemainingTime(-1);
+  uploadStartTime = Date.now();
+  updateButtonState(true, false, true);
+
+  try {
+    updateStatus("Step 1: Initiating multipart upload...");
+    const response = await fetch(`/start-multipart-upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileName: fileToUpload.name,
+        contentType: fileToUpload.type
+      })
+    });
+    if (!response.ok) throw new Error("Failed to initiate multipart upload.");
+    const data = await response.json();
+    uploadId = data.uploadId;
+    updateStatus("Upload initiated. Starting part uploads...");
+    await uploadFileChunks();
+  } catch (error) {
+    updateStatus(`Upload failed: ${error.message}`);
+    console.error("Error during upload initiation:", error);
+    resetUI();
+  }
+}
+
+// --- Core Upload Logic ---
+async function uploadFileChunks() {
+  isUploading = true;
+  const chunkSize = CHUNK_SIZE_MB * 1024 * 1024;
+  const totalChunks = Math.ceil(fileToUpload.size / chunkSize);
+
+  for (let partNumber = completedParts.length + 1; partNumber <= totalChunks; partNumber++) {
+    if (isPaused) {
+      isUploading = false;
+      return;
+    }
+
+    const start = (partNumber - 1) * chunkSize;
+    const end = Math.min(start + chunkSize, fileToUpload.size);
+    const chunk = fileToUpload.slice(start, end);
+
+    try {
+      await uploadPart(partNumber, chunk, uploadId);
+    } catch (error) {
+      updateStatus(`Part ${partNumber} failed. Retrying...`);
+      console.error(`Part ${partNumber} failed:`, error);
+      isUploading = false;
+      return;
+    }
+  }
+  await completeUpload();
+  isUploading = false;
+}
+
+async function uploadPart(partNumber, chunk, uploadId, retryCount = 0) {
+  const { uploadedBytes } = getDomElements();
+  updateStatus(`Uploading part ${partNumber} of ${Math.ceil(fileToUpload.size / (CHUNK_SIZE_MB * 1024 * 1024))}...`);
+
+  const response = await fetch(`/get-presigned-part-url?fileName=${encodeURIComponent(fileToUpload.name)}&uploadId=${uploadId}&partNumber=${partNumber}`);
+  if (!response.ok) throw new Error("Failed to get presigned URL for part.");
+  const { url } = await response.json();
+
+  const xhr = new XMLHttpRequest();
+  currentXhr = xhr;
+
+  return new Promise((resolve, reject) => {
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const currentPartProgressBytes = e.loaded;
+        const totalBytesUploaded = bytesUploadedFromCompletedParts + currentPartProgressBytes;
+
+        const totalProgress = (totalBytesUploaded / fileToUpload.size) * 100;
+        updateProgressBar(totalProgress);
+
+        progressOnPause = totalProgress;
+        uploadedBytes.textContent = `Uploaded: ${formatBytes(totalBytesUploaded)}`;
+
+        const elapsedTime = (Date.now() - uploadStartTime) / 1000;
+        const averageSpeedBps = totalBytesUploaded / elapsedTime;
+        const remainingBytes = fileToUpload.size - totalBytesUploaded;
+        const timeRemaining = averageSpeedBps > 0 ? remainingBytes / averageSpeedBps : 0;
+        updateSpeedDisplay(averageSpeedBps);
+        updateRemainingTime(timeRemaining);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        currentXhr = null;
+        bytesUploadedFromCompletedParts += chunk.size;
+        completedParts.push({ ETag: xhr.getResponseHeader("ETag"), PartNumber: partNumber });
+        updateStatus(`Part ${partNumber} complete. Total progress: ${((bytesUploadedFromCompletedParts / fileToUpload.size) * 100).toFixed(2)}%`);
+        resolve();
+      } else if (retryCount < MAX_RETRIES) {
+        console.warn(`Part ${partNumber} failed, retrying... Attempt ${retryCount + 1}`);
+        setTimeout(() => resolve(uploadPart(partNumber, chunk, uploadId, retryCount + 1)), 1000 * Math.pow(2, retryCount));
+      } else {
+        reject(new Error(`S3 part upload failed with status ${xhr.status}.`));
+      }
+    };
+
+    xhr.onerror = () => {
+      currentXhr = null;
+      if (retryCount < MAX_RETRIES) {
+        console.warn(`Part ${partNumber} failed due to network error, retrying... Attempt ${retryCount + 1}`);
+        setTimeout(() => resolve(uploadPart(partNumber, chunk, uploadId, retryCount + 1)), 1000 * Math.pow(2, retryCount));
+      } else {
+        reject(new Error("Network error during part upload."));
+      }
+    };
+
+    xhr.onabort = () => {
+      currentXhr = null;
+      updateStatus("Upload aborted by user. Ready to resume.");
+      resolve();
+    };
+
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("Content-Type", "application/octet-stream");
+    xhr.send(chunk);
+  });
+}
+
+async function completeUpload() {
+  try {
+    updateStatus("Step 3: Completing multipart upload...");
+    const response = await fetch("/complete-multipart-upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fileName: fileToUpload.name,
+        uploadId,
+        parts: completedParts,
+      }),
+    });
+    if (!response.ok) throw new Error("Failed to complete multipart upload.");
+    updateStatus("File uploaded and assembled successfully! Check your S3 bucket.");
+    updateRemainingTime(0);
+    updateProgressBar(100);
+    console.log("Multipart upload successful!");
+  } catch (error) {
+    updateStatus(`Completion failed: ${error.message}`);
+    console.error("Error during upload completion:", error);
+  } finally {
+    resetUI();
+  }
+}
+
+// --- Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+  const { startButton, pauseButton, resumeButton } = getDomElements();
+  if (startButton) startButton.addEventListener('click', startUpload);
+  if (pauseButton) pauseButton.addEventListener('click', pauseUpload);
+  if (resumeButton) resumeButton.addEventListener('click', resumeUpload);
+});</script>
+</body>
+</html>
+
+

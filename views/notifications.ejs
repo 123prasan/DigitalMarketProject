@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Setup for Vidyari Component --- */
+        .vidyari-notifications-body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            color: #F9FAFB;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+        }
+
+        .vidyari-notifications-container * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* height: 500px; */
+            /* overflow-y: auto; */
+        }
+
+        /* --- Main Container --- */
+        .vidyari-notifications-container {
+            height: 800px;
+            overflow-y: auto;
+            width: 100%;
+            /* max-width: 700px; */
+            background-color: #1F2937;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+            border: 1px solid #374151;
+            overflow: hidden;
+        }
+
+        /* --- Header --- */
+        .vidyari-notifications-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #374151;
+        }
+
+        .vidyari-notifications-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #F9FAFB;
+        }
+
+        /* --- Tab Navigation --- */
+        .vidyari-notification-tabs {
+            display: flex;
+            border-bottom: 1px solid #374151;
+            padding: 0 1.5rem;
+            overflow-x: auto;
+            /* white-space: nowrap; */
+        }
+
+        .vidyari-notification-tabs::-webkit-scrollbar {
+            /* display: none; */
+            width: 0;
+            background: transparent;
+
+        }
+
+        .vidyari-notification-tab {
+            background: none;
+            border: none;
+            color: #9CA3AF;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            padding: 0.75rem 0.25rem;
+            margin-right: 1.5rem;
+            cursor: pointer;
+            position: relative;
+            font-size: 0.95rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .vidyari-notification-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #6366F1;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .vidyari-notification-tab.active {
+            color: #F9FAFB;
+        }
+
+        .vidyari-notification-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        .vidyari-tab-count {
+            background-color: #374151;
+            color: #9CA3AF;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.1rem 0.5rem;
+            border-radius: 99px;
+        }
+
+        .vidyari-notification-tab.active .vidyari-tab-count {
+            background-color: #6366F1;
+            color: white;
+        }
+
+        /* --- Notification List --- */
+        .vidyari-notification-list {
+            list-style: none;
+            display: none;
+        }
+
+        .vidyari-notification-list.active {
+            display: block;
+        }
+
+        .vidyari-notification-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #374151;
+            transition: background-color 0.2s ease-in-out;
+            position: relative;
+        }
+
+        .vidyari-notification-item-link {
+            text-decoration: none;
+            color: inherit;
+            display: contents;
+        }
+
+        .vidyari-notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .vidyari-notification-item:hover {
+            background-color: #374151;
+        }
+
+        .vidyari-notification-item.unread {
+            background-color: #2d3748;
+        }
+
+        /* --- Notification Icons --- */
+        .vidyari-notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .vidyari-icon-system {
+            background-color: #1E3A8A;
+            color: #93C5FD;
+        }
+
+        .vidyari-icon-purchase {
+            background-color: #064E3B;
+            color: #A7F3D0;
+        }
+
+        .vidyari-icon-report {
+            background-color: #7F1D1D;
+            color: #FCA5A5;
+        }
+
+        .vidyari-icon-comment {
+            background-color: #78350F;
+            color: #FCD34D;
+        }
+
+        .vidyari-icon-follow {
+            background-color: #3730A3;
+            color: #C7D2FE;
+        }
+
+        /* --- Notification Content --- */
+        .vidyari-notification-content {
+            flex-grow: 1;
+        }
+
+        .vidyari-notification-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #9CA3AF;
+        }
+
+        .vidyari-notification-text strong {
+            font-weight: 600;
+            color: #F9FAFB;
+        }
+
+        .vidyari-notification-timestamp {
+            font-size: 0.8rem;
+            color: #9CA3AF;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .vidyari-unread-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #6366F1;
+            border-radius: 50%;
+            position: absolute;
+            top: 1.25rem;
+            right: 1.5rem;
+        }
+
+        /* --- Empty State --- */
+        .vidyari-empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            color: #9CA3AF;
+        }
+
+        .vidyari-empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .vidyari-empty-state p {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<%-include("header")%>
+
+    <body class="vidyari-notifications-body">
+
+
+        <div class="vidyari-notifications-container">
+            <header class="vidyari-notifications-header">
+                <h1 class="vidyari-notifications-title">Notifications</h1>
+            </header>
+
+            <div class="vidyari-notification-tabs">
+                <button class="vidyari-notification-tab active" data-tab="all">
+                    All <span class="vidyari-tab-count" id="vidyari-count-all">0</span>
+                </button>
+                <button class="vidyari-notification-tab" data-tab="comment">
+                    Comments <span class="vidyari-tab-count" id="vidyari-count-comment">0</span>
+                </button>
+                <button class="vidyari-notification-tab" data-tab="purchase">
+                    Purchases <span class="vidyari-tab-count" id="vidyari-count-purchase">0</span>
+                </button>
+                <button class="vidyari-notification-tab" data-tab="system">
+                    System <span class="vidyari-tab-count" id="vidyari-count-system">0</span>
+                </button>
+            </div>
+
+            <div class="vidyari-notification-lists-wrapper">
+
+                <%# Helper function to render a single notification item %>
+                    <% const renderNotification=(notification)=> { %>
+                        <li class="vidyari-notification-item <%= !notification.isRead ? 'unread' : '' %>"
+                            data-type="<%= notification.type %>" data-id="<%= notification._id %>">
+                            <a href="<%= notification.link || '#' %>" class="vidyari-notification-item-link">
+                                <div class="vidyari-notification-icon vidyari-icon-<%= notification.type %>">
+                                    <% if (notification.type==='system' ) { %> <i class="fas fa-bell"></i>
+                                        <% } %>
+                                            <% if (notification.type==='purchase' ) { %> <i
+                                                    class="fas fa-shopping-cart"></i>
+                                                <% } %>
+                                                    <% if (notification.type==='report' ) { %> <i
+                                                            class="fas fa-flag"></i>
+                                                        <% } %>
+                                                            <% if (notification.type==='comment' ) { %> <i
+                                                                    class="fas fa-comment"></i>
+                                                                <% } %>
+                                                                    <% if (notification.type==='follow' ) { %> <i
+                                                                            class="fas fa-user-plus"></i>
+                                                                        <% } %>
+                                </div>
+                                <div class="vidyari-notification-content">
+                                    <p class="vidyari-notification-text"><%- notification.message %></p>
+                                    <span class="vidyari-notification-timestamp"
+                                        data-timestamp="<%= notification.createdAt %>"></span>
+                                </div>
+                                <% if (!notification.isRead) { %>
+                                    <div class="vidyari-unread-dot"></div>
+                                    <% } %>
+                            </a>
+                        </li>
+                        <% }; %>
+
+                            <%# Render All Notifications List %>
+                                <ul class="vidyari-notification-list active" id="vidyari-tab-content-all">
+                                    <% if (notifications && notifications.length> 0) { %>
+                                        <% notifications.forEach(renderNotification) %>
+                                            <% } else { %>
+                                                <li class="vidyari-empty-state">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <p>All caught up!</p>
+                                                </li>
+                                                <% } %>
+                                </ul>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const tabs = document.querySelectorAll('.vidyari-notification-tab');
+                const allNotifications = document.querySelectorAll('.vidyari-notification-item');
+
+                // --- Calculate and display tab counts ---
+                const counts = { all: allNotifications.length, comment: 0, purchase: 0, system: 0, report: 0, follow: 0 };
+                allNotifications.forEach(item => {
+                    const type = item.getAttribute('data-type');
+                    if (counts.hasOwnProperty(type)) {
+                        counts[type]++;
+                    }
+                });
+
+                document.getElementById('vidyari-count-all').textContent = counts.all;
+                document.getElementById('vidyari-count-comment').textContent = counts.comment;
+                document.getElementById('vidyari-count-purchase').textContent = counts.purchase;
+                document.getElementById('vidyari-count-system').textContent = counts.system;
+
+                // --- Tab switching logic ---
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+
+                        const tabType = tab.getAttribute('data-tab');
+
+                        let hasVisibleItems = false;
+                        allNotifications.forEach(item => {
+                            const itemIsVisible = (tabType === 'all' || item.getAttribute('data-type') === tabType);
+                            item.style.display = itemIsVisible ? 'flex' : 'none';
+                            if (itemIsVisible) {
+                                hasVisibleItems = true;
+                            }
+                        });
+                    });
+                });
+
+                // --- "Time Ago" logic ---
+                const timeAgo = (date) => {
+                    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+                    if (seconds < 60) return "just now";
+                    const intervals = { year: 31536000, month: 2592000, day: 86400, hour: 3600, minute: 60 };
+                    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                        const interval = Math.floor(seconds / secondsInUnit);
+                        if (interval >= 1) return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
+                    }
+                    return "just now";
+                };
+                document.querySelectorAll('.vidyari-notification-timestamp').forEach(el => {
+                    const timestamp = el.getAttribute('data-timestamp');
+
+
+                    const notificationList = document.getElementById('vidyari-tab-content-all');
+
+                    if (notificationList) {
+                        notificationList.addEventListener('click', (event) => {
+                            // Find the notification item that was clicked on
+                            const notificationItem = event.target.closest('.vidyari-notification-item');
+
+                            // Proceed only if a valid, unread notification item was clicked
+                            if (notificationItem && notificationItem.classList.contains('unread')) {
+                                const notificationId = notificationItem.dataset.id;
+
+                                // 1. Instantly update the UI for a responsive feel
+                                notificationItem.classList.remove('unread');
+                                const unreadDot = notificationItem.querySelector('.vidyari-unread-dot');
+                                if (unreadDot) {
+                                    unreadDot.remove();
+                                }
+
+                                // 2. Send the update request to the backend in the background
+                                fetch(`/notifications/${notificationId}/mark-as-read`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    // No body is needed, the ID is in the URL
+                                })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            // If the server fails, revert the UI change (optional)
+                                            console.error('Failed to mark notification as read on the server.');
+                                            notificationItem.classList.add('unread'); // Re-add the class
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Network error:', error);
+                                        notificationItem.classList.add('unread'); // Re-vert on network error
+                                    });
+                            }
+                        });
+                    } if (timestamp) el.textContent = timeAgo(timestamp);
+                });
+            });
+        </script>
+
+    </body>
+    <%-include("footer")%>
+
+</html>

@@ -1,728 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat UI</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-    :root {
+:root {
+    --yt-text: #f1f1f1;
+    --yt-secondary: #aaa;
+    --yt-link: #3ea6ff;
+    --yt-mod: #59e0c5;
+    --yt-verified: #3ea6ff;
+    --yt-pipeline: #ffffff;
+    --gradient-1: #3ea6ff;
+    --gradient-2: #a134d5;
+    --yt-chat-bg: #121212;
+}
 
-        --yt-text: #f1f1f1;
-        --yt-secondary: #aaa;
-        --yt-link: #3ea6ff;
-        --yt-mod: #59e0c5;
-        --yt-verified: #3ea6ff;
-        --yt-pipeline: #ffffff;
-        --gradient-1: #3ea6ff;
-        --gradient-2: #a134d5;
-    }
+*, *::before, *::after { box-sizing: border-box; }
 
-    *,
-    *::before,
-    *::after {
-        box-sizing: border-box;
-    }
+.chat-container {
+    height: 70vh;
+    display: flex;
+    flex-direction: column-reverse;
+    background-color: var(--yt-chat-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    background-image: linear-gradient(var(--yt-chat-bg), var(--yt-chat-bg)), linear-gradient(145deg, var(--gradient-1), var(--gradient-2));
+    position: relative;
+}
 
-    .chat-container {
-        /* width: 400px; */
-        height: 70vh;
-        display: flex;
-        flex-direction: column-reverse;
-        /* Changed from column to column-reverse */
-        background-color: var(--yt-chat-bg);
-        border-radius: 16px;
-        /* box-shadow: 0 12px 35px rgba(0,0,0,0.6); */
-        overflow: hidden;
-        border: 2px solid transparent;
-        background-clip: padding-box;
-        background-image: linear-gradient(var(--yt-chat-bg), var(--yt-chat-bg)), linear-gradient(145deg, var(--gradient-1), var(--gradient-2));
-        position: relative;
-    }
+.chat-header {
+    padding: 14px 20px;
+    font-weight: 700;
+    font-size: 2rem;
+    border-bottom: 1px solid #303030;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+}
 
-    .chat-header {
-        padding: 14px 20px;
-        font-weight: 700;
-        font-size: 2rem;
-        border-bottom: 1px solid #303030;
-        /* background: rgba(0, 0, 0, 0.2); */
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-        flex-shrink: 0;
-    }
+.message-log {
+    padding: 12px 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
 
-    .message-log {
-        padding: 12px 20px;
-        overflow-y: auto;
-        flex-grow: 1;
-        display: flex;
-        scrollbar-width: none;
-        flex-direction: column;
-        /* Changed to column-reverse for message stacking */
-    }
+.chat-message-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 4px;
+    padding: 6px 4px;
+    border-radius: 6px;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
 
-    .chat-message-item {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 4px;
-        padding: 6px 4px;
-        border-radius: 6px;
-        position: relative;
-        transition: background-color 0.2s ease;
-    }
+.chat-message-item:hover { background-color: rgba(255,255,255,0.05); }
 
-    .chat-message-item:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-    }
+.message-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    color: #fff;
+    font-weight: 500;
+}
 
-    .message-reply-button {
-        position: absolute;
-        right: 4px;
-        top: 4px;
-        font-size: 18px;
-        color: var(--yt-secondary);
-        cursor: pointer;
-        /* opacity: 0; */
-        transition: opacity 0.2s ease, transform 0.2s ease;
-        padding: 4px;
-        transform: scale(0.9);
-    }
+.message-content { flex-grow: 1; }
 
-    .chat-message-item:hover .message-reply-button {
-        opacity: 1;
-        transform: scale(1);
-    }
+.message-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+}
 
-    .message-reply-button:hover {
-        color: var(--yt-text);
-    }
+.message-username { font-weight: 500; font-size: 14px; margin-right: 6px; color: white; }
+.message-badge { font-size: 12px; margin-left: 2px; }
+.mod-badge { color: var(--yt-mod); }
+.verified-badge { color: var(--yt-verified); }
+.message-text { font-size: 14px; color: var(--yt-text); word-wrap: break-word; margin-bottom: 4px; }
 
-    .message-avatar {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: #444;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        margin-right: 12px;
-        flex-shrink: 0;
-        color: #fff;
-        font-weight: 500;
-    }
+.message-actions { display: flex; align-items: center; gap: 16px; margin-top: 6px; }
+.show-replies-btn { color: var(--yt-link); font-weight: 500; font-size: 13px; cursor: pointer; }
+.show-replies-btn:hover { color: white; }
+.reaction-btn { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--yt-secondary); cursor: pointer; transition: color 0.2s ease, transform 0.1s ease; }
+.reaction-btn:hover { color: var(--yt-text); }
+.reaction-btn:active { transform: scale(0.9); }
+.reaction-btn .icon { font-size: 16px; }
+.reaction-btn.active { color: var(--yt-link); font-weight: 500; }
 
-    .message-content {
-        flex-grow: 1;
-    }
+.sub-chat-container { margin-top: 10px; padding-left: 14px; }
+.inline-reply-form { display: flex; margin-top: 8px; animation: fadeIn 0.3s ease; }
+.inline-reply-input { flex-grow: 1; background: #222; border: 1px solid #444; color: var(--yt-text); padding: 8px 12px; border-radius: 18px; font-size: 13px; outline: none; margin-right: 8px; transition: border-color 0.2s ease; }
+.inline-reply-input:focus { border-color: var(--yt-link); }
+.inline-reply-send { background: var(--yt-link); color: #000; border: none; font-size: 13px; font-weight: 500; border-radius: 18px; cursor: pointer; padding: 8px 14px; transition: background-color 0.2s ease; }
+.inline-reply-send:hover { background-color: #62baff; }
 
-    .message-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 2px;
-    }
+.sub-chat-container .chat-message-item { position: relative; padding-left: 30px; }
+.sub-chat-container .chat-message-item::before { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background-color: var(--yt-pipeline); }
+.sub-chat-container .chat-message-item::after { content: ''; position: absolute; top: 14px; left: 1px; width: 18px; height: 1px; background-color: var(--yt-pipeline); }
+.sub-chat-container .chat-message-item:first-child::before { top: -14px; height: calc(100% + 14px); }
+.sub-chat-container .chat-message-item:last-child::before { height: 14px; }
 
-    .message-username {
-        font-weight: 500;
-        font-size: 14px;
-        margin-right: 6px;
-        color: white;
-    }
+.input-area { display: flex; padding: 12px; background: rgba(0,0,0,0.15); flex-shrink: 0; border-top: 1px solid #303030; }
+.input-area input { flex-grow: 1; border: 1px solid #383838; background: #121212; color: var(--yt-text); padding: 10px 16px; border-radius: 20px; font-size: 14px; outline: none; transition: all 0.3s ease; }
+.input-area input:focus { border-color: var(--yt-link); box-shadow: 0 0 8px rgba(62,166,255,0.5); background: #1f1f1f; }
+.input-area button { background: var(--yt-link); color: #000; border: none; padding: 10px 18px; margin-left: 8px; font-size: 14px; font-weight: 700; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+.input-area button:hover { background: #5aaeff; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
 
-    .message-badge {
-        font-size: 12px;
-        margin-left: 2px;
-    }
+.hidden { display: none !important; }
 
-    .mod-badge {
-        color: var(--yt-mod);
-    }
-
-    .verified-badge {
-        color: var(--yt-verified);
-    }
-
-    .message-text {
-        font-size: 14px;
-        color: var(--yt-text);
-        word-wrap: break-word;
-        margin-bottom: 4px;
-    }
-
-    .message-actions {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        margin-top: 6px;
-    }
-
-    .show-replies-btn {
-        color: var(--yt-link);
-        font-weight: 500;
-        font-size: 13px;
-        cursor: pointer;
-        transition: color 0.2s ease;
-    }
-
-    .show-replies-btn:hover {
-        color: white;
-    }
-
-    .reaction-btn {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 13px;
-        color: var(--yt-secondary);
-        cursor: pointer;
-        user-select: none;
-        transition: color 0.2s ease, transform 0.1s ease;
-    }
-
-    .reaction-btn:hover {
-        color: var(--yt-text);
-    }
-
-    .reaction-btn:active {
-        transform: scale(0.9);
-    }
-
-    .reaction-btn .icon {
-        font-size: 16px;
-    }
-
-    .reaction-btn.active {
-        color: var(--yt-link);
-        font-weight: 500;
-    }
-
-    .sub-chat-container {
-        margin-top: 10px;
-        padding-left: 14px;
-    }
-
-    .inline-reply-form {
-        display: flex;
-        margin-top: 8px;
-        animation: fadeIn 0.3s ease;
-    }
-
-    .inline-reply-input {
-        flex-grow: 1;
-        background: #222;
-        border: 1px solid #444;
-        color: var(--yt-text);
-        padding: 8px 12px;
-        border-radius: 18px;
-        font-size: 13px;
-        outline: none;
-        margin-right: 8px;
-        transition: border-color 0.2s ease;
-    }
-
-    .inline-reply-input:focus {
-        border-color: var(--yt-link);
-    }
-
-    .inline-reply-send {
-        background: var(--yt-link);
-        color: #000;
-        border: none;
-        font-size: 13px;
-        font-weight: 500;
-        border-radius: 18px;
-        cursor: pointer;
-        padding: 8px 14px;
-        transition: background-color 0.2s ease;
-    }
-
-    .inline-reply-send:hover {
-        background-color: #62baff;
-    }
-
-    .sub-chat-container .chat-message-item {
-        position: relative;
-        padding-left: 30px;
-    }
-
-    .sub-chat-container .chat-message-item::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 1px;
-        height: 100%;
-        background-color: var(--yt-pipeline);
-    }
-
-    .sub-chat-container .chat-message-item::after {
-        content: '';
-        position: absolute;
-        top: 14px;
-        left: 1px;
-        width: 18px;
-        height: 1px;
-        background-color: var(--yt-pipeline);
-    }
-
-    .sub-chat-container .chat-message-item:first-child::before {
-        top: -14px;
-        height: calc(100% + 14px);
-    }
-
-    .sub-chat-container .chat-message-item:last-child::before {
-        height: 14px;
-    }
-
-    .input-area {
-        display: flex;
-        padding: 12px;
-        background: rgba(0, 0, 0, 0.15);
-        flex-shrink: 0;
-        border-top: 1px solid #303030;
-    }
-
-    .user-form-overlay {
-        position: absolute;
-        top: 0;
-        /* Changed from bottom to top */
-        left: 0;
-        right: 0;
-        padding: 12px;
-        /* background: rgba(56, 55, 55, 0.5); */
-        /* backdrop-filter: blur(px); */
-        display: flex;
-        align-items: center;
-        border-top: none;
-        /* Removed redundant border */
-        border-bottom: 1px solid #303030;
-        /* Added border to bottom */
-        animation: fadeIn 0.3s ease;
-    }
-
-    .user-form-overlay input {
-        flex-grow: 1;
-        border: 1px solid #383838;
-        background: #121212;
-        color: var(--yt-text);
-        padding: 10px 16px;
-        border-radius: 20px;
-        font-size: 14px;
-        outline: none;
-        transition: all 0.3s ease;
-    }
-
-    .user-form-overlay input:focus {
-        border-color: var(--yt-link);
-        box-shadow: 0 0 8px rgba(62, 166, 255, 0.5);
-        background: #1f1f1f;
-    }
-
-    .user-form-overlay button {
-        background: var(--yt-link);
-        color: #000;
-        border: none;
-        padding: 10px 18px;
-        margin-left: 8px;
-        font-size: 14px;
-        font-weight: 700;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .user-form-overlay button:hover {
-        background: #5aaeff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .input-area input {
-        flex-grow: 1;
-        border: 1px solid #383838;
-        background: #121212;
-        color: var(--yt-text);
-        padding: 10px 16px;
-        border-radius: 20px;
-        font-size: 14px;
-        outline: none;
-        transition: all 0.3s ease;
-    }
-
-    .input-area input:focus {
-        border-color: var(--yt-link);
-        box-shadow: 0 0 8px rgba(62, 166, 255, 0.5);
-        background: #1f1f1f;
-    }
-
-    .input-area button {
-        background: var(--yt-link);
-        color: #000;
-        border: none;
-        padding: 10px 18px;
-        margin-left: 8px;
-        font-size: 14px;
-        font-weight: 700;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    .input-area button:hover {
-        background: #5aaeff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .hidden {
-        display: none !important;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 </style>
-<div>
-    <div class="chat-header">Discussions</div>
-</div>
-<div class="chat-container">
+</head>
+<body>
 
+<div class="chat-header">Discussions</div>
+<div class="chat-container">
     <div class="message-log" id="message-log"></div>
     <div class="input-area" id="chat-input-area">
-        <input type="text" id="message-input" placeholder="Join to chat..." disabled />
-        <button id="send-button" disabled>Send</button>
-    </div>
-
-    <div class="user-form-overlay" id="join-form">
-        <input type="text" id="username-input" placeholder="Enter Your Email to Start Chatting" />
-        <button id="join-chat-button">Join</button>
+        <input type="text" id="message-input" placeholder="Say something..." />
+        <button id="send-button">Send</button>
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
+    const CHAT_ROOM_ID = "<%=file._id%>";
+    const msgInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-button');
+    const messageLog = document.getElementById('message-log');
 
-        // --- CONFIGURATION ---
-        const API_BASE_URL = '';
-        const CHAT_ROOM_ID = "<%=file._id%>";
+    const isLoggedIn = <%= isLoggedin %>;
+    const username = "<%= username %>";
 
-        // --- DOM ELEMENTS ---
-        const joinForm = document.getElementById('join-form');
-        const usernameInput = document.getElementById('username-input');
-        const joinBtn = document.getElementById('join-chat-button');
-        const msgInput = document.getElementById('message-input');
-        const sendBtn = document.getElementById('send-button');
-        sendBtn.style.display = 'none';
-        const messageLog = document.getElementById('message-log');
+    let currentUser = null;
+    let chatMessages = [];
 
-        // --- STATE MANAGEMENT ---
-        let currentUser = null;
-        let chatMessages = [];
-
-        // --- HELPERS ---
-        // Adjusted scroll function for column-reverse layout
-        const scrollToBottom = () => {
-            messageLog.scrollTop = messageLog.scrollHeight;
-        };
-
-
-        const getInitials = (n) => n ? (n.split(' ').length > 1 ? n.split(' ')[0][0].toUpperCase() + n.split(' ')[1][0].toUpperCase() : n[0].toUpperCase()) : '?';
-
-        // --- RENDER FUNCTIONS ---
-        function renderAllMessages() {
-            messageLog.innerHTML = '';
-
-            // Sort messages: most likes first
-            const sortedMessages = chatMessages.slice().sort((a, b) =>
-                b.reactions.likes.length - a.reactions.likes.length
-            );
-
-            sortedMessages.forEach(msg => {
-                messageLog.appendChild(createMessageElement(msg));
-            });
-
-            // Start at top (so most liked message is visible first)
-            messageLog.scrollTop = 0;
-        }
-
-        function timeAgo(dateValue) {
-            const now = new Date();
-            const past = new Date(dateValue);
-            const diffMs = now - past; // difference in milliseconds
-
-            const seconds = Math.floor(diffMs / 1000);
-            const minutes = Math.floor(seconds / 60);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
-            const weeks = Math.floor(days / 7);
-            const months = Math.floor(days / 30);
-            const years = Math.floor(days / 365);
-
-            if (seconds < 60) return `${seconds} seconds ago`;
-            if (minutes < 60) return `${minutes} minutes ago`;
-            if (hours < 24) return `${hours} hours ago`;
-            if (days < 7) return `${days} days ago`;
-            if (weeks < 5) return `${weeks} weeks ago`;
-            if (months < 12) return `${months} months ago`;
-            return `${years} years ago`;
-        }
-
-        // Example
-
-
-        function createMessageElement(msgObject) {
-            const item = document.createElement('div');
-            item.className = 'chat-message-item';
-            item.dataset.messageId = msgObject._id;
-
-            const avatar = document.createElement('div');
-            avatar.className = 'message-avatar';
-            avatar.textContent = getInitials(msgObject.author.username);
-            let hash = 0;
-            for (let i = 0; i < msgObject.author.username.length; i++) { hash = msgObject.author.username.charCodeAt(i) + ((hash << 5) - hash); }
-            avatar.style.backgroundColor = `hsl(${hash % 360}, 50%, 40%)`;
-
-            const content = document.createElement('div');
-            content.className = 'message-content';
-            const time = timeAgo(msgObject.createdAt);
-
-            let headerHTML = `<span class="message-username"><b style="opacity:3">${msgObject.author.username}</b> &nbsp <em style="opacity:0.5;font-size:12px"> ${time}</em></span>`;
-            if (msgObject.author.badge) {
-                const badgeClass = `${msgObject.author.badge}-badge`;
-                const badgeIcon = msgObject.author.badge === 'mod' ? '🔧' : '✔';
-                headerHTML += `<span class="message-badge ${badgeClass}">${badgeIcon}</span>`;
-            }
-            content.innerHTML = `<div class="message-header">${headerHTML}</div><div class="message-text">${msgObject.text}</div>`;
-
-            const actions = document.createElement('div');
-            actions.className = 'message-actions';
-
-            if (msgObject.replies && msgObject.replies.length > 0) {
-                const toggleBtn = document.createElement('span');
-                toggleBtn.className = 'show-replies-btn';
-                toggleBtn.textContent = `View ${msgObject.replies.length} ${msgObject.replies.length > 1 ? 'replies' : 'reply'}`;
-                toggleBtn.onclick = () => toggleReplies(msgObject, repliesContainer, toggleBtn);
-                actions.appendChild(toggleBtn);
-            }
-
-            const likeBtn = document.createElement('span');
-            likeBtn.className = 'reaction-btn like-btn';
-            if (currentUser && msgObject.reactions.likes.includes(currentUser.userId)) likeBtn.classList.add('active');
-            likeBtn.innerHTML = `<span class="icon">👍</span><span class="count">${msgObject.reactions.likes.length}</span>`;
-
-            const dislikeBtn = document.createElement('span');
-            dislikeBtn.className = 'reaction-btn dislike-btn';
-            if (currentUser && msgObject.reactions.dislikes.includes(currentUser.userId)) dislikeBtn.classList.add('active');
-            dislikeBtn.innerHTML = `<span class="icon">👎</span><span class="count">${msgObject.reactions.dislikes.length}</span>`;
-
-            likeBtn.onclick = () => handleReaction(msgObject._id, null, 'likes');
-            dislikeBtn.onclick = () => handleReaction(msgObject._id, null, 'dislikes');
-
-            actions.appendChild(likeBtn);
-            actions.appendChild(dislikeBtn);
-            content.appendChild(actions);
-
-            const repliesContainer = document.createElement('div');
-            repliesContainer.className = 'sub-chat-container hidden';
-            content.appendChild(repliesContainer);
-
-            const replyButton = document.createElement('span');
-            replyButton.className = 'message-reply-button';
-            replyButton.innerHTML = `<i style="color:blue;" class="fa-solid fa-reply fa-flip-vertical"></i>`;
-            replyButton.onclick = () => initiateInlineReply(msgObject._id, content);
-
-            item.append(avatar, content, replyButton);
-            return item;
-        }
-
-        function toggleReplies(msgObject, container, button) {
-            const isHidden = container.classList.contains('hidden');
-            container.innerHTML = '';
-            if (isHidden) {
-                msgObject.replies.forEach(reply => {
-                    container.appendChild(createReplyElement(reply, msgObject._id));
-                });
-                container.classList.remove('hidden');
-                button.textContent = 'Hide replies';
-                // scrollToBottom();
-            } else {
-                container.classList.add('hidden');
-                button.textContent = `View ${msgObject.replies.length} ${msgObject.replies.length > 1 ? 'replies' : 'reply'}`;
-            }
-        }
-
-        function createReplyElement(replyObject, parentId) {
-            const item = createMessageElement(replyObject);
-
-            item.querySelector('.like-btn').onclick = () => handleReaction(parentId, replyObject._id, 'likes');
-            item.querySelector('.dislike-btn').onclick = () => handleReaction(parentId, replyObject._id, 'dislikes');
-
-            item.querySelector('.message-reply-button')?.remove();
-            return item;
-        }
-
-        function initiateInlineReply(parentId, contentElement) {
-            if (!currentUser) {
-                alert("Please join the chat to reply.");
-                return;
-            }
-            document.querySelector('.inline-reply-form')?.remove();
-            const form = document.createElement('div');
-            form.className = 'inline-reply-form';
-            form.innerHTML = `<input type="text" class="inline-reply-input" placeholder="Add a reply..." autofocus/><button class="inline-reply-send">Reply</button>`;
-            const sendAction = () => {
-                const input = form.querySelector('input');
-                if (input.value.trim()) { submitReply(parentId, input.value.trim()); form.remove(); }
-            };
-            form.querySelector('button').onclick = sendAction;
-            form.querySelector('input').onkeydown = (e) => { if (e.key === 'Enter') sendAction(); };
-            contentElement.appendChild(form);
-        }
-
-        async function handleReaction(messageId, replyId, reactionType) {
-            if (!currentUser) {
-                alert("Please join the chat to react.");
-                return;
-            }
-            try {
-                const response = await fetch(`/api/chat/react`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messageId, replyId, userId: currentUser.userId, reactionType })
-                });
-                if (!response.ok) throw new Error('Reaction failed');
-                const updatedParentMessage = await response.json();
-
-                const messageIndex = chatMessages.findIndex(m => m._id === messageId);
-                if (messageIndex > -1) {
-                    chatMessages[messageIndex] = updatedParentMessage;
-                    renderAllMessages();
-                }
-            } catch (error) {
-                console.error("Error posting reaction:", error);
-            }
-        }
-
-        async function submitMessage() {
-            if (!msgInput.value.trim()) return;
-            const payload = { author: currentUser, text: msgInput.value.trim() };
-            try {
-                const response = await fetch(`/api/chat/${CHAT_ROOM_ID}/messages`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error('Failed to send message');
-                const newMessage = await response.json();
-
-                chatMessages.push(newMessage);
-                messageLog.appendChild(createMessageElement(newMessage));
-                msgInput.value = '';
-                scrollToBottom();
-            } catch (error) {
-                console.error("Error posting message:", error);
-            }
-        }
-
-        async function submitReply(parentId, text) {
-            const payload = { author: currentUser, text };
-            try {
-                const response = await fetch(`/api/chat/messages/${parentId}/replies`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error('Failed to send reply');
-                const updatedParentMessage = await response.json();
-
-                const messageIndex = chatMessages.findIndex(m => m._id === parentId);
-                if (messageIndex > -1) {
-                    const wasVisible = document.querySelector(`[data-message-id='${parentId}'] .sub-chat-container:not(.hidden)`);
-                    chatMessages[messageIndex] = updatedParentMessage;
-                    renderAllMessages();
-                    if (wasVisible) {
-                        const newParentElement = document.querySelector(`[data-message-id='${parentId}']`);
-                        const toggleBtn = newParentElement.querySelector('.show-replies-btn');
-                        const container = newParentElement.querySelector('.sub-chat-container');
-                        // toggleReplies(updatedParentMessage, container, toggleBtn);
-                    }
-                }
-                // scrollToBottom();
-            } catch (error) {
-                console.error("Error posting reply:", error);
-            }
-        }
-
-        async function startChat() {
-            try {
-                const response = await fetch(`/api/chat/${CHAT_ROOM_ID}/messages`);
-                if (!response.ok) throw new Error('Could not fetch chat history');
-                chatMessages = await response.json();
-                if (chatMessages.length == 0) {
-                    document.querySelector(".message-log").innerHTML = "<div class='message-content'>No Discussions Yet<div class='message-text'>"
-                    return;
-                }
-                document.querySelector(".chat-header").innerHTML = `${chatMessages.length} &nbsp Discussions`
-                renderAllMessages();
-            } catch (error) {
-                console.error("Error starting chat:", error);
-                messageLog.innerHTML = `<div class="chat-message-item"><div class="message-content"><div class="message-text">Could not load chat. Is the backend server running?</div></div></div>`;
-            }
-        }
-
-        function handleJoin() {
-            let username;
-            if (localStorage.getItem("username")) {
-                username = localStorage.getItem("username");
-            } else {
-
-                function isValidEmail(email) {
-                    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    return regex.test(email);
-                }
-                if (!isValidEmail(usernameInput.value.trim())) {
-                    alert("Please enter a valid email address.");
-                    return;
-                }
-
-                username = usernameInput.value.slice(0, usernameInput.value.indexOf("@"));
-                localStorage.setItem("username", username);
-            }
-
-
-
-            if (!username) return;
-
-            let badge = null;
-            if (username.toLowerCase().includes('mod')) badge = 'mod';
-            else if (username.toLowerCase().includes('host')) badge = 'verified';
-
-            currentUser = {
-                userId: 'user_' + Date.now() + Math.random(),
-                username: username,
-                badge: badge
-            };
-
-            joinForm.classList.add('hidden');
-            msgInput.disabled = false;
-            sendBtn.disabled = false;
-            sendBtn.style.display = 'block';
-            msgInput.placeholder = "Say something...";
-            msgInput.focus();
-        }
-
-        // --- INITIALIZATION ---
-        startChat();
-    if(localStorage.getItem("username")){
-               handleJoin()
-
+    if(isLoggedIn && username){
+        currentUser = { userId:'user_'+Date.now()+Math.random(), username:username, badge:null };
+        msgInput.disabled = false; sendBtn.disabled = false; msgInput.placeholder = "Say something...";
     }
-        joinBtn.onclick = handleJoin;
-        usernameInput.onkeydown = (e) => { if (e.key === 'Enter') handleJoin(); };
-        sendBtn.onclick = submitMessage;
-        msgInput.onkeydown = (e) => { if (e.key === 'Enter' && !msgInput.disabled) submitMessage(); };
 
-    });
+    const scrollToBottom = () => { messageLog.scrollTop = messageLog.scrollHeight; }
+    const getInitials = (n) => n ? (n.split(' ').length>1 ? n.split(' ')[0][0].toUpperCase()+n.split(' ')[1][0].toUpperCase() : n[0].toUpperCase()) : '?';
+    const timeAgo = (dateValue) => {
+        const diffMs = new Date() - new Date(dateValue);
+        const s=Math.floor(diffMs/1000), m=Math.floor(s/60), h=Math.floor(m/60), d=Math.floor(h/24), w=Math.floor(d/7), mo=Math.floor(d/30), y=Math.floor(d/365);
+        if(s<60) return `${s} seconds ago`; if(m<60) return `${m} minutes ago`; if(h<24) return `${h} hours ago`;
+        if(d<7) return `${d} days ago`; if(w<5) return `${w} weeks ago`; if(mo<12) return `${mo} months ago`; return `${y} years ago`;
+    }
+
+const createMessageElement = (msgObject, isReply = false, parentId = null) => {
+    const item = document.createElement('div');
+    item.className = 'chat-message-item';
+    item.dataset.messageId = msgObject._id;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'message-avatar';
+    avatar.textContent = getInitials(msgObject.author.username);
+    let hash = 0;
+    for (let i = 0; i < msgObject.author.username.length; i++) {
+        hash = msgObject.author.username.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    avatar.style.backgroundColor = `hsl(${hash % 360},50%,40%)`;
+
+    const content = document.createElement('div');
+    content.className = 'message-content';
+
+    const time = timeAgo(msgObject.createdAt);
+    let headerHTML = `<span class="message-username"><b>${msgObject.author.username}</b> &nbsp <em style="opacity:0.5;font-size:12px">${time}</em></span>`;
+    if(msgObject.author.badge){
+        const badgeClass=`${msgObject.author.badge}-badge`;
+        const badgeIcon=msgObject.author.badge==='mod'?'🔧':'✔';
+        headerHTML += `<span class="message-badge ${badgeClass}">${badgeIcon}</span>`;
+    }
+    content.innerHTML = `<div class="message-header">${headerHTML}</div><div class="message-text">${msgObject.text}</div>`;
+
+    const actions = document.createElement('div');
+    actions.className = 'message-actions';
+
+    const likeBtn = document.createElement('span');
+    likeBtn.className = 'reaction-btn like-btn';
+    if(currentUser && msgObject.reactions.likes.includes(currentUser.userId)) likeBtn.classList.add('active');
+    likeBtn.innerHTML = `<span class="icon">👍</span><span class="count">${msgObject.reactions.likes.length}</span>`;
+
+    const dislikeBtn = document.createElement('span');
+    dislikeBtn.className = 'reaction-btn dislike-btn';
+    if(currentUser && msgObject.reactions.dislikes.includes(currentUser.userId)) dislikeBtn.classList.add('active');
+    dislikeBtn.innerHTML = `<span class="icon">👎</span><span class="count">${msgObject.reactions.dislikes.length}</span>`;
+
+    // **Use replyId if this is a reply**
+    const reactionTargetId = isReply ? msgObject._id : msgObject._id;
+    likeBtn.onclick = () => handleReaction(isReply ? parentId : msgObject._id, isReply ? msgObject._id : null, 'likes');
+    dislikeBtn.onclick = () => handleReaction(isReply ? parentId : msgObject._id, isReply ? msgObject._id : null, 'dislikes');
+
+    actions.appendChild(likeBtn);
+    actions.appendChild(dislikeBtn);
+    content.appendChild(actions);
+
+    const repliesContainer = document.createElement('div');
+    repliesContainer.className = 'sub-chat-container hidden';
+    content.appendChild(repliesContainer);
+
+    if(msgObject.replies && msgObject.replies.length > 0){
+        const toggleBtn = document.createElement('span');
+        toggleBtn.className = 'show-replies-btn';
+        toggleBtn.textContent = `View ${msgObject.replies.length} ${msgObject.replies.length > 1 ? 'replies' : 'reply'}`;
+        toggleBtn.onclick = () => toggleReplies(msgObject, repliesContainer, toggleBtn);
+        actions.appendChild(toggleBtn);
+    }
+
+    const replyButton = document.createElement('span');
+    replyButton.className = 'message-reply-button';
+    replyButton.innerHTML = `<i style="color:blue;" class="fa-solid fa-reply fa-flip-vertical"></i>`;
+    replyButton.onclick = () => initiateInlineReply(msgObject._id, content);
+
+    item.append(avatar, content, replyButton);
+    return item;
+}
+
+
+    const renderAllMessages=()=>{ messageLog.innerHTML=''; chatMessages.slice().sort((a,b)=>b.reactions.likes.length-a.reactions.likes.length).forEach(msg=>{ messageLog.appendChild(createMessageElement(msg)); }); scrollToBottom(); }
+
+const toggleReplies = (msgObject, container, button) => {
+    const isHidden = container.classList.contains('hidden');
+    container.innerHTML = '';
+    if (isHidden) {
+        msgObject.replies.forEach(reply => container.appendChild(createMessageElement(reply, true, msgObject._id)));
+        container.classList.remove('hidden');
+        button.textContent = 'Hide replies';
+    } else {
+        container.classList.add('hidden');
+        button.textContent = `View ${msgObject.replies.length} ${msgObject.replies.length > 1 ? 'replies' : 'reply'}`;
+    }
+}
+
+
+    const initiateInlineReply=(parentId, contentElement)=>{
+        if(!currentUser){ alert("Please login to reply."); return; }
+        document.querySelector('.inline-reply-form')?.remove();
+        const form=document.createElement('div'); form.className='inline-reply-form';
+        form.innerHTML=`<input type="text" class="inline-reply-input" placeholder="Add a reply..." autofocus/><button class="inline-reply-send">Reply</button>`;
+        const sendAction=()=>{ const input=form.querySelector('input'); if(input.value.trim()){ submitReply(parentId,input.value.trim()); form.remove(); }};
+        form.querySelector('button').onclick=sendAction; form.querySelector('input').onkeydown=(e)=>{if(e.key==='Enter') sendAction();};
+        contentElement.appendChild(form);
+    }
+
+    const handleReaction=async (messageId, replyId, reactionType)=>{
+        if(!currentUser){ alert("Please login to react."); return; }
+        try{
+            const res=await fetch(`/api/chat/react`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messageId,replyId,userId:currentUser.userId,reactionType})});
+            if(!res.ok) throw new Error('Reaction failed');
+            const updatedMsg=await res.json();
+            const idx=chatMessages.findIndex(m=>m._id===messageId);
+            if(idx>-1){ chatMessages[idx]=updatedMsg; renderAllMessages(); }
+        }catch(e){ console.error(e); }
+    }
+
+    const submitMessage=async ()=>{
+        if(!msgInput.value.trim()||!currentUser) return;
+        const payload={ author: currentUser, text: msgInput.value.trim() };
+        try{
+            const res=await fetch(`/api/chat/${CHAT_ROOM_ID}/messages`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+            if(!res.ok) throw new Error('Failed to send message');
+            const newMsg=await res.json(); chatMessages.push(newMsg); messageLog.appendChild(createMessageElement(newMsg)); msgInput.value=''; scrollToBottom();
+        }catch(e){ console.error(e);}
+    }
+
+    const submitReply=async (parentId,text)=>{
+        if(!currentUser) return;
+        const payload={ author: currentUser, text };
+        try{
+            const res=await fetch(`/api/chat/messages/${parentId}/replies`,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+            if(!res.ok) throw new Error('Failed to send reply');
+            const updatedParent=await res.json();
+            const idx=chatMessages.findIndex(m=>m._id===parentId); if(idx>-1){ chatMessages[idx]=updatedParent; renderAllMessages(); }
+        }catch(e){ console.error(e);}
+    }
+
+    const startChat=async ()=>{
+        try{
+            const res=await fetch(`/api/chat/${CHAT_ROOM_ID}/messages`);
+            if(!res.ok) throw new Error('Could not fetch chat history');
+            chatMessages=await res.json();
+            if(chatMessages.length===0){ messageLog.innerHTML="<div class='message-content'>No Discussions Yet<div class='message-text'></div></div>"; return; }
+            document.querySelector(".chat-header").innerHTML=`${chatMessages.length} &nbsp Discussions`;
+            renderAllMessages();
+        }catch(e){ console.error(e); messageLog.innerHTML=`<div class="chat-message-item"><div class="message-content"><div class="message-text">Could not load chat. Is the backend server running?</div></div></div>`;}
+    }
+
+    sendBtn.addEventListener('click', submitMessage);
+    msgInput.addEventListener('keydown', e=>{ if(e.key==='Enter') submitMessage(); });
+
+    startChat();
+});
 </script>
+</body>
+</html>

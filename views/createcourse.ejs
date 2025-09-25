@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            color: #FFFFFF;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #2c2c2c; }
+        ::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #777; }
+        
+        /* Sidebar and Navigation */
+        .sidebar-unique { transition: transform 0.3s ease-in-out; }
+        .nav-link-unique { transition: background-color 0.2s, color 0.2s; }
+        .nav-active-unique { background-color: #38bdf8; color: #1a1a1a; font-weight: 600; }
+        .nav-active-unique:hover { background-color: #7dd3fc; }
+
+        .sidebar-overlay-unique {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); z-index: 40;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease-in-out;
+        }
+        .sidebar-overlay-unique.active { opacity: 1; pointer-events: auto; }
+        
+        /* Coming Soon Placeholder */
+        .coming-soon-container {
+            display: flex; justify-content: center; align-items: center;
+            height: 60vh; background-color: #242424; border-radius: 12px;
+            border: 1px dashed #4a5568;
+        }
+        .coming-soon-text { font-size: 2rem; font-weight: bold; color: #9ca3af; text-align: center; }
+        .coming-soon-icon { font-size: 3rem; color: #38bdf8; margin-bottom: 1rem; }
+
+        /* Data cards and tables */
+        .data-card-unique, .data-table-container-unique, .file-card-unique {
+             background-color: #242424; border: 1px solid #374151;
+             border-radius: 12px;
+        }
+        .data-card-unique { padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; }
+        .data-card-unique:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.1), 0 4px 6px -2px rgba(56, 189, 248, 0.05);
+        }
+        
+        .data-table-unique thead th { background-color: #374151; }
+        .data-table-unique tbody tr { border-bottom: 1px solid #374151; transition: background-color 0.2s; }
+        .data-table-unique tbody tr:last-child { border-bottom: none; }
+        .data-table-unique tbody tr:hover { background-color: #374151; }
+        
+        .status-pill-unique {
+            padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;
+            font-weight: 600; text-transform: uppercase;
+        }
+        .status-completed { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .status-pending { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-failed { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+        .filter-input-unique {
+            background-color: #374151; border: 1px solid #4b5563;
+            color: #e5e7eb; border-radius: 8px;
+        }
+        .filter-input-unique:focus {
+            outline: none; border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4);
+        }
+        
+        /* File Card Styling */
+        .file-card-unique {
+            display: flex; flex-direction: column;
+            transition: all 0.2s ease-in-out;
+        }
+        .file-card-unique:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-color: #38bdf8;
+        }
+
+        /* Modal Styles */
+        .modal-backdrop-unique {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-backdrop-unique.visible { opacity: 1; pointer-events: auto; }
+        .modal-dialog-unique {
+            background-color: #242424; border: 1px solid #4b5563;
+            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 90%; max-width: 480px; /* Wider for edit modal */
+            transform: scale(0.95); opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .modal-backdrop-unique.visible .modal-dialog-unique { transform: scale(1); opacity: 1; }
+        
+        /* Settings Section */
+        .settings-tab-active-unique { border-color: #38bdf8; color: #38bdf8; }
+        .billing-option-disabled { opacity: 0.5; pointer-events: none; }
+        .billing-option-disabled label, .billing-option-disabled p { color: #6b7280; }
+        .billing-option-disabled input { background-color: #374151; }
+        
+        @media (max-width: 768px) {
+            .sidebar-unique { position: fixed; top: 0; left: 0; height: 100%; z-index: 50; }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <div id="sidebar-overlay" class="sidebar-overlay-unique md:hidden"></div>
+
+    <div class="flex h-screen">
+        <aside class="sidebar-unique flex flex-col w-64 bg-[#242424] border-r border-gray-700 shadow-xl p-4 overflow-y-auto transform -translate-x-full md:translate-x-0 z-50" id="sidebar">
+            <div class="flex items-center space-x-3 mb-8 px-2">
+                <div class="h-10 w-10 bg-sky-300 rounded-full flex items-center justify-center font-bold text-[#242424] text-xl">R</div>
+                <span class="text-xl font-semibold text-white">LEARN WITH RAKIB</span>
+            </div>
+            <nav class="flex-grow" id="main-nav">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl nav-active-unique" data-target="my-courses-section">
+                            <i class="fa-solid fa-book-open w-5 h-5"></i>
+                            <span>My Courses</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl text-gray-300 hover:bg-gray-700 hover:text-sky-300" data-target="create-course-section">
+                            <i class="fa-solid fa-circle-plus w-5 h-5"></i>
+                            <span>Create Course</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl text-gray-300 hover:bg-gray-700 hover:text-sky-300" data-target="student-list-section">
+                            <i class="fa-solid fa-user-graduate w-5 h-5"></i>
+                            <span>Student List</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl text-gray-300 hover:bg-gray-700 hover:text-sky-300" data-target="uploaded-docs-section">
+                            <i class="fa-solid fa-folder-open w-5 h-5"></i>
+                            <span>Uploaded Docs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl text-gray-300 hover:bg-gray-700 hover:text-sky-300" data-target="transactions-section">
+                            <i class="fa-solid fa-arrow-right-arrow-left w-5 h-5"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl text-gray-300 hover:bg-gray-700 hover:text-sky-300" data-target="payouts-section">
+                            <i class="fa-solid fa-money-bill-wave w-5 h-5"></i>
+                            <span>Payouts</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl text-gray-300 hover:bg-gray-700 hover:text-sky-300" data-target="settings-section">
+                            <i class="fa-solid fa-gear w-5 h-5"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col overflow-x-hidden overflow-y-auto bg-[#1a1a1a] relative">
+            <header class="flex-shrink-0 bg-[#242424] shadow-md shadow-gray-900 p-4 sm:p-6 flex justify-between items-center z-40">
+                <button id="sidebar-toggle" class="md:hidden text-gray-300 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="flex-1"></div> <div class="flex items-center gap-4">
+                    <img src="https://placehold.co/40x40/cbd5e1/475569?text=RM" alt="User Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-sky-400" />
+                </div>
+            </header>
+            
+            <% 
+                let totalIncome = 0;
+                if (typeof transactions !== 'undefined' && transactions.length > 0) {
+                    totalIncome = transactions.reduce((acc, t) => acc + t.totalAmount, 0);
+                }
+            %>
+
+            <div id="content-container" class="flex-1 p-4 lg:p-8">
+
+                <div id="my-courses-section" class="content-section">
+                     <div class="coming-soon-container"><div class="text-center"><i class="fas fa-rocket coming-soon-icon"></i><h2 class="coming-soon-text">My Courses Coming Soon!</h2><p class="text-gray-500 mt-2">We're building something amazing for you.</p></div></div>
+                </div>
+
+                <div id="create-course-section" class="content-section hidden">
+                    <div class="coming-soon-container"><div class="text-center"><i class="fas fa-pencil-ruler coming-soon-icon"></i><h2 class="coming-soon-text">Course Creator Coming Soon!</h2><p class="text-gray-500 mt-2">Get ready to build and share your knowledge.</p></div></div>
+                </div>
+
+                <div id="student-list-section" class="content-section hidden">
+                    <div class="coming-soon-container"><div class="text-center"><i class="fas fa-users coming-soon-icon"></i><h2 class="coming-soon-text">Student List Coming Soon!</h2><p class="text-gray-500 mt-2">You'll be able to manage all your students from here.</p></div></div>
+                </div>
+
+                <div id="uploaded-docs-section" class="content-section hidden">
+                    <h2 class="text-2xl font-bold text-white mb-6">Uploaded Documents</h2>
+                    <div id="file-card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                        <% if (typeof files !== 'undefined' && files.length > 0) { %>
+                            <% files.forEach(file => { %>
+                                <div class="file-card-unique m-0 p-4 border-t border-l border-gray-700" data-file-id="<%= file.id %>">
+                                    <div class="flex-grow flex flex-col items-center text-center">
+                                        <i class="fa-solid fa-file-pdf text-5xl text-red-500"></i>
+                                        <p class="file-card-name font-semibold text-white mt-4 text-sm break-all" title="<%= file.filename %>"><%= file.filename %></p>
+                                        <p class="text-xs text-gray-400 mt-1"><%= file.size %></p>
+                                    </div>
+                                    <div class="mt-4 pt-3 border-t border-gray-600 flex justify-between items-center">
+                                        <span class="file-card-price font-bold text-sky-400">₹<%= file.price.toFixed(2) %></span>
+                                        <div class="flex items-center gap-2">
+                                            <button class="delete-file-btn text-gray-400 hover:text-red-500" title="Delete File"
+                                                data-file-id="<%= file.id %>"
+                                                data-file-name="<%= file.filename %>">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                            <button class="edit-file-btn text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-md text-xs"
+                                                data-file-id="<%= file.id %>"
+                                                data-file-name="<%= file.filename %>"
+                                                data-file-description="<%= file.description %>"
+                                                data-file-price="<%= file.price %>"
+                                                data-file-coupons='<%- JSON.stringify(file.coupons || []) %>'>
+                                                Edit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="col-span-full text-center py-16 text-gray-500">
+                                <i class="fa-solid fa-folder-open text-4xl mb-4"></i>
+                                <p>No documents uploaded yet.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div id="transactions-section" class="content-section hidden">
+                    <div class="space-y-6">
+                        <div class="data-card-unique">
+                             <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                     <i class="fa-solid fa-wallet text-2xl text-green-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Total Income</p>
+                                    <p class="text-3xl font-bold text-white" id="total-income-value" data-total="<%= totalIncome %>">₹0.00</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-table-container-unique">
+                            <div class="p-4 bg-[#2f2f2f] flex flex-wrap items-center justify-between gap-4">
+                                <div class="relative flex-grow sm:flex-grow-0">
+                                    <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" id="transaction-search-input" placeholder="Search by name or ID..." class="filter-input-unique w-full sm:w-64 pl-10 pr-4 py-2 text-sm">
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                     <input type="date" id="transaction-date-start" class="filter-input-unique py-2 px-3 text-sm">
+                                     <span class="text-gray-400">-</span>
+                                     <input type="date" id="transaction-date-end" class="filter-input-unique py-2 px-3 text-sm">
+                                     <select id="transaction-sort-select" class="filter-input-unique py-2 px-3 text-sm">
+                                         <option value="date-desc">Newest First</option>
+                                         <option value="date-asc">Oldest First</option>
+                                         <option value="amount-desc">Amount (High to Low)</option>
+                                         <option value="amount-asc">Amount (Low to High)</option>
+                                     </select>
+                                     <div class="relative" id="export-menu-container">
+                                        <button id="export-btn" class="filter-input-unique font-medium py-2 px-4 text-sm flex items-center gap-2 hover:bg-gray-800">
+                                            Export <i class="fa-solid fa-chevron-down text-xs"></i>
+                                        </button>
+                                        <div id="export-options" class="hidden absolute right-0 mt-2 w-40 bg-[#374151] border border-gray-600 rounded-md shadow-lg z-10">
+                                            <a href="#" id="export-csv-btn" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Export as CSV</a>
+                                            <a href="#" id="export-json-btn" class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600">Export as JSON</a>
+                                        </div>
+                                     </div>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="data-table-unique min-w-full text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left font-semibold p-3">Product Name</th>
+                                            <th class="text-left font-semibold p-3">Transaction ID</th>
+                                            <th class="text-left font-semibold p-3">Date</th>
+                                            <th class="text-left font-semibold p-3">Amount</th>
+                                            <th class="text-left font-semibold p-3">Discount</th>
+                                            <th class="text-left font-semibold p-3">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactions-table-body">
+                                        <% if (typeof transactions !== 'undefined' && transactions.length > 0) { %>
+                                            <% transactions.forEach(transaction => { %>
+                                                <tr data-date="<%= new Date(transaction.createdAt).toISOString().split('T')[0] %>" data-amount="<%= transaction.totalAmount %>" class="transaction-row-unique">
+                                                    <td class="p-3 font-medium"><%= transaction.productName %></td>
+                                                    <td class="p-3 text-gray-400"><%= transaction.transactionId %></td>
+                                                    <td class="p-3 text-gray-400"><%= new Date(transaction.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+                                                    <td class="p-3 font-semibold text-green-400">₹<%= transaction.totalAmount.toFixed(2) %></td>
+                                                    <td class="p-3 text-gray-400">₹<%= transaction.discount.toFixed(2) %></td>
+                                                    <td class="p-3">
+                                                        <span class="status-pill-unique status-<%= transaction.status.toLowerCase() %>"><%= transaction.status %></span>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <tr><td colspan="6" class="text-center p-6 text-gray-500">No transactions found.</td></tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="payouts-section" class="content-section hidden">
+                     <div class="space-y-6">
+                        <div class="data-card-unique flex flex-wrap items-center justify-between gap-4">
+                             <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-sky-500/20 rounded-lg flex items-center justify-center">
+                                     <i class="fa-solid fa-indian-rupee-sign text-2xl text-sky-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Available Balance</p>
+                                    <p class="text-3xl font-bold text-white" id="total-balance-display">₹<%= totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></p>
+                                </div>
+                            </div>
+                            <button id="withdraw-btn" class="bg-sky-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-sky-700 transition disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center gap-2" <% if (totalIncome < 1000) { %>disabled<% } %>>
+                               <i class="fa-solid fa-paper-plane"></i> Withdraw
+                            </button>
+                        </div>
+                        
+                        <div class="data-table-container-unique">
+                             <div class="p-4 bg-[#2f2f2f]">
+                                <h3 class="text-lg font-bold text-white">Payout History</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="data-table-unique min-w-full text-sm">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left font-semibold p-3">Payout ID</th>
+                                            <th class="text-left font-semibold p-3">Date</th>
+                                            <th class="text-left font-semibold p-3">Amount</th>
+                                            <th class="text-left font-semibold p-3">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (typeof payouts !== 'undefined' && payouts.length > 0) { %>
+                                            <% payouts.forEach(payout => { %>
+                                                <tr>
+                                                    <td class="p-3 text-gray-400"><%= payout.payoutId %></td>
+                                                    <td class="p-3 text-gray-400"><%= new Date(payout.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+                                                    <td class="p-3 font-semibold text-white">₹<%= payout.amount.toFixed(2) %></td>
+                                                    <td class="p-3">
+                                                        <span class="status-pill-unique status-<%= payout.status.toLowerCase() %>"><%= payout.status %></span>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <tr><td colspan="4" class="text-center p-6 text-gray-500">No payout history.</td></tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settings-section" class="content-section hidden">
+                     <div class="space-y-8">
+                        <div>
+                            <h2 class="text-3xl font-bold text-white">Settings</h2>
+                            <p class="mt-1 text-gray-400">Manage your payment preferences.</p>
+                        </div>
+                        <div class="border-b border-gray-700">
+                            <nav id="settings-tabs" class="-mb-px flex space-x-6">
+                                <a href="#" data-target="billings-settings" class="settings-tab-unique whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">Billings</a>
+                            </nav>
+                        </div>
+                        <div id="billings-settings" class="settings-content-unique space-y-8">
+                             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div class="md:col-span-1">
+                                    <h3 class="text-lg font-medium leading-6 text-white">Payment Method</h3>
+                                    <p class="mt-1 text-sm text-gray-400">Update your payout details.</p>
+                                </div>
+                                <div class="md:col-span-2 bg-[#242424] p-6 rounded-lg shadow-lg border border-gray-700">
+                                    <div class="space-y-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-300">UPI ID</label>
+                                            <div class="mt-2 space-y-3">
+                                                <input type="text" id="upi-id" placeholder="your-upi-id@okhdfcbank" class="filter-input-unique block w-full py-2 px-3 sm:text-sm">
+                                                <div class="flex justify-end">
+                                                    <button id="save-upi-btn" type="button" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700">Save UPI</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                         <hr class="border-gray-600">
+                                        <div class="billing-option-disabled">
+                                            <label class="block text-sm font-medium">Card Details (Disabled)</label>
+                                            <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6 mt-2">
+                                                <div class="sm:col-span-4">
+                                                    <label for="card-number-disabled" class="block text-sm font-medium">Card Number</label>
+                                                    <input type="text" id="card-number-disabled" value="**** **** **** ****" class="mt-1 block w-full shadow-sm sm:text-sm p-2 rounded-md" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="billing-option-disabled">
+                                            <button type="button" class="flex items-center space-x-2 font-medium text-sm">
+                                                <i class="fas fa-plus-circle"></i>
+                                                <span>Add Bank Account (Disabled)</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="universal-modal" class="modal-backdrop-unique">
+        <div id="universal-modal-dialog" class="modal-dialog-unique p-6">
+            </div>
+    </div>
+    
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const totalIncome = typeof transactions !== 'undefined' ? transactions.reduce((acc, t) => acc + t.totalAmount, 0) : 0;
+
+    // --- Sidebar & Navigation ---
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const mainNav = document.getElementById('main-nav');
+    const navLinks = document.querySelectorAll('.nav-link-unique');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    const toggleSidebar = () => {
+        sidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('active');
+    };
+    if(sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
+    if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+    if(mainNav) mainNav.addEventListener('click', (e) => {
+        const link = e.target.closest('.nav-link-unique');
+        if (!link) return;
+        e.preventDefault();
+        
+        navLinks.forEach(item => item.classList.remove('nav-active-unique'));
+        contentSections.forEach(section => section.classList.add('hidden'));
+
+        link.classList.add('nav-active-unique');
+        const targetId = link.dataset.target;
+        const targetSection = document.getElementById(targetId);
+
+        if (targetSection) targetSection.classList.remove('hidden');
+        
+        if (targetId === 'transactions-section') animateCountUp('total-income-value');
+        if (targetId === 'payouts-section') animateCountUp('total-balance-display', false);
+
+        if (window.innerWidth < 768) {
+            toggleSidebar();
+        }
+    });
+
+    // --- Settings Tab ---
+    const settingsTabsContainer = document.getElementById('settings-tabs');
+    if (settingsTabsContainer) {
+        settingsTabsContainer.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tab = e.target.closest('.settings-tab-unique');
+            if (tab && tab.dataset.target) {
+                document.querySelectorAll('.settings-tab-unique').forEach(t => t.classList.remove('settings-tab-active-unique'));
+                document.querySelectorAll('.settings-content-unique').forEach(c => c.classList.add('hidden'));
+                tab.classList.add('settings-tab-active-unique');
+                document.getElementById(tab.dataset.target).classList.remove('hidden');
+            }
+        });
+        document.querySelector('.settings-tab-unique[data-target="billings-settings"]')?.classList.add('settings-tab-active-unique');
+        document.getElementById('billings-settings')?.classList.remove('hidden');
+    }
+    
+    // --- Count-Up Animation ---
+    function animateCountUp(elementId, useSetInterval = true) {
+        const element = document.getElementById(elementId);
+        if (!element || element.dataset.animated === "true" && useSetInterval) return;
+        
+        const target = parseFloat(element.dataset.total || totalIncome);
+        if (isNaN(target)) return;
+        element.dataset.animated = "true";
+
+        let current = 0;
+        const increment = target / 100;
+        const updateText = () => {
+            element.textContent = `₹${current.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        };
+        
+        if (useSetInterval) {
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                updateText();
+            }, 15);
+        } else {
+             current = target;
+             updateText();
+        }
+    }
+
+    // --- Transactions Filtering, Sorting, and Exporting ---
+    const searchInput = document.getElementById('transaction-search-input');
+    const sortSelect = document.getElementById('transaction-sort-select');
+    const dateStartInput = document.getElementById('transaction-date-start');
+    const dateEndInput = document.getElementById('transaction-date-end');
+    const tableBody = document.getElementById('transactions-table-body');
+    const originalRows = tableBody ? Array.from(tableBody.querySelectorAll('tr.transaction-row-unique')) : [];
+    
+    function filterAndSortTransactions() {
+        if (!tableBody) return;
+        let filteredRows = [...originalRows];
+        const searchTerm = searchInput.value.toLowerCase();
+        const startDate = dateStartInput.value;
+        const endDate = dateEndInput.value;
+        
+        if (searchTerm) {
+            filteredRows = filteredRows.filter(row => row.textContent.toLowerCase().includes(searchTerm));
+        }
+        
+        if (startDate || endDate) {
+            filteredRows = filteredRows.filter(row => {
+                const rowDate = row.dataset.date;
+                return (!startDate || rowDate >= startDate) && (!endDate || rowDate <= endDate);
+            });
+        }
+        
+        filteredRows.sort((a, b) => {
+            const sortValue = sortSelect.value;
+            const valA_date = new Date(a.dataset.date);
+            const valB_date = new Date(b.dataset.date);
+            const valA_amount = parseFloat(a.dataset.amount);
+            const valB_amount = parseFloat(b.dataset.amount);
+
+            if (sortValue === 'date-desc') return valB_date - valA_date;
+            if (sortValue === 'date-asc') return valA_date - valB_date;
+            if (sortValue === 'amount-desc') return valB_amount - valA_amount;
+            if (sortValue === 'amount-asc') return valA_amount - valB_amount;
+            return 0;
+        });
+
+        tableBody.innerHTML = '';
+        if (filteredRows.length > 0) {
+            filteredRows.forEach(row => tableBody.appendChild(row));
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center p-6 text-gray-500">No transactions match your filters.</td></tr>';
+        }
+    }
+    
+    if (searchInput) searchInput.addEventListener('input', filterAndSortTransactions);
+    if (sortSelect) sortSelect.addEventListener('change', filterAndSortTransactions);
+    if (dateStartInput) dateStartInput.addEventListener('change', filterAndSortTransactions);
+    if (dateEndInput) dateEndInput.addEventListener('change', filterAndSortTransactions);
+
+    // Export Logic
+    const exportMenuContainer = document.getElementById('export-menu-container');
+    const exportOptions = document.getElementById('export-options');
+    if (exportMenuContainer) {
+        exportMenuContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+            exportOptions.classList.toggle('hidden');
+        });
+        document.addEventListener('click', () => exportOptions.classList.add('hidden'));
+    }
+
+    function getVisibleTableData() {
+        const headers = Array.from(document.querySelectorAll('.data-table-unique thead th')).map(th => th.textContent.trim());
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        return rows.map(row => {
+            const cells = Array.from(row.querySelectorAll('td'));
+            let rowData = {};
+            headers.forEach((header, index) => {
+                if (header) rowData[header] = cells[index].textContent.trim();
+            });
+            return rowData;
+        });
+    }
+
+    function downloadFile(content, fileName, contentType) {
+        const a = document.createElement("a");
+        const file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+    
+    document.getElementById('export-csv-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const data = getVisibleTableData();
+        if (data.length === 0 || !data[0]) return;
+        const headers = Object.keys(data[0]);
+        let csvContent = headers.join(',') + '\n';
+        data.forEach(row => {
+            csvContent += headers.map(header => `"${row[header]}"`).join(',') + '\n';
+        });
+        downloadFile(csvContent, 'transactions.csv', 'text/csv;charset=utf-8;');
+    });
+
+    document.getElementById('export-json-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const data = getVisibleTableData();
+        if (data.length === 0) return;
+        downloadFile(JSON.stringify(data, null, 2), 'transactions.json', 'application/json');
+    });
+
+    // --- Universal Modal ---
+    const modal = document.getElementById('universal-modal');
+    const modalDialog = document.getElementById('universal-modal-dialog');
+    const showModal = (content) => {
+        modalDialog.innerHTML = content;
+        modal.classList.add('visible');
+    };
+    const hideModal = () => {
+        modal.classList.remove('visible');
+    };
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.closest('.modal-close-btn')) {
+            hideModal();
+        }
+    });
+    
+    // --- Main Event Listener for Dynamic Content ---
+    document.body.addEventListener('click', async (e) => {
+        if (e.target.closest('.edit-file-btn')) {
+            handleEditFileClick(e.target.closest('.edit-file-btn'));
+        }
+        if (e.target.closest('.delete-file-btn')) {
+            handleDeleteFileClick(e.target.closest('.delete-file-btn'));
+        }
+        if (e.target.closest('#save-file-changes-btn')) {
+            await handleSaveFileChanges(e.target.closest('#save-file-changes-btn'));
+        }
+        if (e.target.closest('#confirm-delete-btn')) {
+            await handleConfirmDelete(e.target.closest('#confirm-delete-btn'));
+        }
+    });
+    
+    // --- File Edit Logic ---
+    function handleEditFileClick(btn) {
+        const file = {
+            id: btn.dataset.fileId,
+            name: btn.dataset.fileName,
+            description: btn.dataset.fileDescription,
+            price: btn.dataset.filePrice,
+            coupons: JSON.parse(btn.dataset.fileCoupons)
+        };
+        const modalContent = `
+            <h3 class="text-xl font-bold mb-4 text-white">Edit File Details</h3>
+            <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                <div><label class="block text-sm font-medium text-gray-300">Filename</label><input type="text" id="edit-file-name" value="${file.name}" class="filter-input-unique w-full mt-1 p-2"></div>
+                <div><label class="block text-sm font-medium text-gray-300">Description</label><textarea id="edit-file-description" rows="3" class="filter-input-unique w-full mt-1 p-2">${file.description}</textarea></div>
+                <div><label class="block text-sm font-medium text-gray-300">Price (₹)</label><input type="number" id="edit-file-price" value="${file.price}" class="filter-input-unique w-full mt-1 p-2"></div>
+                <div class="pt-2"><label class="block text-sm font-medium text-gray-300 mb-2">Coupons</label><div id="coupons-list" class="space-y-2"></div><div class="flex gap-2 mt-2"><input type="text" id="new-coupon-code" placeholder="Code" class="filter-input-unique w-full p-2 text-sm"><input type="number" id="new-coupon-discount" placeholder="Discount %" class="filter-input-unique w-32 p-2 text-sm"><button id="add-coupon-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 rounded-lg text-sm">Add</button></div></div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
+                <button class="modal-close-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg">Cancel</button>
+                <button id="save-file-changes-btn" data-file-id="${file.id}" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2">
+                    <span class="btn-text">Save Changes</span><i class="fa-solid fa-spinner fa-spin hidden"></i>
+                </button>
+            </div>`;
+        showModal(modalContent);
+        setupCouponEventListeners(file.coupons);
+    }
+    
+    function setupCouponEventListeners(coupons) {
+        const renderCoupons = () => {
+            const couponsList = document.getElementById('coupons-list');
+            if(!couponsList) return;
+            couponsList.innerHTML = coupons.map((c, index) => `
+                <div class="flex items-center justify-between bg-gray-700 p-2 rounded-md">
+                    <span class="text-sm font-mono">${c.code}</span><span class="text-sm font-semibold text-green-400">${c.discountPercentage}% OFF</span>
+                    <button class="remove-coupon-btn text-red-500 hover:text-red-400" data-index="${index}"><i class="fa-solid fa-trash-can"></i></button>
+                </div>`).join('') || '<p class="text-xs text-gray-500">No coupons added.</p>';
+        };
+        renderCoupons();
+
+        document.getElementById('add-coupon-btn')?.addEventListener('click', () => {
+            const codeInput = document.getElementById('new-coupon-code');
+            const discountInput = document.getElementById('new-coupon-discount');
+            if (codeInput.value && discountInput.value) {
+                coupons.push({ code: codeInput.value.toUpperCase(), discountPercentage: parseInt(discountInput.value) });
+                codeInput.value = ''; discountInput.value = '';
+                renderCoupons();
+            }
+        });
+        document.getElementById('coupons-list')?.addEventListener('click', e => {
+            const removeBtn = e.target.closest('.remove-coupon-btn');
+            if (removeBtn) {
+                coupons.splice(parseInt(removeBtn.dataset.index), 1);
+                renderCoupons();
+            }
+        });
+    }
+
+    async function handleSaveFileChanges(saveBtn) {
+        const fileId = saveBtn.dataset.fileId;
+        const btnText = saveBtn.querySelector('.btn-text');
+        const spinner = saveBtn.querySelector('i');
+        const originalEditBtn = document.querySelector(`.edit-file-btn[data-file-id="${fileId}"]`);
+        
+        const updatedData = {
+            id: fileId,
+            filename: document.getElementById('edit-file-name').value,
+            description: document.getElementById('edit-file-description').value,
+            price: parseFloat(document.getElementById('edit-file-price').value),
+            coupons: JSON.parse(originalEditBtn.dataset.fileCoupons)
+        };
+        btnText.textContent = 'Saving...';
+        spinner.classList.remove('hidden');
+        saveBtn.disabled = true;
+
+        try {
+            const response = await fetch('/update/file-meta', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData),
+            });
+            if (!response.ok) throw new Error('Update failed');
+
+            const cardToUpdate = document.querySelector(`.file-card-unique[data-file-id="${fileId}"]`);
+            if (cardToUpdate) {
+                cardToUpdate.querySelector('.file-card-name').textContent = updatedData.filename;
+                cardToUpdate.querySelector('.file-card-name').title = updatedData.filename;
+                cardToUpdate.querySelector('.file-card-price').textContent = `₹${updatedData.price.toFixed(2)}`;
+                originalEditBtn.dataset.fileName = updatedData.filename;
+                originalEditBtn.dataset.fileDescription = updatedData.description;
+                originalEditBtn.dataset.filePrice = updatedData.price;
+                originalEditBtn.dataset.fileCoupons = JSON.stringify(updatedData.coupons);
+            }
+            hideModal();
+            showModal(`<div class="text-center p-4"><i class="fa-solid fa-circle-check text-5xl text-green-500 mb-4"></i><h3 class="text-xl font-bold text-white">Update Successful</h3><p class="text-gray-400 mt-2">File details have been updated.</p><button class="modal-close-btn bg-sky-600 text-white font-semibold py-2 px-6 rounded-lg mt-6">OK</button></div>`);
+        } catch (error) {
+            hideModal();
+            showModal(`<div class="text-center p-4"><i class="fa-solid fa-circle-xmark text-5xl text-red-500 mb-4"></i><h3 class="text-xl font-bold text-white">Update Failed</h3><p class="text-gray-400 mt-2">Could not save changes. Please try again.</p><button class="modal-close-btn bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg mt-6">Close</button></div>`);
+        }
+    }
+
+    // --- File Delete Logic ---
+    function handleDeleteFileClick(btn) {
+        const fileId = btn.dataset.fileId;
+        const fileName = btn.dataset.fileName;
+        const modalContent = `
+            <div class="text-center p-4">
+                <i class="fa-solid fa-triangle-exclamation text-5xl text-yellow-400 mb-4"></i>
+                <h3 class="text-xl font-bold text-white">Confirm Deletion</h3>
+                <p class="text-gray-400 mt-2">Are you sure you want to delete <strong class="text-white">${fileName}</strong>? This action cannot be undone.</p>
+                <div class="flex justify-center gap-4 mt-6">
+                    <button class="modal-close-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg">Cancel</button>
+                    <button id="confirm-delete-btn" data-file-id="${fileId}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg flex items-center gap-2">
+                         <span class="btn-text">Delete</span><i class="fa-solid fa-spinner fa-spin hidden"></i>
+                    </button>
+                </div>
+            </div>`;
+        showModal(modalContent);
+    }
+    
+    async function handleConfirmDelete(btn) {
+        const fileId = btn.dataset.fileId;
+        const btnText = btn.querySelector('.btn-text');
+        const spinner = btn.querySelector('i');
+        
+        btnText.textContent = 'Deleting...';
+        spinner.classList.remove('hidden');
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/delete/file-meta', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: fileId })
+            });
+            if (!response.ok) throw new Error('Delete failed');
+
+            document.querySelector(`.file-card-unique[data-file-id="${fileId}"]`)?.remove();
+            
+            hideModal();
+            showModal(`<div class="text-center p-4"><i class="fa-solid fa-circle-check text-5xl text-green-500 mb-4"></i><h3 class="text-xl font-bold text-white">File Deleted</h3><p class="text-gray-400 mt-2">The file has been successfully deleted.</p><button class="modal-close-btn bg-sky-600 text-white font-semibold py-2 px-6 rounded-lg mt-6">OK</button></div>`);
+        } catch (error) {
+            hideModal();
+            showModal(`<div class="text-center p-4"><i class="fa-solid fa-circle-xmark text-5xl text-red-500 mb-4"></i><h3 class="text-xl font-bold text-white">Deletion Failed</h3><p class="text-gray-400 mt-2">Could not delete the file. Please try again.</p><button class="modal-close-btn bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg mt-6">Close</button></div>`);
+        }
+    }
+    
+    // --- Withdrawal Logic ---
+    const withdrawBtn = document.getElementById('withdraw-btn');
+    if (withdrawBtn) {
+        withdrawBtn.addEventListener('click', () => {
+            const maxAmount = Math.min(totalIncome, 100000);
+            const modalContent = `
+                <h3 class="text-xl font-bold mb-2 text-white">Request Payout</h3>
+                <p class="text-sm text-gray-400 mb-4">Available for withdrawal: ₹${totalIncome.toFixed(2)}</p>
+                <div>
+                    <label for="withdraw-amount-input" class="block text-sm font-medium text-gray-300">Amount (INR)</label>
+                    <input type="number" id="withdraw-amount-input" min="1000" max="${maxAmount}" placeholder="e.g., 5000" class="filter-input-unique w-full mt-1 p-2">
+                    <p id="withdraw-error-msg" class="text-red-400 text-xs mt-1 h-4"></p>
+                </div>
+                <div class="flex justify-end gap-3 mt-4">
+                    <button class="modal-close-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg">Cancel</button>
+                    <button id="request-payout-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2">
+                        <span class="btn-text">Request Payout</span>
+                        <i class="fa-solid fa-spinner fa-spin hidden"></i>
+                    </button>
+                </div>`;
+            showModal(modalContent);
+
+            const requestBtn = document.getElementById('request-payout-btn');
+            const amountInput = document.getElementById('withdraw-amount-input');
+            const errorMsg = document.getElementById('withdraw-error-msg');
+            
+            requestBtn.addEventListener('click', async () => {
+                const amount = parseFloat(amountInput.value);
+                errorMsg.textContent = '';
+                
+                if (isNaN(amount) || amount < 1000 || amount > maxAmount) {
+                    errorMsg.textContent = `Please enter an amount between ₹1,000 and ₹${maxAmount.toFixed(2)}.`;
+                    return;
+                }
+                
+                const btnText = requestBtn.querySelector('.btn-text');
+                const spinner = requestBtn.querySelector('i');
+                btnText.textContent = 'Requesting...';
+                spinner.classList.remove('hidden');
+                requestBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/user/withdrawal', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount: amount })
+                    });
+
+                    if (!response.ok) throw new Error('Network response was not ok.');
+                    
+                    const successContent = `<div class="text-center p-4"><i class="fa-solid fa-circle-check text-5xl text-green-500 mb-4"></i><h3 class="text-xl font-bold text-white">Payout Requested</h3><p class="text-gray-400 mt-2">Your withdrawal of ₹${amount.toFixed(2)} is being processed.</p><button class="modal-close-btn bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 px-6 rounded-lg mt-6">Done</button></div>`;
+                    showModal(successContent);
+                } catch (error) {
+                    console.error('Withdrawal failed:', error);
+                    const errorContent = `<div class="text-center p-4"><i class="fa-solid fa-circle-xmark text-5xl text-red-500 mb-4"></i><h3 class="text-xl font-bold text-white">Request Failed</h3><p class="text-gray-400 mt-2">Payout can't be processed now. Please try again later. If it persists, contact our support team.</p><button class="modal-close-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg mt-6">Close</button></div>`;
+                    showModal(errorContent);
+                }
+            });
+        });
+    }
+});
+</script>
+
+
+</body>
+</html>

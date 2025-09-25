@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Left-to-Right Slide-In Menu</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <style>
+        /* ======================================== */
+        /* 1. CSS VARIABLES & GLOBAL STYLES         */
+        /* ======================================== */
+        :root {
+            --bg-dark: #05050A;
+            --bg-menu: #111116;
+            --border-color: #262626;
+            --text-primary: #F5F5F5;
+            --text-secondary: #A3A3A3;
+            --accent-blue: #3B82F6;
+            --font-main: 'Figtree', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+        }
+        
+        /* Helper for icon styling */
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 300,
+          'GRAD' 0,
+          'opsz' 24
+        }
+
+
+        /* ======================================== */
+        /* 2. SLIDE-IN MENU & OVERLAY              */
+        /* ======================================== */
+        
+        /* The overlay that covers the page content */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* The menu panel itself */
+        .slide-in-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background-color: var(--bg-menu);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(-100%); /* Initially hidden off-screen to the left */
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .slide-in-menu.active {
+            transform: translateX(0); /* Slides into view */
+        }
+
+        /* ======================================== */
+        /* 3. MENU CONTENT STYLING                  */
+        /* ======================================== */
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0; /* Prevents header from shrinking */
+        }
+        
+        .menu-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+        
+        .menu-close-btn {
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .menu-close-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .menu-nav {
+            padding: 20px 0;
+            flex-grow: 1; /* Allows nav to fill remaining space */
+            overflow-y: auto; /* For smaller screens */
+        }
+        
+        .menu-nav ul {
+            list-style: none;
+        }
+        
+        .menu-nav a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-left: 3px solid transparent; /* For active state indicator */
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .menu-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        
+        .menu-nav a.active-link {
+            color: var(--text-primary);
+            border-left-color: var(--accent-blue);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .menu-nav a .material-symbols-outlined {
+            color: var(--text-secondary);
+            transition: color 0.2s ease-in-out;
+        }
+        
+        .menu-nav a:hover .material-symbols-outlined,
+        .menu-nav a.active-link .material-symbols-outlined {
+            color: var(--text-primary);
+        }
+
+        /* ======================================== */
+        /* 4. EXAMPLE TRIGGER & PAGE CONTENT        */
+        /* ======================================== */
+        .header-trigger {
+            background-color: var(--bg-menu);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .hamburger-icon {
+            cursor: pointer;
+            padding: 8px;
+        }
+        .page-content {
+            padding: 40px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-menu-overlay"></div>
+    <nav class="slide-in-menu">
+        <div class="menu-header">
+            <span class="menu-logo">Vidyari</span>
+            <span class="material-symbols-outlined menu-close-btn">close</span>
+        </div>
+        <div class="menu-nav">
+            <ul>
+                <li><a href="#" class="active-link"><span class="material-symbols-outlined">home</span>Home</a></li>
+                <li><a href="#"><span class="material-symbols-outlined">school</span>Courses</a></li>
+                <li><a href="#"><span class="material-symbols-outlined">description</span>Documents</a></li>
+                <li><a href="#"><span class="material-symbols-outlined">receipt_long</span>Transactions</a></li>
+                <li><a href="#"><span class="material-symbols-outlined">download</span>Downloads</a></li>
+                <li><a href="#"><span class="material-symbols-outlined">space_dashboard</span>Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <header class="header-trigger">
+        <div class="hamburger-icon">
+             <span class="material-symbols-outlined">menu</span>
+        </div>
+        <div style="font-weight: 600;">Your Page Title</div>
+    </header>
+
+    <main class="page-content">
+        <h1>Click the Hamburger Icon</h1>
+        <p>This is the main content of your page. When you click the menu icon in the top-left, the navigation panel will slide in from the left.</p>
+        <p>You can close it by clicking the 'X' button or by clicking anywhere on the dark overlay that covers this content.</p>
+    </main>
+
+    <script>
+        // --- Slide-In Menu Logic ---
+        const menuTrigger = document.querySelector('.hamburger-icon');
+        const menuCloseBtn = document.querySelector('.menu-close-btn');
+        const menuOverlay = document.querySelector('.mobile-menu-overlay');
+        const slideInMenu = document.querySelector('.slide-in-menu');
+
+        const openMenu = () => {
+            slideInMenu.classList.add('active');
+            menuOverlay.classList.add('active');
+        };
+
+        const closeMenu = () => {
+            slideInMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+        };
+
+        menuTrigger.addEventListener('click', openMenu);
+        menuCloseBtn.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+    </script>
+</body>
+</html>

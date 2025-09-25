@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirm Your Order</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+/* --- your CSS stays mostly same --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden;
+}
+.checkout-container {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 900px;
+    width: 100%;
+    background-color: #2c2c2c;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    position: relative;
+}
+.confirmation-section {
+    flex: 2;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.page-title { font-size: 2.5rem; margin-bottom: 15px; color: #f8f8f8; font-weight: 600; }
+.page-subtitle { font-size: 1.1rem; color: #b0b0b0; margin-bottom: 30px; max-width: 400px; }
+.cta-button {
+    width: 100%;
+    max-width: 300px;
+    padding: 16px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 15px rgba(40,167,69,0.4);
+}
+.cta-button:hover { background-color: #218838; transform: translateY(-2px); }
+
+.order-summary-container {
+    flex: 1;
+    background-color: #3a3a3a;
+    padding: 40px;
+    border-left: 1px solid #4a4a4a;
+    display: flex;
+    flex-direction: column;
+}
+.order-summary-container h3 { font-size: 2rem; margin-bottom: 20px; color: #f8f8f8; }
+.order-item { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.item-name { font-weight: bold; }
+.item-price { font-weight: 500; }
+.coupon-section {
+    margin: 20px 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #4a4a4a;
+}
+.coupon-input-group { display: flex; gap: 10px; margin-top: 10px; }
+.coupon-input-group input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #5a5a5a;
+    background-color: #4a4a4a;
+    color: #f0f0f0;
+    border-radius: 6px;
+}
+.coupon-input-group input::placeholder { color: #a0a0a0; }
+.coupon-input-group button {
+    padding: 10px 16px;
+    border: none;
+    background-color: #218838;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.coupon-input-group button:hover { background-color: #19692c; }
+.coupon-message { margin-top: 10px; font-size: 0.95rem; display: none; }
+.success { color: #4CAF50; }
+.error { color: #FF6347; }
+
+.price-breakdown { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+.price-breakdown p { display: flex; justify-content: space-between; align-items: center; color: #cccccc; }
+.price-breakdown span { font-weight: normal; color: #b0b0b0; }
+.info-text { font-size: 0.85rem; color: #9a9a9a; font-style: italic; flex-basis: 60%; text-align: right; }
+
+hr { border: 0; height: 1px; background: #5a5a5a; margin: 25px 0; }
+.total-price-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem; font-weight: bold; color: #f8f8f8; margin-top: 10px; }
+.total-price { font-size: 2rem; color: #ffc107; }
+
+/* Confetti */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 9999;
+    border-radius: 50%;
+}
+@keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity:1; }
+    100% { transform: translateY(500px) rotate(720deg); opacity:0; }
+}
+@media (max-width: 768px) {
+    .checkout-container { flex-direction: column; }
+    .confirmation-section, .order-summary-container { padding: 30px; }
+    .order-summary-container { border-left: none; border-top: 1px solid #4a4a4a; }
+    .page-title { font-size: 2rem; }
+    .page-subtitle { font-size: 1rem; }
+    .cta-button { font-size: 1.2rem; width: 100%; }
+    .total-price { font-size: 1.6rem; }
+    .total-price-row { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="checkout-container">
+    <div class="confirmation-section">
+        <h1 class="page-title">Ready to Complete Your Order?</h1>
+        <p class="page-subtitle">Your final order details are on the right. Click below to proceed with payment securely.</p>
+        <button type="button" class="cta-button">Pay ₹<%=priceDetails.total%></button>
+    </div>
+
+    <div class="order-summary-container">
+        <h3>Order Summary</h3>
+        <div class="order-item">
+            <p class="item-name"><%=file.title%></p>
+            <p class="item-price">₹<%=priceDetails.originalPrice%></p>
+        </div>
+
+        <div class="coupon-section">
+            <h4>Have a coupon code?</h4>
+            <div class="coupon-input-group">
+                <input type="text" id="coupon-code" placeholder="Enter coupon code">
+                <button id="apply-coupon-btn">Apply</button>
+            </div>
+            <p id="coupon-message" class="coupon-message"></p>
+        </div>
+
+        <div class="price-breakdown" id="price-breakdown">
+            <p><span>Item Price:</span> ₹<%=priceDetails.originalPrice%></p>
+            <p><span>Service Fee:</span> ₹<%=priceDetails.serviceFee%></p>
+            <p><span>GST:</span> ₹<%=priceDetails.gstTax%></p>
+            <% if(priceDetails.discountedPrice != priceDetails.originalPrice) { %>
+                <p><span>Discount Applied:</span> -₹<%= (priceDetails.originalPrice - priceDetails.discountedPrice).toFixed(2) %></p>
+            <% } %>
+        </div>
+
+        <hr>
+
+        <div class="total-price-row">
+            <p>Total Amount</p>
+            <p class="total-price">₹<%=priceDetails.total%></p>
+        </div>
+    </div>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+const fileId = "<%=file._id%>";
+const applyBtn = document.getElementById('apply-coupon-btn');
+const couponInput = document.getElementById('coupon-code');
+const couponMessage = document.getElementById('coupon-message');
+const totalAmountElement = document.querySelector('.total-price');
+const payButton = document.querySelector('.cta-button');
+const priceBreakdown = document.getElementById('price-breakdown');
+
+// Confetti generator
+function createConfetti() {
+    const colors = ['#28a745','#ffc107','#ff5733','#33c4ff','#ff33f6','#ff6f33','#8e44ad'];
+    for(let i=0;i<100;i++){
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        const size = Math.random()*8+4;
+        confetti.style.width = size+'px';
+        confetti.style.height = size+'px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random()*colors.length)];
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.top = '-20px';
+        confetti.style.transform = `rotate(${Math.random()*360}deg)`;
+        confetti.style.borderRadius = Math.random()<0.5 ? '50%' : '0%';
+        confetti.style.animation = `confettiFall ${2 + Math.random()*2}s linear forwards`;
+        document.body.appendChild(confetti);
+        setTimeout(()=>confetti.remove(),4000);
+    }
+}
+
+// Apply coupon logic
+applyBtn.addEventListener('click', async ()=>{
+    const couponCode = couponInput.value.trim();
+    if(!couponCode){
+        couponMessage.textContent = 'Please enter a coupon code.';
+        couponMessage.className = 'coupon-message error';
+        couponMessage.style.display = 'block';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/check/coupon?fileId=${fileId}&couponCode=${couponCode}`);
+        const data = await response.json();
+
+        if(data.valid){
+            const p = data.priceDetails;
+            totalAmountElement.textContent = `₹${p.total}`;
+            payButton.textContent = `Pay ₹${p.total}`;
+            priceBreakdown.innerHTML = `
+                <p><span>Item Price:</span> ₹${p.originalPrice}</p>
+                <p><span>Service Fee:</span> ₹${p.serviceFee}</p>
+                <p><span>GST:</span> ₹${p.gstTax}</p>
+                ${p.discountedPrice != p.originalPrice 
+                    ? `<p><span>Discount Applied:</span> -₹${(p.originalPrice - p.discountedPrice).toFixed(2)}</p>` 
+                    : ""}
+            `;
+            couponMessage.textContent = 'Coupon applied successfully!';
+            couponMessage.className = 'coupon-message success';
+            couponMessage.style.display = 'block';
+            createConfetti();
+        } else {
+            couponMessage.textContent = data.message || 'Invalid or expired coupon.';
+            couponMessage.className = 'coupon-message error';
+            couponMessage.style.display = 'block';
+        }
+    } catch (err) {
+        console.error(err);
+        couponMessage.textContent = 'Server error. Please try again.';
+        couponMessage.className = 'coupon-message error';
+        couponMessage.style.display = 'block';
+    }
+
+    
+});
+const buyButton=document.querySelector('.cta-button');
+    // rezorpay
+     if (buyButton) {
+               buyButton.onclick = function (e) {
+                // window.location.href = "/checkout?file_id=<%=file._id%>";
+                e.preventDefault();
+                buyButton.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Processing...</span>`;
+                buyButton.disabled = true;
+
+                fetch('/create-order', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    fileId: "<%= file._id %>",
+                    price: <%=priceDetails.total %>,
+                    filename: "<%= file.filename %>"
+                  })
+                })
+
+                  .then(res => res.json())
+                  .then(order => {
+
+                    var options = {
+                      key: "<%= razorpayKey %>",
+                      amount: order.amount,
+                      currency: order.currency,
+                      name: "<%= file.filename %>",
+                      description: "PDF Document Purchase",
+                      order_id: order.id,
+                      handler: function (response) {
+                        fetch('/verify-payment', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            fileId: "<%= file._id %>",
+                            totalprice:"<%=priceDetails.total%>",
+                            filename:"<%=file.filename%>"
+                          })
+                        })
+                          .then(res => res.json())
+                          .then(data => {
+
+                            if (data.success) {
+                              window.location.href = data.downloadUrl;
+                            } else {
+                              alert("Payment verification failed. Please contact support.");
+                              buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+                              buyButton.disabled = false;
+                            }
+                          });
+                      },
+                      modal: {
+                        ondismiss: function () {
+                          buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+                          buyButton.disabled = false;
+                        }
+                      }
+                    };
+                    var rzp1 = new Razorpay(options);
+                    rzp1.open();
+                  }).catch(err => {
+                    console.error("Error creating order", err);
+                    alert("Could not initiate payment. Please try again.");
+                    buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
+                    buyButton.disabled = false;
+                  });
+              }
+            }
+</script>
+</body>
+</html>

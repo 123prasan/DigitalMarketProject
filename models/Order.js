@@ -14,6 +14,8 @@ const orderSchema = new mongoose.Schema({
   payment: { type: String, required: true },
   total: { type: Number, required: true },
   items: [itemSchema],
+  productId: { type:String, required: true },
+  productName:{type:String,required:true},
   status: { 
     type: String, 
     enum: ["Successfull","unsuccessfull", "Pending"], 

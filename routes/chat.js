@@ -3,6 +3,8 @@ const mongoose=require('mongoose')
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/chat');
+const authenticateJWT_user=require("./authentication/jwtAuth.js")
+const requireAuth=require("./authentication/reaquireAuth.js")
 // const MONGO_URI = 'mongodb://localhost:27017/livechat'; 
 //  mongoose.connect(MONGO_URI) .then(() => console.log('Successfully connected to MongoDB.')) .catch(err => console.error('Connection error', err));
 // GET all messages for a chat
@@ -16,7 +18,7 @@ router.get('/:chatFileId/messages', async (req, res) => {
 });
 
 // POST new message
-router.post('/:chatFileId/messages', async (req, res) => {
+router.post('/:chatFileId/messages',authenticateJWT_user,requireAuth, async (req, res) => {
   try {
     const newMessage = new Message({
       chatFileId: req.params.chatFileId,
@@ -31,7 +33,7 @@ router.post('/:chatFileId/messages', async (req, res) => {
 });
 
 // POST reply to a message
-router.post('/messages/:messageId/replies', async (req, res) => {
+router.post('/messages/:messageId/replies',authenticateJWT_user,requireAuth, async (req, res) => {
   try {
     const parentMessage = await Message.findById(req.params.messageId);
     if (!parentMessage) return res.status(404).json({ message: 'Parent message not found' });

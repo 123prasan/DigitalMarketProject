@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stitch Design - Upload</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"         href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&family=Public+Sans%3Awght%40400%3B500%3B700%3B900" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+      /* Custom CSS for styles not easily achievable with Tailwind */
+      body {
+        font-family: 'Public Sans', 'Noto Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Modal Animations */
+      #modal-container {
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      #modal-container.show {
+        display: flex;
+        opacity: 1;
+      }
+
+      #modal-content {
+        transform: scale(0.8);
+        opacity: 0;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+      }
+
+      #modal-container.show #modal-content {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      /* Success Tick Animation */
+      .circle-animation {
+        stroke-dasharray: 157;
+        stroke-dashoffset: 157;
+        animation: drawCircle 0.9s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      }
+
+      .tick-animation {
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: drawTick 0.8s cubic-bezier(0.65, 0, 0.45, 1) 0.9s forwards;
+      }
+
+      @keyframes drawCircle {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      @keyframes drawTick {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      /* Loader */
+      .cir-loader {
+        transform-origin: center;
+        animation: rotate4 2s linear infinite;
+      }
+
+      .cir {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 4;
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+        stroke-linecap: round;
+        animation: dash4 1.5s ease-in-out infinite;
+      }
+
+      @keyframes rotate4 {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes dash4 {
+        0% {
+          stroke-dasharray: 1, 200;
+          stroke-dashoffset: 0;
+        }
+
+        50% {
+          stroke-dasharray: 90, 200;
+          stroke-dashoffset: -35px;
+        }
+
+        100% {
+          stroke-dashoffset: -125px;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-neutral-900 overflow-x-hidden text-neutral-50">
+    <div id="app-container" class="relative min-h-screen flex flex-col"></div>
+    <template id="template-upload-form">
+      <div class="flex-1 flex flex-col">
+        <header class="sticky top-0 z-10 flex items-center justify-between p-4 bg-neutral-900">
+          <button aria-label="Go back" class="size-12 flex items-center justify-center text-neutral-50 hover:text-neutral-400 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+              <path                             d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+            </svg>
+          </button>
+          <h2 class="text-lg font-bold flex-1 text-center pr-12 text-neutral-50">Upload Study Material</h2>
+        </header>
+        <main class="flex-1 p-4 overflow-y-auto">
+          <div class="bg-neutral-800 p-8 md:p-12 rounded-2xl shadow-xl max-w-2xl mx-auto space-y-8">
+            <form id="upload-form" class="space-y-6">
+              <div class="form-input-group flex flex-col gap-1">
+                <label for="title" class="text-xs font-bold uppercase text-neutral-400">
+                  <span class="text-red-500">*</span>TITLE                             </label>
+                <input id="title" required placeholder="Title"                                 class="w-full p-4 rounded-lg bg-neutral-700 border border-neutral-600 text-neutral-50 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+              </div>
+              <div class="form-input-group flex flex-col gap-1">
+                <label for="summary" class="text-xs font-bold uppercase text-neutral-400">
+                  <span class="text-red-500">*</span>DESCRIPTION                             </label>
+                <textarea id="summary" required placeholder="Short Summary (150 chars)"                                 class="w-full p-4 rounded-lg bg-neutral-700 border border-neutral-600 text-neutral-50 min-h-36 focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+              </div>
+              <div class="form-input-group flex flex-col gap-1">
+                <label for="price" class="text-xs font-bold uppercase text-neutral-400">
+                  <span class="text-red-500">*</span>PRICE                             </label>
+                <input id="price" required type="number" placeholder="Price (Ruppes)"                                 class="w-full p-4 rounded-lg bg-neutral-700 border border-neutral-600 text-neutral-50 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+              </div>
+              <div class="form-input-group flex flex-col gap-1">
+                <label for="category" class="text-xs font-bold uppercase text-neutral-400">
+                  <span class="text-red-500">*</span>CATEGORY                             </label>
+                <select id="category" required                                 class="w-full p-4 rounded-lg bg-neutral-700 border border-neutral-600 text-neutral-50 focus:outline-none focus:ring-2 focus:ring-blue-600 appearance-none bg-right-8 bg-no-repeat"                                 style="background-image: url('data:image/svg+xml,%3csvg
+									xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(115,115,115)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e');">
+                  <option value="" disabled selected>Category</option>
+                  <option value="one">one</option>
+                  <option value="two">two</option>
+                  <option value="three">three</option>
+                </select>
+              </div>
+              <div class="form-input-group flex flex-col gap-1">
+                <label for="tags" class="text-xs font-bold uppercase text-neutral-400">
+                  <span class="text-red-500">*</span>TAGS (For better Search)                             </label>
+                <textarea id="tags" required placeholder="Tags (comma separated)"                                 class="w-full p-4 rounded-lg bg-neutral-700 border border-neutral-600 text-neutral-50 min-h-36 focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+              </div>
+              <div class="flex items-center gap-4 bg-neutral-700 p-4 border border-neutral-600 rounded-lg">
+                <input type="checkbox" id="copyright-check" required                                 class="h-5 w-5 rounded-md border-2 border-neutral-500 bg-neutral-700 text-blue-600 focus:ring-0 focus:ring-offset-0 focus:border-blue-600" />
+                <p class="text-sm flex-1 truncate text-neutral-400">I confirm that I have the rights to upload this content and it does not violate any copyright laws.</p>
+              </div>
+            </form>
+            <div id="file-upload-section" class="space-y-4">
+              <h3 class="text-xl font-bold">Upload Files</h3>
+              <div id="img-up-div"                             class="cursor-pointer bg-neutral-700 hover:bg-neutral-600 transition-colors rounded-lg overflow-hidden flex flex-col justify-end pt-36 bg-cover bg-center relative group"                             style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD5kTB80gFgOWixbKl4uXbpxDqfXGRQh6qO4Hc8uDtmhvzD9gPrV8MfOiWYmvH8qm2OdMipq28lIoQkWSt4K0X2SiZvhGLtIaF1zb8eKjQ6NdQNAvZ6Ae_gAsCkqOEPbHBmimz4EpxAu25S3uZsld17VfjOVOu-05YxMTgbv7p3LpEOklPZwjc38XrI2m1E6kY7BDVEiH8IRRGTeB5hhY2N9iPPmX4QulxDzmEzhjXpwAvd_THrZSxevueyAqREDWuGx3yHRoZCO8r7');">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent transition-opacity group-hover:from-black/70"></div>
+                <div class="relative p-4 z-10">
+                  <p id="image-title" class="text-neutral-50 text-2xl font-bold">Cover Image</p>
+                  <p id="image-details" class="text-neutral-300 text-sm">Drag & drop or click to upload</p>
+                </div>
+              </div>
+              <input type="file" id="image-input" hidden accept="image/*" />
+              <div id="file-up-div"                             class="cursor-pointer bg-neutral-700 hover:bg-neutral-600 transition-colors rounded-lg overflow-hidden flex flex-col justify-end pt-36 bg-cover bg-center relative group"                             style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB0dUAyVlFXJ3iv6DMaj38EitNI1D_n8BMc42kNZrjxr4MFqS20fQ5IZPhmAuIYBkm5dmMk8yvINxfzeAnIFKcYfrAwcyFhxiN_aavGO7zpFRy_p8o5aYXbwX4v1lA83mbuLHqG9xAmSUI9hyTKVcjLv0-S_iHUNO8QmFcsb0dk2QQeUHfN8MzzK0np8ZAmiXE95mBVS85iTnthPHpI5i1R-zLcBbFwjpz_3PYj1p_1ngWqNeOmgtS3WKvM6ICb_4j_RFPHHXYr7Pkh');">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent transition-opacity group-hover:from-black/70"></div>
+                <div class="relative p-4 z-10">
+                  <p id="file-title" class="text-neutral-50 text-2xl font-bold">Main File</p>
+                  <p id="file-details" class="text-neutral-300 text-sm">Drag & drop or click to upload (PDF, Video, ZIP, PPT)</p>
+                </div>
+              </div>
+              <input type="file" id="file-input" hidden accept=".pdf,.mp4,.ppt,.docs" />
+            </div>
+          </div>
+        </main>
+        <footer class="p-4 sticky bottom-0 bg-neutral-900">
+          <button id="upload-btn" disabled                     class="w-full flex items-center justify-center h-12 px-5 rounded-lg text-base font-bold transition-colors duration-200 bg-neutral-700 text-neutral-50 disabled:bg-neutral-800 disabled:text-neutral-500">
+            <span class="truncate">Review & Upload</span>
+          </button>
+        </footer>
+      </div>
+    </template>
+    <template id="template-preview">
+      <div class="flex-1 flex flex-col">
+        <header class="sticky top-0 z-10 flex items-center justify-between p-4 bg-neutral-900">
+          <button id="back-to-form" aria-label="Go back"                     class="size-12 flex items-center justify-center text-neutral-50 hover:text-neutral-400 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+              <path                             d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+            </svg>
+          </button>
+          <h2 class="text-lg font-bold flex-1 text-center pr-12 text-neutral-50">Publish</h2>
+        </header>
+        <main class="flex-1 p-4 overflow-y-auto">
+          <div class="bg-neutral-800 p-8 md:p-12 rounded-2xl shadow-xl max-w-2xl mx-auto space-y-8">
+            <section>
+              <h3 class="text-xl font-bold mb-4">Preview</h3>
+              <div class="@container">
+                <div class="flex flex-col @xl:flex-row items-stretch justify-start rounded-xl @xl:items-start border border-neutral-700 p-4">
+                  <div class="img-preview w-full aspect-video bg-cover bg-center rounded-lg"></div>
+                  <div class="flex w-full min-w-72 grow flex-col gap-1 py-4 @xl:px-4">
+                    <p class="text-lg font-bold text-neutral-50">File</p>
+                    <p class="file-name text-neutral-400"></p>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section>
+              <h3 class="text-xl font-bold mb-4">Metadata</h3>
+              <div class="grid grid-cols-[30%_1fr] md:grid-cols-[200px_1fr] gap-x-6 gap-y-4">
+                <p class="text-sm font-normal text-neutral-400">Cover</p>
+                <p class="text-sm font-normal text-neutral-50">Cover image</p>
+                <p class="text-sm font-normal text-neutral-400">Title</p>
+                <p id="title-value" class="text-sm font-normal text-neutral-50"></p>
+                <p class="text-sm font-normal text-neutral-400">Summary</p>
+                <p id="summary-value" class="text-sm font-normal text-neutral-50"></p>
+                <p class="text-sm font-normal text-neutral-400">Price</p>
+                <p id="price-value" class="text-sm font-normal text-neutral-50"></p>
+                <p class="text-sm font-normal text-neutral-400">Category</p>
+                <p id="category-value" class="text-sm font-normal text-neutral-50"></p>
+                <p class="text-sm font-normal text-neutral-400">Tags</p>
+                <p id="tags-value" class="text-sm font-normal text-neutral-50"></p>
+                <p class="text-sm font-normal text-neutral-400">License</p>
+                <p class="text-sm font-normal text-neutral-50">Standard License</p>
+              </div>
+            </section>
+          </div>
+        </main>
+        <footer class="p-4 sticky bottom-0 bg-neutral-900">
+          <button id="publish-btn"                     class="w-full flex items-center justify-center h-12 px-5 bg-blue-600 text-white rounded-lg text-base font-bold transition-colors duration-200 hover:bg-blue-500">
+            <span class="truncate">Publish</span>
+          </button>
+        </footer>
+      </div>
+    </template>
+    <template id="template-upload-progress">
+      <div class="flex flex-col items-center justify-center h-screen bg-neutral-900 p-4 text-center">
+        <div class="max-w-xl w-full p-8 rounded-2xl shadow-lg bg-neutral-800 text-neutral-50 space-y-6">
+          <div class="flex items-center justify-center text-blue-600">
+            <svg class="cir-loader w-12 h-12" viewBox="25 25 50 50">
+              <circle class="cir" r="20" cy="50" cx="50"></circle>
+            </svg>
+          </div>
+          <h1 class="text-2xl font-bold" id="upload-heading"></h1>
+         <p
+  id="upload-module-status-message"
+  class=" text-sm font-medium rounded-lg px-4 py-2 transition-all duration-300 ease-in-out
+         bg-neutral-50 text-neutral-600 border border-neutral-200 shadow-sm"
+>
+  <!-- Status message will appear here -->
+</p>
+
+          <div class="relative pt-1">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-xs font-semibold py-1 px-2 rounded-full bg-neutral-700 text-neutral-300" id="upload-module-progress-text"></span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-semibold text-neutral-300" id="upload-module-uploaded-bytes">0 B</span>
+                <span class="text-xs text-neutral-400">of</span>
+                <span class="text-xs text-neutral-300" id="upload-module-total-bytes">0 B</span>
+              </div>
+            </div>
+            <progress id="upload-module-progress-bar" value="0" max="100" class="w-full h-2 rounded-md appearance-none [&::-webkit-progress-bar]:bg-neutral-600 [&::-webkit-progress-value]:bg-blue-600 [&::-moz-progress-bar]:bg-blue-600"></progress>
+          </div>
+          <div class="grid grid-cols-2 gap-x-6 text-sm">
+            <div class="text-left text-neutral-400">Speed: <span class="text-neutral-50" id="upload-module-speed-display">0 B/s</span>
+            </div>
+            <div class="text-right text-neutral-400">Time Left: <span class="text-neutral-50" id="upload-module-time-remaining">--:--</span>
+            </div>
+          </div>
+          <div id="upload-module-btn-group" class="flex justify-center gap-4 mt-6">
+            <button id="upload-module-pause-btn" class="px-6 py-2 rounded-lg bg-neutral-700 text-neutral-50 font-semibold hover:bg-neutral-600 transition-colors disabled:opacity-50">Pause</button>
+            <button id="upload-module-cancel-btn" class="px-6 py-2 rounded-lg bg-red-600 text-neutral-50 font-semibold hover:bg-red-500 transition-colors">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </template>
+    <template id="template-modal">
+      <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
+        <div id="modal-content" class="bg-neutral-800 text-neutral-50 p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full">
+          <div class="w-24 h-24 mx-auto mb-4 relative">
+            <svg viewBox="0 0 52 52" class="w-full h-full text-green-500" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="26" cy="26" r="25" fill="none" stroke="currentColor" stroke-width="2"                             class="circle-animation" />
+              <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"                             stroke-linejoin="round" d="M14.1 27.2l7.1 7.2 16.7-16.8" class="tick-animation" />
+            </svg>
+          </div>
+          <h2 class="text-3xl font-bold mb-2">Success!</h2>
+          <p class="text-lg text-neutral-300 mb-6">Your files have been uploaded successfully.</p>
+          <button id="dismiss-btn"                     class="px-6 py-2 text-sm font-semibold text-neutral-50 bg-neutral-700 rounded-full hover:bg-neutral-600 transition-colors duration-200">                     Dismiss                 </button>
+        </div>
+      </div>
+    </template>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        class UIHandler {
+          constructor(appContainerId) {
+            this.appContainer = document.getElementById(appContainerId);
+          }
+          render(templateId) {
+            this.appContainer.innerHTML = '';
+            const template = document.getElementById(templateId);
+            const clone = template.content.cloneNode(true);
+            this.appContainer.appendChild(clone);
+          }
+          showModal(onDismiss) {
+            this.render('template-modal');
+            const modalContainer = document.getElementById('modal-container');
+            const dismissBtn = document.getElementById('dismiss-btn');
+            modalContainer.classList.add('show');
+            dismissBtn.addEventListener('click', onDismiss);
+          }
+        }
+        class Uploader {
+          constructor() {
+            this.CHUNK_SIZE_MB = 5;
+            this.queue = [];
+            this.currentIndex = 0;
+            this.state = this._resetState();
+          }
+          _resetState() {
+            return {
+              file: null,
+              uploadId: null,
+              completedParts: [],
+              bytesUploadedFromCompletedParts: 0,
+              isUploading: false,
+              isPaused: false,
+              currentXhr: null,
+              uploadStartTime: null,
+            };
+          }
+          enqueueFiles(files) {
+            this.queue = files;
+            this.currentIndex = 0;
+          }
+          async startNext(onSuccess, onFail, onProgressUpdate) {
+            if (this.currentIndex >= this.queue.length) {
+              onSuccess();
+              return;
+            }
+            this.state = this._resetState();
+            this.state.file = this.queue[this.currentIndex].file;
+            try {
+              const response = await fetch(`/start-multipart-upload`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  fileName: this.state.file.name,
+                  contentType: this.state.file.type
+                })
+              });
+              if (!response.ok) throw new Error("Failed to initiate multipart upload.");
+              const data = await response.json();
+              this.state.uploadId = data.uploadId;
+              this.state.uploadStartTime = Date.now();
+              onProgressUpdate({
+                type: 'status',
+                message: "Upload initiated. Starting parts..."
+              });
+              await this._uploadChunks(onProgressUpdate);
+              await this._completeUpload(onProgressUpdate);
+              this.currentIndex++;
+              this.startNext(onSuccess, onFail, onProgressUpdate);
+            } catch (error) {
+              onFail(error);
+            }
+          }
+          _uploadChunks(onProgressUpdate) {
+            this.state.isUploading = true;
+            const chunkSize = this.CHUNK_SIZE_MB * 1024 * 1024;
+            const totalChunks = Math.ceil(this.state.file.size / chunkSize);
+            const uploadLoop = async () => {
+              for (let partNumber = this.state.completedParts.length + 1; partNumber <= totalChunks; partNumber++) {
+                if (this.state.isPaused) return;
+                const start = (partNumber - 1) * chunkSize;
+                const end = Math.min(start + chunkSize, this.state.file.size);
+                const chunk = this.state.file.slice(start, end);
+                onProgressUpdate({
+                  type: 'status',
+                  message: `Uploading ${this.state.file.name} part ${partNumber} of ${totalChunks}...`
+                });
+                try {
+                  await this._uploadPart(partNumber, chunk, onProgressUpdate);
+                } catch (error) {
+                  this.state.isUploading = false;
+                  throw error;
+                }
+              }
+              this.state.isUploading = false;
+            }
+            return new Promise(resolve => {
+              const interval = setInterval(() => {
+                if (!this.state.isUploading && !this.state.isPaused) {
+                  clearInterval(interval);
+                  resolve();
+                }
+              }, 100);
+              uploadLoop();
+            });
+          }
+          _uploadPart(partNumber, chunk, onProgressUpdate) {
+            return new Promise(async (resolve, reject) => {
+              const response = await fetch(`/get-presigned-part-url?fileName=${encodeURIComponent(this.state.file.name)}&uploadId=${this.state.uploadId}&partNumber=${partNumber}`);
+              if (!response.ok) return reject(new Error("Failed to get presigned URL."));
+              const {
+                url
+              } = await response.json();
+              const xhr = new XMLHttpRequest();
+              this.state.currentXhr = xhr;
+              xhr.upload.onprogress = (e) => {
+                const totalBytesUploaded = this.state.bytesUploadedFromCompletedParts + e.loaded;
+                const totalProgress = (totalBytesUploaded / this.state.file.size) * 100;
+                const elapsedTime = (Date.now() - this.state.uploadStartTime) / 1000;
+                const averageSpeedBps = totalBytesUploaded / elapsedTime;
+                const remainingBytes = this.state.file.size - totalBytesUploaded;
+                const timeRemaining = averageSpeedBps > 0 ? remainingBytes / averageSpeedBps : Infinity;
+                onProgressUpdate({
+                  type: 'progress',
+                  progress: totalProgress,
+                  speed: averageSpeedBps,
+                  timeRemaining: timeRemaining,
+                  uploadedBytes: totalBytesUploaded,
+                  totalBytes: this.state.file.size
+                });
+              };
+              xhr.onload = () => {
+                if (xhr.status === 200) {
+                  this.state.completedParts.push({
+                    ETag: xhr.getResponseHeader("ETag"),
+                    PartNumber: partNumber
+                  });
+                  this.state.bytesUploadedFromCompletedParts += chunk.size;
+                  resolve();
+                } else {
+                  reject(new Error(`Part upload failed with status ${xhr.status}.`));
+                }
+              };
+              xhr.onerror = () => reject(new Error("Network error during part upload."));
+              xhr.onabort = () => resolve();
+              xhr.open("PUT", url);
+              xhr.setRequestHeader("Content-Type", "application/octet-stream");
+              xhr.send(chunk);
+            });
+          }
+          async _completeUpload(onProgressUpdate) {
+            onProgressUpdate({
+              type: 'status',
+              message: "Completing upload..."
+            });
+            const response = await fetch("/complete-multipart-upload", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                fileName: this.state.file.name,
+                uploadId: this.state.uploadId,
+                parts: this.state.completedParts,
+              }),
+            });
+            if (!response.ok) throw new Error("Failed to complete upload.");
+          }
+          togglePause() {
+            this.state.isPaused = !this.state.isPaused;
+            if (this.state.isPaused && this.state.currentXhr) {
+              this.state.currentXhr.abort();
+            } else if (!this.state.isPaused) {
+              this.startNext(
+                () => ui.showModal(() => location.reload()),
+                (err) => alert(`Upload failed: ${err.message}`), updateProgressUI);
+            }
+          }
+          cancel() {
+            if (this.state.currentXhr) {
+              this.state.currentXhr.abort();
+            }
+            this.state = this._resetState();
+            this.queue = [];
+            this.currentIndex = 0;
+          }
+        }
+        const ui = new UIHandler('app-container');
+        const uploader = new Uploader();
+        let formData = {};
+        let imageInput = null;
+        let fileInput = null;
+        const formatBytes = (bytes, decimals = 2) => {
+          if (bytes === 0) return '0 B';
+          const k = 1024;
+          const dm = decimals < 0 ? 0 : decimals;
+          const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        };
+        const formatRate = (bytes, decimals = 2) => {
+          if (bytes === 0) return '0 B/s';
+          const k = 1024;
+          const dm = decimals < 0 ? 0 : decimals;
+          const sizes = ['B/s', 'KB/s', 'MB/s', 'GB/s', 'TB/s'];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        };
+        const formatTime = (seconds) => {
+          if (seconds === Infinity || seconds < 0) return "--:--";
+          const minutes = Math.floor(seconds / 60);
+          const remainingSeconds = Math.floor(seconds % 60);
+          return `${minutes}m ${remainingSeconds}s`;
+        };
+        const calSize = (size) => {
+          const imageSize = Math.floor(size / 1024 / 1024);
+          return imageSize > 1 ? `${imageSize} MB` : `${Math.floor(size / 1024)} KB`;
+        };
+        const updateProgressUI = (event) => {
+          const statusMessage = document.getElementById('upload-module-status-message');
+          const progressBar = document.getElementById('upload-module-progress-bar');
+          const progressBarText = document.getElementById('upload-module-progress-text');
+          const speedDisplay = document.getElementById('upload-module-speed-display');
+          const timeRemainingDisplay = document.getElementById('upload-module-time-remaining');
+          const uploadedBytesDisplay = document.getElementById('upload-module-uploaded-bytes');
+          const totalBytesDisplay = document.getElementById('upload-module-total-bytes');
+          if (event.type === 'status') {
+            if (statusMessage) statusMessage.textContent = event.message;
+          } else if (event.type === 'progress') {
+            if (progressBar) progressBar.value = event.progress;
+            if (progressBarText) progressBarText.textContent = `${event.progress.toFixed(1)}%`;
+            if (speedDisplay) speedDisplay.textContent = formatRate(event.speed);
+            if (timeRemainingDisplay) timeRemainingDisplay.textContent = formatTime(event.timeRemaining);
+            if (uploadedBytesDisplay) uploadedBytesDisplay.textContent = formatBytes(event.uploadedBytes);
+            if (totalBytesDisplay) totalBytesDisplay.textContent = formatBytes(event.totalBytes);
+          }
+        }
+        const goToFormStage = () => {
+          ui.render('template-upload-form');
+          initializeFormStage();
+        };
+        const goToPreviewStage = () => {
+          ui.render('template-preview');
+          initializePreviewStage();
+        };
+        const goToUploadProgressStage = () => {
+          ui.render('template-upload-progress');
+          initializeUploadProgressStage();
+        };
+        const initializeFormStage = () => {
+          const form = document.getElementById('upload-form');
+          const uploadBtn = document.getElementById('upload-btn');
+          const imgUpDiv = document.getElementById('img-up-div');
+          const fileUpDiv = document.getElementById('file-up-div');
+          imageInput = document.getElementById('image-input');
+          fileInput = document.getElementById('file-input');
+          const checkFormValidity = () => {
+            const allRequiredFilled = Array.from(form.querySelectorAll('[required]')).every(input => {
+              return input.type === 'checkbox' ? input.checked : input.value.trim() !== '' && input.value !== 'Category';
+            });
+            const filesSelected = fileInput.files.length > 0 && imageInput.files.length > 0;
+            uploadBtn.disabled = !(allRequiredFilled && filesSelected);
+          };
+          form.addEventListener('input', checkFormValidity);
+          imageInput.addEventListener('change', (e) => {
+            document.getElementById('image-title').textContent = e.target.files[0].name;
+            document.getElementById('image-details').textContent = `${calSize(e.target.files[0].size)} | ${e.target.files[0].type}`;
+            checkFormValidity();
+          });
+          fileInput.addEventListener('change', (e) => {
+            document.getElementById('file-title').textContent = e.target.files[0].name;
+            document.getElementById('file-details').textContent = `${calSize(e.target.files[0].size)} | ${e.target.files[0].type}`;
+            checkFormValidity();
+          });
+          imgUpDiv.addEventListener('click', () => imageInput.click());
+          fileUpDiv.addEventListener('click', () => fileInput.click());
+          uploadBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!uploadBtn.disabled) {
+              formData = {
+                title: document.getElementById('title').value,
+                summary: document.getElementById('summary').value,
+                price: document.getElementById('price').value,
+                category: document.getElementById('category').value,
+                tags: document.getElementById('tags').value,
+              };
+              goToPreviewStage();
+            }
+          });
+        };
+        const initializePreviewStage = () => {
+          document.getElementById('back-to-form').addEventListener('click', goToFormStage);
+          document.getElementById('title-value').textContent = formData.title;
+          document.getElementById('summary-value').textContent = formData.summary;
+          document.getElementById('price-value').textContent = `${formData.price} Ruppes`;
+          document.getElementById('category-value').textContent = formData.category;
+          document.getElementById('tags-value').textContent = formData.tags;
+          document.querySelector('.img-preview').style.backgroundImage = `url(${URL.createObjectURL(imageInput.files[0])})`;
+          document.querySelector('.file-name').textContent = fileInput.files[0].name;
+          document.getElementById('publish-btn').addEventListener('click', () => {
+            uploader.enqueueFiles([{
+              type: 'main-file',
+              file: fileInput.files[0]
+            }, {
+              type: 'cover-image',
+              file: imageInput.files[0]
+            }]);
+            goToUploadProgressStage();
+            uploader.startNext(
+              () => ui.showModal(() => location.reload()),
+              (err) => alert(`Upload failed: ${err.message}`), updateProgressUI);
+          });
+        };
+        const initializeUploadProgressStage = () => {
+          const pauseBtn = document.getElementById('upload-module-pause-btn');
+          const cancelBtn = document.getElementById('upload-module-cancel-btn');
+          pauseBtn.addEventListener('click', () => {
+            uploader.togglePause();
+            pauseBtn.textContent = uploader.state.isPaused ? 'Resume' : 'Pause';
+            updateProgressUI({
+              type: 'status',
+              message: uploader.state.isPaused ? "Upload paused." : "Resuming upload..."
+            });
+          });
+          cancelBtn.addEventListener('click', () => {
+            uploader.cancel();
+            alert("Upload cancelled.");
+            goToFormStage();
+          });
+        };
+        // Initial call
+        goToFormStage();
+      });
+    </script>
+  </body>
+</html>

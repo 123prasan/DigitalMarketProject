@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Payment Status</title>
+</head>
+<body style="font-family:Arial,sans-serif;background:#f3f3f3;padding:20px;">
+  <div style="max-width:600px;margin:auto;background:#fff;padding:30px;border-radius:8px;">
+    <h2 style="color:#2196F3;">Payment {{status}}</h2>
+    <p>Hi {{userName}},</p>
+    <p>Your payment for order <strong>#{{orderId}}</strong> has been <strong>{{status}}</strong> on {{date}}.</p>
+    {{#if status == "Failed"}}
+      <p style="color:red;">Please retry the payment or contact support if the amount was debited.</p>
+      <a href="{{retryLink}}" style="background:red;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;">Retry Payment</a>
+    {{/if}}
+    {{#if status == "Success"}}
+      <p>We’ve received your payment of ₹{{amount}}.</p>
+      <a href="{{invoiceLink}}" style="background:#2196F3;color:#fff;padding:10px 20px;border-radius:4px;text-decoration:none;">Download Invoice</a>
+    {{/if}}
+  </div>
+</body>
+</html>
