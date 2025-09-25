@@ -133,6 +133,12 @@
             <nav class="flex-grow" id="main-nav">
                 <ul class="space-y-2">
                     <li>
+                        <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl nav-active-unique" data-target="upload-file-section">
+                            <i class="fa-solid fa-file-arrow-up w-5 h-5"></i>
+                            <span>Upload Docs</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" class="nav-link-unique flex items-center space-x-3 p-3 rounded-xl nav-active-unique" data-target="my-courses-section">
                             <i class="fa-solid fa-book-open w-5 h-5"></i>
                             <span>My Courses</span>
@@ -200,8 +206,10 @@
             %>
 
             <div id="content-container" class="flex-1 p-4 lg:p-8">
-
-                <div id="my-courses-section" class="content-section">
+                <div id="upload-file-section" class="content-section">
+                    <%-include("fileupload")%>
+                </div>
+                <div id="my-courses-section" class="content-section hidden" >
                      <div class="coming-soon-container"><div class="text-center"><i class="fas fa-rocket coming-soon-icon"></i><h2 class="coming-soon-text">My Courses Coming Soon!</h2><p class="text-gray-500 mt-2">We're building something amazing for you.</p></div></div>
                 </div>
 
