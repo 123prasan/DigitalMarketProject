@@ -15,7 +15,7 @@ const cors = require('cors');
 const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
-const File = require("./models/File"); // Ensure path to your model is correct
+const File = require("./models/file");
 const authenticateJWT_user  = require('./routes/authentication/jwtAuth'); // Assuming path is correct
 const requireAuth = require('./routes/authentication/reaquireAuth'); // Assuming path is correct
 
