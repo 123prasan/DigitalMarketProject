@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getProgressForCourse, updateProgress } = require('../controllers/progressController');
+const { getProgressForCourse, updateProgress } = require('../controllers/progresscontroller');
 const authenticateJWT_user = require('./authentication/jwtAuth'); // Adjust path if needed
 
 // Get progress for a specific course
