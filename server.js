@@ -43,7 +43,7 @@ const User = require("./models/userData.js");
 const UserDownloads = require("./models/userDownloads.js");
 const Userpurchases = require("./models/userPerchase.js");
 const requireAuth = require("./routes/authentication/reaquireAuth.js");
-const Usernotifications = require("./models/userNotifications.js");
+const Usernotifications = require("./models/userNotifications");
 const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 const Usertransaction = require("./models/userTransactions.js");
 const app = express();
@@ -1159,7 +1159,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
 });
 
 const dotenv = require("dotenv");
-const usernotifications = require("./models/usernotifications.js");
+const usernotifications = require("./models/userNotifications.js");
 dotenv.config();
 
 app.get("/documents", authenticateJWT_user, async (req, res) => {
