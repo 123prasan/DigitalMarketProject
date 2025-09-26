@@ -940,26 +940,35 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       return res.status(404).render("404", { message: "File not found" });
     }
 
+    // Get seller profile picture
+    let sellerprofilepic = "/images/avatar.jpg"; // default
+    if (file.userId) {
+      const findUser = await User.findById(file.userId);
+      if (findUser?.profilePicUrl) {
+        sellerprofilepic = findUser.profilePicUrl;
+      }
+    }
+
     // Redirect if slug is incorrect
     if (file.slug !== req.params.slug) {
       return res.redirect(301, `/file/${file.slug}/${file._id}`);
     }
 
-    // Use CloudFront URLs for preview and PDF
-    const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${
-      file.imageType || "jpg"
-    }`;
-    const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
+    // Build URLs (CloudFront)
+const ext = file.imageType ?file.imageType:"jpg";
+const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${ext}`;    const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
 
+    console.log("Preview URL:", previewUrl);
+
+    // Logged in user
     let user = null;
     if (req.user) {
-      user = await User.findById(req.user._id).select(
-        "profilePicUrl username email"
-      );
+      user = await User.findById(req.user._id).select("profilePicUrl username email");
     }
 
     res.render("file-details", {
       file,
+      sellerprofilepic,
       razorpayKey: process.env.RAZORPAY_KEY_ID,
       previewUrl,
       pdfUrl,
@@ -973,6 +982,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+;
 
 // Delete File - NOW PROTECTED BY JWT
 app.post("/delete-file", authenticateJWT, async (req, res) => {
@@ -1168,9 +1178,8 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
     const categories = await getcategories();
 
     const filesWithPreviews = files.map((file) => {
-      const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${
-        files.imageType || "jpg"
-      }`;
+      const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${files.imageType || "jpg"}`;
+      
       const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
 
       return {
@@ -1179,7 +1188,7 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
         pdfUrl,
       };
     });
-
+    
     let user = null;
     if (req.user) {
       user = await User.findById(req.user._id).select(
@@ -1413,8 +1422,7 @@ function getMimeType(extension) {
     case ".zip":
       return "application/zip";
     case ".jpg":
-    case ".jpeg":
-      return "image/jpeg";
+      return "image/jpg";
     case ".png":
       return "image/png";
     default:

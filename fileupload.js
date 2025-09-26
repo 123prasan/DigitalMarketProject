@@ -18,7 +18,7 @@ const crypto = require('crypto');
 const File = require("./models/file");
 const authenticateJWT_user  = require('./routes/authentication/jwtAuth'); // Assuming path is correct
 const requireAuth = require('./routes/authentication/reaquireAuth'); // Assuming path is correct
-
+const Categories=require("./models/categories")
 const router = express.Router();
 
 // --- Configuration ---
@@ -200,6 +200,7 @@ router.post('/api/create-file-record', authenticateJWT_user, requireAuth, async 
             title, descriptionHTML, price, category, fileSize, // <-- get fileSize
             couponCode, couponPercentage,imageType
         } = req.body;
+        console.log(req.body)
 
         if (!title || !descriptionHTML || !price || !category || fileSize === undefined) {
             return res.status(400).json({ error: 'Missing required metadata fields.' });
@@ -222,9 +223,16 @@ router.post('/api/create-file-record', authenticateJWT_user, requireAuth, async 
             fileSize: Number(fileSize), // <-- Save the file size
             couponCode: couponCode || null,
             couponPercentage: couponPercentage ? Number(couponPercentage) : null,
-            imageType:imageType || "jpg"
+            imageType:imageType
         });
+        const filecategory=Categories.findOne({name:category})
+        if(!filecategory){
+           await Categories.create({
+            name:category
+            })
+        }
         
+     
         await newFile.save();
         
         res.status(201).json({ fileId: newFile._id });

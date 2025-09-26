@@ -1,254 +1,295 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Content Modal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        
-        /* Custom transition for the modal */
-        #reportModal {
-            transition: opacity 0.3s ease-in-out;
-            
-        }
-        #modalContent {
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-        }
-        /* Styling for radio button focus state */
-        input[type="radio"]:focus + label {
-            outline: 2px solid #3b82f6; /* Tailwind's blue-500 */
-            outline-offset: 2px;
-        }
-        /* Keyframe animation for the success checkmark */
-        @keyframes draw-check {
-            0% {
-                stroke-dashoffset: 32;
-            }
-            100% {
-                stroke-dashoffset: 0;
-            }
-        }
-        .success-checkmark {
-            stroke-dasharray: 32;
-            animation: draw-check 0.5s ease-in-out forwards;
-        }
-        #reportModal{
-            scrollbar-width: none;
-        }
-    </style>
-</head>
-<body class=" min-h-screen">
+<button class="report-button" id="reportButton">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="12" y1="18" x2="12" y2="12"></line>
+        <line x1="12" y1="12" x2="12" y2="12"></line>
+    </svg>
+    <span>Report File</span>
+</button>
 
-    <!-- Wrapper Div for the entire component -->
-    <div id="report-component-wrapper">
-        <!-- The Report Button -->
-        <!-- In a real application, the data-file-id would be dynamically set, e.g., data-file-id="<%= file._id %>" -->
-        <button id="reportButton" data-file-id="FILE12345" class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75 transition-all duration-200 ease-in-out flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="12" y1="12" x2="12" y2="12"></line></svg>
-            <span>Report File</span>
-        </button>
-
-        <!-- The Modal -->
-        <div id="reportModal" style="overflow-y: auto;" class="fixed  inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 opacity-0 pointer-events-none">
-            <div id="modalContent"  class="bg-white rounded-xl shadow-2xl w-full max-w-md transform scale-95 opacity-0">
-                <!-- Modal Header -->
-                <div class="flex items-center justify-between p-5 border-b border-gray-200 rounded-t-xl">
-                    <h3 class="text-xl font-bold text-gray-800">Report Content</h3>
-                    <button id="closeModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center transition-colors">
-                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-
-                <!-- Modal Body -->
-                <div id="modalBody" class="p-6">
-                    <!-- This content is replaced on successful submission -->
-                </div>
-            </div>
+<div class="modal-backdrop" id="reportModalBackdrop">
+    <div class="modal-content" id="reportModalContent">
+        <div class="modal-header">
+            <h3 class="modal-title">Report Content</h3>
+            <button class="modal-close-button" id="closeReportModal">&times;</button>
         </div>
+        <div class="modal-body" id="reportModalBody">
+            </div>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Get all necessary elements from the DOM
-            const reportButton = document.getElementById('reportButton');
-            const reportModal = document.getElementById('reportModal');
-            const modalContent = document.getElementById('modalContent');
-            const closeModal = document.getElementById('closeModal');
-            const modalBody = document.getElementById('modalBody');
 
-            // --- Form Content Templates ---
-            // This function returns the initial form HTML.
-            // This makes it easy to reset the form after submission.
-            const getFormHtml = () => `
-                <form id="reportForm" novalidate>
-                    <p class="text-gray-600 mb-5">Please select a reason for your report. Your feedback helps us maintain a safe community.</p>
-                    <fieldset class="space-y-3">
-                        <legend class="sr-only">Report Reasons</legend>
-                        ${getRadioOption('copyright', 'Copyright Infringement', 'Concerns related to unauthorized use of copyrighted material.')}
-                        ${getRadioOption('infringement', 'Trademark Infringement', 'Content that violates a trademark.')}
-                        ${getRadioOption('fraud', 'Fraud or Scam', 'Content that is deceptive or fraudulent.')}
-                        ${getRadioOption('empty', 'Empty or Low-Quality Content', 'The file contains no valuable content.')}
-                        ${getRadioOption('other', 'Other', 'Issues not covered by the options above.')}
-                    </fieldset>
-                    <div id="otherReasonContainer" class="mt-4 hidden">
-                        <label for="otherDetails" class="block mb-2 text-sm font-medium text-gray-900">Please provide more details:</label>
-                        <textarea id="otherDetails" name="details" rows="4" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 transition-colors" placeholder="Explain your reason..."></textarea>
-                    </div>
-                    <div class="text-red-500 text-sm mt-2 h-5" id="error-message"></div>
-                    <button type="submit" id="submitReportBtn" class="w-full mt-4 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 text-center transition-all duration-200">Submit Report</button>
-                </form>
-            `;
+<style>
+    /* --- General Button Styling --- */
+    .report-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        font-family: sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #dc3545;
+        background-color: transparent;
+        border: 1px solid #dc3545;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+    .report-button:hover {
+        background-color: #dc3545;
+        color: #fff;
+    }
+    .report-button svg {
+        width: 20px;
+        height: 20px;
+    }
 
-            // Helper function to create radio button options
-            const getRadioOption = (id, title, description) => `
-                <div>
-                    <input type="radio" id="${id}" name="reason" value="${id}" class="sr-only" required>
-                    <label for="${id}" class="block p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        <span class="font-semibold text-gray-800">${title}</span>
-                        <p class="text-sm text-gray-500 mt-1">${description}</p>
-                    </label>
-                </div>
-            `;
+    /* --- Modal Styling --- */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-backdrop.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    .modal-content {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 500px;
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+        /* UPDATED: Make modal a flex container and limit its height */
+        display: flex;
+        flex-direction: column;
+        max-height: 85vh; 
+    }
+    .modal-backdrop.visible .modal-content {
+        transform: scale(1);
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e9ecef;
+        padding: 15px 20px;
+    }
+    /* UPDATED: Add rule for the modal body to make it scrollable */
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto;
+    }
+    .modal-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+        color: #212529;
+    }
+    .modal-close-button {
+        background: none;
+        border: none;
+        font-size: 28px;
+        font-weight: 300;
+        cursor: pointer;
+        color: #6c757d;
+        padding: 0;
+        line-height: 1;
+    }
 
-            // Success message template
-            const getSuccessHtml = () => `
-                <div class="text-center py-8">
-                     <div class="mx-auto bg-green-100 rounded-full h-16 w-16 flex items-center justify-center">
-                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path class="success-checkmark" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mt-4">Report Submitted</h3>
-                    <p class="text-gray-600 mt-2">Thank you for your feedback. We will review your report shortly.</p>
-                     <button id="closeSuccessBtn" class="w-full mt-6 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 text-center transition-colors">Done</button>
-                </div>
-            `;
-            
-            // --- Modal Control Functions ---
-            const openModal = () => {
-                modalBody.innerHTML = getFormHtml(); // Set initial form content
-                reportModal.classList.remove('opacity-0', 'pointer-events-none');
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                attachFormListeners(); // Attach listeners to the newly created form
-            };
+    /* --- Form Styling within Modal --- */
+    .report-reason-label {
+        display: block;
+        padding: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        margin-bottom: 10px;
+    }
+    .report-reason-label:hover {
+        background-color: #f8f9fa;
+    }
+    .report-reason-input {
+        display: none;
+    }
+    .report-reason-input:checked + .report-reason-label {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+        background-color: #e7f1ff;
+    }
+    #otherDetails {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    #submitReportBtn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        background-color: #0d6efd;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 15px;
+    }
+    #submitReportBtn:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
 
-            const closeModalFunc = () => {
-                modalContent.classList.add('scale-95', 'opacity-0');
-                reportModal.classList.add('opacity-0');
-                // Use setTimeout to wait for animation before disabling pointer events
-                setTimeout(() => {
-                    reportModal.classList.add('pointer-events-none');
-                }, 300);
-            };
+    /* --- Success Message Styling --- */
+    @keyframes draw-check {
+        from { stroke-dashoffset: 32; }
+        to { stroke-dashoffset: 0; }
+    }
+    .success-checkmark {
+        stroke-dasharray: 32;
+        animation: draw-check 0.5s ease-in-out forwards;
+    }
+</style>
 
-            // --- Event Handlers ---
-            const handleFormSubmit = async (event) => {
-                event.preventDefault();
-                const form = event.target;
-                const submitButton = document.getElementById('submitReportBtn');
-                const errorMessage = document.getElementById('error-message');
-                
-                const formData = new FormData(form);
-                const reason = formData.get('reason');
-                const details = formData.get('details');
-                
-                errorMessage.textContent = ''; // Clear previous errors
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const reportButton = document.getElementById('reportButton');
+        const reportModalBackdrop = document.getElementById('reportModalBackdrop');
+        const reportModalBody = document.getElementById('reportModalBody');
+        const closeReportModalBtn = document.getElementById('closeReportModal');
+        
+        // --- Modal Control ---
+        const openModal = () => {
+            reportModalBackdrop.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        };
+        const closeModal = () => {
+            reportModalBackdrop.classList.remove('visible');
+            document.body.style.overflow = '';
+        };
 
-                if (!reason) {
-                    errorMessage.textContent = 'Please select a reason.';
-                    return;
-                }
-                if (reason === 'other' && !details.trim()) {
-                    errorMessage.textContent = 'Please provide details for the "Other" reason.';
-                    return;
-                }
-
-                submitButton.disabled = true;
-                submitButton.textContent = 'Submitting...';
-                
-                const fileId = "<%=file._id%>";
-                const reportUrl = `/report/?file_id=${fileId}`;
-
-                try {
-                    // Simulate API call
-                    console.log('Submitting report to:', reportUrl);
-                    console.log('Payload:', { reason, details });
-                    
-                    const response = await fetch(reportUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ reason, details }),
-                    });
-
-                    // Since this is a mock, we'll simulate a successful response.
-                    // In a real scenario, you'd check response.ok
-                    if (response.ok) { // Simulating success
-                        modalBody.innerHTML = getSuccessHtml();
-                        document.getElementById('closeSuccessBtn').addEventListener('click', closeModalFunc);
-                    } else {
-                        throw new Error('Failed to submit report.');
-                    }
-
-                } catch (error) {
-                    console.error('Submission failed:', error);
-                    errorMessage.textContent = 'An error occurred. Please try again.';
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Submit Report';
-                }
-            };
-            
-            // Function to attach listeners to the dynamic form content
-            const attachFormListeners = () => {
-                const form = document.getElementById('reportForm');
-                const otherReasonContainer = document.getElementById('otherReasonContainer');
-                const radioButtons = form.querySelectorAll('input[name="reason"]');
-
-                radioButtons.forEach(radio => {
-                    radio.addEventListener('change', () => {
-                        if (radio.value === 'other') {
-                            otherReasonContainer.classList.remove('hidden');
-                        } else {
-                            otherReasonContainer.classList.add('hidden');
-                        }
-                        // Add selected style
-                        document.querySelectorAll('label[for^="copyright"], label[for^="infringement"], label[for^="fraud"], label[for^="empty"], label[for^="other"]').forEach(label => {
-                           label.classList.remove('ring-2', 'ring-blue-500', 'border-blue-500');
-                           label.classList.add('border-gray-200');
-                        });
-                        const selectedLabel = document.querySelector(`label[for="${radio.id}"]`);
-                        selectedLabel.classList.add('ring-2', 'ring-blue-500', 'border-blue-500');
-                        selectedLabel.classList.remove('border-gray-200');
-
-                    });
-                });
-                
-                form.addEventListener('submit', handleFormSubmit);
-            };
-
-            // --- Main Event Listeners ---
-            reportButton.addEventListener('click', openModal);
-            closeModal.addEventListener('click', closeModalFunc);
-            
-            // Close modal if user clicks on the backdrop
-            reportModal.addEventListener('click', (event) => {
-                if (event.target === reportModal) {
-                    closeModalFunc();
-                }
-            });
-
-            // Close modal with Escape key
-            window.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape' && !reportModal.classList.contains('pointer-events-none')) {
-                    closeModalFunc();
-                }
-            });
+        reportButton.addEventListener('click', () => {
+            reportModalBody.innerHTML = getFormHtml();
+            attachFormListeners();
+            openModal();
         });
-    </script>
-</body>
-</html>
+        
+        closeReportModalBtn.addEventListener('click', closeModal);
+        reportModalBackdrop.addEventListener('click', (event) => {
+            if (event.target === reportModalBackdrop) {
+                closeModal();
+            }
+        });
 
+        // --- HTML Content Templates ---
+        const getFormHtml = () => `
+            <form id="reportForm" novalidate>
+                <p style="color: #6c757d; margin-top:0; margin-bottom: 20px;">Please select a reason for your report. Your feedback helps us maintain a safe community.</p>
+                <div>
+                    ${getRadioOption('copyright', 'Copyright Infringement', 'Unauthorized use of copyrighted material.')}
+                    ${getRadioOption('infringement', 'Trademark Infringement', 'Content that violates a trademark.')}
+                    ${getRadioOption('fraud', 'Fraud or Scam', 'Content that is deceptive or fraudulent.')}
+                    ${getRadioOption('empty', 'Empty or Low-Quality Content', 'The file contains no valuable content.')}
+                    ${getRadioOption('other', 'Other', 'Issues not covered by the options above.')}
+                </div>
+                <div id="otherReasonContainer" style="margin-top: 15px; display: none;">
+                    <label for="otherDetails" style="display: block; margin-bottom: 5px;">Please provide more details:</label>
+                    <textarea id="otherDetails" name="details" rows="3" placeholder="Explain your reason..."></textarea>
+                </div>
+                <div style="color: #dc3545; font-size: 14px; margin-top: 10px; height: 1.2em;" id="error-message"></div>
+                <button type="submit" id="submitReportBtn">Submit Report</button>
+            </form>
+        `;
+        const getRadioOption = (id, title, description) => `
+            <div>
+                <input class="report-reason-input" type="radio" name="reason" id="${id}" value="${id}" required>
+                <label class="report-reason-label" for="${id}">
+                    <span style="font-weight: 600; color: #212529;">${title}</span>
+                    <p style="font-size: 14px; color: #6c757d; margin: 5px 0 0 0;">${description}</p>
+                </label>
+            </div>
+        `;
+        const getSuccessHtml = () => `
+            <div style="text-align: center; padding: 20px 0;">
+                <div style="margin: 0 auto; background-color: #d1e7dd; border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                    <svg style="color: #0f5132;" width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path class="success-checkmark" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 style="font-size: 22px; font-weight: 600; color: #212529; margin-top: 20px;">Report Submitted</h3>
+                <p style="color: #6c757d; margin-top: 10px;">Thank you for your feedback. We will review your report shortly.</p>
+            </div>
+        `;
+
+        // --- Form Logic ---
+        const handleFormSubmit = async (event) => {
+            event.preventDefault();
+            const submitButton = document.getElementById('submitReportBtn');
+            const errorMessage = document.getElementById('error-message');
+            const formData = new FormData(event.target);
+            const reason = formData.get('reason');
+            const details = formData.get('details') || "";
+
+            errorMessage.textContent = '';
+            if (!reason) {
+                errorMessage.textContent = 'Please select a reason.'; return;
+            }
+            if (reason === 'other' && !details.trim()) {
+                errorMessage.textContent = 'Please provide details for the "Other" reason.'; return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            
+            const fileId = "<%= file._id %>";
+            const reportUrl = `/report/?file_id=${fileId}`;
+
+            try {
+                const response = await fetch(reportUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason, details }),
+                });
+                if (response.ok) {
+                    reportModalBody.innerHTML = getSuccessHtml();
+                    setTimeout(closeModal, 3000);
+                } else { throw new Error('Server responded with an error.'); }
+            } catch (error) {
+                console.error('Submission failed:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit Report';
+            }
+        };
+        
+        const attachFormListeners = () => {
+            const form = document.getElementById('reportForm');
+            if (!form) return;
+            form.addEventListener('submit', handleFormSubmit);
+
+            const otherReasonContainer = document.getElementById('otherReasonContainer');
+            form.querySelectorAll('input[name="reason"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    otherReasonContainer.style.display = radio.value === 'other' ? 'block' : 'none';
+                });
+            });
+        };
+    });
+</script>
