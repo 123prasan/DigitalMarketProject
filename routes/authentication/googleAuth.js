@@ -319,12 +319,7 @@ router.get(
     // const reports= await Report.find({userId:req.user._id})
     const payouts = await Payouts.find({ userId: req.user._id });
     const files = await File.find({ userId: req.user._id });
-    const userUpi = await paymentMethod.findOne({ userId: req.user._id });
-    const isDefault = userUpi.isDefault;
-    console.log(isDefault)
-    if (!isDefault) {
-      isDefault = false
-    }
+   
     let user = null;
 
     if (req.user) {
