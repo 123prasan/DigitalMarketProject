@@ -336,8 +336,7 @@ router.get(
       }
     }
     res.render("createcourse", {
-      isDefault,
-      userUpi: userUpi.upi,
+      
       transactions: userTransactions,
       payouts,
       isLoggedin: !!req.user,
