@@ -21,13 +21,19 @@
         <div class="vidyari-profile-header">
             <div class="vidyari-profile-avatar-wrapper">
                 <img 
-                    src="<%= userData.profilepicUrl || './images/avatar.jpg' %>" 
+                    src="<%= userData.profilePicUrl %>" 
                     alt="User Avatar" 
                     class="vidyari-profile-avatar" 
                     id="profileAvatar"
                     onerror="this.onerror=null; this.src='./images/avatar.jpg';"
                 />
+               
             </div>
+             <% if (userData.ISVERIFIED) { %>
+                                <span class="profile-verified-badge" title="Verified User">
+                                    <img style="width: 50px; height: 50px;" src="/images/verify.png" alt="Verified Badge"/>
+                                </span>
+                            <% } %>
             <div class="vidyari-profile-info">
                 <h1 class="vidyari-profile-name" id="profileName"><%= userData.fullname || userData.username %></h1>
                 <p class="vidyari-profile-username" id="profileUsername">@<%= userData.username %></p>

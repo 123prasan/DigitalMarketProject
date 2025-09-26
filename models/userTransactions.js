@@ -2,7 +2,7 @@ const mongoose=require("mongoose");
 const userTran=new mongoose.Schema({
     ProductName:{type:String,required:true},
     ProductId:{type:String,required:true},
-    userId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
+    userId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true,default:"66f5a4b3e3d2c7f1a9b12345"},
     status:{type:String,required:true,default:"Completed"},
     totalAmount:{type:Number,required:true},
     discount:{type:Number,default:0},

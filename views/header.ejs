@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vidyari - Clean Redesign</title>
+    <title>Vidyari - Redesigned</title>
 
     <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -21,94 +20,100 @@
            ========================================================================== */
         :root {
             --color-primary: #8b5cf6;
-            --color-secondary: #ec4899;
             --color-accent: #3b82f6; 
-            --color-success: #22c55e;
             --color-danger: #ef4444;
             --color-text: #e5e7eb;
             --color-text-muted: #9ca3af;
             --color-bg-dark: #030712;
             --color-bg-card: #111827;
             --color-border: #374151;
-            --color-hover: rgba(255, 255, 255, 0.08);
             
+            /* Icon Colors */
+            --icon-color-home: #22c55e;
+            --icon-color-docs: #f59e0b;
+            --icon-color-courses: #3b82f6;
+            --icon-color-dashboard: #6366f1;
+            --icon-color-downloads: #8b5cf6;
+            --icon-color-trans: #ec4899;
+
             --radius-md: 0.75rem;
-            --radius-lg: 1rem;
-            --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --shadow-glow: 0 0 25px rgba(139, 92, 246, 0.1);
+            --transition-fast: 0.2s ease;
+            --transition-smooth: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow-glow: 0 0 35px rgba(139, 92, 246, 0.1);
         }
 
         body {
             background-color: var(--color-bg-dark);
             font-family: 'Inter', 'Segoe UI', sans-serif;
             color: var(--color-text);
+            overflow-x: hidden;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* ==========================================================================
            2. Header & Navigation
            ========================================================================== */
         .site-header {
-            background-color: var(--color-bg-card);
+            background-color: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--color-border);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4), 0 1px 2px var(--color-border);
             position: sticky;
             top: 0;
             z-index: 1020;
-            
-            padding: 1rem 2rem;
-        }
-
-        .site-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 600px;
-            height: 100%;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
-            transform: translateX(-50%);
-            animation: aurora-glow 10s infinite alternate;
-            pointer-events: none;
-        }
-
-        @keyframes aurora-glow {
-            from { transform: translateX(-60%); opacity: 0.8; }
-            to { transform: translateX(-40%); opacity: 1; }
+            padding: 0.75rem 1.5rem;
         }
 
         .brand-logo {
             height: 40px;
             width: 40px;
-            transition: transform var(--transition);
+            transition: transform var(--transition-smooth);
         }
         .brand-logo:hover { transform: scale(1.05) rotate(-5deg); }
-
-        .brand-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-        }
+        .brand-name { font-size: 1.5rem; font-weight: 700; color: white; }
 
         .main-nav a {
+            position: relative;
             color: var(--color-text-muted);
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            transition: all var(--transition);
+            padding: 0.75rem 0;
+            margin: 0 1rem;
+            transition: color var(--transition-fast);
             text-decoration: none;
-            font-size: 1.3rem;
-            
+            font-size: 1rem;
         }
-        .main-nav a:hover {
+        .main-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--color-primary);
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform var(--transition-smooth);
+        }
+        .main-nav a:hover, .main-nav a.active {
             color: var(--color-text);
-            background-color: var(--color-hover);
         }
-        .main-nav a.active {
-            /* Custom active styles can go here */
+        .main-nav a:hover::after, .main-nav a.active::after {
+            transform: scaleX(1);
         }
-
+        
         .header-actions { gap: 0.75rem; }
-
+        .header-btn, .vidyari-header-become-seller-button {
+            transition: all var(--transition-fast);
+        }
+        .header-btn:hover, .vidyari-header-become-seller-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+        
         .header-btn {
             background-color: transparent;
             border: 1px solid var(--color-border);
@@ -116,183 +121,56 @@
             width: 42px;
             height: 42px;
             border-radius: 50%;
-            transition: all var(--transition);
             font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         .header-btn:hover {
-            background-color: var(--color-hover);
+            background-color: var(--color-border);
             color: var(--color-text);
-            border-color: rgba(255, 255, 255, 0.2);
         }
 
         /* ==========================================================================
            3. Buttons
            ========================================================================== */
-
-        /* --- "Become Seller" Button --- */
         .vidyari-header-become-seller-button {
-            position: relative;
-            padding: 5px ;
-            border-radius: 7px;
-            border: 1px solid rgb(61, 106, 255);
-            font-size: 10px;
-            text-transform: uppercase;
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-accent);
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 2px;
-            background: transparent;
-            color: #fff;
-            overflow: hidden;
-            box-shadow: 0 0 0 0 transparent;
-            transition: all 0.2s ease-in;
+            letter-spacing: 0.5px;
+            background-color: transparent;
+            color: var(--color-accent);
             cursor: pointer;
+            white-space: nowrap;
         }
         .vidyari-header-become-seller-button:hover {
-            background: rgb(61, 106, 255);
-            box-shadow: 0 0 30px 5px rgba(0, 142, 236, 0.815);
-            transition: all 0.2s ease-out;
+            background: var(--color-accent);
+            color: white;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
         }
-        .vidyari-header-become-seller-button:hover::before {
-            animation: vidyari-shine-animation 0.5s 0s linear;
-        }
-        .vidyari-header-become-seller-button::before {
-            content: '';
-            display: block;
-            width: 0px;
-            height: 86%;
-            position: absolute;
-            top: 7%;
-            left: 0%;
-            opacity: 0;
-            background: #fff;
-            box-shadow: 0 0 50px 30px #fff;
-            transform: skewX(-20deg);
-        }
-        .vidyari-header-become-seller-button:active {
-            box-shadow: 0 0 0 0 transparent;
-            transition: box-shadow 0.2s ease-in;
-        }
-        @keyframes vidyari-shine-animation {
-            from { opacity: 0; left: 0%; }
-            50% { opacity: 1; }
-            to { opacity: 0; left: 100%; }
-        }
-
-        /* --- Fancy Login Button --- */
-        .vidyari-fancy-login-button {
-            --fancy-button-gradient-0: #8d49fd;
-            --fancy-button-gradient-50: #7f56f3;
-            --fancy-button-gradient-100: #5691f3;
-            --fancy-button-inner-shadow-top: rgba(233, 209, 255, 0.2);
-            --fancy-button-inner-shadow-top-lg: rgba(9, 12, 60, 0.1);
-            --fancy-button-inner-shadow-bottom: rgba(137, 222, 246, 0.3);
-            --fancy-button-shine-top: #e9d1ff;
-            --fancy-button-shine-bottom: #adfff9;
-            font-weight: 500;
-            font-size: 15px;
-            line-height: 21px;
-            text-shadow: 0px 0.5px 0.5px rgba(0, 0, 0, 0.2);
-            padding: 0;
-            margin: 0;
-            border: none;
-            outline: none;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            z-index: 1;
-            border-radius: 25px;
-            color: #fff;
-            background-image: linear-gradient( to bottom, var(--fancy-button-gradient-0) 0%, var(--fancy-button-gradient-50) 50%, var(--fancy-button-gradient-100) 100% );
-            box-shadow: 0px 4px 12px rgba(9, 12, 60, 0.15), 0px 2px 8px rgba(9, 12, 60, 0.15), 0px 1px 3px var(--fancy-button-inner-shadow-top-lg), inset 0px 1px 1px var(--fancy-button-inner-shadow-top), inset 0px -1px 3px var(--fancy-button-inner-shadow-bottom);
-        }
-        .vidyari-fancy-login-button::before,
-        .vidyari-fancy-login-button::after {
-            content: "";
-            position: absolute;
-            border-radius: inherit;
-        }
-        .vidyari-fancy-login-button::before {
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--fancy-button-shine-top);
-            width: 96px;
-            height: 6px;
-            top: -3px;
-            opacity: 0.6;
-            filter: blur(6px);
-            transition: opacity 0.25s;
-        }
-        .vidyari-fancy-login-button__text-wrapper {
-            display: block;
-            padding: 12px 24px;
-            border-radius: inherit;
-            overflow: hidden;
-            position: relative;
-            background-image: linear-gradient( to bottom, var(--fancy-button-shine-top), transparent 8px );
-            background-position: 0 -6px;
-            background-repeat: no-repeat;
-            z-index: 1;
-        }
-        .vidyari-fancy-login-button__text-wrapper::before,
-        .vidyari-fancy-login-button__text-wrapper::after {
-            content: "";
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 50%;
-            background-color: var(--fancy-button-shine-bottom);
-            transition: opacity 0.25s, transform 0.25s;
-        }
-        .vidyari-fancy-login-button__text-wrapper::before {
-            width: 92px;
-            height: 8px;
-            bottom: -4px;
-            opacity: 0.75;
-            filter: blur(6px);
-        }
-        .vidyari-fancy-login-button__text-wrapper::after {
-            width: 112px;
-            height: 1px;
-            bottom: 0;
-            opacity: 0.9;
-            filter: blur(1px);
-        }
-        .vidyari-fancy-login-button:hover .vidyari-fancy-login-button__text-wrapper::before {
-            opacity: 0.8;
-            transform: translateX(-50%) scale(1.25);
-        }
-        .vidyari-fancy-login-button:hover .vidyari-fancy-login-button__text-wrapper::after {
-            opacity: 1;
-        }
-
-        /* --- Footer Sign Up Button --- */
-        .signup-btn-footer {
-            --primary-color: #645bff;
-            --secondary-color: #fff;
-            --hover-color: #111;
-            --arrow-width: 10px;
-            --arrow-stroke: 2px;
-            box-sizing: border-box;
-            border: 0;
-            border-radius: 20px;
-            color: var(--secondary-color);
-            padding: 1em 1.8em;
-            background: var(--primary-color);
-            display: flex;
-            transition: 0.2s background;
-            align-items: center;
-            gap: 0.6em;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .signup-btn-footer .arrow-wrapper { display: flex; justify-content: center; align-items: center; }
-        .signup-btn-footer .arrow { margin-top: 1px; width: var(--arrow-width); background: var(--primary-color); height: var(--arrow-stroke); position: relative; transition: 0.2s; }
-        .signup-btn-footer .arrow::before { content: ""; box-sizing: border-box; position: absolute; border: solid var(--secondary-color); border-width: 0 var(--arrow-stroke) var(--arrow-stroke) 0; display: inline-block; top: -3px; right: 3px; transition: 0.2s; padding: 3px; transform: rotate(-45deg); }
-        .signup-btn-footer:hover { background-color: var(--hover-color); }
-        .signup-btn-footer:hover .arrow { background: var(--secondary-color); }
-        .signup-btn-footer:hover .arrow:before { right: 0; }
         
+        .vidyari-fancy-login-button {
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            color: #fff;
+            background-image: linear-gradient(to right, var(--color-primary), var(--color-accent));
+            box-shadow: 0px 4px 15px rgba(0,0,0, 0.2);
+            padding: 10px 24px;
+            transition: all var(--transition-fast);
+        }
+        .vidyari-fancy-login-button:hover {
+             transform: translateY(-2px);
+             box-shadow: 0px 6px 20px rgba(0,0,0, 0.3);
+        }
+
         /* ==========================================================================
-           4. Dropdowns & User Profile
+           4. Dropdowns (User & Grip)
            ========================================================================== */
         .user-avatar {
             width: 42px;
@@ -309,120 +187,90 @@
             min-width: 240px;
             z-index: 1021;
             box-shadow: var(--shadow-glow);
+            animation: fadeIn 0.2s ease-out;
         }
-        .dropdown-header {
-            border-bottom: 1px solid var(--color-border);
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-        }
-        .dropdown-header .username { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .dropdown-header .email { font-size: 0.85rem; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .dropdown-item {
-            color: var(--color-text-muted);
-            font-weight: 500;
-            transition: all var(--transition);
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-        }
-        .dropdown-item:hover {
-            background-color: var(--color-hover);
-            color: var(--color-text);
-        }
+        .dropdown-item { color: var(--color-text); border-radius: 6px; }
+        .dropdown-item:hover { background-color: var(--color-primary); color: white; }
         .dropdown-divider { border-color: var(--color-border); }
-
-        /* --- Apps (Grip Icon) Dropdown --- */
+        
+        /* Grip Menu (Dots Box) Styles */
         .apps-dropdown {
             display: none;
             position: absolute;
             top: calc(100% + 10px);
             right: 0;
-            width: 350px;
+            width: 320px;
             background-color: var(--color-bg-card);
             border: 1px solid var(--color-border);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-md);
             box-shadow: var(--shadow-glow);
             padding: 1rem;
             z-index: 1021;
-            opacity: 0;
-            transform: translateY(10px) scale(0.98);
-            transform-origin: top right;
-            transition: opacity var(--transition), transform var(--transition);
-            pointer-events: none;
         }
         .apps-dropdown.is-open {
             display: block;
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
+            animation: fadeIn 0.2s ease-out;
         }
         .apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .app-item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.75rem; border-radius: var(--radius-md); text-decoration: none; transition: background-color var(--transition); text-align: center; }
-        .app-item:hover { background-color: var(--color-hover); }
-        .app-icon-wrapper { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; }
-        .app-item i { font-size: 1.5rem; }
+        .app-item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.75rem; border-radius: var(--radius-md); text-decoration: none; transition: background-color var(--transition-fast); text-align: center; }
+        .app-item:hover { background-color: var(--color-border); }
+        .app-icon-wrapper { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; font-size: 1.5rem; }
         .app-label { font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500; }
         .app-item:hover .app-label { color: var(--color-text); }
-        .bg-primary-light { background-color: rgba(139, 92, 246, 0.1); }
-        .text-primary { color: var(--color-primary); }
-        .bg-success-light { background-color: rgba(34, 197, 94, 0.1); }
-        .text-success { color: var(--color-success); }
-        .bg-accent-light { background-color: rgba(59, 130, 246, 0.1); }
-        .text-accent { color: var(--color-accent); }
-        
+        .app-icon-wrapper.dashboard { color: var(--icon-color-dashboard); background-color: rgba(99, 102, 241, 0.1); }
+        .app-icon-wrapper.downloads { color: var(--icon-color-downloads); background-color: rgba(139, 92, 246, 0.1); }
+        .app-icon-wrapper.transactions { color: var(--icon-color-trans); background-color: rgba(236, 72, 153, 0.1); }
+
+
         /* ==========================================================================
-           5. Mobile Side Panel
+           5. Mobile Side Panel & Animated Hamburger
            ========================================================================== */
-        .hamburger-btn { background: none; border: none; color: var(--color-text); font-size: 1.5rem; }
+        .hamburger-btn {
+            background: none; border: none; width: 42px; height: 42px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; z-index: 1050;
+        }
+        .hamburger-btn span {
+            display: block; width: 24px; height: 2px; background-color: var(--color-text); border-radius: 2px; transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .hamburger-btn.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .hamburger-btn.is-open span:nth-child(2) { opacity: 0; }
+        .hamburger-btn.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
         .mobile-nav-panel {
-            position: fixed; top: 0; left: 0; width: 300px; height: 100%;
-            background-color: var(--color-bg-card);
-            border-right: 1px solid var(--color-border);
-            z-index: 1045;
-            transform: translateX(-100%);
-            transition: transform var(--transition);
-            display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            position: fixed; top: 0; left: 0; width: 280px; height: 100%; background-color: var(--color-bg-card); border-right: 1px solid var(--color-border); z-index: 1045; transform: translateX(-100%); transition: transform var(--transition-smooth); display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
         .mobile-nav-panel.is-open { transform: translateX(0); }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--color-border); }
-        .panel-header .brand-logo { height: 32px; width: 32px; }
-        .panel-header .close-btn { background: none; border: none; color: var(--color-text-muted); font-size: 2rem; line-height: 1; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
         .panel-body { padding: 1rem; flex-grow: 1; overflow-y: auto; }
         .panel-user-profile { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
         .panel-user-profile .avatar { width: 48px; height: 48px; border-radius: 50%; }
-        .panel-user-profile .username, .panel-user-profile .email { margin: 0; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .panel-user-profile .username { font-weight: 600; }
-        .panel-user-profile .email { font-size: 0.8rem; color: var(--color-text-muted); }
-        .panel-nav-section { margin-top: 1rem; }
-        .panel-nav-section .section-title { font-size: 0.75rem; text-transform: uppercase; font-weight: 600; color: var(--color-text-muted); padding: 0 1rem; margin-bottom: 0.5rem; }
-        .panel-link { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-md); color: var(--color-text); text-decoration: none; font-weight: 500; }
-        .panel-link:hover { background-color: var(--color-hover); }
-        .panel-link i { color: var(--color-primary); width: 20px; }
-        .panel-footer { padding: 1.5rem; border-top: 1px solid var(--color-border); }
-        .panel-footer .btn-logout { background-color: var(--color-danger); color: white; width: 100%; text-align: center; }
-        .nav-overlay {
-            position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1040;
-            opacity: 0; pointer-events: none; transition: opacity var(--transition);
-        }
+        .panel-link { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem; border-radius: var(--radius-md); color: var(--color-text); text-decoration: none; font-weight: 500; transition: background-color var(--transition-fast); font-size: 1rem; }
+        .panel-link:hover { background-color: var(--color-border); }
+        .panel-link .icon-wrapper { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1.1rem; }
+        .panel-link .icon-home { color: var(--icon-color-home); background-color: rgba(34, 197, 94, 0.1); }
+        .panel-link .icon-docs { color: var(--icon-color-docs); background-color: rgba(245, 158, 11, 0.1); }
+        .panel-link .icon-courses { color: var(--icon-color-courses); background-color: rgba(59, 130, 246, 0.1); }
+        .panel-link .icon-dashboard { color: var(--icon-color-dashboard); background-color: rgba(99, 102, 241, 0.1); }
+        .panel-link .icon-downloads { color: var(--icon-color-downloads); background-color: rgba(139, 92, 246, 0.1); }
+        .panel-link .icon-trans { color: var(--icon-color-trans); background-color: rgba(236, 72, 153, 0.1); }
+        .panel-footer { padding: 1.5rem; border-top: 1px solid var(--color-border); flex-shrink: 0; }
+        .panel-divider { height: 1px; border: 0; background-image: linear-gradient(to right, transparent, var(--color-border), transparent); margin: 1rem 0; }
+        .nav-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.7); z-index: 1040; opacity: 0; pointer-events: none; transition: opacity var(--transition-smooth); }
         .nav-overlay.is-open { opacity: 1; pointer-events: auto; }
         
         /* ==========================================================================
-           6. Notifications
+           6. Media Queries for Responsiveness
            ========================================================================== */
-        #notificationDot { display: none; position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: var(--color-danger); border-radius: 50%; border: 1px solid var(--color-bg-card); }
-        #notificationBox { display: none; position:fixed; top:80px; right:30px; z-index:2000; background-color: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 0; overflow: hidden; min-width: 380px; box-shadow: var(--shadow-glow); }
-        /* ... other notification styles ... */
-
-        /* ==========================================================================
-           7. Media Queries & Responsive Design
-           ========================================================================== */
-        @media (max-width: 992px) {
-            .main-nav { display: none !important; }
+        @media (max-width: 991.98px) {
+            .main-nav, #grip-container { display: none !important; }
         }
-        @media (max-width: 576px) {
+        @media (max-width: 575.98px) {
             .site-header { padding: 0.75rem 1rem; }
-            #grip-container { display: none !important; }
+            .brand-name { display: none !important; }
+            .vidyari-header-become-seller-button{
+                padding:5px 8px;
+                font-size: 10px;
+            }
+             #loginContainer { display: none !important; }
         }
     </style>
 </head>
@@ -431,18 +279,18 @@
     data-is-loggedin="<%= isLoggedin %>" 
     data-username="<%= typeof username !== 'undefined' ? username : 'Guest' %>" 
     data-useremail="<%= typeof useremail !== 'undefined' ? useremail : '' %>" 
-    data-profile-url="<%= typeof profileUrl !== 'undefined' && profileUrl ? profileUrl : './images/avatar.jpg' %>"
+    data-profile-url="<%= typeof profileUrl !== 'undefined' && profileUrl ? profileUrl : '/images/avatar.jpg' %>"
 >
 
 <header class="site-header">
     <div class="container-fluid d-flex align-items-center justify-content-between">
         
-        <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
-            <img src="./images/logo.svg" alt="Vidyari Logo" class="brand-logo">
-            <span class="brand-name d-none d-md-inline">Vidyari</span>
+        <a href="/" class="d-flex align-items: center gap-3 text-decoration-none">
+            <img src="/images/logo.svg" alt="Vidyari Logo" class="brand-logo">
+            <span class="brand-name">Vidyari</span>
         </a>
 
-        <nav class="main-nav d-none d-lg-flex" id="desktopNavLinks">
+        <nav class="main-nav d-none d-lg-flex">
             <a href="/" class="active">Home</a>
             <a href="/documents">Documents</a>
             <a href="/courses">Courses</a>
@@ -452,49 +300,55 @@
 
             <button id="becomeSellerBtn" class="vidyari-header-become-seller-button">Become Seller</button>
             
-            <div id="loginContainer" class="d-none d-lg-block">
-                 
-                <button id="loginBtn" class="vidyari-fancy-login-button">
-                    <% if(!isLoggedin) { %>
-                    <span class="vidyari-fancy-login-button__text-wrapper">Login</span>
-                    <% } %>
-                </button>
-                
+            <div id="loginContainer">
+                <button id="loginBtn" class="vidyari-fancy-login-button">Login</button>
             </div>
-             
+              
             <% if(isLoggedin) { %>
-                <button onclick="window.location.href='/user-notifications'" id="notificationBellBtn" type="button" class="header-btn" style="position:relative;" aria-label="Notifications">
+                <button onclick="window.location.href='/user-notifications'" id="notificationBellBtn" type="button" class="header-btn" aria-label="Notifications">
                     <i class="fa-regular fa-bell"></i>
-                    <span id="notificationDot"></span>
                 </button>
-            <% } %>
-            
-            <div class="position-relative" id="grip-container" style="display: none;">
-                <button id="grip-button" type="button" class="header-btn" aria-label="Apps">
-                    <i class="fas fa-grip"></i>
-                </button>
-                <div class="apps-dropdown" id="grip-menu">
-                    <div class="apps-grid">
-                        <a href="/downloads" class="app-item"><div class="app-icon-wrapper bg-primary-light"><i class="fas fa-cloud-arrow-down text-primary"></i></div><span class="app-label">Downloads</span></a>
-                        <a href="/transactions" class="app-item"><div class="app-icon-wrapper bg-success-light"><i class="fas fa-receipt text-success"></i></div><span class="app-label">Transactions</span></a>
-                        <a href="/dashboard" class="app-item"><div class="app-icon-wrapper bg-accent-light"><i class="fas fa-table-columns text-accent"></i></div><span class="app-label">Dashboard</span></a>
-                    </div>
-                </div>
-            </div>
 
-            <div onclick="window.location.href='/user-profile'" id="userProfile" class="dropdown" style="display: none;">
-                <img src="./images/avatar.jpg" alt="User Avatar" class="user-avatar" id="userAvatar" data-bs-toggle="dropdown">
-                <div class="dropdown-menu dropdown-menu-end" id="userDropdown">
-                    <div class="dropdown-header">
-                        <p class="username mb-0" id="dropdownUsername"></p>
-                        <p class="email mb-0" id="dropdownUserEmail"></p>
+                <div class="position-relative" id="grip-container">
+                    <button id="grip-button" type="button" class="header-btn" aria-label="Apps">
+                        <i class="fas fa-grip"></i>
+                    </button>
+                    <div class="apps-dropdown" id="grip-menu">
+                        <div class="apps-grid">
+                            <a href="/dashboard" class="app-item">
+                                <div class="app-icon-wrapper dashboard"><i class="fas fa-table-columns"></i></div>
+                                <span class="app-label">Dashboard</span>
+                            </a>
+                            <a href="/downloads" class="app-item">
+                                <div class="app-icon-wrapper downloads"><i class="fas fa-cloud-arrow-down"></i></div>
+                                <span class="app-label">Downloads</span>
+                            </a>
+                            <a href="/transactions" class="app-item">
+                                <div class="app-icon-wrapper transactions"><i class="fas fa-receipt"></i></div>
+                                <span class="app-label">Transactions</span>
+                            </a>
+                        </div>
                     </div>
-                    <a href="/logout" class="dropdown-item"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>
                 </div>
+            <% } %>
+
+            <div onclick="window.location.href='/user-profile'" id="userProfile" class="dropdown">
+                <img src="/images/avatar.jpg" alt="User Avatar" class="user-avatar" id="userAvatar" data-bs-toggle="dropdown" aria-expanded="false">
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li class="px-3 pt-2 pb-3 border-bottom">
+                        <p class="fw-bold mb-0 text-white" id="dropdownUsername"></p>
+                        <p class="small text-muted mb-0" id="dropdownUserEmail"></p>
+                    </li>
+                    <li><a class="dropdown-item" href="/user-profile"><i class="fa-solid fa-user-gear fa-fw me-2"></i>Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a></li>
+                </ul>
             </div>
 
             <button class="hamburger-btn d-lg-none" id="hamburgerBtn" type="button" aria-label="Toggle navigation">
-                <i class="fas fa-bars"></i>
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
         </div>
     </div>
@@ -504,125 +358,101 @@
     </div>
 <div class="nav-overlay" id="navOverlay"></div>
 
-<div id="notificationBox">
-    </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- 1. Get Data & DOM Elements ---
     const userData = document.body.dataset;
     const isLoggedIn = userData.isLoggedin === 'true';
 
-    // Header Elements
     const loginContainer = document.getElementById('loginContainer');
     const userProfile = document.getElementById('userProfile');
-    const gripContainer = document.getElementById('grip-container');
-    const gripButton = document.getElementById('grip-button');
-    const gripMenu = document.getElementById('grip-menu');
-    const userAvatar = document.getElementById('userAvatar');
-    const dropdownUsername = document.getElementById('dropdownUsername');
-    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
-
-    // Button Elements
-    const loginBtn = document.getElementById('loginBtn');
-    const becomeSellerBtn = document.getElementById('becomeSellerBtn');
-    
-    // Mobile Navigation Elements
     const mobileNavPanel = document.getElementById('mobileNavPanel');
     const navOverlay = document.getElementById('navOverlay');
     const hamburgerBtn = document.getElementById('hamburgerBtn');
-
-    // --- 2. Core Functions ---
-
-    /**
-     * Toggles UI elements based on the user's login status.
-     */
+    
+    // RESTORED: Grip Menu elements
+    const gripContainer = document.getElementById('grip-container');
+    const gripButton = document.getElementById('grip-button');
+    const gripMenu = document.getElementById('grip-menu');
+    
     function updateUserUI() {
         if (isLoggedIn) {
             loginContainer.style.display = 'none';
             userProfile.style.display = 'block';
-            gripContainer.style.display = 'block';
-            userAvatar.src = userData.profileUrl;
-            dropdownUsername.textContent = userData.username;
-            dropdownUserEmail.textContent = userData.useremail;
+            gripContainer.style.display = 'block'; // Show grip menu
+            document.getElementById('userAvatar').src = userData.profileUrl;
+            document.getElementById('dropdownUsername').textContent = userData.username;
+            document.getElementById('dropdownUserEmail').textContent = userData.useremail;
         } else {
             loginContainer.style.display = 'block';
             userProfile.style.display = 'none';
-            gripContainer.style.display = 'none';
+            gripContainer.style.display = 'none'; // Hide grip menu
         }
     }
 
-    /**
-     * Generates and injects the content for the mobile navigation panel.
-     */
     function populateMobileNav() {
         const navLinks = [
-            { href: '/', icon: 'fa-solid fa-house', text: 'Home' },
-            { href: '/documents', icon: 'fa-solid fa-file-contract', text: 'Documents' },
-            { href: '/courses', icon: 'fa-solid fa-book-open-reader', text: 'Courses' },
+            { href: '/', icon: 'fa-solid fa-house', text: 'Home', iconClass: 'icon-home' },
+            { href: '/documents', icon: 'fa-solid fa-file-lines', text: 'Documents', iconClass: 'icon-docs' },
+            { href: '/courses', icon: 'fa-solid fa-book-open-reader', text: 'Courses', iconClass: 'icon-courses' },
         ];
         const accountLinks = [
-            { href: '/dashboard', icon: 'fa-solid fa-table-columns', text: 'Dashboard' },
-            { href: '/downloads', icon: 'fa-solid fa-cloud-arrow-down', text: 'Downloads' },
-            { href: '/transactions', icon: 'fa-solid fa-dollar-sign', text: 'Transactions' },
+            { href: '/dashboard', icon: 'fa-solid fa-table-columns', text: 'Dashboard', iconClass: 'icon-dashboard' },
+            { href: '/downloads', icon: 'fa-solid fa-cloud-arrow-down', text: 'Downloads', iconClass: 'icon-downloads' },
+            { href: '/transactions', icon: 'fa-solid fa-receipt', text: 'Transactions', iconClass: 'icon-trans' },
         ];
 
-        let panelHeader = `
-            <div class="panel-header">
-                <img src="./images/logo.svg" alt="Vidyari Logo" class="brand-logo">
-                <button class="close-btn" id="closeNavBtn" aria-label="Close menu">&times;</button>
-            </div>`;
+        const createLinksHTML = (links) => links.map(link => `
+            <a href="${link.href}" class="panel-link">
+                <span class="icon-wrapper ${link.iconClass}"><i class="${link.icon}"></i></span>
+                <span>${link.text}</span>
+            </a>`).join('');
 
-        let userSection = '';
-        if (isLoggedIn) {
-            userSection = `
+        let userSection = isLoggedIn ? `
+            <a href="/user-profile" class="text-decoration-none">
                 <div class="panel-user-profile">
                     <img src="${userData.profileUrl}" alt="User Avatar" class="avatar">
                     <div>
-                        <p class="username">${userData.username}</p>
-                        <p class="email">${userData.useremail}</p>
+                        <p class="username text-white mb-0">${userData.username}</p>
+                        <p class="email small text-muted mb-0">${userData.useremail}</p>
                     </div>
-                </div>`;
-        }
-
-        const createLinksHTML = (links) => links.map(link => `<a href="${link.href}" class="panel-link"><i class="${link.icon} fa-fw"></i><span>${link.text}</span></a>`).join('');
-
-        let mainNavSection = `<div class="panel-nav-section"><div class="section-title">Navigation</div>${createLinksHTML(navLinks)}</div>`;
-        let accountNavSection = isLoggedIn ? `<div class="panel-nav-section"><div class="section-title">My Account</div>${createLinksHTML(accountLinks)}</div>` : '';
+                </div>
+            </a>` : '';
         
-        let panelFooter = '';
-        if (isLoggedIn) {
-            panelFooter = `<a href="/logout" class="btn panel-link btn-logout"><i class="fa-solid fa-arrow-right-from-bracket fa-fw"></i><span>Logout</span></a>`;
-        } else {
-            panelFooter = `
-                <button id="mobileLoginBtn" class="vidyari-fancy-login-button" style="width:100%"><span class="vidyari-fancy-login-button__text-wrapper">Login</span></button>
-                <br><br>
-                <button id="mobileSignupBtn" class="signup-btn-footer" style="width:100%">Sign up<div class="arrow-wrapper"><div class="arrow"></div></div></button>`;
-        }
+        let footerSection = isLoggedIn ? 
+            `<a href="/logout" class="btn panel-link w-100 justify-content-center" style="background-color: var(--color-danger);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw"></i><span>Logout</span></a>` : 
+            `<button id="mobileLoginBtn" class="btn btn-primary w-100">Login / Sign Up</button>`;
 
-        mobileNavPanel.innerHTML = `${panelHeader}<div class="panel-body">${userSection}${mainNavSection}${accountNavSection}</div><div class="panel-footer">${panelFooter}</div>`;
+        const panelHTML = `
+            <div class="panel-header d-flex justify-content-between align-items-center">
+                <a href="/"><img src="/images/logo.svg" alt="Vidyari Logo" style="height:32px"></a>
+            </div>
+            <div class="panel-body">
+                ${userSection}
+                ${isLoggedIn ? '<hr class="panel-divider">' : ''}
+                <div class="panel-nav-section">${createLinksHTML(navLinks)}</div>
+                ${isLoggedIn ? `
+                <hr class="panel-divider">
+                <div class="panel-nav-section">${createLinksHTML(accountLinks)}</div>` : ''}
+            </div>
+            <div class="panel-footer">${footerSection}</div>`;
+        
+        mobileNavPanel.innerHTML = panelHTML;
     
-        // Re-attach event listeners for dynamically created elements
-        document.getElementById('closeNavBtn').addEventListener('click', toggleMobileNav);
         if (!isLoggedIn) {
             document.getElementById('mobileLoginBtn').addEventListener('click', () => window.location.href = '/user-login');
-            document.getElementById('mobileSignupBtn').addEventListener('click', () => window.location.href = '/user-login'); // Assuming signup is on the login page
         }
     }
 
-    /**
-     * Opens or closes the mobile navigation panel.
-     */
     const toggleMobileNav = () => {
-        mobileNavPanel.classList.toggle('is-open');
+        const isOpen = mobileNavPanel.classList.toggle('is-open');
         navOverlay.classList.toggle('is-open');
+        hamburgerBtn.classList.toggle('is-open');
+        document.body.style.overflow = isOpen ? 'hidden' : '';
     };
 
-    /**
-     * Sets up the listeners for the "apps" grip menu.
-     */
+    // RESTORED: Grip Menu functionality
     function setupGripMenu() {
         if (!gripButton) return;
         gripButton.addEventListener('click', (e) => {
@@ -634,26 +464,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 gripMenu.classList.remove('is-open');
             }
         });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && gripMenu.classList.contains('is-open')) {
-                gripMenu.classList.remove('is-open');
-            }
-        });
     }
 
-    // --- 3. Event Listeners ---
+    // --- Event Listeners & Initial Setup ---
     hamburgerBtn.addEventListener('click', toggleMobileNav);
     navOverlay.addEventListener('click', toggleMobileNav);
-    loginBtn.addEventListener('click', () => window.location.href = '/user-login');
-    becomeSellerBtn.addEventListener('click', () => window.location.href = '/dashboard'); // Or seller sign-up page
+    document.getElementById('loginBtn').addEventListener('click', () => window.location.href = '/user-login');
+    document.getElementById('becomeSellerBtn').addEventListener('click', () => window.location.href = '/dashboard');
 
-    // --- 4. Initial Setup Calls ---
     updateUserUI();
     populateMobileNav();
-    setupGripMenu();
-    
-    // NOTE: Notification logic would go here.
-
+    setupGripMenu(); // Activate the grip menu
 });
 </script>
 

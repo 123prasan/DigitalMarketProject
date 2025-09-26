@@ -1,3 +1,4 @@
+<%-include("header")%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -186,16 +187,22 @@
 
         <main class="flex-1 flex flex-col overflow-x-hidden overflow-y-auto bg-[#1a1a1a] relative">
             <header class="flex-shrink-0 bg-[#242424] shadow-md shadow-gray-900 p-4 sm:p-6 flex justify-between items-center z-40">
+                
                 <button id="sidebar-toggle" class="md:hidden text-gray-300 focus:outline-none">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
+                 <div style="align-self: center; text-align: center; width:80%;">
+                    <h1>Dashboard</h1>
+                 </div>
                 <div class="flex-1"></div> <div class="flex items-center gap-4">
+                    
 <img 
   src="<%= profileUrl ? profileUrl : '/images/avatar.jpg' %>" 
   alt="User Profile" 
   class="w-10 h-10 rounded-full object-cover ring-2 ring-sky-400" 
 />
                 </div>
+                
             </header>
             
             <% 
@@ -421,6 +428,26 @@
                                             </div>
                                         </div>
                                          <hr class="border-gray-600">
+                                         <div class="bg-gray-800 rounded-xl shadow-md p-4 mb-4">
+  <h1 class="text-lg font-semibold text-gray-100 mb-2 flex items-center">
+    <svg class="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0-3.866 3.134-7 7-7m-7 7c0 3.866-3.134 7-7 7m7-7a7 7 0 010-14 7 7 0 010 14z" />
+    </svg>
+    Saved UPI ID
+  </h1>
+
+  <% if (userUpi) { %>
+    <div class="bg-gray-700 text-green-300 font-mono text-base px-3 py-2 rounded-lg inline-flex items-center gap-2">
+      <span><%= userUpi %></span>
+      <% if (isDefault) { %>
+        <span class="bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Default</span>
+      <% } %>
+    </div>
+  <% } else { %>
+    <p class="text-gray-400 italic">No UPI ID saved</p>
+  <% } %>
+</div>
+
                                         <div class="billing-option-disabled">
                                             <label class="block text-sm font-medium">Card Details (Disabled)</label>
                                             <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6 mt-2">
@@ -823,7 +850,53 @@ document.addEventListener('DOMContentLoaded', () => {
             showModal(`<div class="text-center p-4"><i class="fa-solid fa-circle-xmark text-5xl text-red-500 mb-4"></i><h3 class="text-xl font-bold text-white">Deletion Failed</h3><p class="text-gray-400 mt-2">Could not delete the file. Please try again.</p><button class="modal-close-btn bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg mt-6">Close</button></div>`);
         }
     }
-    
+    const saveUpiBtn = document.getElementById('save-upi-btn');
+    if (saveUpiBtn) {
+        saveUpiBtn.addEventListener('click', async () => {
+            const upiInput = document.getElementById('upi-id');
+            const upiValue = upiInput.value.trim();
+
+            if (!upiValue) {
+                alert('Please enter a valid UPI ID.');
+                return;
+            }
+
+            const originalBtnText = saveUpiBtn.innerHTML;
+            saveUpiBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>Saving...`;
+            saveUpiBtn.disabled = true;
+
+            try {
+                const response = await fetch('/user/update/payment-method', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        method: 'upi',
+                        details: {
+                            upiId: upiValue
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Failed to update UPI ID');
+                }
+
+                const successContent = `<div class="text-center p-4"><i class="fa-solid fa-circle-check text-5xl text-green-500 mb-4"></i><h3 class="text-xl font-bold text-white">Success!</h3><p class="text-gray-400 mt-2">Your UPI ID has been saved.</p><button class="modal-close-btn bg-sky-600 text-white font-semibold py-2 px-6 rounded-lg mt-6">OK</button></div>`;
+                showModal(successContent);
+
+            } catch (error) {
+                console.error('Error saving UPI ID:', error);
+                const errorContent = `<div class="text-center p-4"><i class="fa-solid fa-circle-xmark text-5xl text-red-500 mb-4"></i><h3 class="text-xl font-bold text-white">Update Failed</h3><p class="text-gray-400 mt-2">${error.message}</p><button class="modal-close-btn bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg mt-6">Close</button></div>`;
+                showModal(errorContent);
+            } finally {
+                saveUpiBtn.innerHTML = "Save UPI";
+                saveUpiBtn.disabled = false;
+            }
+        });
+    }
+
     // --- Withdrawal Logic ---
     const withdrawBtn = document.getElementById('withdraw-btn');
     if (withdrawBtn) {

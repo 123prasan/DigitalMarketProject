@@ -1,457 +1,329 @@
-<div class="retro-profile-wrapper">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>User Profile</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           1. Variables & Base Styles
+           ========================================================================== */
+        :root {
+            --bg-color: #0a041a;
+            --primary-glow: #ff00c1;
+            --secondary-glow: #00f7ff;
+            --text-color: #d1d5db;
+            --text-muted: #6b7280;
+            --border-color: rgba(0, 247, 255, 0.2);
+            --card-bg: rgba(23, 15, 48, 0.6);
+            --following-bg: #4b5563;
+            --following-border: #6b7280;
+            --following-text: #e5e7eb;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'IBM Plex Mono', monospace;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
         
-        <style>
-            /* --- CSS Variables and Base Styles --- */
-            :root {
-                --bg-color: #0a041a;
-                --primary-glow: #ff00c1;
-                --secondary-glow: #00f7ff;
-                --text-color: #d1d5db;
-                --text-muted: #6b7280;
-                --border-color: rgba(0, 247, 255, 0.2);
-                --card-bg: rgba(23, 15, 48, 0.6);
-            }
+        /* ==========================================================================
+           2. Main Wrapper & Retro Effects
+           ========================================================================== */
+        .retro-profile-wrapper {
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            overflow: hidden; 
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 2.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 25px rgba(0, 247, 255, 0.1);
+            animation: fadeIn 1s ease-out;
+            z-index: 1;
+        }
 
-            body {
-                background-color: var(--bg-color);
-                color: var(--text-color);
-                font-family: 'IBM Plex Mono', monospace;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
-                padding: 1rem;
-            }
+        .retro-profile-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0, rgba(0, 0, 0, 0.3) 1px, transparent 1px, transparent 4px);
+            pointer-events: none;
+            z-index: 3;
+            animation: scanlines 10s linear infinite;
+        }
 
-            /* --- Main Wrapper & Retro Effects --- */
-            .retro-profile-wrapper {
-                width: 100%;
-                max-width: 900px;
-                position: relative;
-                background: var(--card-bg);
-                backdrop-filter: blur(10px);
-                padding: 2rem;
-                border-radius: 8px;
-                /* MODIFICATION: Removed border, box-shadow, and float animation for a cleaner look */
-                animation: fadeIn 1s ease-out;
-            }
+        /* ==========================================================================
+           3. Animated Background
+           ========================================================================== */
+        @keyframes move-stars {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-2000px); }
+        }
+        .stars, .stars2, .stars3 {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 200%;
+            background-repeat: repeat;
+            background-position: center;
+            z-index: 2;
+        }
+        .stars {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="10" cy="10" r="1" fill="white"/><circle cx="50" cy="80" r="0.5" fill="white"/><circle cx="80" cy="30" r="1" fill="white"/></svg>');
+            animation: move-stars 200s linear infinite;
+        }
+        .stars2 {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><circle cx="30" cy="150" r="1.2" fill="white"/><circle cx="120" cy="40" r="0.8" fill="white"/><circle cx="180" cy="180" r="1.2" fill="white"/></svg>');
+            animation: move-stars 150s linear infinite;
+        }
+        .stars3 {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><circle cx="250" cy="90" r="1.5" fill="white"/><circle cx="70" cy="220" r="1" fill="white"/><circle cx="150" cy="30" r="1.5" fill="white"/></svg>');
+            animation: move-stars 100s linear infinite;
+        }
 
-            /* Scanline effect for that old CRT monitor feel */
-            .retro-profile-wrapper::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0, rgba(0, 0, 0, 0.3) 1px, transparent 1px, transparent 4px);
-                pointer-events: none;
-                z-index: 10;
-                animation: scanlines 10s linear infinite;
-            }
+        /* ==========================================================================
+           4. Profile Header
+           ========================================================================== */
+        .profile-header {
+            position: relative;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            text-align: center;
+        }
+        @media (min-width: 768px) { .profile-header { flex-direction: row; text-align: left; align-items: flex-start; } }
+        
+        .profile-name-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .profile-name { 
+            font-family: 'VT323', monospace; 
+            font-size: 3.5rem; 
+            color: #fff; 
+            text-shadow: 0 0 5px #fff, 0 0 10px var(--primary-glow), 0 0 20px var(--primary-glow); 
+            animation: textFlicker 3s infinite alternate; 
+            margin: 0; 
+            line-height: 1.1; 
+        }
 
-            /* --- Profile Header Section --- */
-            .profile-header {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 1.5rem;
-                text-align: center;
-            }
-            @media (min-width: 640px) {
-                .profile-header {
-                    flex-direction: row;
-                    text-align: left;
-                    align-items: flex-start;
-                }
-            }
-            
-            .profile-avatar-container {
-                flex-shrink: 0;
-            }
-            
-            .profile-avatar {
-                width: 120px;
-                height: 120px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 4px solid var(--secondary-glow);
-                box-shadow: 0 0 15px var(--secondary-glow);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-            .profile-avatar:hover {
-                transform: scale(1.05) rotate(3deg);
-                box-shadow: 0 0 25px var(--secondary-glow);
-            }
+        /* NEW: Retro Verified Badge Styles */
+        .profile-verified-badge {
+            width: 28px;
+            height: 28px;
+            display: inline-block;
+            vertical-align: middle;
+            color: var(--secondary-glow);
+            filter: drop-shadow(0 0 5px var(--secondary-glow));
+            /* animation: glitch 2.5s infinite steps(2, start); */
+        }
+        .profile-verified-badge svg {
+            width: 100%;
+            height: 100%;
+        }
 
-            .profile-info {
-                width: 100%;
-            }
+        .profile-username { font-size: 1.1rem; color: var(--secondary-glow); letter-spacing: 2px; }
 
-            .profile-main-info {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                width: 100%;
-                gap: 1rem;
-            }
-            @media (min-width: 640px) {
-                .profile-main-info {
-                    flex-direction: row;
-                    justify-content: space-between;
-                }
-            }
+        /* ... Other styles remain unchanged ... */
+        .profile-avatar-container { flex-shrink: 0; }
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--secondary-glow); box-shadow: 0 0 15px var(--secondary-glow); }
+        .profile-info { width: 100%; }
+        .profile-main-info { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 1rem; }
+        @media (min-width: 768px) { .profile-main-info { flex-direction: row; justify-content: space-between; } }
+        .profile-follow-btn { background: transparent; border: 2px solid var(--primary-glow); color: var(--primary-glow); font-weight: bold; padding: 0.75rem 1.75rem; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; box-shadow: inset 0 0 8px var(--primary-glow), 0 0 8px var(--primary-glow); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .profile-follow-btn:hover { background: var(--primary-glow); color: var(--bg-color); box-shadow: 0 0 20px var(--primary-glow); }
+        .profile-follow-btn.following { background: var(--following-bg); color: var(--following-text); border-color: var(--following-border); box-shadow: none; }
+        .profile-follow-btn.following:hover { background: var(--following-bg); filter: brightness(1.2); color: var(--following-text); }
+        .profile-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1.5rem; text-align: center; }
+        @media (min-width: 768px) { .profile-stats { grid-template-columns: repeat(4, 1fr); text-align: left; } }
+        .stat-item .stat-number { font-weight: bold; font-size: 2rem; color: #fff; display: block; }
+        .stat-item .stat-label { color: var(--text-muted); font-size: 1rem; }
+        .profile-bio { margin-top: 1.5rem; color: var(--text-color); line-height: 1.6; font-size: 1.1rem; }
+        .content-tabs, .content-main { position: relative; z-index: 4; }
+        .content-tabs { margin-top: 2.5rem; border-bottom: 2px solid var(--border-color); }
+        .tabs-nav { display: flex; gap: 2rem; margin-bottom: -2px; }
+        .tab-button { font-family: 'VT323', monospace; font-size: 2rem; background: none; border: none; color: var(--text-muted); padding: 0.5rem 0.25rem; cursor: pointer; border-bottom: 4px solid transparent; transition: all 0.3s ease; }
+        .tab-button:hover { color: var(--secondary-glow); }
+        .tab-button.is-active { color: var(--primary-glow); border-bottom-color: var(--primary-glow); text-shadow: 0 0 10px var(--primary-glow); }
+        .content-main { margin-top: 2rem; }
+        .content-section { display: none; animation: contentFadeIn 0.5s ease; }
+        .content-section.is-active { display: block; }
+        .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; height: 400px; overflow-y: auto; padding: 0.5rem; }
+        .content-grid::-webkit-scrollbar { width: 8px; }
+        .content-grid::-webkit-scrollbar-track { background: transparent; }
+        .content-grid::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        .content-card { display: block; text-decoration: none; border-radius: 6px; border: 2px solid var(--border-color); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .content-card:hover { transform: translateY(-5px); box-shadow: 0 0 15px var(--border-color); }
+        .content-card-thumbnail { width: 100%; height: 150px; object-fit: cover; }
+        .empty-state { text-align: center; padding: 4rem 1rem; border: 2px dashed var(--border-color); border-radius: 6px; }
+        .empty-state i { font-size: 3rem; opacity: 0.7; margin-bottom: 1rem; }
+        .empty-state h3 { font-size: 1.5rem; margin-top: 1rem; }
 
-            .profile-name {
-                font-family: 'VT323', monospace;
-                font-size: 3rem;
-                color: #fff;
-                text-shadow: 0 0 5px #fff, 0 0 10px var(--primary-glow), 0 0 20px var(--primary-glow);
-                animation: textFlicker 3s infinite alternate;
-                margin: 0;
-            }
+        /* ==========================================================================
+           6. Keyframe Animations
+           ========================================================================== */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes contentFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scanlines { from { transform: translateY(0); } to { transform: translateY(40px); } }
+        @keyframes textFlicker { 0%, 19%, 22%, 25%, 53%, 57%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px var(--primary-glow), 0 0 20px var(--primary-glow); } 20%, 24%, 55% { text-shadow: none; } }
+        /* NEW: Glitch animation for the verified badge */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
 
-            .profile-username {
-                color: var(--secondary-glow);
-                margin-top: -0.5rem;
-                letter-spacing: 2px;
-            }
-            
-            /* NEW: Style for the join date */
-            .profile-joindate {
-                color: var(--text-muted);
-                font-size: 0.9rem;
-                margin-top: 0.5rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.5rem;
-            }
-            @media (min-width: 640px) {
-                .profile-joindate {
-                    justify-content: flex-start;
-                }
-            }
+<body>
+    <div class="retro-profile-wrapper">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
 
-            .profile-follow-btn {
-                background: transparent;
-                border: 2px solid var(--primary-glow);
-                color: var(--primary-glow);
-                font-weight: bold;
-                padding: 0.6rem 1.5rem;
-                border-radius: 4px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                box-shadow: inset 0 0 8px var(--primary-glow), 0 0 8px var(--primary-glow);
-                text-transform: uppercase;
-                letter-spacing: 1px;
-            }
-            .profile-follow-btn:hover {
-                background: var(--primary-glow);
-                color: var(--bg-color);
-                box-shadow: 0 0 20px var(--primary-glow);
-            }
-
-            /* MODIFICATION: Updated stats section to a grid for better layout */
-            .profile-stats {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1.5rem;
-                margin-top: 1.5rem;
-                text-align: center;
-            }
-             @media (min-width: 640px) {
-                .profile-stats {
-                    grid-template-columns: repeat(4, 1fr);
-                    text-align: left;
-                }
-            }
-            
-            .stat-item .stat-number {
-                font-weight: bold;
-                font-size: 1.5rem;
-                color: #fff;
-                display: block;
-            }
-            .stat-item .stat-label {
-                color: var(--text-muted);
-                font-size: 0.9rem;
-            }
-
-            .profile-bio {
-                margin-top: 1.5rem;
-                color: var(--text-color);
-                line-height: 1.6;
-            }
-            
-            /* --- Tabs Section --- */
-            .content-tabs {
-                margin-top: 2.5rem;
-                border-bottom: 2px solid var(--border-color);
-            }
-            .tabs-nav {
-                display: flex;
-                gap: 2rem;
-                margin-bottom: -2px;
-            }
-
-            .tab-button {
-                font-family: 'VT323', monospace;
-                font-size: 1.75rem;
-                background: none;
-                border: none;
-                color: var(--text-muted);
-                padding: 0.5rem 0.25rem;
-                cursor: pointer;
-                border-bottom: 4px solid transparent;
-                transition: all 0.3s ease;
-            }
-
-            .tab-button:hover {
-                color: var(--secondary-glow);
-            }
-            .tab-button.is-active {
-                color: var(--primary-glow);
-                border-bottom-color: var(--primary-glow);
-                text-shadow: 0 0 10px var(--primary-glow);
-            }
-            
-            /* --- Content Grid & Sections --- */
-            .content-main {
-                margin-top: 2rem;
-            }
-
-            .content-section {
-                display: none;
-                animation: contentFadeIn 0.5s ease;
-            }
-            .content-section.is-active {
-                display: block;
-            }
-
-            .docs-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 1rem;
-            }
-
-            .doc-item {
-                aspect-ratio: 1 / 1;
-                cursor: pointer;
-                position: relative;
-                overflow: hidden;
-                border-radius: 6px;
-                border: 2px solid var(--border-color);
-            }
-
-            .doc-thumbnail {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform 0.4s ease, filter 0.4s ease;
-            }
-            .doc-item:hover .doc-thumbnail {
-                transform: scale(1.1);
-                filter: brightness(0.7);
-            }
-
-            /* --- Empty State for Courses --- */
-            .empty-state {
-                text-align: center;
-                padding: 4rem 1rem;
-                border: 2px dashed var(--border-color);
-                border-radius: 6px;
-            }
-            .empty-state-icon {
-                margin: 0 auto;
-                height: 48px;
-                width: 48px;
-                color: var(--secondary-glow);
-                opacity: 0.7;
-            }
-            .empty-state-title {
-                margin-top: 0.5rem;
-                font-size: 1.25rem;
-                font-weight: 500;
-                color: #fff;
-            }
-            .empty-state-text {
-                margin-top: 0.25rem;
-                color: var(--text-muted);
-            }
-            
-            /* --- Keyframe Animations --- */
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes contentFadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            /* MODIFICATION: Removed the 'float' animation */
-            @keyframes scanlines {
-                from { transform: translateY(0); }
-                to { transform: translateY(40px); }
-            }
-            @keyframes textFlicker {
-                0%, 19%, 22%, 25%, 53%, 57%, 100% {
-                    text-shadow: 0 0 5px #fff, 0 0 10px var(--primary-glow), 0 0 20px var(--primary-glow);
-                }
-                20%, 24%, 55% {
-                    text-shadow: none;
-                }
-            }
-        </style>
-    </head>
-    
-    <body>
         <header class="profile-header">
             <div class="profile-avatar-container">
-                <img class="profile-avatar" src="<%= userData. profilePicUrl %>" alt="Profile Picture">
+                <img class="profile-avatar" src="<%= userData.profilePicUrl %>" alt="Profile Picture">
             </div>
-            
             <div class="profile-info">
                 <div class="profile-main-info">
                     <div>
-                        <h1 class="profile-name">
-                            <% if(userData.fullname && userData.fullname.length > 0) { %>
-                                <%= userData.fullname %>
-                            <% } else { %>
-                                <%= userData.username %>
+                        <div class="profile-name-wrapper">
+                            <h1 class="profile-name"><%= userData.fullname || userData.username %></h1>
+                            <% if (userData.ISVERIFIED) { %>
+                                <span class="profile-verified-badge" title="Verified User">
+                                    <img style="width: 50px; height: 50px;" src="/images/verify.png" alt="Verified Badge"/>
+                                </span>
                             <% } %>
-                        </h1>
+                        </div>
                         <p class="profile-username">@<%= userData.username %></p>
-                        <p class="profile-joindate">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
-                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
-                            </svg>
-                            <span id="join-date" data-createdat="<%= userData.createdAt %>"></span>
-                        </p>
                     </div>
-                    <button class="profile-follow-btn">Follow</button>
+                    <button class="profile-follow-btn" id="followBtn" data-user-id="<%= userData._id %>"></button>
                 </div>
-                
                 <div class="profile-stats">
-                    <div class="stat-item">
-                        <span class="stat-number"><%= numsOfDocs %></span>
-                        <span class="stat-label">Docs Uploaded</span>
-                    </div>
-                     <div class="stat-item">
-                        <span class="stat-number"><%= numOfCourses %></span>
-                        <span class="stat-label">Courses</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span> <span class="stat-label">Followers</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">0</span> <span class="stat-label">Following</span>
-                    </div>
+                    <div class="stat-item"><span class="stat-number"><%= numsOfDocs %></span><span class="stat-label">Docs</span></div>
+                    <div class="stat-item"><span class="stat-number"><%= numOfCourses %></span><span class="stat-label">Courses</span></div>
+                    <div class="stat-item"><span class="stat-number"><%= userData.followers.length || 0 %></span><span class="stat-label">Followers</span></div>
+                    <div class="stat-item"><span class="stat-number"><%= userData.following.length || 0 %></span><span class="stat-label">Following</span></div>
                 </div>
-
-                <p class="profile-bio">
-                    <% if(userData.bio) { %>
-                        <%= userData.bio %>
-                    <% } else { %>
-                        Digital explorer navigating the vast realms of code and creativity. 🚀
-                    <% } %>
-                </p>
+                <p class="profile-bio"><%= userData.bio || 'Digital explorer navigating the vast realms of code and creativity. 🚀' %></p>
             </div>
         </header>
 
         <div class="content-tabs">
             <nav class="tabs-nav" aria-label="Tabs">
-                <button id="docs-tab" class="tab-button is-active">Docs</button>
-                <button id="courses-tab" class="tab-button">Courses</button>
+                <button class="tab-button is-active" data-tab="docs-section">Docs</button>
+                <button class="tab-button" data-tab="courses-section">Courses</button>
             </nav>
         </div>
 
         <main class="content-main">
             <div id="docs-section" class="content-section is-active">
-                <div class="docs-grid">
-                     <% files.forEach((file) => { %>
-                        
-                            <img onclick="window.location.href='/file/<%=file.slug%>/<%=file._id%>'" class="doc-thumbnail" src="<%= file.previewUrl %>" alt="Document thumbnail">
-                        
-                    <% }) %>
-                </div>
+                <% if (files && files.length > 0) { %>
+                    <div class="content-grid">
+                        <% files.forEach((file) => { %>
+                            <a href="/file/<%= file.slug %>/<%= file._id %>" class="content-card">
+                                <img class="content-card-thumbnail" src="<%= file.previewUrl %>" alt="Document thumbnail">
+                            </a>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fa-solid fa-file-circle-xmark" style="color: var(--secondary-glow);"></i>
+                        <h3 style="color: #fff;">No Docs Found</h3>
+                    </div>
+                <% } %>
             </div>
 
             <div id="courses-section" class="content-section">
                 <div class="empty-state">
-                    <svg class="empty-state-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v1.586m0 9.162v1.586M12 12.586v.01M4.75 8.25l1.06 1.06M18.19 15.69l1.06 1.06M4.75 15.69l1.06-1.06M18.19 8.25l1.06-1.06M12 21a9 9 0 110-18 9 9 0 010 18z" /></svg>
-                    <h3 class="empty-state-title">No courses found</h3>
-                    <p class="empty-state-text">Check back later for new courses and content.</p>
+                     <i class="fa-solid fa-book-open-reader" style="font-size: 3rem; opacity: 0.7; color: var(--primary-glow);"></i>
+                    <h3 style="font-size: 1.5rem; margin-top: 1rem;">No courses found</h3>
                 </div>
             </div>
         </main>
-        
-        <script>
-            // --- Tab Functionality ---
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
             const tabs = document.querySelectorAll('.tab-button');
             const contentSections = document.querySelectorAll('.content-section');
-
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     tabs.forEach(t => t.classList.remove('is-active'));
                     contentSections.forEach(s => s.classList.remove('is-active'));
-
                     tab.classList.add('is-active');
-
-                    const targetId = tab.id.replace('-tab', '-section');
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        targetSection.classList.add('is-active');
-                    }
+                    document.getElementById(tab.dataset.tab).classList.add('is-active');
                 });
             });
 
-            // --- NEW: Time Ago Formatting ---
-            document.addEventListener('DOMContentLoaded', () => {
-                const joinDateElement = document.getElementById('join-date');
-                const isoDate = joinDateElement.getAttribute('data-createdat');
-                
-                if (isoDate) {
-                    joinDateElement.textContent = `Joined ${formatTimeAgo(isoDate)}`;
+            const followBtn = document.getElementById('followBtn');
+            // This 'isFollowed' boolean must be passed from your EJS backend
+            let isFollowed = <%= isFollowed %>; 
+            const userIdToFollow = followBtn.dataset.userId;
+
+            function updateFollowButtonState() {
+                if (isFollowed) {
+                    followBtn.textContent = 'Following';
+                    followBtn.classList.add('following');
+                } else {
+                    followBtn.textContent = 'Follow';
+                    followBtn.classList.remove('following');
                 }
+            }
+
+            followBtn.addEventListener('click', () => {
+                const url = isFollowed ? `/user/unfollow` : `/user/follow`;
+                followBtn.disabled = true;
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userIdToFollow })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        isFollowed = !isFollowed;
+                        updateFollowButtonState();
+                    } else {
+                        alert(data.message || 'An error occurred.');
+                    }
+                })
+                .catch(error => {
+                    console.error('There was a problem with the follow/unfollow operation:', error);
+                    alert('An error occurred. Please try again.');
+                })
+                .finally(() => {
+                    followBtn.disabled = false;
+                });
             });
 
-            function formatTimeAgo(dateString) {
-                const date = new Date(dateString);
-                const now = new Date();
-                const seconds = Math.floor((now - date) / 1000);
-
-                let interval = seconds / 31536000; // seconds in a year
-                if (interval > 1) {
-                    return Math.floor(interval) + " years ago";
-                }
-                interval = seconds / 2592000; // seconds in a month
-                if (interval > 1) {
-                    return Math.floor(interval) + " months ago";
-                }
-                interval = seconds / 86400; // seconds in a day
-                if (interval > 1) {
-                    return Math.floor(interval) + " days ago";
-                }
-                interval = seconds / 3600; // seconds in an hour
-                if (interval > 1) {
-                    return Math.floor(interval) + " hours ago";
-                }
-                interval = seconds / 60; // seconds in a minute
-                if (interval > 1) {
-                    return Math.floor(interval) + " minutes ago";
-                }
-                return "just now";
-            }
-        </script>
-    </body>
-</div>
+            updateFollowButtonState();
+        });
+    </script>
+</body>
+</html>
