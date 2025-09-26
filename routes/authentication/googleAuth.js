@@ -77,23 +77,40 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
+
         if (!user) {
+          let username = profile.displayName;
+          let finalUsername = username;
+
+          // Check if username already exists
+          const existingUser = await User.findOne({ username: finalUsername });
+
+          if (existingUser) {
+            // Username exists, generate a unique one
+            while (await User.findOne({ username: finalUsername })) {
+              finalUsername = `${username}_${Math.floor(Math.random() * 10000)}`;
+            }
+          }
+
           user = await User.create({
             googleId: profile.id,
-            username: profile.displayName,
+            username: finalUsername,
             email: profile.emails[0].value,
             profilePicUrl: profile.photos[0].value,
             isEmailVerified: true,
           });
         }
+
         await log_activities.create({
           userId: user._id,
           last_logged_in: [{ date: new Date() }],
         });
+
         return done(null, user);
       } catch (err) {
         return done(err, null);
       }
+
     }
   )
 );
@@ -302,11 +319,11 @@ router.get(
     // const reports= await Report.find({userId:req.user._id})
     const payouts = await Payouts.find({ userId: req.user._id });
     const files = await File.find({ userId: req.user._id });
-    const userUpi=await paymentMethod.findOne({userId:req.user._id});
-    const isDefault=userUpi.isDefault;
+    const userUpi = await paymentMethod.findOne({ userId: req.user._id });
+    const isDefault = userUpi.isDefault;
     console.log(isDefault)
-    if(!isDefault){
-       isDefault=false
+    if (!isDefault) {
+      isDefault = false
     }
     let user = null;
 
@@ -320,7 +337,7 @@ router.get(
     }
     res.render("createcourse", {
       isDefault,
-      userUpi:userUpi.upi,
+      userUpi: userUpi.upi,
       transactions: userTransactions,
       payouts,
       isLoggedin: !!req.user,
@@ -527,9 +544,9 @@ router.post("/auth/signup", async (req, res) => {
 
     // Optional: auto-generate unique username
     let finalUsername = username;
-    // while (await User.findOne({ username: finalUsername })) {
-    //   finalUsername = `${username}_${Math.floor(Math.random()*10000)}`;
-    // }
+    while (await User.findOne({ username: finalUsername })) {
+      finalUsername = `${username}_${Math.floor(Math.random() * 10000)}`;
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -730,18 +747,18 @@ router.get(
     const numOfCourses = 0; // For now only
     const fileUrl = `${userData.profilePicUrl}`;
     console.log(fileUrl);
-    if(fileUrl){
+    if (fileUrl) {
       const url = new URL(fileUrl);
-const key = url.pathname.substring(1); // remove leading "/"
- userData.profilePicUrl= `${CF_DOMAIN}/${key}`;
+      const key = url.pathname.substring(1); // remove leading "/"
+      userData.profilePicUrl = `${CF_DOMAIN}/${key}`;
     }
-    
 
 
-// "avatars/avatar-68d611a993f888f73f6306fe-1758875009169.jpg"
 
-  //  userData.profilePicUrl= `${CF_DOMAIN}/files-previews/images/${file._id}.${files.imageType || "jpg"}`
-  
+    // "avatars/avatar-68d611a993f888f73f6306fe-1758875009169.jpg"
+
+    //  userData.profilePicUrl= `${CF_DOMAIN}/files-previews/images/${file._id}.${files.imageType || "jpg"}`
+
     res.render("myprofile.ejs", {
       numsOfDocs,
       numOfCourses,
@@ -781,7 +798,7 @@ const s3 = new S3Client({
 const s3Storage = multerS3({
   s3: s3,
   bucket: process.env.AWS_S3_BUCKET_NAME,
- 
+
   key: function (req, file, cb) {
     // Create a unique filename using the user's ID from req.user
     const fileName = `avatars/avatar-${req.user._id
@@ -813,9 +830,9 @@ router.post(
       // If a new file was uploaded, get its S3 URL
       let newProfilePicUrl = null;
       if (req.file) {
-    
+
         updateData.profilePicUrl = req.file.location;
-        
+
         newProfilePicUrl = req.file.location;
       }
 
@@ -1001,11 +1018,11 @@ router.post("/report", authenticateJWT_user, reaquireAuth, async (req, res) => {
 
 router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
   try {
-const user = await User.findOne({
-  username: new RegExp(`^${req.params.username}$`, "i")
-});
+    const user = await User.findOne({
+      username: new RegExp(`^${req.params.username}$`, "i")
+    });
 
-    
+
     // 1. Handle user not found case FIRST and exit immediately.
     if (!user) {
       return res.status(404).render("404.ejs"); // Or send a simple message
@@ -1150,44 +1167,44 @@ router.delete(
  * @desc    Follow a user
  * @access  Private
  */
-router.post('/user/follow', authenticateJWT_user, reaquireAuth,async (req, res) => {
-    const currentUserId = req.user._id; // ID of the user performing the action (from middleware)
-    const { userId: userIdToFollow } = req.body; // ID of the user to be followed (from frontend)
+router.post('/user/follow', authenticateJWT_user, reaquireAuth, async (req, res) => {
+  const currentUserId = req.user._id; // ID of the user performing the action (from middleware)
+  const { userId: userIdToFollow } = req.body; // ID of the user to be followed (from frontend)
 
-    if (currentUserId === userIdToFollow) {
-        return res.status(400).json({ success: false, message: "You cannot follow yourself." });
+  if (currentUserId === userIdToFollow) {
+    return res.status(400).json({ success: false, message: "You cannot follow yourself." });
+  }
+
+  try {
+    // Find both users in the database
+    const currentUser = await User.findById(currentUserId);
+    const userToFollow = await User.findById(userIdToFollow);
+
+    if (!userToFollow) {
+      return res.status(404).json({ success: false, message: "User not found." });
     }
 
-    try {
-        // Find both users in the database
-        const currentUser = await User.findById(currentUserId);
-        const userToFollow = await User.findById(userIdToFollow);
-
-        if (!userToFollow) {
-            return res.status(404).json({ success: false, message: "User not found." });
-        }
-
-        // Check if already following
-        if (currentUser.following.includes(userIdToFollow)) {
-            return res.status(400).json({ success: false, message: "You are already following this user." });
-        }
-
-        // Update both users' documents in one transaction for safety
-        await User.updateOne(
-            { _id: currentUserId },
-            { $addToSet: { following: userIdToFollow } } // Use $addToSet to avoid duplicates
-        );
-        await User.updateOne(
-            { _id: userIdToFollow },
-            { $addToSet: { followers: currentUserId } }
-        );
-
-        res.status(200).json({ success: true, message: `Successfully followed ${userToFollow.username}.` });
-
-    } catch (error) {
-        console.error("Error in /user/follow route:", error);
-        res.status(500).json({ success: false, message: "Server error." });
+    // Check if already following
+    if (currentUser.following.includes(userIdToFollow)) {
+      return res.status(400).json({ success: false, message: "You are already following this user." });
     }
+
+    // Update both users' documents in one transaction for safety
+    await User.updateOne(
+      { _id: currentUserId },
+      { $addToSet: { following: userIdToFollow } } // Use $addToSet to avoid duplicates
+    );
+    await User.updateOne(
+      { _id: userIdToFollow },
+      { $addToSet: { followers: currentUserId } }
+    );
+
+    res.status(200).json({ success: true, message: `Successfully followed ${userToFollow.username}.` });
+
+  } catch (error) {
+    console.error("Error in /user/follow route:", error);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
 });
 
 /**
@@ -1195,33 +1212,33 @@ router.post('/user/follow', authenticateJWT_user, reaquireAuth,async (req, res) 
  * @desc    Unfollow a user
  * @access  Private
  */
-router.post('/user/unfollow', authenticateJWT_user, reaquireAuth,async (req, res) => {
-    const currentUserId = req.user._id; // ID of the user performing the action
-    const { userId: userIdToUnfollow } = req.body; // ID of the user to be unfollowed
+router.post('/user/unfollow', authenticateJWT_user, reaquireAuth, async (req, res) => {
+  const currentUserId = req.user._id; // ID of the user performing the action
+  const { userId: userIdToUnfollow } = req.body; // ID of the user to be unfollowed
 
-    try {
-        // Find the user to unfollow to get their username for the message
-        const userToUnfollow = await User.findById(userIdToUnfollow);
-        if (!userToUnfollow) {
-            return res.status(404).json({ success: false, message: "User not found." });
-        }
-
-        // Update both users' documents
-        await User.updateOne(
-            { _id: currentUserId },
-            { $pull: { following: userIdToUnfollow } } // Use $pull to remove the ID
-        );
-        await User.updateOne(
-            { _id: userIdToUnfollow },
-            { $pull: { followers: currentUserId } }
-        );
-
-        res.status(200).json({ success: true, message: `Successfully unfollowed ${userToUnfollow.username}.` });
-
-    } catch (error) {
-        console.error("Error in /user/unfollow route:", error);
-        res.status(500).json({ success: false, message: "Server error." });
+  try {
+    // Find the user to unfollow to get their username for the message
+    const userToUnfollow = await User.findById(userIdToUnfollow);
+    if (!userToUnfollow) {
+      return res.status(404).json({ success: false, message: "User not found." });
     }
+
+    // Update both users' documents
+    await User.updateOne(
+      { _id: currentUserId },
+      { $pull: { following: userIdToUnfollow } } // Use $pull to remove the ID
+    );
+    await User.updateOne(
+      { _id: userIdToUnfollow },
+      { $pull: { followers: currentUserId } }
+    );
+
+    res.status(200).json({ success: true, message: `Successfully unfollowed ${userToUnfollow.username}.` });
+
+  } catch (error) {
+    console.error("Error in /user/unfollow route:", error);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
 });
 
 
