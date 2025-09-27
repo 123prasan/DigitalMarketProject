@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const passport = require("passport");
 const session = require("express-session");
@@ -201,7 +202,7 @@ router.get(
     if (user.twoFAEnabled) {
       const tempToken = jwt.sign(
         { userId: user.id },
-        "3a1f0b9d5c7e2a8f6d1c4b8a9e3f0d7a2c5e8b6d1a4f7c3e9b0d2a1f6e4c8b2",
+        process.env.JWT_SECRET_USER_LOGIN,
         { expiresIn: "5m" }
       );
 
@@ -212,17 +213,18 @@ router.get(
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      "3a1f0b9d5c7e2a8f6d1c4b8a9e3f0d7a2c5e8b6d1a4f7c3e9b0d2a1f6e4c8b2",
+      process.env.JWT_SECRET_USER_LOGIN,
       { expiresIn: "7d" }
     );
 
     // Set the JWT as a cookie before redirecting
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production", // HTTPS only in prod
+      sameSite: "strict", // or "lax" if you need cross-site redirects (Google OAuth)
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined, // allow across subdomains
     });
-
     // Redirect the user to the dashboard or home page after successful login
     console.log("callback recieved");
     res.redirect("/");
@@ -319,7 +321,7 @@ router.get(
     // const reports= await Report.find({userId:req.user._id})
     const payouts = await Payouts.find({ userId: req.user._id });
     const files = await File.find({ userId: req.user._id });
-   
+
     let user = null;
 
     if (req.user) {
@@ -331,7 +333,7 @@ router.get(
       }
     }
     res.render("createcourse", {
-      
+
       transactions: userTransactions,
       payouts,
       isLoggedin: !!req.user,
@@ -495,16 +497,17 @@ router.post("/auth/login", async (req, res) => {
     // Generate JWT
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      "3a1f0b9d5c7e2a8f6d1c4b8a9e3f0d7a2c5e8b6d1a4f7c3e9b0d2a1f6e4c8b2", // replace with your real secret
+      process.env.JWT_SECRET_USER_LOGIN,
       { expiresIn: "7d" }
     );
-
+    console.log(token);
     // Set cookie
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: false, // true in production (HTTPS)
-      sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS only in prod
+      sameSite: "strict", // or "lax" if you need cross-site redirects (Google OAuth)
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined, // allow across subdomains
     });
 
     // Send response
@@ -552,14 +555,16 @@ router.post("/auth/signup", async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      "3a1f0b9d5c7e2a8f6d1c4b8a9e3f0d7a2c5e8b6d1a4f7c3e9b0d2a1f6e4c8b2",
+      process.env.JWT_SECRET_USER_LOGIN,
       { expiresIn: "7d" }
     );
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+   httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS only in prod
+      sameSite: "strict", // or "lax" if you need cross-site redirects (Google OAuth)
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined, // allow across subdomains
     });
 
     //email verification token
@@ -767,7 +772,7 @@ router.get(
 );
 
 // const express = require('express');
-require("dotenv").config();
+
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 const { S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
