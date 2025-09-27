@@ -270,7 +270,7 @@
                 padding:5px 8px;
                 font-size: 10px;
             }
-             #loginContainer { display: none !important; }
+             /* #loginContainer { display: none !important; } */
         }
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
@@ -358,7 +358,7 @@
 
 <div class="mobile-nav-panel" id="mobileNavPanel">
     
-    </div>
+</div>
 <div class="nav-overlay" id="navOverlay"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
@@ -394,59 +394,81 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ✅ CORRECTED FUNCTION
     function populateMobileNav() {
+        // Basic links available to everyone
         const navLinks = [
             { href: '/', icon: 'fa-solid fa-house', text: 'Home', iconClass: 'icon-home' },
             { href: '/documents', icon: 'fa-solid fa-file-lines', text: 'Documents', iconClass: 'icon-docs' },
             { href: '/courses', icon: 'fa-solid fa-book-open-reader', text: 'Courses', iconClass: 'icon-courses' },
         ];
+        // Links only for logged-in users
         const accountLinks = [
             { href: '/dashboard', icon: 'fa-solid fa-table-columns', text: 'Dashboard', iconClass: 'icon-dashboard' },
             { href: '/downloads', icon: 'fa-solid fa-cloud-arrow-down', text: 'Downloads', iconClass: 'icon-downloads' },
             { href: '/transactions', icon: 'fa-solid fa-receipt', text: 'Transactions', iconClass: 'icon-trans' },
         ];
 
+        // Helper function to create the HTML for a list of links
         const createLinksHTML = (links) => links.map(link => `
-            <a href="${link.href}" class="panel-link">
+            <a href="${link.href}" class="panel-link d-flex align-items-center">
                 <span class="icon-wrapper ${link.iconClass}"><i class="${link.icon}"></i></span>
                 <span>${link.text}</span>
             </a>`).join('');
 
-        let userSection = isLoggedIn ? `
-            <a href="/user-profile" class="text-decoration-none">
-                <div class="panel-user-profile">
-                    <img src="${userData.profileUrl}" alt="User Avatar" class="avatar">
-                    <div>
-                        <p class="username text-white mb-0">${userData.username}</p>
-                        <p class="email small text-muted mb-0">${userData.useremail}</p>
-                    </div>
-                </div>
-            </a>` : '';
-        
-        let footerSection = isLoggedIn ? 
-            `<a href="/logout" class="btn panel-link w-100 justify-content-center" style="background-color: var(--color-danger);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw"></i><span>Logout</span></a>` : 
-            `<button id="mobileLoginBtn" class="btn btn-primary w-100">Login / Sign Up</button>`;
+        let panelBodyHTML = '';
+        let panelFooterHTML = '';
 
+        // Generate the HTML for the public navigation links
+        const publicLinksSection = `<div class="panel-nav-section">${createLinksHTML(navLinks)}</div>`;
+
+        if (isLoggedIn) {
+            // If logged in, show user profile, public links, and account links
+            const userSection = `
+                <a href="/user-profile" class="text-decoration-none">
+                    <div class="panel-user-profile">
+                        <img src="${userData.profileUrl}" alt="User Avatar" class="avatar">
+                        <div>
+                            <p class="username text-white mb-0">${userData.username}</p>
+                            <p class="email small text-muted mb-0">${userData.useremail}</p>
+                        </div>
+                    </div>
+                </a>`;
+            const accountLinksSection = `<div class="panel-nav-section">${createLinksHTML(accountLinks)}</div>`;
+            
+            panelBodyHTML = `
+                ${userSection}
+                <hr class="panel-divider">
+                ${publicLinksSection}
+                <hr class="panel-divider">
+                ${accountLinksSection}
+            `;
+            panelFooterHTML = `<a href="/logout" class="btn panel-link w-100 justify-content-center" style="background-color: var(--color-danger);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>`;
+        } else {
+            // If not logged in, only show the public links
+            panelBodyHTML = publicLinksSection;
+            panelFooterHTML = `<button id="mobileLoginBtn" class="btn btn-primary w-100">Login / Sign Up</button>`;
+        }
+
+        // Assemble the final panel HTML
         const panelHTML = `
             <div class="panel-header d-flex justify-content-between align-items-center">
                 <a href="/"><img src="/images/logo.svg" alt="Vidyari Logo" style="height:32px"></a>
             </div>
             <div class="panel-body">
-                ${userSection}
-                ${isLoggedIn ? '<hr class="panel-divider">' : ''}
-                <div class="panel-nav-section">${createLinksHTML(navLinks)}</div>
-                ${isLoggedIn ? `
-                <hr class="panel-divider">
-                <div class="panel-nav-section">${createLinksHTML(accountLinks)}</div>` : ''}
+                ${panelBodyHTML}
             </div>
-            <div class="panel-footer">${footerSection}</div>`;
-        
+            <div class="panel-footer">${panelFooterHTML}</div>
+        `;
+
         mobileNavPanel.innerHTML = panelHTML;
-    
+
+        // Add event listener for the login button if it exists
         if (!isLoggedIn) {
             document.getElementById('mobileLoginBtn').addEventListener('click', () => window.location.href = '/user-login');
         }
     }
+
 
     const toggleMobileNav = () => {
         const isOpen = mobileNavPanel.classList.toggle('is-open');

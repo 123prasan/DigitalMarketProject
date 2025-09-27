@@ -1,13 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile</title>
+    <title><%= userData.fullname || userData.username %> - Vidyari Profile</title>
+
+    <!-- Basic SEO -->
+    <meta name="description" content="View <%= userData.fullname || userData.username %>'s profile on Vidyari. Access shared docs, courses, followers, and explore their content.">
+    <meta name="keywords" content="Vidyari user profile, <%= userData.username %>, <%= userData.fullname %>, study materials, online courses, docs, educational content, student profile">
+    <meta name="author" content="Vidyari">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vidyari.com/profile/<%= userData.username %>">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="<%= userData.fullname || userData.username %> - Vidyari Profile">
+    <meta property="og:description" content="Explore <%= userData.fullname || userData.username %>'s profile, documents, courses, and educational contributions on Vidyari.">
+    <meta property="og:type" content="profile">
+    <meta property="og:url" content="https://vidyari.com/user/<%= userData.username %>">
+    <meta property="og:image" content="<%= userData.profilePicUrl || 'https://vidyari.com/images/avatar.png' %>">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= userData.fullname || userData.username %> - Vidyari Profile">
+    <meta name="twitter:description" content="View <%= userData.fullname || userData.username %>'s shared documents and courses on Vidyari.">
+    <meta name="twitter:image" content="<%= userData.profilePicUrl || 'https://vidyari.com/images/avatar.png' %>">
+
+    <!-- Structured Data (JSON-LD for Profile) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "<%= userData.fullname || userData.username %>",
+      "url": "https://vidyari.com/profile/<%= userData.username %>",
+      "image": "<%= userData.profilePicUrl || 'https://vidyari.com/images/avatar.png' %>",
+      "sameAs": [],
+      "description": "<%= userData.bio || 'Digital explorer navigating the vast realms of code and creativity.' %>"
+    }
+    </script>
+
+    <!-- Fonts and Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow">
+    
+    <!-- Your existing styles or CSS link here -->
+
 
     <style>
         /* ==========================================================================

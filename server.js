@@ -620,18 +620,32 @@ app.get("/admin", authenticateJWT, async (req, res) => {
   const totalAmount = (orderamount[0] && orderamount[0].totalAmount) || 0;
 
   const files = await File.find({});
-  const filesWithUrls = await Promise.all(
-    files.map(async (file) => {
-      const { data, error } = await supabase.storage
-        .from("files")
-        .createSignedUrl(file.fileUrl, 60 * 5); // 5 minutes
+const filesWithUrls = await Promise.all(
+  files.map(async (file) => {
+    try {
+      // Construct the S3 key
+      const key = `main-files/${file.fileUrl}`; // adapt if your file structure is different
+
+      // Generate pre-signed URL (valid for 5 minutes)
+      const downloadUrl = s3.getSignedUrl("getObject", {
+        Bucket: "vidyarimain",
+        Key: key,
+        Expires: 5 * 60, // 5 minutes
+      });
 
       return {
         ...file.toObject(),
-        downloadUrl: data?.signedUrl || "#",
+        downloadUrl,
       };
-    })
-  );
+    } catch (err) {
+      console.error(`Error generating URL for ${file.fileUrl}`, err);
+      return {
+        ...file.toObject(),
+        downloadUrl: "#",
+      };
+    }
+  })
+);
 
   // --- NEW DATA FETCHING FOR CHARTS ---
 
@@ -985,32 +999,43 @@ const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${ext}`;    c
 ;
 
 // Delete File - NOW PROTECTED BY JWT
+// const AWS = require("aws-sdk");
+// const File = require("./models/file");
+
+// Configure S3
+// const s3 = new AWS.S3({
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   region: process.env.AWS_REGION, // e.g., "ap-south-1"
+// });
+
 app.post("/delete-file", authenticateJWT, async (req, res) => {
   const { fileId, fileUrl } = req.body;
-  // console.log({ fileId, fileUrl });
+
   try {
-    // Find the file document to get the preview image path
     const file = await File.findById(fileId);
     if (!file) return res.json({ success: false, message: "File not found" });
 
-    // Prepare paths to delete: main file and preview image
-    const pathsToDelete = [fileUrl];
-    // If you store the preview image as `previews/<fileId>.jpg`
-    pathsToDelete.push(`previews/${file._id}.jpg`);
+    // Construct S3 keys
+    const mainFileKey = `main-files/${fileUrl}`;             // for vidyari-main bucket
+    const previewKey = `/files-previews/images/${file._id}.${file.imageType || "jpg"}`; // for vidyari2 bucket
 
-    // Remove both files from Supabase Storage
-    const { error: supabaseError } = await supabase.storage
-      .from("files")
-      .remove(pathsToDelete);
+    // Delete main file from vidyari-main
+    await s3
+      .deleteObject({ Bucket: "vidyarimain", Key: mainFileKey })
+      .promise();
 
-    if (supabaseError)
-      return res.json({ success: false, message: "Supabase delete failed" });
+    // Delete preview image from vidyari2
+    await s3
+      .deleteObject({ Bucket: "vidyari2", Key: previewKey })
+      .promise();
 
-    // Delete the file record from MongoDB
+    // Delete MongoDB record
     await File.deleteOne({ _id: fileId });
-
+    console.log("file deleted")
     res.json({ success: true });
   } catch (err) {
+    console.error(err);
     res.json({ success: false, message: "Server error" });
   }
 });
