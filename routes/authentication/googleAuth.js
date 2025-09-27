@@ -227,7 +227,7 @@ router.get(
     });
     // Redirect the user to the dashboard or home page after successful login
     console.log("callback recieved");
-    res.redirect("/");
+    res.redirect("/documents");
   }
 );
 
