@@ -270,19 +270,13 @@
                 padding:5px 8px;
                 font-size: 10px;
             }
-             /* #loginContainer { display: none !important; } */
         }
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
      crossorigin="anonymous"></script>
 </head>
 
-<body 
-    data-is-loggedin="<%= isLoggedin %>" 
-    data-username="<%= typeof username !== 'undefined' ? username : 'Guest' %>" 
-    data-useremail="<%= typeof useremail !== 'undefined' ? useremail : '' %>" 
-    data-profile-url="<%= typeof profileUrl !== 'undefined' && profileUrl ? profileUrl : '/images/avatar.jpg' %>"
->
+<body>
 
 <header class="site-header">
     <div class="container-fluid d-flex align-items-center justify-content-between">
@@ -300,14 +294,12 @@
         
         <div class="d-flex align-items-center header-actions">
 
-            <button id="becomeSellerBtn" class="vidyari-header-become-seller-button">Become Seller</button>
+            <button onclick="window.location.href='/dashboard'" class="vidyari-header-become-seller-button">Become Seller</button>
             
-            <div id="loginContainer">
-                <button id="loginBtn" class="vidyari-fancy-login-button">Login</button>
-            </div>
-              
+            <%# EJS logic to conditionally render Login button OR User Profile %>
             <% if(isLoggedin) { %>
-                <button onclick="window.location.href='/user-notifications'" id="notificationBellBtn" type="button" class="header-btn" aria-label="Notifications">
+                <%# USER IS LOGGED IN %>
+                <button onclick="window.location.href='/user-notifications'" type="button" class="header-btn" aria-label="Notifications">
                     <i class="fa-regular fa-bell"></i>
                 </button>
 
@@ -332,20 +324,25 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="dropdown">
+                    <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="px-3 pt-2 pb-3 border-bottom">
+                            <p class="fw-bold mb-0 text-white"><%= username %></p>
+                            <p class="small text-muted mb-0"><%= useremail %></p>
+                        </li>
+                        <li><a class="dropdown-item" href="/user-profile"><i class="fa-solid fa-user-gear fa-fw me-2"></i>Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+
+            <% } else { %>
+                <%# USER IS A GUEST %>
+                <button onclick="window.location.href='/user-login'" class="vidyari-fancy-login-button">Login</button>
             <% } %>
 
-            <div onclick="window.location.href='/user-profile'" id="userProfile" class="dropdown">
-                <img src="/images/avatar.jpg" alt="User Avatar" class="user-avatar" id="userAvatar" data-bs-toggle="dropdown" aria-expanded="false">
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li class="px-3 pt-2 pb-3 border-bottom">
-                        <p class="fw-bold mb-0 text-white" id="dropdownUsername"></p>
-                        <p class="small text-muted mb-0" id="dropdownUserEmail"></p>
-                    </li>
-                    <li><a class="dropdown-item" href="/user-profile"><i class="fa-solid fa-user-gear fa-fw me-2"></i>Profile</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a></li>
-                </ul>
-            </div>
 
             <button class="hamburger-btn d-lg-none" id="hamburgerBtn" type="button" aria-label="Toggle navigation">
                 <span></span>
@@ -357,119 +354,68 @@
 </header>
 
 <div class="mobile-nav-panel" id="mobileNavPanel">
-    
+    <%# EJS logic to render the correct mobile navigation panel %>
+    <div class="panel-header d-flex justify-content-between align-items-center">
+        <a href="/"><img src="/images/logo.svg" alt="Vidyari Logo" style="height:32px"></a>
+    </div>
+
+    <% if(isLoggedin) { %>
+        <%# MOBILE PANEL FOR LOGGED-IN USER %>
+        <div class="panel-body">
+            <a href="/user-profile" class="text-decoration-none">
+                <div class="panel-user-profile">
+                    <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="avatar">
+                    <div>
+                        <p class="username text-white mb-0"><%= username %></p>
+                        <p class="email small text-bluedark mb-0"><%= useremail %></p>
+                    </div>
+                </div>
+            </a>
+            <hr class="panel-divider">
+            <div class="panel-nav-section">
+                <a href="/" class="panel-link"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
+                <a href="/documents" class="panel-link"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
+                <a href="/courses" class="panel-link"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
+            </div>
+            <hr class="panel-divider">
+            <div class="panel-nav-section">
+                <a href="/dashboard" class="panel-link"><span class="icon-wrapper icon-dashboard"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+                <a href="/downloads" class="panel-link"><span class="icon-wrapper icon-downloads"><i class="fa-solid fa-cloud-arrow-down"></i></span><span>Downloads</span></a>
+                <a href="/transactions" class="panel-link"><span class="icon-wrapper icon-trans"><i class="fa-solid fa-receipt"></i></span><span>Transactions</span></a>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <a href="/logout" class="btn panel-link w-100 justify-content-center" style="background-color: var(--color-danger);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>
+        </div>
+
+    <% } else { %>
+        <%# MOBILE PANEL FOR GUEST %>
+        <div class="panel-body">
+            <div class="panel-nav-section">
+                <a href="/" class="panel-link"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
+                <a href="/documents" class="panel-link"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
+                <a href="/courses" class="panel-link"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button onclick="window.location.href='/user-login'" class="btn btn-primary w-100">Login / Sign Up</button>
+        </div>
+    <% } %>
 </div>
 <div class="nav-overlay" id="navOverlay"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', () => {
-
-    const userData = document.body.dataset;
-    const isLoggedIn = userData.isLoggedin === 'true';
-
-    const loginContainer = document.getElementById('loginContainer');
-    const userProfile = document.getElementById('userProfile');
+    // --- UI Elements for Interaction ---
     const mobileNavPanel = document.getElementById('mobileNavPanel');
     const navOverlay = document.getElementById('navOverlay');
     const hamburgerBtn = document.getElementById('hamburgerBtn');
-    
-    // RESTORED: Grip Menu elements
     const gripContainer = document.getElementById('grip-container');
     const gripButton = document.getElementById('grip-button');
     const gripMenu = document.getElementById('grip-menu');
-    
-    function updateUserUI() {
-        if (isLoggedIn) {
-            loginContainer.style.display = 'none';
-            userProfile.style.display = 'block';
-            gripContainer.style.display = 'block'; // Show grip menu
-            document.getElementById('userAvatar').src = userData.profileUrl;
-            document.getElementById('dropdownUsername').textContent = userData.username;
-            document.getElementById('dropdownUserEmail').textContent = userData.useremail;
-        } else {
-            loginContainer.style.display = 'block';
-            userProfile.style.display = 'none';
-            gripContainer.style.display = 'none'; // Hide grip menu
-        }
-    }
 
-    // ✅ CORRECTED FUNCTION
-    function populateMobileNav() {
-        // Basic links available to everyone
-        const navLinks = [
-            { href: '/', icon: 'fa-solid fa-house', text: 'Home', iconClass: 'icon-home' },
-            { href: '/documents', icon: 'fa-solid fa-file-lines', text: 'Documents', iconClass: 'icon-docs' },
-            { href: '/courses', icon: 'fa-solid fa-book-open-reader', text: 'Courses', iconClass: 'icon-courses' },
-        ];
-        // Links only for logged-in users
-        const accountLinks = [
-            { href: '/dashboard', icon: 'fa-solid fa-table-columns', text: 'Dashboard', iconClass: 'icon-dashboard' },
-            { href: '/downloads', icon: 'fa-solid fa-cloud-arrow-down', text: 'Downloads', iconClass: 'icon-downloads' },
-            { href: '/transactions', icon: 'fa-solid fa-receipt', text: 'Transactions', iconClass: 'icon-trans' },
-        ];
-
-        // Helper function to create the HTML for a list of links
-        const createLinksHTML = (links) => links.map(link => `
-            <a href="${link.href}" class="panel-link d-flex align-items-center">
-                <span class="icon-wrapper ${link.iconClass}"><i class="${link.icon}"></i></span>
-                <span>${link.text}</span>
-            </a>`).join('');
-
-        let panelBodyHTML = '';
-        let panelFooterHTML = '';
-
-        // Generate the HTML for the public navigation links
-        const publicLinksSection = `<div class="panel-nav-section">${createLinksHTML(navLinks)}</div>`;
-
-        if (isLoggedIn) {
-            // If logged in, show user profile, public links, and account links
-            const userSection = `
-                <a href="/user-profile" class="text-decoration-none">
-                    <div class="panel-user-profile">
-                        <img src="${userData.profileUrl}" alt="User Avatar" class="avatar">
-                        <div>
-                            <p class="username text-white mb-0">${userData.username}</p>
-                            <p class="email small text-muted mb-0">${userData.useremail}</p>
-                        </div>
-                    </div>
-                </a>`;
-            const accountLinksSection = `<div class="panel-nav-section">${createLinksHTML(accountLinks)}</div>`;
-            
-            panelBodyHTML = `
-                ${userSection}
-                <hr class="panel-divider">
-                ${publicLinksSection}
-                <hr class="panel-divider">
-                ${accountLinksSection}
-            `;
-            panelFooterHTML = `<a href="/logout" class="btn panel-link w-100 justify-content-center" style="background-color: var(--color-danger);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>`;
-        } else {
-            // If not logged in, only show the public links
-            panelBodyHTML = publicLinksSection;
-            panelFooterHTML = `<button id="mobileLoginBtn" class="btn btn-primary w-100">Login / Sign Up</button>`;
-        }
-
-        // Assemble the final panel HTML
-        const panelHTML = `
-            <div class="panel-header d-flex justify-content-between align-items-center">
-                <a href="/"><img src="/images/logo.svg" alt="Vidyari Logo" style="height:32px"></a>
-            </div>
-            <div class="panel-body">
-                ${panelBodyHTML}
-            </div>
-            <div class="panel-footer">${panelFooterHTML}</div>
-        `;
-
-        mobileNavPanel.innerHTML = panelHTML;
-
-        // Add event listener for the login button if it exists
-        if (!isLoggedIn) {
-            document.getElementById('mobileLoginBtn').addEventListener('click', () => window.location.href = '/user-login');
-        }
-    }
-
-
+    // --- Mobile Navigation Toggle ---
     const toggleMobileNav = () => {
         const isOpen = mobileNavPanel.classList.toggle('is-open');
         navOverlay.classList.toggle('is-open');
@@ -477,29 +423,32 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = isOpen ? 'hidden' : '';
     };
 
-    // RESTORED: Grip Menu functionality
+    // --- Grip Menu (Apps) Toggle ---
     function setupGripMenu() {
-        if (!gripButton) return;
+        if (!gripButton) return; // Only run if grip button exists on page
+        
         gripButton.addEventListener('click', (e) => {
             e.stopPropagation();
             gripMenu.classList.toggle('is-open');
         });
+
         document.addEventListener('click', (e) => {
-            if (!gripContainer.contains(e.target) && gripMenu.classList.contains('is-open')) {
+            if (gripContainer && !gripContainer.contains(e.target) && gripMenu.classList.contains('is-open')) {
                 gripMenu.classList.remove('is-open');
             }
         });
     }
 
-    // --- Event Listeners & Initial Setup ---
-    hamburgerBtn.addEventListener('click', toggleMobileNav);
-    navOverlay.addEventListener('click', toggleMobileNav);
-    document.getElementById('loginBtn').addEventListener('click', () => window.location.href = '/user-login');
-    document.getElementById('becomeSellerBtn').addEventListener('click', () => window.location.href = '/dashboard');
+    // --- Event Listeners ---
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', toggleMobileNav);
+    }
+    if (navOverlay) {
+        navOverlay.addEventListener('click', toggleMobileNav);
+    }
 
-    updateUserUI();
-    populateMobileNav();
-    setupGripMenu(); // Activate the grip menu
+    // --- Initial Setup ---
+    setupGripMenu();
 });
 </script>
 

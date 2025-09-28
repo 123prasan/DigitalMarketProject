@@ -501,6 +501,7 @@ router.post("/auth/login", async (req, res) => {
       { expiresIn: "7d" }
     );
     console.log(token);
+    console.log(process.env.NODE_ENV==="production")
     // Set cookie
     res.cookie("token", token, {
 httpOnly: true,
