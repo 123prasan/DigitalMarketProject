@@ -221,7 +221,7 @@ router.get(
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // HTTPS only in prod
-      sameSite: "strict", // or "lax" if you need cross-site redirects (Google OAuth)
+      sameSite: "lax", // or "lax" if you need cross-site redirects (Google OAuth)
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined, // allow across subdomains
     });
