@@ -918,6 +918,9 @@ router.get(
         isLoggedin: !!req.user,
         notifications: notifications,
         unreadCount: unreadCount,
+        profileUrl: user?.profilePicUrl || null,
+        username: user?.username || null,
+        useremail: user?.email || null,
       });
     } catch (error) {
       console.error(error);
