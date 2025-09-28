@@ -47,9 +47,16 @@ const Usernotifications = require("./models/userNotifications");
 const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 const Usertransaction = require("./models/userTransactions.js");
 const app = express();
+app.use((req, res, next) => {
+  if (req.protocol === "http" || req.hostname === "vidyari.com") {
+    return res.redirect(301, `https://www.vidyari.com${req.originalUrl}`);
+  }
+  next();
+});
 app.use(express.json());
 const cors = require("cors");
 app.use(cors());
+
 app.use("/api/courses", courseRoutes);
 app.use("/api/progress", progressRoutes);
 // app.use(cookieParser())
