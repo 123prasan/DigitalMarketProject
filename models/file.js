@@ -7,7 +7,7 @@ const fileSchema = new mongoose.Schema({
   filename: String,
   fileUrl: String,
   storedFilename: String,
-  price: Number,
+  price: {type: Number, required: true, default: 0},
   uploadedAt: { type: Date, default: Date.now },
   category: { type: String, required: true },
   imageType:{type:String},
