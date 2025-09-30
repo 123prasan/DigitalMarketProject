@@ -944,6 +944,49 @@ app.get("/notifications", async (req, res) => {
 // The route now expects a slug and an id
 // const CF_DOMAIN = process.env.CF_DOMAIN; // e.g., https://d123abcd.cloudfront.net
 
+// const axios = require("axios");
+
+const VALID_IMAGE_TYPES = ["jpg", "jpeg", "png", "webp", "gif"];
+
+async function getValidFileUrl(file, CF_DOMAIN, validTypes = VALID_IMAGE_TYPES) {
+  const triedExtensions = new Set();
+
+  // 1️⃣ Try file.imageType first
+  if (file.imageType) {
+    const url = `${CF_DOMAIN}/files-previews/images/${file._id}.${file.imageType}`;
+    triedExtensions.add(file.imageType);
+    try {
+      const res = await axios.head(url);
+      if (res.status === 200) return url;
+    } catch (err) {
+      // ignore and continue
+    }
+  }
+
+  // 2️⃣ Try remaining extensions
+  for (const ext of validTypes) {
+    if (triedExtensions.has(ext)) continue; // skip already tried
+    const url = `${CF_DOMAIN}/files-previews/images/${file._id}.${ext}`;
+    try {
+      const res = await axios.head(url);
+      if (res.status === 200) {
+        // Update DB with valid type
+        if (file.imageType !== ext) {
+          file.imageType = ext;
+          await file.save();
+        }
+        return url;
+      }
+    } catch (err) {
+      if (err.response && (err.response.status === 403 || err.response.status === 404)) continue;
+      console.error("Unexpected error checking file:", err.message);
+    }
+  }
+
+  // 3️⃣ Fallback to .jpg
+  return `${CF_DOMAIN}/files-previews/images/${file._id}.jpg`;
+}
+
 app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
   try {
     // Validate ID length
@@ -970,9 +1013,9 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       return res.redirect(301, `/file/${file.slug}/${file._id}`);
     }
 
-    // Build URLs (CloudFront)
-const ext = file.imageType ?file.imageType:"jpg";
-const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${ext}`;    const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
+    // Build URLs (CloudFront) with valid preview URL
+    const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
+    const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
 
     console.log("Preview URL:", previewUrl);
 
@@ -998,6 +1041,7 @@ const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${ext}`;    c
     res.status(500).send("Server error");
   }
 });
+;
 ;
 
 // Delete File - NOW PROTECTED BY JWT
@@ -1199,23 +1243,66 @@ const dotenv = require("dotenv");
 const usernotifications = require("./models/userNotifications.js");
 dotenv.config();
 
+// const axios = require("axios");
+
+async function getValidFileUrl(file, CF_DOMAIN, extensions = ["jpg", "jpeg", "png", "webp", "gif"]) {
+  const triedExtensions = new Set();
+
+  // 1️⃣ Try file.imageType first
+  if (file.imageType) {
+    const url = `${CF_DOMAIN}/files-previews/images/${file._id}.${file.imageType}`;
+    triedExtensions.add(file.imageType);
+    try {
+      const res = await axios.head(url);
+      if (res.status === 200) return url;
+    } catch (err) {
+      // ignore and continue
+    }
+  }
+
+  // 2️⃣ Try remaining extensions
+  for (const ext of extensions) {
+    if (triedExtensions.has(ext)) continue; // skip already tried
+    const url = `${CF_DOMAIN}/files-previews/images/${file._id}.${ext}`;
+    try {
+      const res = await axios.head(url);
+      if (res.status === 200) {
+        // Update DB with valid type
+        if (file.imageType !== ext) {
+          file.imageType = ext;
+          await file.save();
+        }
+        return url;
+      }
+    } catch (err) {
+      // ignore 403/404 and continue
+      if (err.response && (err.response.status === 403 || err.response.status === 404)) continue;
+      console.error("Unexpected error checking file:", err.message);
+    }
+  }
+
+  // 3️⃣ Fallback to .jpg if nothing works
+  return `${CF_DOMAIN}/files-previews/images/${file._id}.jpg`;
+}
+
 app.get("/documents", authenticateJWT_user, async (req, res) => {
   try {
     const files = await File.find();
     const categories = await getcategories();
 
-    const filesWithPreviews = files.map((file) => {
-      const previewUrl = `${CF_DOMAIN}/files-previews/images/${file._id}.${files.imageType || "jpg"}`;
-      
-      const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
+    const filesWithPreviews = await Promise.all(
+      files.map(async (file) => {
+        const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
+        const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
 
-      return {
-        ...file.toObject(),
-        previewUrl,
-        pdfUrl,
-      };
-    });
-    
+        return {
+          ...file.toObject(),
+          previewUrl,
+          pdfUrl,
+        };
+      })
+    );
+
     let user = null;
     if (req.user) {
       user = await User.findById(req.user._id).select(
@@ -1236,6 +1323,7 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
     res.status(500).send("Failed to load files");
   }
 });
+
 
 // Checkout route
 app.get("/checkout", authenticateJWT_user, requireAuth, async (req, res) => {
