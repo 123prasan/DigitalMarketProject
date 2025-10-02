@@ -30,6 +30,8 @@ const dayjs = require("dayjs");
 const bcrypt = require("bcrypt");
 const mime = require("mime-types");
 const axios = require("axios");
+const http=require('http');
+
 // const logVisitorMiddleware = require("./middlewares/ipmiddleware");
 const categories = require("./models/categories"); // Assuming categories.js exports a Mongoose model
 const { createClient } = require("@supabase/supabase-js");
@@ -46,7 +48,22 @@ const requireAuth = require("./routes/authentication/reaquireAuth.js");
 const Usernotifications = require("./models/userNotifications");
 const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 const Usertransaction = require("./models/userTransactions.js");
+const { UserChats, initializeChat } = require('./routes/chatRoutes');
+const WebSocket = require('ws');
+
 const app = express();
+
+
+
+// --- Middleware Setup ---
+// Make sure you have your standard middleware here
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+// app.use(cookieParser());
+// app.set('view engine', 'ejs');
+// ... etc.
+
+
 
 app.use(express.json());
 const cors = require("cors");
@@ -124,8 +141,16 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/chat", chatRoutes);
+const server = http.createServer(app); // Create an HTTP server from the Express app
+
 // Define Mongoose schema and model for Files
 // In your file model (e.g., models/File.js)
+// --- Use the Chat Router ---
+app.use(UserChats); // This will handle the /chat/:userId and /messages/:userId routes
+
+// --- Initialize the WebSocket Server ---
+// Pass the HTTP server instance to the chat initializer
+initializeChat(server);
 
 // This is a helper function to create a clean, URL-safe string
 function slugify(text) {
@@ -184,30 +209,30 @@ const ADMIN_USER = {
 };
 
 // --- Routes ---
-app.get("/:id/:impression", async (req, res) => {
-  if (req.params.impression == "like") {
-    const file = await File.findById(req.params.id);
-    if (file) {
-      file.likes += 1;
-      await file.save();
-      // console.log(file.likes);
-      res.json({ likes: file.likes });
+app.get("/:id/:impression",authenticateJWT_user,requireAuth, async (req, res) => {
+  try {
+    const { id, impression } = req.params;
+    const update = {};
+
+    if (impression === "like") {
+      update.$inc = { likes: 1 };
+    } else if (impression === "dislike") {
+      update.$inc = { likes: -1 };
     } else {
-      res.status(404).json({ error: "File not found" });
+      return res.status(400).json({ error: "Invalid impression type" });
     }
-  }
-  if (req.params.impression == "dislike") {
-    const file = await File.findById(req.params.id);
-    if (file && file.likes > 0) {
-      file.likes -= 1;
-      await file.save();
-      // console.log(file.likes);
-      res.json({ likes: file.likes });
-    } else {
-      res.status(404).json({ error: "File not found" });
-    }
+
+    const updated = await File.findByIdAndUpdate(id, update, { new: true });
+    if (!updated) return res.status(404).json({ error: "File not found" });
+
+    res.json({ likes: updated.likes });
+  } catch (err) {
+    console.error("Error updating likes:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
+
+
 app.get("/dashboard", (req, res) => {
   res.render("createcourse");
 });
@@ -1353,92 +1378,161 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
 
 // *** THIS IS THE CORRECTED AND UPDATED API ROUTE ***
 app.get('/files', async (req, res) => {
+    try {
+        // --- 1. PARSE & VALIDATE QUERY PARAMETERS ---
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+        const skip = (page - 1) * limit;
+
+        const search = req.query.search || '';
+        const sort = req.query.sort || 'popular';
+        const priceFilter = req.query.price || 'all';
+        
+        let categories = req.query.category || [];
+        if (typeof categories === 'string') categories = [categories];
+        
+        let fileTypes = req.query.fileType || [];
+        if (typeof fileTypes === 'string') fileTypes = [fileTypes];
+
+        // --- 2. BUILD ADVANCED DATABASE QUERY ---
+        const queryConditions = [];
+
+        if (search) {
+            queryConditions.push({
+                $or: [
+                    { filename: { $regex: search, $options: 'i' } },
+                    { filedescription: { $regex: search, $options: 'i' } },
+                    { user: { $regex: search, $options: 'i' } }
+                ]
+            });
+        }
+
+        if (priceFilter === 'free') queryConditions.push({ price: 0 });
+        else if (priceFilter === 'paid') queryConditions.push({ price: { $gt: 0 } });
+        
+        if (categories.length > 0) {
+            const categoryRegex = categories.map(c => new RegExp(`^${c}$`, 'i'));
+            queryConditions.push({ category: { $in: categoryRegex } });
+        }
+
+        if (fileTypes.length > 0) {
+            const fileTypeRegex = fileTypes.map(t => new RegExp(`^${t}$`, 'i'));
+            queryConditions.push({ fileType: { $in: fileTypeRegex } });
+        }
+        
+        const query = queryConditions.length > 0 ? { $and: queryConditions } : {};
+        
+        // --- 3. BUILD SORT OPTIONS ---
+        let sortOptions = {};
+        switch (sort) {
+            case 'newest': sortOptions = { createdAt: -1 }; break;
+            case 'price-asc': sortOptions = { price: 1 }; break;
+            case 'price-desc': sortOptions = { price: -1 }; break;
+            case 'popular': default: sortOptions = { downloadCount: -1 }; break;
+        }
+
+        // --- 4. EXECUTE ALL QUERIES IN PARALLEL ---
+        // This is more efficient. We now fetch everything at once.
+        const [
+            filesFromDB, 
+            totalFiles,
+            categoryResults,
+            fileTypeResults
+        ] = await Promise.all([
+            File.find(query).sort(sortOptions).skip(skip).limit(limit).lean(),
+            File.countDocuments(query),
+            // This query now runs every time to ensure filters are always populated
+            File.aggregate([
+                { $match: { category: { $ne: null, $ne: "" } } },
+                { $group: { _id: { $toLower: "$category" }, originalCase: { $first: "$category" } } },
+                { $project: { _id: 0, category: "$originalCase" } }
+            ]),
+            File.distinct('fileType')
+        ]);
+        
+        // --- 5. PROCESS PREVIEW URLS ---
+        const filesWithPreviews = await Promise.all(
+            filesFromDB.map(async (file) => {
+                const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
+                return { ...file, previewUrl };
+            })
+        );
+        
+        // --- 6. SEND FINAL JSON RESPONSE ---
+        res.status(200).json({
+            files: filesWithPreviews,
+            totalFiles,
+            totalPages: Math.ceil(totalFiles / limit),
+            currentPage: page,
+            // This data is now included in EVERY response, fixing the bug
+            allCategories: categoryResults.map(c => c.category).sort(), 
+            allFileTypes: fileTypeResults.filter(t => t),
+        });
+
+    } catch (error) {
+        console.error('API Error in /api/files:', error);
+        res.status(500).json({ message: "Server error while fetching files." });
+    }
+});
+// The Most Advanced Suggestions Route
+app.get('/suggestions', async (req, res) => {
+  const q = req.query.q?.toLowerCase().trim();
+  if (!q || q.length < 2) return res.json([]);
+
   try {
-    console.log('1. API route hit. Parsing queries...');
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 30;
-    const search = req.query.search || '';
-    const sort = req.query.sort || 'popular';
-    const skip = (page - 1) * limit;
+    // Build regex for partial/fuzzy matching
+    const regex = new RegExp(q.split(' ').join('.*'), 'i');
 
-    console.log('2. Building database query...');
-    let query = {};
-    if (search) {
-      query = {
-        $or: [
-          { filename: { $regex: search, $options: 'i' } },
-          { filedescription: { $regex: search, $options: 'i' } },
-          { category: { $regex: search, $options: 'i' } }
-        ]
-      };
+    // Build query
+    const query = [
+      { filename: regex },
+      { filedescription: regex },
+      { user: regex }
+    ];
+
+    // Only add price filter if q is a number
+    const priceNum = Number(q);
+    if (!isNaN(priceNum)) {
+      query.push({ price: priceNum });
     }
 
-    // Build Sort Options
-    let sortOptions = {};
-    switch (sort) {
-      // *** FIX 2: Switched to 'createdAt' from your schema's timestamps for sorting 'newest'. ***
-      case 'newest': sortOptions = { createdAt: -1 }; break;
-      case 'price-asc': sortOptions = { price: 1 }; break;
-      case 'price-desc': sortOptions = { price: -1 }; break;
-      case 'popular': default: sortOptions = { downloadCount: -1 }; break;
-    }
+    // Find matching documents
+    let suggestions = await File.find({ $or: query })
+      .limit(20)
+      .lean();
 
-    console.log('3. Executing database queries...');
-    // *** FIX 1: Console logs are now in the correct order. The queries run FIRST. ***
-    const [filesFromDB, totalFiles] = await Promise.all([
-      File.find(query).sort(sortOptions).skip(skip).limit(limit).lean(),
-      File.countDocuments(query)
-    ]);
+    // Simple relevance scoring
+    suggestions = suggestions.map(file => {
+      let score = 0;
+      if (file.filename.toLowerCase().includes(q)) score += 10;
+      if (file.filedescription.toLowerCase().includes(q)) score += 5;
+      if (file.user.toLowerCase().includes(q)) score += 3;
+      if (!isNaN(priceNum) && file.price === priceNum) score += 7;
+      return { ...file, score };
+    });
 
-    console.log(`4. Found ${filesFromDB.length} files. Processing previews...`);
+    // Sort by score descending, then price ascending
+    suggestions.sort((a, b) => b.score - a.score || a.price - b.price);
 
-    // This is much more efficient as it only runs on a small batch of files at a time.
-    // Make sure `getValidFileUrl` and `CF_DOMAIN` are defined/imported in this file.
-    const filesWithPreviews = await Promise.all(
-      filesFromDB.map(async (file) => {
+    // Take top 10
+    suggestions = suggestions.slice(0, 10);
+
+    // Enrich with preview URLs
+    const enriched = await Promise.all(
+      suggestions.map(async file => {
         const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
-        return {
-          ...file,
-          previewUrl,
-        };
+        return { ...file, previewUrl };
       })
     );
-
-    console.log('5. Previews processed. Sending final response...');
-
-    // Send JSON Response
-    // In your /api/files route on the backend
-    // ... after queries and processing
-
-    const totalPages = Math.ceil(totalFiles / limit);
-
-    // *** ADD THIS BLOCK ***
-    // If it's the first page load, also send all file names for client-side search suggestions
-    if (page === 1 && search === '') {
-      const allFilesForSuggestions = await File.find({}, 'filename filedescription category user').lean();
-      res.status(200).json({
-        files: filesWithPreviews,
-        totalFiles,
-        totalPages,
-        currentPage: page,
-        allFilesForSuggestions // <-- New property
-      });
-    } else {
-      // For all other requests, send the normal response
-      res.status(200).json({
-        files: filesWithPreviews,
-        totalFiles,
-        totalPages,
-        currentPage: page,
-      });
-    }
-
-
-  } catch (error) {
-    console.error('API Error:', error);
-    res.status(500).json({ message: "Server error while fetching files." });
+ console.log("suggestions fetched")
+    res.json(enriched);
+  } catch (err) {
+    console.error("Suggestion API Error:", err);
+    res.status(500).json({ message: "Server error fetching suggestions." });
   }
 });
+
+
 
 // Checkout route
 app.get("/checkout", authenticateJWT_user, requireAuth, async (req, res) => {
@@ -1659,6 +1753,7 @@ function getMimeType(extension) {
       return "application/octet-stream";
   }
 }
+
 
 app.use((req, res) => {
   res.status(404).render("404");
