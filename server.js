@@ -622,32 +622,32 @@ app.get("/admin", authenticateJWT, async (req, res) => {
   const totalAmount = (orderamount[0] && orderamount[0].totalAmount) || 0;
 
   const files = await File.find({});
-const filesWithUrls = await Promise.all(
-  files.map(async (file) => {
-    try {
-      // Construct the S3 key
-      const key = `main-files/${file.fileUrl}`; // adapt if your file structure is different
+  const filesWithUrls = await Promise.all(
+    files.map(async (file) => {
+      try {
+        // Construct the S3 key
+        const key = `main-files/${file.fileUrl}`; // adapt if your file structure is different
 
-      // Generate pre-signed URL (valid for 5 minutes)
-      const downloadUrl = s3.getSignedUrl("getObject", {
-        Bucket: "vidyarimain",
-        Key: key,
-        Expires: 5 * 60, // 5 minutes
-      });
+        // Generate pre-signed URL (valid for 5 minutes)
+        const downloadUrl = s3.getSignedUrl("getObject", {
+          Bucket: "vidyarimain",
+          Key: key,
+          Expires: 5 * 60, // 5 minutes
+        });
 
-      return {
-        ...file.toObject(),
-        downloadUrl,
-      };
-    } catch (err) {
-      console.error(`Error generating URL for ${file.fileUrl}`, err);
-      return {
-        ...file.toObject(),
-        downloadUrl: "#",
-      };
-    }
-  })
-);
+        return {
+          ...file.toObject(),
+          downloadUrl,
+        };
+      } catch (err) {
+        console.error(`Error generating URL for ${file.fileUrl}`, err);
+        return {
+          ...file.toObject(),
+          downloadUrl: "#",
+        };
+      }
+    })
+  );
 
   // --- NEW DATA FETCHING FOR CHARTS ---
 
@@ -897,9 +897,8 @@ app.post(
     });
     //notification update
     const newMessage = new Message({
-      message: `New file uploaded: ${filename} by ${
-        req.user ? req.user.username : "Admin"
-      }`,
+      message: `New file uploaded: ${filename} by ${req.user ? req.user.username : "Admin"
+        }`,
     });
     await newMessage.save();
     const { error: imgError } = await supabase.storage
@@ -1285,33 +1284,60 @@ async function getValidFileUrl(file, CF_DOMAIN, extensions = ["jpg", "jpeg", "pn
   return `${CF_DOMAIN}/files-previews/images/${file._id}.jpg`;
 }
 
+// app.get("/documents", authenticateJWT_user, async (req, res) => {
+//   try {
+//     const files = await File.find();
+//     const categories = await getcategories();
+
+//     const filesWithPreviews = await Promise.all(
+//       files.map(async (file) => {
+//         const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
+//         const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
+
+//         return {
+//           ...file.toObject(),
+//           previewUrl,
+//           pdfUrl,
+//         };
+//       })
+//     );
+
+//     let user = null;
+//     if (req.user) {
+//       user = await User.findById(req.user._id).select(
+//         "profilePicUrl username email"
+//       );
+//     }
+
+//     res.render("index", {
+//       files: filesWithPreviews,
+//       categories,
+//       isLoggedin: !!req.user,
+//       profileUrl: user?.profilePicUrl || null,
+//       username: user?.username || null,
+//       useremail: user?.email || null,
+//     });
+//   } catch (err) {
+//     console.error("DB fetch error:", err);
+//     res.status(500).send("Failed to load files");
+//   }
+// });
+
+// This route now ONLY sends the page template.
+// This is your existing page-loading route. It is correct and does not need changes.
 app.get("/documents", authenticateJWT_user, async (req, res) => {
   try {
-    const files = await File.find();
+    // We still get categories for the filter modal.
     const categories = await getcategories();
-
-    const filesWithPreviews = await Promise.all(
-      files.map(async (file) => {
-        const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
-        const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
-
-        return {
-          ...file.toObject(),
-          previewUrl,
-          pdfUrl,
-        };
-      })
-    );
 
     let user = null;
     if (req.user) {
-      user = await User.findById(req.user._id).select(
-        "profilePicUrl username email"
-      );
+      user = await User.findById(req.user._id).select("profilePicUrl username email");
     }
 
+    // Render the page WITHOUT the 'files' data.
+    // The JavaScript on this page will fetch the files from /api/files.
     res.render("index", {
-      files: filesWithPreviews,
       categories,
       isLoggedin: !!req.user,
       profileUrl: user?.profilePicUrl || null,
@@ -1319,11 +1345,100 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
       useremail: user?.email || null,
     });
   } catch (err) {
-    console.error("DB fetch error:", err);
-    res.status(500).send("Failed to load files");
+    console.error("Page load error:", err);
+    res.status(500).send("Failed to load page");
   }
 });
 
+
+// *** THIS IS THE CORRECTED AND UPDATED API ROUTE ***
+app.get('/files', async (req, res) => {
+  try {
+    console.log('1. API route hit. Parsing queries...');
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 30;
+    const search = req.query.search || '';
+    const sort = req.query.sort || 'popular';
+    const skip = (page - 1) * limit;
+
+    console.log('2. Building database query...');
+    let query = {};
+    if (search) {
+      query = {
+        $or: [
+          { filename: { $regex: search, $options: 'i' } },
+          { filedescription: { $regex: search, $options: 'i' } },
+          { category: { $regex: search, $options: 'i' } }
+        ]
+      };
+    }
+
+    // Build Sort Options
+    let sortOptions = {};
+    switch (sort) {
+      // *** FIX 2: Switched to 'createdAt' from your schema's timestamps for sorting 'newest'. ***
+      case 'newest': sortOptions = { createdAt: -1 }; break;
+      case 'price-asc': sortOptions = { price: 1 }; break;
+      case 'price-desc': sortOptions = { price: -1 }; break;
+      case 'popular': default: sortOptions = { downloadCount: -1 }; break;
+    }
+
+    console.log('3. Executing database queries...');
+    // *** FIX 1: Console logs are now in the correct order. The queries run FIRST. ***
+    const [filesFromDB, totalFiles] = await Promise.all([
+      File.find(query).sort(sortOptions).skip(skip).limit(limit).lean(),
+      File.countDocuments(query)
+    ]);
+
+    console.log(`4. Found ${filesFromDB.length} files. Processing previews...`);
+
+    // This is much more efficient as it only runs on a small batch of files at a time.
+    // Make sure `getValidFileUrl` and `CF_DOMAIN` are defined/imported in this file.
+    const filesWithPreviews = await Promise.all(
+      filesFromDB.map(async (file) => {
+        const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
+        return {
+          ...file,
+          previewUrl,
+        };
+      })
+    );
+
+    console.log('5. Previews processed. Sending final response...');
+
+    // Send JSON Response
+    // In your /api/files route on the backend
+    // ... after queries and processing
+
+    const totalPages = Math.ceil(totalFiles / limit);
+
+    // *** ADD THIS BLOCK ***
+    // If it's the first page load, also send all file names for client-side search suggestions
+    if (page === 1 && search === '') {
+      const allFilesForSuggestions = await File.find({}, 'filename filedescription category user').lean();
+      res.status(200).json({
+        files: filesWithPreviews,
+        totalFiles,
+        totalPages,
+        currentPage: page,
+        allFilesForSuggestions // <-- New property
+      });
+    } else {
+      // For all other requests, send the normal response
+      res.status(200).json({
+        files: filesWithPreviews,
+        totalFiles,
+        totalPages,
+        currentPage: page,
+      });
+    }
+
+
+  } catch (error) {
+    console.error('API Error:', error);
+    res.status(500).json({ message: "Server error while fetching files." });
+  }
+});
 
 // Checkout route
 app.get("/checkout", authenticateJWT_user, requireAuth, async (req, res) => {

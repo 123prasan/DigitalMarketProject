@@ -5,9 +5,6 @@
         <div class="purchase-history__card">
             <div class="purchase-history__header">
                 <h1 class="purchase-history__title">Purchase History</h1>
-                <div class="purchase-history__logo-icon">
-                    <img class="purchase-history__logo-img" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="Brand Logo">
-                </div>
             </div>
 
             <div class="purchase-history__controls">
@@ -56,25 +53,25 @@
 
             <ul class="purchase-history__list" id="purchaseHistoryList">
                  <% if (purchases && purchases.length > 0) { %>
-                    <% purchases.forEach(item => { %>
-                        <li class="purchase-history__item" data-item='<%- JSON.stringify(item) %>'>
-                            <img src="<%= item.productDetails.imageUrl %>" alt="<%= item.productName || 'Product' %>" class="purchase-history__item-image">
-                            <div class="purchase-history__item-info">
-                                <div class="purchase-history__item-name"><%= item.productName || 'Unnamed Product' %></div>
-                                <div class="purchase-history__item-category"><%= item.productType || 'N/A' %></div>
-                            </div>
-                            <div class="purchase-history__item-details">
-                                <div class="purchase-history__item-price">$<%= item.totalPrice.toFixed(2) %></div>
-                                <div class="purchase-history__item-date"><%= new Date(item.purchaseDate).toLocaleDateString() %></div>
-                            </div>
-                        </li>
-                    <% }) %>
-                <% } else { %>
-                    <div class="purchase-history__empty-state">
-                        <i class="fas fa-box-open purchase-history__empty-state-icon"></i>
-                        <p class="purchase-history__empty-state-text">No purchase history found.</p>
-                    </div>
-                <% } %>
+                     <% purchases.forEach(item => { %>
+                         <li class="purchase-history__item" data-item='<%- JSON.stringify(item) %>'>
+                             <img src="<%= item.productDetails.imageUrl %>" alt="<%= item.productName || 'Product' %>" class="purchase-history__item-image">
+                             <div class="purchase-history__item-info">
+                                 <div class="purchase-history__item-name"><%= item.productName || 'Unnamed Product' %></div>
+                                 <div class="purchase-history__item-category"><%= item.productType || 'N/A' %></div>
+                             </div>
+                             <div class="purchase-history__item-details">
+                                 <div class="purchase-history__item-price">$<%= item.totalPrice.toFixed(2) %></div>
+                                 <div class="purchase-history__item-date"><%= new Date(item.purchaseDate).toLocaleDateString() %></div>
+                             </div>
+                         </li>
+                     <% }) %>
+                 <% } else { %>
+                     <div class="purchase-history__empty-state">
+                         <i class="fas fa-box-open purchase-history__empty-state-icon"></i>
+                         <p class="purchase-history__empty-state-text">No purchase history found.</p>
+                     </div>
+                 <% } %>
             </ul>
         </div>
     </div>
@@ -100,32 +97,24 @@
             <button class="purchase-history__invoice-btn" id="purchaseHistoryDownloadInvoiceBtn">Download Invoice</button>
           </div>
       </div>
-  </div>
+    </div>
 </div>
 
 <style>
     .purchase-history-scope-xyz {
-        --bg-primary: #0a0a0a;
-        --bg-secondary: #141414;
-        --bg-card: #1a1a1a;
-        --bg-input: #2a2a2a;
-        --bg-hover: #222222;
-        --text-primary: #f0f0f0;
-        --text-secondary: #a0a0a0;
-        --text-muted: #666666;
-        --accent-primary: #6366f1;
-        --accent-hover: #4f46e5;
-        --border-color: #333333;
-        --border-focus: #6366f1;
-        --shadow-glow: 0 0 25px -5px rgba(99, 102, 241, 0.2);
-        --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        --border-radius-lg: 16px;
-        --border-radius-md: 8px;
-        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        
-        font-family: var(--font-family);
-        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-        color: var(--text-primary);
+        --font-main: 'Montserrat', sans-serif;
+        --color-bg: #fff;
+        --color-black: #000000;
+        --color-primary: #ff66a3; /* Pink */
+        --color-secondary: #4ade80; /* Green */
+        --color-accent: #ffd60a;   /* Yellow */
+        --color-focus: #1ac2ff;   /* Blue */
+        --transition-fast: 0.2s ease;
+
+        font-family: var(--font-main);
+        background-color: var(--color-primary);
+        color: var(--color-black);
+        /* padding: 2rem; */
     }
     .purchase-history-scope-xyz *,
     .purchase-history-scope-xyz *::before,
@@ -136,116 +125,198 @@
     }
     .purchase-history-scope-xyz .purchase-history__container {
         width: 100%;
-        padding: 0; /* Changed for full width */
     }
     .purchase-history-scope-xyz .purchase-history__card {
-        background: var(--bg-card);
+        background: var(--color-bg);
+        border: 4px solid var(--color-black);
+        box-shadow: 12px 12px 0 var(--color-black);
         padding: 40px;
-        min-height: 100vh; /* Changed for full page feel */
-        width: 100%; /* Changed for full width */
-        border-radius: 0; /* Changed for full width */
-        border: none; /* Changed for full width */
-        box-shadow: var(--shadow-glow);
-        animation: purchase-history-fadeIn 0.6s ease-out;
-    }
-    @keyframes purchase-history-fadeIn {
-        from { opacity: 0; transform: scale(0.98); }
-        to { opacity: 1; transform: scale(1); }
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
     }
     .purchase-history-scope-xyz .purchase-history__header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 24px;
         padding-bottom: 24px;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 4px solid var(--color-black);
     }
-    .purchase-history-scope-xyz .purchase-history__title { font-size: 28px; font-weight: 700; }
-    .purchase-history-scope-xyz .purchase-history__logo-img { height: 36px; filter: invert(1); }
-    .purchase-history-scope-xyz .purchase-history__controls { display: flex; gap: 16px; margin-bottom: 24px; }
-    .purchase-history-scope-xyz .purchase-history__search-wrapper { flex-grow: 1; position: relative; }
+    .purchase-history-scope-xyz .purchase-history__title {
+        font-size: 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+    .purchase-history-scope-xyz .purchase-history__logo-img { display: none; } /* Hide default logo */
+    
+    .purchase-history-scope-xyz .purchase-history__controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    .purchase-history-scope-xyz .purchase-history__search-wrapper {
+        flex-grow: 1;
+        position: relative;
+    }
     .purchase-history-scope-xyz .purchase-history__search-input {
         width: 100%;
         padding: 14px 16px 14px 44px;
-        background-color: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-md);
-        color: var(--text-primary);
-        transition: var(--transition);
-        font-size: 16px;
+        background-color: var(--color-bg);
+        border: 3px solid var(--color-black);
+        box-shadow: 4px 4px 0 var(--color-black);
+        color: var(--color-black);
+        font-size: 16px; font-weight: 600;
+        outline: none;
+        transition: var(--transition-fast);
     }
     .purchase-history-scope-xyz .purchase-history__search-input:focus {
-        outline: none;
-        border-color: var(--border-focus);
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 var(--color-black);
     }
     .purchase-history-scope-xyz .purchase-history__search-icon {
-        position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);
+        position: absolute; left: 16px; top: 50%;
+        transform: translateY(-50%); color: var(--color-black);
     }
+
     .purchase-history-scope-xyz .purchase-history__filter-bar {
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+        padding-bottom: 24px;
+        border-bottom: 4px solid var(--color-black);
     }
     .purchase-history-scope-xyz .purchase-history__filter-group { display: flex; flex-direction: column; }
-    .purchase-history-scope-xyz .purchase-history__filter-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
-    .purchase-history-scope-xyz .purchase-history__filter-select, .purchase-history-scope-xyz .purchase-history__filter-input {
-        padding: 10px; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); color: var(--text-primary); font-size: 14px;
+    .purchase-history-scope-xyz .purchase-history__filter-label {
+        font-size: 12px; color: #555;
+        margin-bottom: 8px; font-weight: 700; text-transform: uppercase;
+    }
+    .purchase-history-scope-xyz .purchase-history__filter-select,
+    .purchase-history-scope-xyz .purchase-history__filter-input {
+        padding: 10px; background-color: var(--color-bg);
+        border: 3px solid var(--color-black);
+        color: var(--color-black); font-size: 14px; font-weight: 600;
     }
     .purchase-history-scope-xyz .purchase-history__filter-input[type="range"] { padding: 0; }
+    
     .purchase-history-scope-xyz .purchase-history__export-wrapper { position: relative; }
     .purchase-history-scope-xyz .purchase-history__export-btn {
-        padding: 0 20px; background-color: var(--accent-primary); color: white; border: none; border-radius: var(--border-radius-md); cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 8px; font-size: 16px; height: 100%;
+        padding: 0 20px;
+        background-color: var(--color-secondary);
+        color: var(--color-black);
+        border: 3px solid var(--color-black);
+        box-shadow: 4px 4px 0 var(--color-black);
+        cursor: pointer;
+        transition: var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        height: 100%;
     }
-    .purchase-history-scope-xyz .purchase-history__export-btn:hover { background-color: var(--accent-hover); }
+    .purchase-history-scope-xyz .purchase-history__export-btn:hover {
+        background-color: var(--color-focus);
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--color-black);
+    }
     .purchase-history-scope-xyz .purchase-history__export-dropdown {
-        position: absolute; top: 110%; right: 0; background-color: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); list-style: none; z-index: 10; overflow: hidden; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: var(--transition); width: max-content;
+        position: absolute; top: 110%; right: 0;
+        background-color: var(--color-bg);
+        border: 3px solid var(--color-black);
+        list-style: none;
+        z-index: 10;
+        overflow: hidden;
+        opacity: 0; visibility: hidden;
+        transform: translateY(-10px);
+        transition: var(--transition-fast);
+        width: max-content;
     }
     .purchase-history-scope-xyz .purchase-history__export-wrapper:hover .purchase-history__export-dropdown {
-        opacity: 1; visibility: visible; transform: translateY(0);
+        opacity: 1; visibility: visible;
+        transform: translateY(0);
     }
     .purchase-history-scope-xyz .purchase-history__export-option {
-        padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px;
+        padding: 12px 20px; cursor: pointer; display: flex;
+        align-items: center; gap: 10px; font-size: 14px;
+        font-weight: 600;
     }
-    .purchase-history-scope-xyz .purchase-history__export-option:hover { background-color: var(--accent-primary); }
+    .purchase-history-scope-xyz .purchase-history__export-option:hover { background-color: var(--color-accent); }
+    
     .purchase-history-scope-xyz .purchase-history__list {
-        list-style: none; max-height: 450px; overflow-y: auto; padding-right: 12px;
+        list-style: none;
+        max-height: 450px;
+        overflow-y: auto;
+        padding-right: 12px;
     }
     .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar { width: 8px; }
-    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar-track { background: transparent; }
-    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar-track { background: #eee; }
+    .purchase-history-scope-xyz .purchase-history__list::-webkit-scrollbar-thumb { background: var(--color-black); }
+
     .purchase-history-scope-xyz .purchase-history__item {
-        display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; padding: 16px 8px; border-bottom: 1px solid var(--border-color); transition: background-color var(--transition); cursor: pointer; border-radius: var(--border-radius-md);
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 8px;
+        border-bottom: 2px solid #ddd;
+        transition: background-color var(--transition-fast);
+        cursor: pointer;
     }
-    .purchase-history-scope-xyz .purchase-history__item:hover { background-color: var(--bg-hover); }
+    .purchase-history-scope-xyz .purchase-history__item:hover { background-color: #f0f0f0; }
     .purchase-history-scope-xyz .purchase-history__item-image {
-        width: 56px; height: 56px; border-radius: var(--border-radius-md); object-fit: cover; background-color: var(--bg-input);
+        width: 56px; height: 56px;
+        object-fit: cover;
+        background-color: #eee;
+        border: 3px solid var(--color-black);
     }
-    .purchase-history-scope-xyz .purchase-history__item-name { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
-    .purchase-history-scope-xyz .purchase-history__item-category { font-size: 13px; color: var(--text-secondary); }
+    .purchase-history-scope-xyz .purchase-history__item-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .purchase-history-scope-xyz .purchase-history__item-category { font-size: 13px; color: #555; }
     .purchase-history-scope-xyz .purchase-history__item-details { text-align: right; }
-    .purchase-history-scope-xyz .purchase-history__item-price { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
-    .purchase-history-scope-xyz .purchase-history__item-date { font-size: 13px; color: var(--text-secondary); }
-    .purchase-history-scope-xyz .purchase-history__empty-state { text-align: center; padding: 60px; color: var(--text-secondary); }
+    .purchase-history-scope-xyz .purchase-history__item-price { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .purchase-history-scope-xyz .purchase-history__item-date { font-size: 13px; color: #555; }
+    
+    .purchase-history-scope-xyz .purchase-history__empty-state { text-align: center; padding: 60px; }
     .purchase-history-scope-xyz .purchase-history__empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+    .purchase-history-scope-xyz .purchase-history__empty-state-text { font-weight: 700; }
+    
     .purchase-history-scope-xyz .purchase-history__modal {
-        position: fixed; inset: 0; background-color: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; z-index: 1000;
+        position: fixed; inset: 0; background-color: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; z-index: 1000;
     }
     .purchase-history-scope-xyz .purchase-history__modal.show { opacity: 1; visibility: visible; }
     .purchase-history-scope-xyz .purchase-history__modal-content {
-        background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s;
+        background-color: var(--color-bg);
+        border: 4px solid var(--color-black);
+        box-shadow: 12px 12px 0 var(--color-black);
+        padding: 32px;
+        width: 90%;
+        max-width: 500px;
+        transform: scale(0.95);
+        transition: transform 0.3s;
     }
     .purchase-history-scope-xyz .purchase-history__modal.show .purchase-history__modal-content { transform: scale(1); }
-    .purchase-history-scope-xyz .purchase-history__modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .purchase-history-scope-xyz .purchase-history__modal-title { font-size: 20px; }
-    .purchase-history-scope-xyz .purchase-history__modal-close-btn { background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
-    .purchase-history-scope-xyz .purchase-history__modal-body { display: flex; gap: 24px; }
-    .purchase-history-scope-xyz .purchase-history__modal-image { width: 120px; height: 120px; border-radius: var(--border-radius-md); object-fit: cover; }
+    .purchase-history-scope-xyz .purchase-history__modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 3px solid var(--color-black); }
+    .purchase-history-scope-xyz .purchase-history__modal-title { font-size: 20px; font-weight: 900; }
+    .purchase-history-scope-xyz .purchase-history__modal-close-btn { background: none; border: none; font-size: 24px; cursor: pointer; font-weight: 700; }
+    .purchase-history-scope-xyz .purchase-history__modal-body { display: flex; flex-wrap: wrap; gap: 24px; }
+    .purchase-history-scope-xyz .purchase-history__modal-image { width: 120px; height: 120px; object-fit: cover; border: 3px solid var(--color-black); }
     .purchase-history-scope-xyz .purchase-history__modal-details-list { list-style: none; }
-    .purchase-history-scope-xyz .purchase-history__modal-detail-item { margin-bottom: 12px; font-size: 14px; }
-    .purchase-history-scope-xyz .purchase-history__modal-detail-item strong { color: var(--text-secondary); min-width: 100px; display: inline-block; }
+    .purchase-history-scope-xyz .purchase-history__modal-detail-item { margin-bottom: 12px; font-size: 14px; font-weight: 600; }
+    .purchase-history-scope-xyz .purchase-history__modal-detail-item strong { color: #555; min-width: 100px; display: inline-block; }
     .purchase-history-scope-xyz .purchase-history__modal-footer { margin-top: 24px; text-align: right; }
-    .purchase-history-scope-xyz .purchase-history__invoice-btn { padding: 10px 16px; background-color: var(--accent-primary); color: white; border: none; border-radius: var(--border-radius-md); cursor: pointer; transition: var(--transition); }
-    .purchase-history-scope-xyz .purchase-history__invoice-btn:hover { background-color: var(--accent-hover); }
+    .purchase-history-scope-xyz .purchase-history__invoice-btn {
+        padding: 10px 16px;
+        background-color: var(--color-accent);
+        color: var(--color-black);
+        border: 3px solid var(--color-black);
+        box-shadow: 4px 4px 0 var(--color-black);
+        cursor: pointer;
+        transition: var(--transition-fast);
+        font-weight: 700;
+    }
+    .purchase-history-scope-xyz .purchase-history__invoice-btn:hover { background-color: var(--color-focus); }
 </style>
 
 <script>

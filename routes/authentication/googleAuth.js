@@ -402,7 +402,7 @@ router.post(
         },
         { upsert: true, new: true }
       );
-
+   console.log("updated user payment method")
       return res.status(200).json({
         success: true,
         message: "Payment method updated successfully",

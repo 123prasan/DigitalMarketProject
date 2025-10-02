@@ -1,3 +1,4 @@
+    <%-include("header")%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,33 +9,182 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
-     crossorigin="anonymous"></script>
-    <style>
-        @keyframes vidyari-fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes vidyari-neon-flicker{0%,19%,21%,23%,25%,54%,56%,100%{text-shadow:0 0 5px #00f6ff,0 0 10px #00f6ff,0 0 20px #00f6ff;opacity:1}20%,24%,55%{text-shadow:none;opacity:.8}}@keyframes vidyari-pulse-glow{0%{box-shadow:0 0 8px rgba(240,56,255,.5)}50%{box-shadow:0 0 16px rgba(240,56,255,.9)}100%{box-shadow:0 0 8px rgba(240,56,255,.5)}}.vidyari-profile-body{background-color:#0a011c;font-family:Poppins,sans-serif;color:#e0d5f5;font-size:1rem;overflow-x:hidden}.vidyari-profile-container{max-width:900px;margin:40px auto;padding:0 20px}.vidyari-profile-header{background:#14052e;border:3px solid #4a1a8a;border-radius:10px;padding:2.5rem;display:flex;align-items:center;gap:2rem;animation:vidyari-fadeIn .6s ease-out;box-shadow:0 10px 40px rgba(0,0,0,.5)}.vidyari-profile-avatar-wrapper{flex-shrink:0}.vidyari-profile-avatar{width:110px;height:110px;border-radius:50%;border:4px solid #00f6ff;padding:4px;object-fit:cover;transition:transform .3s ease;box-shadow:0 0 20px rgba(0,246,255,.4)}.vidyari-profile-avatar:hover{transform:scale(1.08)}.vidyari-profile-info{flex-grow:1}.vidyari-profile-name{font-size:1.8rem;font-weight:700;color:#00f6ff;margin:0;animation:vidyari-neon-flicker 4s infinite alternate}.vidyari-profile-username{color:#a496c2;margin-bottom:.5rem}.vidyari-profile-bio{margin-bottom:1.5rem}.vidyari-profile-extra-info{display:flex;gap:1.5rem;color:#a496c2;font-size:.9rem}.vidyari-edit-profile-button{background:linear-gradient(45deg,#f038ff,#c225d6);border:2px solid #ff9bff;color:#fff;padding:.7rem 1.5rem;border-radius:10px;transition:all .3s ease;font-weight:600;font-size:.9rem;align-self:flex-start;animation:vidyari-pulse-glow 3s infinite}.vidyari-edit-profile-button:hover{transform:translateY(-4px)}.vidyari-stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5rem;margin-top:2rem}.vidyari-stat-item{background-color:#14052e;border:2px solid #4a1a8a;border-radius:10px;padding:1.5rem;text-align:center;transition:all .3s ease}.vidyari-stat-item:hover{transform:translateY(-5px);border-color:#00f6ff;box-shadow:0 5px 20px rgba(0,246,255,.2)}.vidyari-stat-value{font-size:2.2rem;color:#00f6ff;font-weight:700;text-shadow:0 0 5px #00f6ff}.vidyari-stat-label{font-size:.9rem;color:#a496c2;text-transform:uppercase}.vidyari-main-content{margin-top:2rem;background-color:#14052e;border:2px solid #4a1a8a;border-radius:10px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.5)}.vidyari-nav-tabs{border-bottom:2px solid #4a1a8a;padding:0 1.5rem}.vidyari-nav-tabs .nav-link{background:0 0;border:none;color:#a496c2;font-weight:600;padding:1rem 0;margin:0 1rem;border-bottom:4px solid transparent;transition:all .3s ease}.vidyari-nav-tabs .nav-link:first-child{margin-left:0}.vidyari-nav-tabs .nav-link.active,.vidyari-nav-tabs .nav-link:hover{color:#f038ff;border-bottom-color:#f038ff}.vidyari-tab-content{padding:2.5rem}.vidyari-detail-group label{display:block;color:#a496c2;font-size:.9rem;margin-bottom:.25rem}.vidyari-detail-group p{font-size:1.1rem;margin:0}.vidyari-social-links a{color:#a496c2;font-size:2rem;margin-right:1.5rem;transition:all .3s ease}.vidyari-social-links a:hover{color:#f038ff;transform:scale(1.2)}.vidyari-modal-content{background-color:#0a011c;border:3px solid #4a1a8a;border-radius:10px}.vidyari-modal-header,.vidyari-modal-footer{border-color:#4a1a8a}.vidyari-modal-title{font-weight:700;color:#00f6ff}.vidyari-form-control{background-color:#14052e;border:1px solid #4a1a8a;color:#e0d5f5;border-radius:5px;padding:.75rem}.vidyari-form-control:focus{background-color:#14052e;border-color:#00f6ff;box-shadow:0 0 0 .25rem rgba(0,246,255,.25);color:#e0d5f5}.vidyari-primary-button{background-color:#f038ff;border:none;font-weight:600;font-size:.9rem}.vidyari-image-preview{width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #4a1a8a}@media (max-width:768px){.vidyari-profile-header{flex-direction:column;text-align:center}.vidyari-edit-profile-button{align-self:center;margin-top:1rem}.vidyari-profile-extra-info{justify-content:center}}
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet" />
+<style>
+    .vidyari-profile-page-wrapper {
+        --font-main: 'Montserrat', sans-serif;
+        --color-bg: #fff;
+        --color-black: #000000;
+        --color-primary: #ff66a3; /* Pink */
+        --color-secondary: #4ade80; /* Green */
+        --color-accent: #ffd60a;   /* Yellow */
+        --color-focus: #1ac2ff;   /* Blue */
+        --transition: 0.2s ease;
+    }
+
+    .vidyari-profile-page-wrapper {
+        font-family: var(--font-main);
+        background-color: var(--color-accent);
+        color: var(--color-black);
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    .vidyari-profile-container { 
+         margin: 0 auto; padding: 0 20px; }
+
+    .chunky-card {
+        background: var(--color-bg);
+        border: 4px solid var(--color-black);
+        box-shadow: 10px 10px 0 var(--color-black);
+        padding: 2.5rem;
+    }
+    
+    .vidyari-profile-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+    .vidyari-profile-avatar-wrapper { flex-shrink: 0; }
+    .vidyari-profile-avatar {
+        width: 110px; height: 110px; border-radius: 50%;
+        border: 4px solid var(--color-black);
+        object-fit: cover;
+    }
+    .vidyari-profile-info { flex-grow: 1; }
+    .vidyari-profile-name {
+        font-size: 1.8rem; font-weight: 900;
+        text-transform: uppercase; color: var(--color-black);
+        margin: 0;
+    }
+    .vidyari-profile-username { color: #555; margin-bottom: 0.5rem; font-weight: 600; }
+    .vidyari-profile-bio { margin-bottom: 1.5rem; font-weight: 500; }
+    .vidyari-profile-extra-info {
+        display: flex; gap: 1.5rem; color: #333; font-size: 0.9rem; font-weight: 600;
+    }
+
+    .chunky-btn {
+        border: 3px solid var(--color-black);
+        box-shadow: 4px 4px 0 var(--color-black);
+        font-weight: 700;
+        transition: all var(--transition);
+        cursor: pointer;
+        padding: 10px 20px;
+        background-color: var(--color-secondary);
+        color: var(--color-black);
+        text-decoration: none;
+        display: inline-block;
+    }
+    .chunky-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--color-black);
+        background-color: var(--color-focus);
+    }
+
+    .vidyari-stats-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    .vidyari-stat-item {
+        background-color: var(--color-primary);
+        border: 4px solid var(--color-black);
+        box-shadow: 8px 8px 0 var(--color-black);
+        padding: 1.5rem; text-align: center;
+        transition: all var(--transition);
+    }
+    .vidyari-stat-item:hover { transform: translateY(-5px); }
+    .vidyari-stat-value {
+        font-size: 2.5rem; color: var(--color-black);
+        font-weight: 900;
+    }
+    .vidyari-stat-label { font-size: 0.9rem; color: var(--color-black); font-weight: 700; text-transform: uppercase; }
+
+    .vidyari-main-content {
+        margin-top: 2rem;
+    }
+    .vidyari-nav-tabs {
+        /* border-bottom: 4px solid var(--color-black); */
+        /* padding: 0 1.5rem; */
+    }
+    .vidyari-nav-tabs .nav-link {
+        background: none; border: 3px solid var(--color-black); border-bottom: none;
+        box-shadow: 4px 4px 0 var(--color-black);
+        color: var(--color-black); font-weight: 700;
+        padding: 0.75rem 1.5rem; margin: 0 0.5rem -4px 0;
+        transition: all var(--transition);
+    }
+    .vidyari-nav-tabs .nav-link.active, .vidyari-nav-tabs .nav-link:hover {
+        background-color: var(--color-black);
+        color: #fff;
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--color-black);
+    }
+    .vidyari-tab-content { padding: 2.5rem; }
+    .vidyari-detail-group label {
+        display: block; color: #555;
+        font-size: 0.9rem; font-weight: 700;
+        text-transform: uppercase; margin-bottom: 0.25rem;
+    }
+    .vidyari-detail-group p { font-size: 1.1rem; font-weight: 600; margin: 0; }
+    .vidyari-social-links a {
+        color: var(--color-black); font-size: 2rem; margin-right: 1.5rem;
+        transition: all var(--transition);
+    }
+    .vidyari-social-links a:hover { color: var(--color-primary); transform: translateY(-3px); }
+    
+    .vidyari-form-control, .input-group-text {
+        background-color: var(--color-bg);
+        border: 3px solid var(--color-black);
+        box-shadow: 4px 4px 0 var(--color-black);
+        color: var(--color-black); font-weight: 600;
+        padding: 10px;
+        border-radius: 0;
+    }
+    .vidyari-form-control:focus {
+        outline: none;
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 var(--color-black);
+    }
+    .input-group-text {
+        box-shadow: none;
+        border-right: none;
+    }
+    
+    .vidyari-modal-content {
+        background-color: var(--color-bg);
+        border: 4px solid var(--color-black);
+        box-shadow: 12px 12px 0 var(--color-black);
+        border-radius: 0;
+    }
+    .vidyari-modal-header, .vidyari-modal-footer { border-color: var(--color-black); }
+    .vidyari-modal-title { font-weight: 900; text-transform: uppercase; }
+    .vidyari-image-preview {
+        width: 120px; height: 120px; border-radius: 50%;
+        object-fit: cover; border: 3px solid var(--color-black);
+    }
+
+    @media (max-width: 768px) {
+        .vidyari-profile-header { flex-direction: column; text-align: center; }
+        .chunky-btn { align-self: center; margin-top: 1rem; }
+        .vidyari-profile-extra-info { justify-content: center; }
+    }
+</style>
 </head>
-<body class="vidyari-profile-body">
-    <%-include("header")%>
+<body>
+
+<div class="vidyari-profile-page-wrapper">
+
 
     <div class="vidyari-profile-container">
-        <div class="vidyari-profile-header">
+        <div class="vidyari-profile-header chunky-card">
             <div class="vidyari-profile-avatar-wrapper">
-                <img 
-                    src="<%= userData.profilePicUrl %>" 
-                    alt="User Avatar" 
-                    class="vidyari-profile-avatar" 
-                    id="profileAvatar"
-                    onerror="this.onerror=null; this.src='./images/avatar.jpg';"
-                />
-               
+                <img src="<%= userData.profilePicUrl %>" alt="User Avatar" class="vidyari-profile-avatar" id="profileAvatar" onerror="this.onerror=null; this.src='/images/avatar.jpg';"/>
             </div>
-             <% if (userData.ISVERIFIED) { %>
-                                <span class="profile-verified-badge" title="Verified User">
-                                    <img style="width: 50px; height: 50px;" src="/images/verify.png" alt="Verified Badge"/>
-                                </span>
-                            <% } %>
+            <% if (userData.ISVERIFIED) { %>
+                 <span title="Verified User"><img style="width: 50px; height: 50px;" src="/images/verify.png" alt="Verified Badge"/></span>
+            <% } %>
             <div class="vidyari-profile-info">
                 <h1 class="vidyari-profile-name" id="profileName"><%= userData.fullname || userData.username %></h1>
                 <p class="vidyari-profile-username" id="profileUsername">@<%= userData.username %></p>
@@ -44,7 +194,7 @@
                     <div><i class="fas fa-user-plus me-1"></i><strong><%= userData.following.length %></strong> Following</div>
                 </div>
             </div>
-            <button class="btn vidyari-edit-profile-button" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <button class="chunky-btn" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                 <i class="fas fa-pen-alt me-2"></i>Edit
             </button>
         </div>
@@ -58,10 +208,9 @@
                 <div class="vidyari-stat-value" data-value="<%=numsOfDocs%>">0</div>
                 <div class="vidyari-stat-label">Files Uploaded</div>
             </div>
-            
         </div>
 
-        <div class="vidyari-main-content">
+        <div class="vidyari-main-content chunky-card">
             <ul class="nav nav-tabs vidyari-nav-tabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile" type="button">Details</button>
@@ -101,40 +250,40 @@
                 <div class="tab-pane fade" id="security" role="tabpanel">
                     <% if (hasPassword) { %>
                         <div id="change-password-container">
-                            <h5 class="mb-3">Change Password</h5>
+                            <h5 class="mb-3 fw-bold">Change Password</h5>
                             <form id="changePasswordForm" class="row g-3">
                                 <div class="col-md-12">
                                     <label for="currentPassword" class="form-label">Current Password</label>
-                                    <input type="password" class="form-control vidyari-form-control" id="currentPassword" required>
+                                    <input type="password" class="vidyari-form-control" id="currentPassword" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="newPasswordChange" class="form-label">New Password</label>
-                                    <input type="password" class="form-control vidyari-form-control" id="newPasswordChange" required>
+                                    <input type="password" class="vidyari-form-control" id="newPasswordChange" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="confirmNewPasswordChange" class="form-label">Confirm New Password</label>
-                                    <input type="password" class="form-control vidyari-form-control" id="confirmNewPasswordChange" required>
+                                    <input type="password" class="vidyari-form-control" id="confirmNewPasswordChange" required>
                                 </div>
                                 <div class="col-12 mt-4">
-                                    <button type="submit" class="btn btn-primary vidyari-primary-button">Update Password</button>
+                                    <button type="submit" class="chunky-btn">Update Password</button>
                                 </div>
                             </form>
                         </div>
                     <% } else { %>
                         <div id="set-password-container">
-                             <h5 class="mb-3">Set Your Password</h5>
-                             <p class="text-white-50 small">You signed up using a social account. Set a password to enable logging in with your email address.</p>
+                             <h5 class="mb-3 fw-bold">Set Your Password</h5>
+                             <p class="small">You signed up using a social account. Set a password to enable logging in with your email address.</p>
                             <form id="setPasswordForm" class="row g-3">
                                 <div class="col-md-6">
                                     <label for="newPasswordSet" class="form-label">New Password</label>
-                                    <input type="password" class="form-control vidyari-form-control" id="newPasswordSet" required>
+                                    <input type="password" class="vidyari-form-control" id="newPasswordSet" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="confirmNewPasswordSet" class="form-label">Confirm New Password</label>
-                                    <input type="password" class="form-control vidyari-form-control" id="confirmNewPasswordSet" required>
+                                    <input type="password" class="vidyari-form-control" id="confirmNewPasswordSet" required>
                                 </div>
                                 <div class="col-12 mt-4">
-                                    <button type="submit" class="btn btn-primary vidyari-primary-button">Set Password</button>
+                                    <button type="submit" class="chunky-btn">Set Password</button>
                                 </div>
                             </form>
                         </div>
@@ -152,12 +301,12 @@
             <div class="modal-content vidyari-modal-content">
                 <div class="modal-header vidyari-modal-header">
                     <h5 class="modal-title vidyari-modal-title">Edit Your Profile</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="editProfileForm" novalidate>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-md-4 text-center">
+                            <div class="col-md-4 text-center mb-4 mb-md-0">
                                 <img src="" alt="Avatar Preview" id="imagePreview" class="mb-3 vidyari-image-preview" />
                                 <input type="file" id="avatarUpload" class="form-control vidyari-form-control" accept="image/*" />
                             </div>
@@ -176,8 +325,8 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="my-4" style="color: #4a1a8a;" />
-                        <h6>Social Links</h6>
+                        <hr class="my-4" style="color: var(--color-black);" />
+                        <h6 class="fw-bold">Social Links</h6>
                         <div class="input-group mb-3">
                             <span class="input-group-text"><i class="fab fa-github fa-fw"></i></span>
                             <input type="text" class="form-control vidyari-form-control" id="githubInput" placeholder="https://github.com/username" />
@@ -188,8 +337,8 @@
                         </div>
                     </div>
                     <div class="modal-footer vidyari-modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary vidyari-primary-button">Save Changes</button>
+                        <button type="button" class="chunky-btn" style="background-color: #aaa;" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="chunky-btn">Save Changes</button>
                     </div>
                 </form>
             </div>
@@ -201,7 +350,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Stats Counter
         const animateValue = (obj, start, end, duration) => {
             let startTimestamp = null;
             const step = (timestamp) => {
@@ -219,7 +367,6 @@
             }
         });
 
-        // Edit Profile Modal Logic
         const editModalElement = document.getElementById("editProfileModal");
         if (editModalElement) {
             const editProfileModal = new bootstrap.Modal(editModalElement);
@@ -280,8 +427,8 @@
                     changedData.profilepic = true;
                 }
 
-                if (Object.keys(changedData).length > 0) {
-                    try {
+                try {
+                    if (Object.keys(changedData).length > 0) {
                         const response = await fetch("/update/user-detail", { method: "POST", body: formData });
                         if (!response.ok) throw new Error('Update failed');
                         const result = await response.json();
@@ -295,22 +442,30 @@
                         if (changedData.githubUrl !== undefined) document.getElementById("socialGithub").href = changedData.githubUrl || '#';
                         if (changedData.instagramUrl !== undefined) document.getElementById("socialInstagram").href = changedData.instagramUrl || '#';
                         if (result.newProfilePicUrl) document.getElementById("profileAvatar").src = result.newProfilePicUrl;
-                    } catch(error) { console.error('Error:', error); }
+                    }
+                } catch(error) { 
+                    console.error('Error:', error);
+                } finally {
+                    // *** BUG FIX: THIS 'FINALLY' BLOCK ENSURES THE MODAL ALWAYS CLOSES CORRECTLY ***
+                    saveButton.disabled = false;
+                    saveButton.innerHTML = 'Save Changes';
+                    editProfileModal.hide();
+
+                    // Manually clean up Bootstrap's modal backdrop if it gets stuck
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
                 }
-                
-                // BUG FIX: Force modal cleanup in a 'finally' block
-                saveButton.disabled = false;
-                saveButton.innerHTML = 'Save Changes';
-                editProfileModal.hide();
-                
-                const backdrop = document.querySelector('.modal-backdrop');
-                if (backdrop) backdrop.remove();
-                document.body.classList.remove('modal-open');
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
             });
         }
         
+        // --- Password update logic remains unchanged ---
+       
+  
         const feedbackEl = document.getElementById("password-feedback");
         const showFeedback = (message, type) => {
             feedbackEl.textContent = message;

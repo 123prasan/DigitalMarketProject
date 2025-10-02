@@ -3,65 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vidyari - Redesigned</title>
+    <title>Vidyari</title>
 
     <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU" />
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
            1. Global Variables & Base Styles
            ========================================================================== */
         :root {
-            --color-primary: #8b5cf6;
-            --color-accent: #3b82f6; 
-            --color-danger: #ef4444;
-            --color-text: #e5e7eb;
-            --color-text-muted: #9ca3af;
-            --color-bg-dark: #030712;
-            --color-bg-card: #111827;
-            --color-border: #374151;
-            
-            /* Icon Colors */
-            --icon-color-home: #22c55e;
-            --icon-color-docs: #f59e0b;
-            --icon-color-courses: #3b82f6;
-            --icon-color-dashboard: #6366f1;
-            --icon-color-downloads: #8b5cf6;
-            --icon-color-trans: #ec4899;
-
-            --radius-md: 0.75rem;
+            --font-main: 'Montserrat', sans-serif;
+            --color-bg: #fff;
+            --color-black: #000000;
+            --color-primary: #ff66a3; /* Pink */
+            --color-secondary: #4ade80; /* Green */
+            --color-accent: #ffd60a;   /* Yellow */
+            --color-focus: #1ac2ff;   /* Blue */
             --transition-fast: 0.2s ease;
-            --transition-smooth: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --shadow-glow: 0 0 35px rgba(139, 92, 246, 0.1);
         }
 
         body {
-            background-color: var(--color-bg-dark);
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            color: var(--color-text);
-            overflow-x: hidden;
+            background-color: var(--color-bg);
+            font-family: var(--font-main);
+            color: var(--color-black);
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         /* ==========================================================================
            2. Header & Navigation
            ========================================================================== */
         .site-header {
-            background-color: rgba(17, 24, 39, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--color-border);
+            background-color: var(--color-bg);
+            border-bottom: 4px solid var(--color-black);
             position: sticky;
             top: 0;
             z-index: 1020;
@@ -71,208 +49,208 @@
         .brand-logo {
             height: 40px;
             width: 40px;
-            transition: transform var(--transition-smooth);
+            transition: transform var(--transition-fast);
         }
         .brand-logo:hover { transform: scale(1.05) rotate(-5deg); }
-        .brand-name { font-size: 1.5rem; font-weight: 700; color: white; }
+        .brand-name { font-size: 1.5rem; font-weight: 900; color: var(--color-black); }
 
         .main-nav a {
-            position: relative;
-            color: var(--color-text-muted);
-            font-weight: 500;
-            padding: 0.75rem 0;
-            margin: 0 1rem;
-            transition: color var(--transition-fast);
+            color: var(--color-black);
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            transition: all var(--transition-fast);
             text-decoration: none;
             font-size: 1rem;
-        }
-        .main-nav a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--color-primary);
-            transform: scaleX(0);
-            transform-origin: center;
-            transition: transform var(--transition-smooth);
+            border: 3px solid transparent;
         }
         .main-nav a:hover, .main-nav a.active {
-            color: var(--color-text);
-        }
-        .main-nav a:hover::after, .main-nav a.active::after {
-            transform: scaleX(1);
+            background-color: var(--color-accent);
+            border: 3px solid var(--color-black);
+            box-shadow: 3px 3px 0 var(--color-black);
         }
         
         .header-actions { gap: 0.75rem; }
-        .header-btn, .vidyari-header-become-seller-button {
+
+        .chunky-btn {
+            border: 3px solid var(--color-black);
+            box-shadow: 4px 4px 0 var(--color-black);
+            font-weight: 700;
             transition: all var(--transition-fast);
+            cursor: pointer;
+            padding: 8px 16px;
+            background-color: var(--color-secondary);
+            color: var(--color-black);
+            text-decoration: none;
+            display: inline-block;
         }
-        .header-btn:hover, .vidyari-header-become-seller-button:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
+        .chunky-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--color-black);
+            background-color: var(--color-focus);
         }
-        
-        .header-btn {
-            background-color: transparent;
-            border: 1px solid var(--color-border);
-            color: var(--color-text-muted);
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        .chunky-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--color-black);
         }
-        .header-btn:hover {
-            background-color: var(--color-border);
-            color: var(--color-text);
+
+        .header-icon-btn {
+            width: 42px; height: 42px;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0;
         }
 
         /* ==========================================================================
-           3. Buttons
-           ========================================================================== */
-        .vidyari-header-become-seller-button {
-            padding: 10px 18px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--color-accent);
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            background-color: transparent;
-            color: var(--color-accent);
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .vidyari-header-become-seller-button:hover {
-            background: var(--color-accent);
-            color: white;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-        }
-        
-        .vidyari-fancy-login-button {
-            font-weight: 600;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            border-radius: var(--radius-md);
-            color: #fff;
-            background-image: linear-gradient(to right, var(--color-primary), var(--color-accent));
-            box-shadow: 0px 4px 15px rgba(0,0,0, 0.2);
-            padding: 10px 24px;
-            transition: all var(--transition-fast);
-        }
-        .vidyari-fancy-login-button:hover {
-             transform: translateY(-2px);
-             box-shadow: 0px 6px 20px rgba(0,0,0, 0.3);
-        }
-
-        /* ==========================================================================
-           4. Dropdowns (User & Grip)
+           3. Dropdowns (User & Grip)
            ========================================================================== */
         .user-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
+            width: 42px; height: 42px; border-radius: 50%;
             cursor: pointer;
-            border: 2px solid var(--color-primary);
+            border: 3px solid var(--color-black);
         }
         .dropdown-menu {
-            background-color: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            padding: 0.5rem;
-            min-width: 240px;
-            z-index: 1021;
-            box-shadow: var(--shadow-glow);
-            animation: fadeIn 0.2s ease-out;
+            background-color: var(--color-bg);
+            border: 3px solid var(--color-black);
+            box-shadow: 8px 8px 0 var(--color-black);
+            border-radius: 0;
+            padding: 0.5rem; min-width: 240px;
+            margin-top: 15px !important;
         }
-        .dropdown-item { color: var(--color-text); border-radius: 6px; }
-        .dropdown-item:hover { background-color: var(--color-primary); color: white; }
-        .dropdown-divider { border-color: var(--color-border); }
+        .dropdown-item { 
+            color: var(--color-black);
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+        }
+        .dropdown-item:hover { background-color: var(--color-accent); }
+        .dropdown-divider { border-color: var(--color-black); }
         
-        /* Grip Menu (Dots Box) Styles */
         .apps-dropdown {
-            display: none;
-            position: absolute;
-            top: calc(100% + 10px);
-            right: 0;
-            width: 320px;
-            background-color: var(--color-bg-card);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-glow);
-            padding: 1rem;
-            z-index: 1021;
+            display: none; position: absolute; top: calc(100% + 15px); right: 0;
+            width: 320px; background-color: var(--color-bg);
+            border: 3px solid var(--color-black);
+            box-shadow: 8px 8px 0 var(--color-black);
+            padding: 1rem; z-index: 1021;
         }
-        .apps-dropdown.is-open {
-            display: block;
-            animation: fadeIn 0.2s ease-out;
-        }
+        .apps-dropdown.is-open { display: block; }
         .apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .app-item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.75rem; border-radius: var(--radius-md); text-decoration: none; transition: background-color var(--transition-fast); text-align: center; }
-        .app-item:hover { background-color: var(--color-border); }
-        .app-icon-wrapper { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; font-size: 1.5rem; }
-        .app-label { font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500; }
-        .app-item:hover .app-label { color: var(--color-text); }
-        .app-icon-wrapper.dashboard { color: var(--icon-color-dashboard); background-color: rgba(99, 102, 241, 0.1); }
-        .app-icon-wrapper.downloads { color: var(--icon-color-downloads); background-color: rgba(139, 92, 246, 0.1); }
-        .app-icon-wrapper.transactions { color: var(--icon-color-trans); background-color: rgba(236, 72, 153, 0.1); }
-
+        .app-item {
+            border: 2px solid var(--color-black); background-color: #f0f0f0;
+            padding: 0.75rem; text-decoration: none; text-align: center;
+            transition: all var(--transition-fast);
+        }
+        .app-item:hover { background-color: var(--color-accent); transform: translateY(-3px); }
+        .app-icon-wrapper { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .app-label { font-size: 0.8rem; color: var(--color-black); font-weight: 600; }
+        .app-icon-wrapper.dashboard { color: var(--color-primary); }
+        .app-icon-wrapper.downloads { color: var(--color-secondary); }
+        .app-icon-wrapper.transactions { color: var(--color-focus); }
 
         /* ==========================================================================
-           5. Mobile Side Panel & Animated Hamburger
+           4. Mobile Side Panel & Animated Hamburger
            ========================================================================== */
         .hamburger-btn {
             background: none; border: none; width: 42px; height: 42px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; z-index: 1050;
         }
         .hamburger-btn span {
-            display: block; width: 24px; height: 2px; background-color: var(--color-text); border-radius: 2px; transition: transform 0.3s ease, opacity 0.3s ease;
+            display: block; width: 24px; height: 2px;
+            background-color: var(--color-black); 
+            border-radius: 2px; transition: transform 0.3s ease, opacity 0.3s ease;
         }
         .hamburger-btn.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .hamburger-btn.is-open span:nth-child(2) { opacity: 0; }
         .hamburger-btn.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
         .mobile-nav-panel {
-            position: fixed; top: 0; left: 0; width: 280px; height: 100%; background-color: var(--color-bg-card); border-right: 1px solid var(--color-border); z-index: 1045; transform: translateX(-100%); transition: transform var(--transition-smooth); display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            position: fixed; top: 0; left: 0; width: 280px; height: 100%;
+            background-color: var(--color-bg); border-right: 4px solid var(--color-black);
+            z-index: 1045; transform: translateX(-100%); transition: transform 0.3s ease;
+            display: flex; flex-direction: column;
         }
         .mobile-nav-panel.is-open { transform: translateX(0); }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
-        .panel-body { padding: 1rem; flex-grow: 1; overflow-y: auto; }
-        .panel-user-profile { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-        .panel-user-profile .avatar { width: 48px; height: 48px; border-radius: 50%; }
-        .panel-link { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem; border-radius: var(--radius-md); color: var(--color-text); text-decoration: none; font-weight: 500; transition: background-color var(--transition-fast); font-size: 1rem; }
-        .panel-link:hover { background-color: var(--color-border); }
-        .panel-link .icon-wrapper { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1.1rem; }
-        .panel-link .icon-home { color: var(--icon-color-home); background-color: rgba(34, 197, 94, 0.1); }
-        .panel-link .icon-docs { color: var(--icon-color-docs); background-color: rgba(245, 158, 11, 0.1); }
-        .panel-link .icon-courses { color: var(--icon-color-courses); background-color: rgba(59, 130, 246, 0.1); }
-        .panel-link .icon-dashboard { color: var(--icon-color-dashboard); background-color: rgba(99, 102, 241, 0.1); }
-        .panel-link .icon-downloads { color: var(--icon-color-downloads); background-color: rgba(139, 92, 246, 0.1); }
-        .panel-link .icon-trans { color: var(--icon-color-trans); background-color: rgba(236, 72, 153, 0.1); }
-        .panel-footer { padding: 1.5rem; border-top: 1px solid var(--color-border); flex-shrink: 0; }
-        .panel-divider { height: 1px; border: 0; background-image: linear-gradient(to right, transparent, var(--color-border), transparent); margin: 1rem 0; }
-        .nav-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.7); z-index: 1040; opacity: 0; pointer-events: none; transition: opacity var(--transition-smooth); }
+        .panel-header {
+            padding: 0.75rem 1.5rem; border-bottom: 4px solid var(--color-black);
+            flex-shrink: 0;
+        }
+        .panel-body { 
+            padding: 1rem; 
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .panel-footer { 
+            padding: 1.5rem; border-top: 4px solid var(--color-black); 
+            flex-shrink: 0;
+        }
+        .nav-overlay {
+            position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1040; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
         .nav-overlay.is-open { opacity: 1; pointer-events: auto; }
+
+        .panel-user-profile {
+            display: flex; align-items: center; gap: 1rem;
+            text-decoration: none; color: var(--color-black);
+            margin-bottom: 1rem;
+        }
+        .panel-user-profile .avatar {
+            width: 48px; height: 48px; border-radius: 50%;
+            border: 3px solid var(--color-black);
+        }
+        .panel-user-profile .username { font-weight: 700; }
+        .panel-user-profile .email { font-size: 0.8rem; color: #666; }
+        
+        .panel-divider {
+            height: 2px; background-color: var(--color-black);
+            margin: 1.5rem 0; border: 0;
+        }
+
+        .panel-section-label {
+            font-size: 0.75rem; font-weight: 900;
+            text-transform: uppercase; color: #888;
+            margin-bottom: 0.5rem; padding: 0 0.5rem;
+        }
+
+        .panel-link {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 0.8rem 1rem; border-radius: 0;
+            color: var(--color-black); text-decoration: none;
+            font-weight: 700; font-size: 1rem;
+            border: 3px solid transparent;
+            transition: all var(--transition-fast);
+        }
+        .panel-link:hover {
+            border: 3px solid var(--color-black);
+            background-color: var(--color-accent);
+            box-shadow: 3px 3px 0 var(--color-black);
+        }
+        .panel-link .icon-wrapper {
+            width: 32px; height: 32px; display: inline-flex;
+            align-items: center; justify-content: center;
+            border-radius: 8px; font-size: 1.1rem;
+            color: var(--color-black);
+        }
+        .icon-home { background-color: #a7f3d0; }
+        .icon-docs { background-color: #fde68a; }
+        .icon-courses { background-color: #bfdbfe; }
+        .icon-dashboard { background-color: #c4b5fd; }
+        .icon-downloads { background-color: #fbcfe8; }
+        .icon-transactions { background-color: #bae6fd; }
+        .icon-profile { background-color: #d1d5db; }
+        .icon-seller { background-color: var(--color-secondary); }
         
         /* ==========================================================================
-           6. Media Queries for Responsiveness
+           5. Media Queries
            ========================================================================== */
-        @media (max-width: 991.98px) {
-            .main-nav, #grip-container { display: none !important; }
-        }
+        @media (max-width: 991.98px) { .main-nav, #grip-container { display: none !important; } }
         @media (max-width: 575.98px) {
             .site-header { padding: 0.75rem 1rem; }
-            .brand-name { display: none !important; }
-            .vidyari-header-become-seller-button{
-                padding:5px 8px;
-                font-size: 10px;
-            }
+            .brand-name { 
+                font-size: 1rem;
+                font-weight: 700;
+             }
+            .chunky-btn { padding: 5px 8px; font-size: 12px; }
         }
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
      crossorigin="anonymous"></script>
 </head>
 
@@ -281,7 +259,7 @@
 <header class="site-header">
     <div class="container-fluid d-flex align-items-center justify-content-between">
         
-        <a href="/" class="d-flex align-items: center gap-3 text-decoration-none">
+        <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
             <img src="/images/logo.svg" alt="Vidyari Logo" class="brand-logo">
             <span class="brand-name">Vidyari</span>
         </a>
@@ -294,33 +272,20 @@
         
         <div class="d-flex align-items-center header-actions">
 
-            <button onclick="window.location.href='/dashboard'" class="vidyari-header-become-seller-button">Become Seller</button>
-            
-            <%# EJS logic to conditionally render Login button OR User Profile %>
             <% if(isLoggedin) { %>
-                <%# USER IS LOGGED IN %>
-                <button onclick="window.location.href='/user-notifications'" type="button" class="header-btn" aria-label="Notifications">
+                <button onclick="window.location.href='/user-notifications'" type="button" class="chunky-btn header-icon-btn" aria-label="Notifications" style="background-color: var(--color-primary);">
                     <i class="fa-regular fa-bell"></i>
                 </button>
 
                 <div class="position-relative" id="grip-container">
-                    <button id="grip-button" type="button" class="header-btn" aria-label="Apps">
+                    <button id="grip-button" type="button" class="chunky-btn header-icon-btn" aria-label="Apps" style="background-color: var(--color-accent);">
                         <i class="fas fa-grip"></i>
                     </button>
                     <div class="apps-dropdown" id="grip-menu">
                         <div class="apps-grid">
-                            <a href="/dashboard" class="app-item">
-                                <div class="app-icon-wrapper dashboard"><i class="fas fa-table-columns"></i></div>
-                                <span class="app-label">Dashboard</span>
-                            </a>
-                            <a href="/downloads" class="app-item">
-                                <div class="app-icon-wrapper downloads"><i class="fas fa-cloud-arrow-down"></i></div>
-                                <span class="app-label">Downloads</span>
-                            </a>
-                            <a href="/transactions" class="app-item">
-                                <div class="app-icon-wrapper transactions"><i class="fas fa-receipt"></i></div>
-                                <span class="app-label">Transactions</span>
-                            </a>
+                            <a href="/dashboard" class="app-item"><div class="app-icon-wrapper dashboard"><i class="fas fa-table-columns"></i></div><span class="app-label">Dashboard</span></a>
+                            <a href="/downloads" class="app-item"><div class="app-icon-wrapper downloads"><i class="fas fa-cloud-arrow-down"></i></div><span class="app-label">Downloads</span></a>
+                            <a href="/transactions" class="app-item"><div class="app-icon-wrapper transactions"><i class="fas fa-receipt"></i></div><span class="app-label">Transactions</span></a>
                         </div>
                     </div>
                 </div>
@@ -328,8 +293,8 @@
                 <div class="dropdown">
                     <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="px-3 pt-2 pb-3 border-bottom">
-                            <p class="fw-bold mb-0 text-white"><%= username %></p>
+                        <li class="px-3 pt-2 pb-3 border-bottom border-dark">
+                            <p class="fw-bold mb-0"><%= username %></p>
                             <p class="small text-muted mb-0"><%= useremail %></p>
                         </li>
                         <li><a class="dropdown-item" href="/user-profile"><i class="fa-solid fa-user-gear fa-fw me-2"></i>Profile</a></li>
@@ -337,68 +302,70 @@
                         <li><a class="dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a></li>
                     </ul>
                 </div>
-
             <% } else { %>
-                <%# USER IS A GUEST %>
-                <button onclick="window.location.href='/user-login'" class="vidyari-fancy-login-button">Login</button>
+                <button onclick="window.location.href='/dashboard'" class="chunky-btn">Become Seller</button>
+                <button onclick="window.location.href='/user-login'" class="chunky-btn" style="background-color: var(--color-primary);">Login</button>
             <% } %>
 
-
             <button class="hamburger-btn d-lg-none" id="hamburgerBtn" type="button" aria-label="Toggle navigation">
-                <span></span>
-                <span></span>
-                <span></span>
+                <span></span><span></span><span></span>
             </button>
         </div>
     </div>
 </header>
 
 <div class="mobile-nav-panel" id="mobileNavPanel">
-    <%# EJS logic to render the correct mobile navigation panel %>
-    <div class="panel-header d-flex justify-content-between align-items-center">
+    <div class="panel-header">
         <a href="/"><img src="/images/logo.svg" alt="Vidyari Logo" style="height:32px"></a>
     </div>
 
     <% if(isLoggedin) { %>
-        <%# MOBILE PANEL FOR LOGGED-IN USER %>
         <div class="panel-body">
-            <a href="/user-profile" class="text-decoration-none">
-                <div class="panel-user-profile">
-                    <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="avatar">
-                    <div>
-                        <p class="username text-white mb-0"><%= username %></p>
-                        <p class="email small text-bluedark mb-0"><%= useremail %></p>
-                    </div>
+            <a href="/user-profile" class="panel-user-profile">
+                <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="avatar">
+                <div>
+                    <p class="username mb-0"><%= username %></p>
+                    <p class="email mb-0"><%= useremail %></p>
                 </div>
             </a>
+            
             <hr class="panel-divider">
-            <div class="panel-nav-section">
-                <a href="/" class="panel-link"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
-                <a href="/documents" class="panel-link"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
-                <a href="/courses" class="panel-link"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
-            </div>
-            <hr class="panel-divider">
-            <div class="panel-nav-section">
-                <a href="/dashboard" class="panel-link"><span class="icon-wrapper icon-dashboard"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
-                <a href="/downloads" class="panel-link"><span class="icon-wrapper icon-downloads"><i class="fa-solid fa-cloud-arrow-down"></i></span><span>Downloads</span></a>
-                <a href="/transactions" class="panel-link"><span class="icon-wrapper icon-trans"><i class="fa-solid fa-receipt"></i></span><span>Transactions</span></a>
-            </div>
-        </div>
-        <div class="panel-footer">
-            <a href="/logout" class="btn panel-link w-100 justify-content-center" style="background-color: var(--color-danger);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>
-        </div>
 
-    <% } else { %>
-        <%# MOBILE PANEL FOR GUEST %>
-        <div class="panel-body">
-            <div class="panel-nav-section">
+            <div class="panel-section">
+                <p class="panel-section-label">Navigation</p>
                 <a href="/" class="panel-link"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
                 <a href="/documents" class="panel-link"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
                 <a href="/courses" class="panel-link"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
             </div>
+
+            <hr class="panel-divider">
+
+            <div class="panel-section">
+                <p class="panel-section-label">Account</p>
+                <a href="/user-profile" class="panel-link"><span class="icon-wrapper icon-profile"><i class="fa-solid fa-user-gear"></i></span><span>My Profile</span></a>
+                <a href="/downloads" class="panel-link"><span class="icon-wrapper icon-downloads"><i class="fa-solid fa-cloud-arrow-down"></i></span><span>My Downloads</span></a>
+                <a href="/transactions" class="panel-link"><span class="icon-wrapper icon-transactions"><i class="fa-solid fa-receipt"></i></span><span>Transactions</span></a>
+            </div>
+            
+            <hr class="panel-divider">
+            
+            <div class="panel-section">
+                <p class="panel-section-label">Seller</p>
+                 <a href="/dashboard" class="panel-link"><span class="icon-wrapper icon-dashboard"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+                 <a href="/dashboard" class="panel-link"><span class="icon-wrapper icon-seller"><i class="fa-solid fa-store"></i></span><span>Become a Seller</span></a>
+            </div>
         </div>
         <div class="panel-footer">
-            <button onclick="window.location.href='/user-login'" class="btn btn-primary w-100">Login / Sign Up</button>
+            <a href="/logout" class="chunky-btn w-100 text-center" style="background-color: var(--color-primary);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>
+        </div>
+    <% } else { %>
+        <div class="panel-body">
+            <a href="/" class="panel-link"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
+            <a href="/documents" class="panel-link"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
+            <a href="/courses" class="panel-link"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
+        </div>
+        <div class="panel-footer">
+            <button onclick="window.location.href='/user-login'" class="chunky-btn w-100" style="background-color: var(--color-primary);">Login / Sign Up</button>
         </div>
     <% } %>
 </div>
@@ -407,7 +374,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- UI Elements for Interaction ---
     const mobileNavPanel = document.getElementById('mobileNavPanel');
     const navOverlay = document.getElementById('navOverlay');
     const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -415,7 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const gripButton = document.getElementById('grip-button');
     const gripMenu = document.getElementById('grip-menu');
 
-    // --- Mobile Navigation Toggle ---
     const toggleMobileNav = () => {
         const isOpen = mobileNavPanel.classList.toggle('is-open');
         navOverlay.classList.toggle('is-open');
@@ -423,15 +388,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = isOpen ? 'hidden' : '';
     };
 
-    // --- Grip Menu (Apps) Toggle ---
     function setupGripMenu() {
-        if (!gripButton) return; // Only run if grip button exists on page
-        
+        if (!gripButton) return;
         gripButton.addEventListener('click', (e) => {
             e.stopPropagation();
             gripMenu.classList.toggle('is-open');
         });
-
         document.addEventListener('click', (e) => {
             if (gripContainer && !gripContainer.contains(e.target) && gripMenu.classList.contains('is-open')) {
                 gripMenu.classList.remove('is-open');
@@ -439,7 +401,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Event Listeners ---
     if (hamburgerBtn) {
         hamburgerBtn.addEventListener('click', toggleMobileNav);
     }
@@ -447,7 +408,6 @@ document.addEventListener('DOMContentLoaded', () => {
         navOverlay.addEventListener('click', toggleMobileNav);
     }
 
-    // --- Initial Setup ---
     setupGripMenu();
 });
 </script>

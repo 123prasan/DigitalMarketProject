@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,824 +7,331 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        /* ======================================== */
-        /* 1. GLOBAL STYLES & CSS VARIABLES       */
-        /* ======================================== */
-        :root {
-            --bg-dark: #05050A;
-            --bg-card: #111116;
-            --border-color: #262626;
-            --text-primary: #F5F5F5;
-            --text-secondary: #A3A3A3;
-            --accent-blue: #3B82F6;
-            --accent-teal: #14B8A6;
-            --accent-purple: #8B5CF6;
-            --accent-glow: rgba(59, 130, 246, 0.3);
-            --border-radius-md: 12px;
-            --border-radius-lg: 16px;
-            --font-main: 'Figtree', sans-serif;
+        .vidyari-landing-wrapper {
+            --font-main: 'Montserrat', sans-serif;
+            --color-bg: #fff;
+            --color-black: #000000;
+            --color-primary: #ff66a3; /* Pink */
+            --color-secondary: #4ade80; /* Green */
+            --color-accent: #ffd60a;   /* Yellow */
+            --color-focus: #1ac2ff;   /* Blue */
+            --transition: 0.2s ease;
         }
 
-        .vidyari-html-document {
-            scroll-behavior: smooth;
-        }
-
-        .vidyari-body-container * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .vidyari-body-container {
+        .vidyari-landing-wrapper {
             font-family: var(--font-main);
-            background-color: var(--bg-dark);
-            color: var(--text-secondary);
+            background-color: var(--color-bg);
+            color: var(--color-black);
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+            position: relative;
         }
+        .vidyari-landing-wrapper * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* ======================================== */
-        /* 2. AURORA BACKGROUND                   */
-        /* ======================================== */
-        .vidyari-aurora-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        /* NEW Animated Gradient Background */
+        .vidyari-animated-background {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
+            background: linear-gradient(135deg, 
+                #ff66a3, /* Pink */
+                #4ade80, /* Green */
+                #ffd60a, /* Yellow */
+                #1ac2ff  /* Blue */
+            );
+            background-size: 400% 400%;
+            animation: animated-gradient 15s ease infinite;
+            opacity: 0.2; /* Kept subtle so content is legible */
         }
+        @keyframes animated-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* END NEW Animated Gradient Background */
 
-        .vidyari-aurora-shape-one,
-        .vidyari-aurora-shape-two,
-        .vidyari-aurora-shape-three {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.2;
-        }
 
-        .vidyari-aurora-shape-one {
-            width: 600px;
-            height: 600px;
-            top: -20%;
-            left: -10%;
-            background-color: var(--accent-blue);
-            animation: move-aurora1 25s infinite alternate ease-in-out;
-        }
-
-        .vidyari-aurora-shape-two {
-            width: 500px;
-            height: 500px;
-            top: 20%;
-            left: 60%;
-            background-color: var(--accent-teal);
-            animation: move-aurora2 30s infinite alternate ease-in-out;
-        }
-
-        .vidyari-aurora-shape-three {
-            width: 400px;
-            height: 400px;
-            bottom: -30%;
-            right: -20%;
-            background-color: var(--accent-purple);
-            animation: move-aurora3 20s infinite alternate ease-in-out;
-        }
-
-        @keyframes move-aurora1 {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(200px, 100px) rotate(90deg); }
-        }
-        @keyframes move-aurora2 {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(-150px, -100px) rotate(120deg); }
-        }
-        @keyframes move-aurora3 {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(-100px, 50px) rotate(60deg); }
-        }
-
-        /* ======================================== */
-        /* 3. GENERAL LAYOUT & TYPOGRAPHY         */
-        /* ======================================== */
-        .vidyari-main-content-wrapper {
-            position: relative;
-            z-index: 2;
-        }
-
-        .vidyari-hero-container,
-        .vidyari-why-container,
-        .vidyari-sell-container,
-        .vidyari-popular-container,
-        .vidyari-learners-container,
-        .vidyari-pricing-container,
-        .vidyari-faq-container {
-            max-width: 1050px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .vidyari-hero-section,
-        .vidyari-why-section,
-        .vidyari-sell-section,
-        .vidyari-popular-section,
-        .vidyari-learners-section,
-        .vidyari-pricing-section,
-        .vidyari-faq-section {
-            padding: 100px 0;
-        }
-
-        .vidyari-popular-section {
-            padding-top: 120px;
-        }
+        .vidyari-main-content-wrapper { position: relative; z-index: 1; }
         
-        .vidyari-hero-section {
-            padding: 120px 0;
-            text-align: center;
-        }
-
-        .vidyari-hero-main-heading {
-            font-size: 5rem;
-            line-height: 1.1;
+        section { padding: 80px 20px; }
+        .container { max-width: 1050px; margin: 0 auto; }
+        
+        .main-heading {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900; text-transform: uppercase; text-align: center;
             margin-bottom: 1.5rem;
-            text-align: center;
-            color: var(--text-primary);
-            font-weight: 800;
-            letter-spacing: -0.025em;
-            background: linear-gradient(90deg, #FFFFFF, #A3A3A3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine-text 5s infinite linear;
-            background-size: 200% auto;
+        }
+        .sub-heading {
+            max-width: 650px; margin: 0 auto 60px auto; text-align: center;
+            font-size: 1.1rem; line-height: 1.8; font-weight: 500;
         }
 
-        @keyframes shine-text {
-            to { background-position: 200% center; }
+        .chunky-btn {
+            display: inline-block; padding: 16px 36px; font-weight: 700;
+            font-size: 1.1rem; text-decoration: none; text-align: center;
+            border: 3px solid var(--color-black); cursor: pointer;
+            box-shadow: 6px 6px 0 var(--color-black);
+            transition: all var(--transition);
+            background-color: var(--color-secondary); color: var(--color-black);
         }
+        .chunky-btn:hover {
+            transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--color-black);
+            background-color: var(--color-focus);
+        }
+        .chunky-btn.alt { background-color: var(--color-accent); }
 
-        .vidyari-why-main-heading,
-        .vidyari-sell-main-heading,
-        .vidyari-popular-main-heading,
-        .vidyari-learners-main-heading,
-        .vidyari-pricing-main-heading,
-        .vidyari-faq-main-heading {
-            font-size: 3rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-            font-weight: 800;
-            letter-spacing: -0.025em;
-        }
-        
-        .vidyari-why-card-heading,
-        .vidyari-sell-card-heading,
-        .vidyari-learners-content-heading {
-            font-size: 1.3rem;
-            color: var(--text-primary);
-            font-weight: 800;
-            letter-spacing: -0.025em;
-        }
-
-        .vidyari-popular-card-title {
-            color: var(--text-primary);
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-        
-        .vidyari-hero-subheading,
-        .vidyari-why-subheading,
-        .vidyari-sell-subheading,
-        .vidyari-popular-subheading,
-        .vidyari-pricing-subheading,
-        .vidyari-faq-subheading {
-            max-width: 650px;
-            margin: 0 auto 60px auto;
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-
-        .vidyari-hero-subheading {
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            font-size: 1.2rem;
-        }
-
-        .vidyari-why-card-description,
-        .vidyari-learners-content-description,
-        .vidyari-faq-answer-paragraph {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 1rem;
-        }
-        
-        .vidyari-faq-answer-paragraph {
-            padding: 0 20px 20px 20px;
-            margin: 0;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-
-        /* ======================================== */
-        /* 4. BUTTONS & INTERACTIVE               */
-        /* ======================================== */
-        .vidyari-hero-buttons-wrapper {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .vidyari-hero-promo-image {
-            margin-bottom: 40px;
-        }
-
-        .vidyari-hero-cta-button {
-            display: inline-block;
-            padding: 16px 36px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-decoration: none;
-            text-align: center;
-            border: 2px solid transparent;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            isolation: isolate;
-            transition: all 0.3s ease;
-            background-color: var(--accent-blue);
-            color: #fff;
-        }
-
-        .vidyari-hero-cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 25px var(--accent-glow);
-        }
-
-        .vidyari-hero-cta-button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 60%);
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.7s ease;
-            z-index: -1;
-        }
-
-        .vidyari-hero-cta-button:hover::after {
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        /* ======================================== */
-        /* 5. GRID & CARD STYLES                  */
-        /* ======================================== */
-        .vidyari-why-grid,
-        .vidyari-sell-grid,
-        .vidyari-popular-grid,
-        .vidyari-learners-grid {
-            display: grid;
-            gap: 30px;
-        }
-
-        .vidyari-why-grid, .vidyari-learners-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .vidyari-sell-grid, .vidyari-popular-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .vidyari-learners-grid {
-             align-items: center;
-        }
-
-        /* --- Why Section Cards --- */
-        .vidyari-why-card-storefront,
-        .vidyari-why-card-payments {
-            background-color: var(--bg-card);
-            padding: 30px;
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--border-color);
+        .chunky-card {
+            background: var(--color-bg); border: 3px solid var(--color-black);
+            box-shadow: 10px 10px 0 var(--color-black); padding: 30px;
             transition: all 0.3s ease;
         }
-
-        .vidyari-why-card-storefront:hover,
-        .vidyari-why-card-payments:hover {
+        .chunky-card:hover {
             transform: translateY(-8px);
-            border-color: var(--accent-blue);
         }
 
-        .vidyari-why-card-icon-wrapper {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background-color: rgba(59, 130, 246, 0.1);
-            color: var(--accent-blue);
-            display: grid;
-            place-items: center;
-            margin-bottom: 20px;
-            animation: pulse-glow 3s infinite ease-in-out;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 10px rgba(59, 130, 246, 0.1); }
-            50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-        }
-
-        /* --- What To Sell Cards --- */
-        .vidyari-sell-card-notes,
-        .vidyari-sell-card-tutorials,
-        .vidyari-sell-card-ebooks {
-            background: var(--bg-card);
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--border-color);
-            text-align: center;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .vidyari-sell-card-notes:hover,
-        .vidyari-sell-card-tutorials:hover,
-        .vidyari-sell-card-ebooks:hover {
-            transform: translateY(-8px);
-            border-color: var(--accent-teal);
-        }
+        /* Hero Section */
+        .vidyari-hero-section { padding: 100px 0; text-align: center; }
+        .vidyari-hero-buttons-wrapper { display: flex; gap: 15px; justify-content: center; }
+        .vidyari-hero-promo-image { width: 100%; max-width: 400px; margin: 40px auto; display: block; }
         
-        .vidyari-sell-card-image {
-            max-height: 120px;
-            margin: 20px auto;
-            display: block;
+        /* Grid & Card Styles */
+        .grid-container { display: grid; gap: 30px; }
+        .grid-2-cols { grid-template-columns: repeat(2, 1fr); }
+        .grid-3-cols { grid-template-columns: repeat(3, 1fr); }
+
+        .icon-wrapper {
+            width: 48px; height: 48px; border-radius: 50%;
+            background-color: var(--color-accent); border: 3px solid var(--color-black);
+            display: grid; place-items: center; margin-bottom: 20px; font-size: 1.5rem;
         }
+        .card-heading { font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem; }
+        .card-description { line-height: 1.8; font-weight: 500; }
         
-        /* --- Popular Products Cards --- */
-        .vidyari-popular-card-one,
-        .vidyari-popular-card-two,
-        .vidyari-popular-card-three {
-            background: rgba(20, 20, 25, 0.5);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-lg);
-            padding: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .vidyari-popular-card-one:hover,
-        .vidyari-popular-card-two:hover,
-        .vidyari-popular-card-three:hover {
-            transform: translateY(-8px);
-            border-color: var(--accent-blue);
-        }
-
-        .vidyari-popular-card-thumbnail-wrapper {
-            background-color: #222;
-            border-radius: var(--border-radius-md);
-            margin-bottom: 16px;
-            aspect-ratio: 16 / 10;
-        }
-
-        .vidyari-popular-card-thumbnail-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: var(--border-radius-md);
-        }
-
-        .vidyari-popular-card-creator-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .vidyari-popular-card-creator-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-        }
-
-        .vidyari-popular-card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--text-secondary);
-        }
-
-        .vidyari-popular-card-price {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        /* ======================================== */
-        /* 6. SPECIFIC SECTION STYLES             */
-        /* ======================================== */
+        .sell-card { text-align: center; }
+        .sell-card-image { max-height: 120px; margin: 20px auto; display: block; }
         
-        /* --- Learners Section --- */
-        .vidyari-learners-image {
-            max-width: 400px;
-            width: 100%;
-            margin: 0 auto;
-            display: block;
+        /* Popular Products Cards */
+        .popular-card-title {
+            font-weight: 700; font-size: 1.1rem; margin-bottom: 8px;
         }
-
-        .vidyari-learners-feature-list {
-            list-style: none;
+        .popular-card-thumbnail-image {
+            width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
+            border: 2px solid var(--color-black); margin-bottom: 16px;
         }
+        .popular-card-creator-info {
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 16px; font-size: 0.9rem; font-weight: 600;
+        }
+        .popular-card-creator-avatar { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--color-black); }
+        .popular-card-footer { display: flex; justify-content: space-between; align-items: center; }
+        .popular-card-price { font-size: 1.1rem; font-weight: 900; }
 
-        .vidyari-learners-feature-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        /* Learners Section */
+        .learners-grid { align-items: center; }
+        .learners-image { width: 100%; max-width: 400px; display: block; margin: 0 auto; }
+        .learners-feature-list { list-style: none; }
+        .learners-feature-item {
+            display: flex; align-items: center; gap: 15px;
+            margin-bottom: 15px; font-size: 1.1rem; font-weight: 600;
+        }
+        .learners-feature-icon { color: var(--color-secondary); }
+
+        /* Pricing Section */
+        .pricing-image { max-width: 250px; margin: 0 auto 20px; display: block; }
+        .pricing-visualizer {
+            display: flex; max-width: 700px; margin: 0 auto 40px;
+            overflow: hidden; border: 3px solid var(--color-black);
+        }
+        .pricing-creator-bar, .pricing-platform-bar {
+            padding: 20px; font-weight: 700; font-size: 1.2rem;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .pricing-creator-bar { flex: 7; background: var(--color-secondary); }
+        .pricing-platform-bar { flex: 3; background: #ddd; }
+        
+        /* FAQ Section */
+        .faq-item {
+            background-color: var(--color-bg); border: 3px solid var(--color-black);
             margin-bottom: 15px;
-            font-size: 1.1rem;
-            color: var(--text-primary);
         }
-        
-        .vidyari-learners-feature-icon {
-            color: var(--accent-teal);
+        .faq-question-wrapper {
+            padding: 20px; cursor: pointer; display: flex;
+            justify-content: space-between; align-items: center;
+            font-weight: 700; font-size: 1.1rem;
         }
-
-        /* --- Pricing Section --- */
-        .vidyari-pricing-section {
-            text-align: center;
-        }
-
-        .vidyari-pricing-image {
-            margin-bottom: 20px;
-        }
-        
-        .vidyari-pricing-visualizer {
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-            max-width: 700px;
-            margin: 0 auto 40px;
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 6px 25px rgba(0,0,0,0.35);
-        }
-
-        .vidyari-pricing-creator-bar,
-        .vidyari-pricing-platform-bar {
-            padding: 20px;
-            font-weight: 700;
-            font-size: 1.2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-        }
-
-        .vidyari-pricing-creator-bar {
-            flex: 7;
-            background: linear-gradient(135deg, var(--accent-teal), var(--accent-blue));
-        }
-
-        .vidyari-pricing-platform-bar {
-            flex: 3;
-            background: #1F2937;
-            color: var(--text-secondary);
-        }
-        
-        .vidyari-pricing-description {
-            max-width: 700px;
-            margin: 0 auto;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            color: var(--text-secondary);
-        }
-        
-        /* --- FAQ Section --- */
-        .vidyari-faq-item-one,
-        .vidyari-faq-item-two,
-        .vidyari-faq-item-three {
-            background-color: var(--bg-card);
-            border-radius: var(--border-radius-md);
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-        
-        .vidyari-faq-question-wrapper {
-            padding: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
-        
-        .vidyari-faq-icon-wrapper {
-            transition: transform 0.3s ease;
-        }
-        
-        .vidyari-faq-item-one.active .vidyari-faq-icon-wrapper,
-        .vidyari-faq-item-two.active .vidyari-faq-icon-wrapper,
-        .vidyari-faq-item-three.active .vidyari-faq-icon-wrapper {
-            transform: rotate(45deg);
-        }
-        
-        .vidyari-faq-answer-wrapper {
-            max-height: 0;
-            overflow: hidden;
+        .faq-icon-wrapper { transition: transform 0.3s ease; }
+        .faq-item.active .faq-icon-wrapper { transform: rotate(45deg); }
+        .faq-answer-wrapper {
+            max-height: 0; overflow: hidden;
             transition: max-height 0.4s ease, padding 0.4s ease;
+            font-weight: 500;
+        }
+        .faq-answer-paragraph {
+            padding: 0 20px 20px; line-height: 1.7;
         }
 
-        /* ======================================== */
-        /* 7. SCROLL ANIMATION                    */
-        /* ======================================== */
-        [data-animation="fade-in"] {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
+        /* Scroll Animation */
+        [data-animation="fade-in"] { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        [data-animation="fade-in"].visible { opacity: 1; transform: translateY(0); }
 
-        [data-animation="fade-in"].visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Staggered animation delays */
-        .vidyari-why-card-payments,
-        .vidyari-sell-card-tutorials,
-        .vidyari-popular-card-two,
-        .vidyari-faq-item-two {
-            transition-delay: 0.1s;
-        }
-
-        .vidyari-sell-card-ebooks,
-        .vidyari-popular-card-three,
-        .vidyari-faq-item-three {
-            transition-delay: 0.2s;
-        }
-        
-        /* ======================================== */
-        /* 8. RESPONSIVE DESIGN                   */
-        /* ======================================== */
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .vidyari-hero-main-heading {
-                font-size: 3rem;
-            }
-
-            .vidyari-why-main-heading,
-            .vidyari-sell-main-heading,
-            .vidyari-popular-main-heading,
-            .vidyari-learners-main-heading,
-            .vidyari-pricing-main-heading,
-            .vidyari-faq-main-heading {
-                font-size: 2.2rem;
-            }
-
-            .vidyari-why-grid,
-            .vidyari-sell-grid,
-            .vidyari-popular-grid,
-            .vidyari-learners-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .vidyari-learners-feature-list {
-                margin-top: 40px;
-            }
+            .grid-2-cols, .grid-3-cols { grid-template-columns: 1fr; }
         }
-        
-        @media (max-width: 600px) {
-            .vidyari-pricing-visualizer {
-                flex-direction: column;
-            }
-            .vidyari-pricing-creator-bar,
-            .vidyari-pricing-platform-bar {
-                flex: unset;
-                width: 100%;
-                text-align: center;
-            }
-        }
-
     </style>
 </head>
+<body>
 
-<body class="vidyari-body-container">
+<div class="vidyari-landing-wrapper">
     <%-include("header")%>
 
-    <div class="vidyari-aurora-background">
-        <div class="vidyari-aurora-shape-one"></div>
-        <div class="vidyari-aurora-shape-two"></div>
-        <div class="vidyari-aurora-shape-three"></div>
-    </div>
+    <div class="vidyari-animated-background"></div>
 
     <main class="vidyari-main-content-wrapper">
 
         <section class="vidyari-hero-section">
-            <div class="vidyari-hero-container" data-animation="fade-in">
-                <h1 class="vidyari-hero-main-heading">Your Knowledge, Now Your Currency.</h1>
-                <p class="vidyari-hero-subheading">Vidyari is the premier marketplace for creators to sell digital study materials. Turn your notes,
-                    guides, and courses into a sustainable income stream. Effortlessly.</p>
+            <div class="container" data-animation="fade-in">
+                <h1 class="main-heading">Your Knowledge, Your Currency.</h1>
+                <p class="sub-heading">Vidyari is the premier marketplace for creators to sell digital study materials. Turn your notes, guides, and courses into a sustainable income stream.</p>
                 <img src="./images/video-files.svg" class="vidyari-hero-promo-image" alt="Video Files Illustration">
                 <div class="vidyari-hero-buttons-wrapper">
-                    <a href="/dashboard" class="vidyari-hero-cta-button">Start Selling — It's Free</a>
-                </div>
-                <br>
-                <div class="vidyari-hero-buttons-wrapper">
-                    <a href="/documents" class="vidyari-hero-cta-button">Explore Docs</a>
+                    <a href="/dashboard" class="chunky-btn">Start Selling — It's Free</a>
+                    <a href="/documents" class="chunky-btn alt">Explore Docs</a>
                 </div>
             </div>
         </section>
 
         <section class="vidyari-why-section">
-            <div class="vidyari-why-container">
-                <div class="vidyari-why-header" data-animation="fade-in">
-                    <h2 class="vidyari-why-main-heading">Everything You Need to Succeed</h2>
-                    <p class="vidyari-why-subheading">We handle the tech, payments, and delivery, so you can focus on what
-                        matters: creating amazing content.</p>
+            <div class="container">
+                <div data-animation="fade-in">
+                    <h2 class="main-heading">Everything You Need to Succeed</h2>
+                    <p class="sub-heading">We handle the tech, payments, and delivery, so you can focus on creating amazing content.</p>
                 </div>
-                <div class="vidyari-why-grid">
-                    <div class="vidyari-why-card-storefront" data-animation="fade-in">
-                        <div class="vidyari-why-card-icon-wrapper">
-                            <svg class="vidyari-why-card-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                            </svg>
-                        </div>
-                        <img src="./images/Fast-loading-rafiki.svg" class="vidyari-why-card-image" alt="Fast Loading Illustration">
-                        <h3 class="vidyari-why-card-heading">Instant Storefront</h3>
-                        <p class="vidyari-why-card-description">No website? No problem. Get a beautiful, high-converting product page the moment you upload a file.</p>
+                <div class="grid-container grid-2-cols">
+                    <div class="chunky-card" data-animation="fade-in">
+                        <div class="icon-wrapper"><i class="fas fa-store"></i></div>
+                        <h3 class="card-heading">Instant Storefront</h3>
+                        <p class="card-description">No website? No problem. Get a beautiful, high-converting product page the moment you upload a file.</p>
                     </div>
-                    <div class="vidyari-why-card-payments" data-animation="fade-in">
-                        <div class="vidyari-why-card-icon-wrapper">
-                            <svg class="vidyari-why-card-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                                <line x1="1" y1="10" x2="23" y2="10"></line>
-                            </svg>
-                        </div>
-                        <img src="./images/Payment-Information-bro.svg" class="vidyari-why-card-image" alt="Payment Information Illustration">
-                        <h3 class="vidyari-why-card-heading">Secure Global Payments</h3>
-                        <p class="vidyari-why-card-description">Accept payments from anyone, anywhere. We manage all payment processing and fraud prevention.</p>
+                    <div class="chunky-card" data-animation="fade-in" style="transition-delay: 0.1s;">
+                        <div class="icon-wrapper"><i class="fas fa-credit-card"></i></div>
+                        <h3 class="card-heading">Secure Global Payments</h3>
+                        <p class="card-description">Accept payments from anyone, anywhere. We manage all payment processing and fraud prevention.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="vidyari-sell-section">
-            <div class="vidyari-sell-container">
-                <div class="vidyari-sell-header" data-animation="fade-in">
-                    <h2 class="vidyari-sell-main-heading">What Can You Sell? Anything Digital.</h2>
-                    <p class="vidyari-sell-subheading">If you can save it, you can sell it. We support a vast range of file
-                        types for every kind of knowledge creator.</p>
+            <div class="container">
+                <div data-animation="fade-in">
+                    <h2 class="main-heading">What Can You Sell?</h2>
+                    <p class="sub-heading">If you can save it, you can sell it. We support a vast range of file types for every kind of knowledge creator.</p>
                 </div>
-                <div class="vidyari-sell-grid">
-                    <div class="vidyari-sell-card-notes" data-animation="fade-in">
-                        <img src="./images/Notes-bro.svg" class="vidyari-sell-card-image" alt="Notes Illustration">
-                        <h3 class="vidyari-sell-card-heading">Lecture Notes & Guides</h3>
+                <div class="grid-container grid-3-cols">
+                    <div class="chunky-card sell-card" data-animation="fade-in">
+                        <img src="./images/Notes-bro.svg" class="sell-card-image" alt="Notes Illustration">
+                        <h3 class="card-heading">Lecture Notes & Guides</h3>
                     </div>
-                    <div class="vidyari-sell-card-tutorials" data-animation="fade-in">
-                        <img src="./images/Video-tutorial-bro.svg" class="vidyari-sell-card-image" alt="Video Tutorial Illustration">
-                        <h3 class="vidyari-sell-card-heading">Video Courses & Tutorials</h3>
+                    <div class="chunky-card sell-card" data-animation="fade-in" style="transition-delay: 0.1s;">
+                        <img src="./images/Video-tutorial-bro.svg" class="sell-card-image" alt="Video Tutorial Illustration">
+                        <h3 class="card-heading">Video Courses & Tutorials</h3>
                     </div>
-                    <div class="vidyari-sell-card-ebooks" data-animation="fade-in">
-                        <img src="./images/Research-paper-bro.svg" class="vidyari-sell-card-image" alt="Research Paper Illustration">
-                        <h3 class="vidyari-sell-card-heading">E-books & Checklists</h3>
+                    <div class="chunky-card sell-card" data-animation="fade-in" style="transition-delay: 0.2s;">
+                        <img src="./images/Research-paper-bro.svg" class="sell-card-image" alt="Research Paper Illustration">
+                        <h3 class="card-heading">E-books & Checklists</h3>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="vidyari-popular-section">
-            <div class="vidyari-popular-container">
-                <div class="vidyari-popular-header" data-animation="fade-in">
-                    <h2 class="vidyari-popular-main-heading">Popular This Week</h2>
-                    <p class="vidyari-popular-subheading">See what's trending. Get instant access to the top-rated materials from
-                        creators around the world.</p>
+            <div class="container">
+                <div data-animation="fade-in">
+                    <h2 class="main-heading">Popular This Week</h2>
+                    <p class="sub-heading">See what's trending. Get instant access to top-rated materials from creators around the world.</p>
                 </div>
-                <div class="vidyari-popular-grid">
-                     <% popularFiles.forEach(file => { %>
-                    <div class="vidyari-popular-card-one" data-animation="fade-in">
-                        <div class="vidyari-popular-card-thumbnail-wrapper"><img class="vidyari-popular-card-thumbnail-image"
-                                src="<%=file.previewUrl%>" alt="Product Thumbnail">
-                        </div>
-                        <h4 class="vidyari-popular-card-title"><%= file.filename %></h4>
-                        <div class="vidyari-popular-card-creator-info"><img src="./images/logo.svg" 
-                                class="vidyari-popular-card-creator-avatar" alt="Creator Avatar"><span>by <%=file.user%></span></div>
-                        <div class="vidyari-popular-card-footer"><span class="vidyari-popular-card-rating">⭐️<%=file.downloadCount%></span></div>
-                    </div>
-                    <% }); %>
-
+                <div class="grid-container grid-3-cols">
+                     <% popularFiles.forEach((file, index) => { %>
+                     <div class="chunky-card" data-animation="fade-in" style="transition-delay: <%= index * 100 %>ms;">
+                         <img class="popular-card-thumbnail-image" src="<%=file.previewUrl%>" alt="Product Thumbnail">
+                         <h4 class="popular-card-title"><%= file.filename %></h4>
+                         <div class="popular-card-creator-info">
+                             <img src="/images/logo.svg" class="popular-card-creator-avatar" alt="Creator Avatar">
+                             <span>by <%=file.user%></span>
+                         </div>
+                         <div class="popular-card-footer">
+                             <span><i class="fas fa-download"></i> <%=file.downloadCount%></span>
+                             <span class="popular-card-price">₹<%=file.price%></span>
+                         </div>
+                     </div>
+                     <% }); %>
                 </div>
             </div>
         </section>
 
         <section class="vidyari-learners-section">
-            <div class="vidyari-learners-container" data-animation="fade-in">
-                <div class="vidyari-learners-grid">
-                    <div class="vidyari-learners-content">
-                        <h2 class="vidyari-learners-main-heading">For Every Kind of Learner</h2>
-                        <p class="vidyari-learners-content-description">Stop reinventing the wheel. Access a global library of peer-reviewed knowledge to accelerate
-                            your learning and achieve your goals faster.</p>
-                        <ul class="vidyari-learners-feature-list">
-                            <li class="vidyari-learners-feature-item"><i class="vidyari-learners-feature-icon" data-feather="check-circle"></i> University & College Students</li>
-                            <li class="vidyari-learners-feature-item"><i class="vidyari-learners-feature-icon" data-feather="check-circle"></i> Professionals Seeking Certifications</li>
-                            <li class="vidyari-learners-feature-item"><i class="vidyari-learners-feature-icon" data-feather="check-circle"></i> Lifelong Learners & Hobbyists</li>
-                            <li class="vidyari-learners-feature-item"><i class="vidyari-learners-feature-icon" data-feather="check-circle"></i> Creatives & Developers</li>
+            <div class="container" data-animation="fade-in">
+                <div class="grid-container grid-2-cols learners-grid">
+                    <div>
+                        <h2 class="main-heading" style="text-align: left;">For Every Kind of Learner</h2>
+                        <p class="card-description" style="text-align: left; margin: 20px 0;">Access a global library of peer-reviewed knowledge to accelerate your learning.</p>
+                        <ul class="learners-feature-list">
+                            <li class="learners-feature-item"><i class="fas fa-check-circle learners-feature-icon"></i> University & College Students</li>
+                            <li class="learners-feature-item"><i class="fas fa-check-circle learners-feature-icon"></i> Professionals Seeking Certifications</li>
+                            <li class="learners-feature-item"><i class="fas fa-check-circle learners-feature-icon"></i> Lifelong Learners & Hobbyists</li>
                         </ul>
                     </div>
-                    <div class="vidyari-learners-image-wrapper">
-                        <img src="./images/Learning-bro.svg" class="vidyari-learners-image" alt="Person Learning Illustration">
+                    <div>
+                        <img src="./images/Learning-bro.svg" class="learners-image" alt="Person Learning Illustration">
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="vidyari-pricing-section">
-            <div class="vidyari-pricing-container" data-animation="fade-in">
-                <img src="./images/Pricing-plans-amico.svg" class="vidyari-pricing-image" alt="Pricing Plans Illustration">
-                <h2 class="vidyari-pricing-main-heading">Simple, Transparent Pricing.</h2>
-                <p class="vidyari-pricing-subheading">No monthly fees. No hidden costs. We only make money when you do, making us a true partner in your success.</p>
-                <div class="vidyari-pricing-visualizer">
-                    <div class="vidyari-pricing-creator-bar">You Keep 70%</div>
-                    <div class="vidyari-pricing-platform-bar">Platform Fee 30%</div>
+            <div class="container" data-animation="fade-in">
+                <img src="./images/Pricing-plans-amico.svg" class="pricing-image" alt="Pricing Plans Illustration">
+                <h2 class="main-heading">Simple, Transparent Pricing</h2>
+                <p class="sub-heading">No monthly fees. No hidden costs. We only make money when you do.</p>
+                <div class="pricing-visualizer">
+                    <div class="pricing-creator-bar">You Keep 70%</div>
+                    <div class="pricing-platform-bar">Platform Fee 30%</div>
                 </div>
-                <p class="vidyari-pricing-description">Our 30% fee covers credit card processing fees, secure file hosting and delivery, fraud protection, and platform development. </p>
             </div>
         </section>
 
         <section class="vidyari-faq-section">
-            <div class="vidyari-faq-container" data-animation="fade-in">
-                <h2 class="vidyari-faq-main-heading">Frequently Asked Questions</h2>
-                <p class="vidyari-faq-subheading">Have questions? We have answers. If you don't see your question here, feel
-                    free to contact us.</p>
-                <div class="vidyari-faq-accordion">
-                    <div class="vidyari-faq-item-one" data-faq="item" data-animation="fade-in">
-                        <div class="vidyari-faq-question-wrapper" data-faq="question">How do I get paid? 
-                            <div class="vidyari-faq-icon-wrapper">
-                                <svg class="vidyari-faq-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                            </div>
+            <div class="container" data-animation="fade-in">
+                <h2 class="main-heading">Frequently Asked Questions</h2>
+                <div style="max-width: 700px; margin: 0 auto;">
+                    <div class="faq-item" data-faq="item" data-animation="fade-in">
+                        <div class="faq-question-wrapper" data-faq="question">How do I get paid? 
+                            <div class="faq-icon-wrapper"><i class="fas fa-plus"></i></div>
                         </div>
-                        <div class="vidyari-faq-answer-wrapper" data-faq="answer">
-                            <p class="vidyari-faq-answer-paragraph">We pay out directly to your bank account or PayPal via Stripe. Payouts are processed automatically every 7 days for all sales made in the previous period.</p>
+                        <div class="faq-answer-wrapper" data-faq="answer">
+                            <p class="faq-answer-paragraph">We pay out directly to your bank account or PayPal. Payouts are processed automatically every 7 days.</p>
                         </div>
                     </div>
-                    <div class="vidyari-faq-item-two" data-faq="item" data-animation="fade-in">
-                        <div class="vidyari-faq-question-wrapper" data-faq="question">What are the fees? 
-                            <div class="vidyari-faq-icon-wrapper">
-                                <svg class="vidyari-faq-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                            </div>
+                    <div class="faq-item" data-faq="item" data-animation="fade-in" style="transition-delay: 0.1s;">
+                        <div class="faq-question-wrapper" data-faq="question">What are the fees? 
+                            <div class="faq-icon-wrapper"><i class="fas fa-plus"></i></div>
                         </div>
-                        <div class="vidyari-faq-answer-wrapper" data-faq="answer">
-                            <p class="vidyari-faq-answer-paragraph">Vidyari charges a simple, flat 30% fee on each sale. This includes all credit card processing fees, file hosting costs, and customer support. There are no monthly fees, setup fees, or hidden charges.</p>
-                        </div>
-                    </div>
-                    <div class="vidyari-faq-item-three" data-faq="item" data-animation="fade-in">
-                        <div class="vidyari-faq-question-wrapper" data-faq="question">What file types can I sell? 
-                            <div class="vidyari-faq-icon-wrapper">
-                                <svg class="vidyari-faq-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="vidyari-faq-answer-wrapper" data-faq="answer">
-                            <p class="vidyari-faq-answer-paragraph">You can sell almost any digital file, including PDFs, EPUB, MOBI, MP4, MOV, ZIP, and more. If you have a specific file type in question, please contact our support team.</p>
+                        <div class="faq-answer-wrapper" data-faq="answer">
+                            <p class="faq-answer-paragraph">Vidyari charges a simple, flat 30% fee on each sale. This covers all processing fees, file hosting, and customer support.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
-<%-include("footer")%>
-    <script>
-        // --- Feather Icons Initialization ---
-        // This script finds elements with `data-feather` attributes and replaces them with SVG icons.
-        // It's a lightweight way to add icons.
-        const featherScript = document.createElement('script');
-        featherScript.src = 'https://unpkg.com/feather-icons';
-        document.head.appendChild(featherScript);
-        featherScript.onload = () => {
-            feather.replace();
-        }
 
-        // --- Scroll Animation Logic ---
-        // I've used a 'data-animation' attribute to mark elements for animation,
-        // keeping the class names unique for styling purposes.
+    <%-include("footer")%>
+</div>
+    <script>
         const animatedElements = document.querySelectorAll('[data-animation="fade-in"]');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -836,33 +342,23 @@
         }, { threshold: 0.1 });
         animatedElements.forEach(el => { observer.observe(el); });
 
-        // --- FAQ Accordion Logic ---
-        // I've used 'data-faq' attributes to hook into the JS, allowing
-        // class names to be purely for styling, as requested.
         const faqItems = document.querySelectorAll('[data-faq="item"]');
         faqItems.forEach(item => {
             const question = item.querySelector('[data-faq="question"]');
             const answer = item.querySelector('[data-faq="answer"]');
             const answerParagraph = answer.querySelector('p');
-
             question.addEventListener('click', () => {
                 const isActive = item.classList.contains('active');
-
-                // Close all other items first for a clean accordion effect
                 faqItems.forEach(otherItem => {
                     otherItem.classList.remove('active');
                     otherItem.querySelector('[data-faq="answer"]').style.maxHeight = null;
                 });
-
-                // Open the clicked item if it wasn't already active
                 if (!isActive) {
                     item.classList.add('active');
-                    // Calculate the required height including padding
                     answer.style.maxHeight = answerParagraph.scrollHeight + 40 + "px"; 
                 }
             });
         });
     </script>
 </body>
-
 </html>
