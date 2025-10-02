@@ -825,8 +825,24 @@ router.get('/following',authenticateJWT_user,reaquireAuth, async (req, res) => {
             path: 'following',
             select: 'username fullname profilePicUrl' // Only get the fields you need
         });
+let user = null;
 
+      if (req.user) {
+        const userId = req.user._id;
+        // Fetch only the necessary fields
+        user = await User.findById(userId).select(
+          "profilePicUrl username email"
+        );
+        if (user) {
+          console.log("User profile pic URL:", user.profilePicUrl);
+        }
+      }
+     
         res.render('following', {
+           isLoggedin: !!req.user,
+profileUrl: user?.profilePicUrl || null,
+        username: user?.username || null,
+        useremail: user?.email || null,
             followingList: currentUser.following // This must be an array of user objects
         });
 
@@ -843,8 +859,24 @@ router.get('/followers',authenticateJWT_user,reaquireAuth, async (req, res) => {
             path: 'followers',
             select: 'username fullname profilePicUrl' // Only get the fields you need
         });
+let user = null;
 
+      if (req.user) {
+        const userId = req.user._id;
+        // Fetch only the necessary fields
+        user = await User.findById(userId).select(
+          "profilePicUrl username email"
+        );
+        if (user) {
+          console.log("User profile pic URL:", user.profilePicUrl);
+        }
+      }
+     
         res.render('followers', {
+          isLoggedin: !!req.user,
+profileUrl: user?.profilePicUrl || null,
+        username: user?.username || null,
+        useremail: user?.email || null,
             followersList: currentUser.followers // Pass the populated array to the EJS file
         });
 
