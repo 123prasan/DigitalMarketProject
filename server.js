@@ -280,7 +280,6 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     razorpay_signature,
     fileId,
     totalprice,
-    filename,
   } = req.body;
 
   // Validate required payment fields
@@ -306,38 +305,53 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
 
   try {
     // Fetch payment details from Razorpay
-    const paymentDetails = await razorpay.payments.fetch(razorpay_payment_id);
+    let paymentDetails;
+    try {
+      paymentDetails = await razorpay.payments.fetch(razorpay_payment_id);
+    } catch (err) {
+      console.error("Razorpay fetch failed:", err);
+      return res
+        .status(502)
+        .json({ success: false, message: "Payment gateway error" });
+    }
 
     // Fetch file details
     const file = await File.findById(fileId);
     if (!file) {
-      return res
-        .status(404)
-        .json({ success: false, message: "File not found" });
+      return res.status(404).json({ success: false, message: "File not found" });
     }
-    const price = totalprice * 0.3;
-    const totalPriceaftercut = totalprice - price;
-    const updatetransaction = new Usertransaction({
-      userId: file.userId,
-      ProductId: file._id,
-      totalAmount: totalPriceaftercut,
-      ProductName: file.filename,
-      purchaserId: req.user._id,
-      transactionId: razorpay_payment_id,
-    });
-    await updatetransaction.save();
-    await Adminbal.findOneAndUpdate(
-      {}, // condition (empty if you only have one Admin balance doc)
+
+    // Calculate commission + seller share
+    const platformCut = totalprice * 0.3; // 30% commission
+    const sellerShare = totalprice - platformCut;
+
+    // Save transaction (upsert to avoid duplicates)
+    await Usertransaction.findOneAndUpdate(
+      { transactionId: razorpay_payment_id },
       {
-        $inc: {
-          totalAmount: price, // add price to existing totalAmount
-          cutOffbal: totalPriceaftercut, // add totalPriceAfterCut to existing cutOffbal
-        },
+        userId: file.userId, // seller
+        ProductId: file._id,
+        totalAmount: sellerShare,
+        ProductName: file.filename,
+        purchaserId: req.user._id,
+        transactionId: razorpay_payment_id,
       },
-      { upsert: true, new: true } // create if not exists, return updated doc
+      { upsert: true, new: true }
     );
 
-    // Save order details
+    // Update admin balance
+    await Adminbal.findOneAndUpdate(
+      {},
+      {
+        $inc: {
+          totalAmount: platformCut,  // platform earnings
+          cutOffbal: sellerShare,    // seller payout balance
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    // Save order (unique per orderId)
     const orderData = {
       orderId: razorpay_order_id,
       transactionId: razorpay_payment_id,
@@ -348,55 +362,59 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
       productId: file._id,
       productName: file.filename,
       items: [{ name: file.filename, quantity: 1, price: file.price }],
-      status: "Successfull",
+      status: "Successful",
       dateTime: new Date(),
     };
-    const order = new Order(orderData);
-    await order.save();
 
-    // Save user purchase
-    const userPurchase = new Userpurchases({
-      userId: req.user._id,
-      productId: file._id,
-      price: file.price,
-      totalPrice: totalprice,
-      productName: file.filename,
-    });
-    await userPurchase.save();
+    await Order.findOneAndUpdate(
+      { orderId: razorpay_order_id },
+      orderData,
+      { upsert: true, new: true }
+    );
 
-    // Add file to user's downloads (ignore duplicates)
-    if (fileId) {
-      await UserDownloads.findOneAndUpdate(
-        { userId: req.user._id, fileId: file._id },
-        {
-          userId: req.user._id,
-          fileId: file._id,
-          filename: file.filename,
-          fileUrl: file.fileUrl,
-          fileType: file.fileType || "pdf",
-        },
-        { upsert: true, setDefaultsOnInsert: true }
-      );
-
-      // Send notification
-      const userNotification = new Usernotifications({
+    // Save user purchase (unique per user + product)
+    await Userpurchases.findOneAndUpdate(
+      { userId: req.user._id, productId: file._id },
+      {
         userId: req.user._id,
-        type: "purchase",
-        message: `Your purchase of the file <strong>${file.filename}</strong> has been successful.`,
-        targetId: file._id,
-      });
-      await userNotification.save();
-    }
+        productId: file._id,
+        price: file.price,
+        totalPrice: totalprice,
+        productName: file.filename,
+      },
+      { upsert: true, new: true }
+    );
+
+    // Save user download (unique per user + file)
+    await UserDownloads.findOneAndUpdate(
+      { userId: req.user._id, fileId: file._id },
+      {
+        userId: req.user._id,
+        fileId: file._id,
+        filename: file.filename,
+        fileUrl: file.fileUrl,
+        fileType: path.extname(file.fileUrl).toLowerCase() || "pdf",
+      },
+      { upsert: true, setDefaultsOnInsert: true }
+    );
+
+    // Send notification
+    await Usernotifications.create({
+      userId: req.user._id,
+      type: "purchase",
+      message: `Your purchase of the file <strong>${file.filename}</strong> has been successful.`,
+      targetId: file._id,
+    });
 
     // Generate temporary token for direct file access
     const token = jwt.sign(
       {
         fileId: fileId,
-        orderId: order.orderId,
-        transactionId: order.transactionId,
+        orderId: razorpay_order_id,
+        transactionId: razorpay_payment_id,
       },
       process.env.JWT_SECRET_FILE_PURCHASE,
-      { expiresIn: "2m" } // expires in 2 minutes
+      { expiresIn: "10m" } // extended to 10 minutes for safety
     );
 
     // Return download URL
@@ -411,6 +429,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
       .json({ success: false, message: "Payment verification failed" });
   }
 });
+
 // Home Page - Render files
 app.get("/", authenticateJWT_user, async (req, res) => {
   try {
