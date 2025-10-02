@@ -186,17 +186,21 @@
             </div>
             
             <div class="vidyari-profile-info">
+                 <% if (userData.ISVERIFIED) { %>
                 <div style="display:flex ; gap:5px; align-items: center; justify-content: flex-start;">
                 <h1 class="vidyari-profile-name" id="profileName"><%= userData.fullname || userData.username %></h1>
-                <% if (userData.ISVERIFIED) { %>
+               
                  <span title="Verified User"><img style="width: 50px; height: 50px;" src="/images/verify.png" alt="Verified Badge"/></span>
-            <% } %>
+            
             </div>
+            <% } else{%>
+                                <h1 class="vidyari-profile-name" id="profileName"><%= userData.fullname || userData.username %></h1>
+                 <%}%>
                 <p class="vidyari-profile-username" id="profileUsername">@<%= userData.username %></p>
                 <p class="vidyari-profile-bio" id="profileBio"><%= userData.bio || 'No bio yet. Click edit to add one!' %></p>
                 <div class="vidyari-profile-extra-info">
-                    <div><i class="fas fa-users me-1"></i><strong><%= userData.followers.length %></strong> Followers</div>
-                    <div><i class="fas fa-user-plus me-1"></i><strong><%= userData.following.length %></strong> Following</div>
+                    <div style="cursor: pointer;" onclick="window.location.href='/followers'"><i class="fas fa-users me-1"></i><strong><%= userData.followers.length %></strong> Followers</div>
+                    <div style="cursor: pointer;" onclick="window.location.href='/following'"><i class="fas fa-user-plus me-1"></i><strong><%= userData.following.length %></strong> Following</div>
                 </div>
             </div>
             <button class="chunky-btn" data-bs-toggle="modal" data-bs-target="#editProfileModal">
