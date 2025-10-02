@@ -5,137 +5,241 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chat UI</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root {
-    --yt-text: #f1f1f1;
-    --yt-secondary: #aaa;
-    --yt-link: #3ea6ff;
-    --yt-mod: #59e0c5;
-    --yt-verified: #3ea6ff;
-    --yt-pipeline: #ffffff;
-    --gradient-1: #3ea6ff;
-    --gradient-2: #a134d5;
-    --yt-chat-bg: #121212;
-}
+/* --- STYLES APPLIED WITHOUT USING BODY OR :ROOT --- */
 
-*, *::before, *::after { box-sizing: border-box; }
+.page-container {
+    /* CSS variables are defined here, not in :root */
+    --font-main: 'Inter', sans-serif;
+    --font-display: 'Anton', sans-serif;
+    --reply-pipeline-color: #555; /* New color for reply lines */
 
-.chat-container {
-    height: 70vh;
+    /* Styles moved from body to this wrapper */
+    background-color: #000;
+    font-family: var(--font-main);
+    /* padding: 2rem; */
+    min-height: 100vh;
     display: flex;
-    flex-direction: column-reverse;
-    background-color: transparent;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    /* background-image: linear-gradient(var(--yt-chat-bg), var(--yt-chat-bg)), linear-gradient(145deg, var(--gradient-1), var(--gradient-2)); */
-    position: relative;
+    box-sizing: border-box; /* Ensures padding is included in height/width */
 }
 
+/* The main chat widget is now styled as the .card */
+.chat-card {
+    background: #fff;
+    /* border: 6px solid #000; */
+    box-shadow: 12px 12px 0 #000;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    
+    /* Occupies full width up to a max for readability */
+    width: 100%;
+    /* max-width: 900px; */
+    margin: auto; /* Centers the card within the flex container */
+    padding: 25px;
+}
+
+.chat-card:hover {
+    transform: translate(-5px, -5px);
+    box-shadow: 17px 17px 0 #000;
+}
+
+/* Header styled as .card__title */
 .chat-header {
-    padding: 14px 20px;
-    font-weight: 700;
-    font-size: 2rem;
-    border-bottom: 1px solid #303030;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 900;
+    color: #000;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    position: relative;
+    overflow: hidden;
     flex-shrink: 0;
 }
 
+.chat-header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: #000;
+    transform: translateX(-101%);
+    transition: transform 0.4s ease-out;
+}
+
+.chat-card:hover .chat-header::after {
+    transform: translateX(0);
+}
+
+/* Message log with improved spacing */
 .message-log {
-    padding: 12px 20px;
-    overflow-y: auto;
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    overflow-y: auto;
+    color: #000;
 }
 
 .chat-message-item {
+    padding: 1rem 0.25rem;
+    border-bottom: 2px solid #f0f0f0;
     display: flex;
-    align-items: flex-start;
-    margin-bottom: 4px;
-    padding: 6px 4px;
-    border-radius: 6px;
-    position: relative;
-    transition: background-color 0.2s ease;
+    flex-direction: column;
+    gap: 0.5rem; /* Space between header, text, and actions */
 }
-
-.chat-message-item:hover { background-color: rgba(255,255,255,0.05); }
-
-.message-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    margin-right: 12px;
-    flex-shrink: 0;
-    color: #fff;
-    font-weight: 500;
+.chat-message-item:last-child {
+    border-bottom: none;
 }
-
-.message-content { flex-grow: 1; }
 
 .message-header {
     display: flex;
     align-items: center;
-    margin-bottom: 2px;
+    gap: 0.75rem;
 }
 
-.message-username { font-weight: 500; font-size: 14px; margin-right: 6px; color: white; }
-.message-badge { font-size: 12px; margin-left: 2px; }
-.mod-badge { color: var(--yt-mod); }
-.verified-badge { color: var(--yt-verified); }
-.message-text { font-size: 14px; color: var(--yt-text); word-wrap: break-word; margin-bottom: 4px; }
+.message-username b {
+    color: #000;
+    font-weight: 900;
+    font-size: 1rem;
+}
+.message-timestamp {
+    font-size: 0.8rem;
+    color: #666;
+}
 
-.message-actions { display: flex; align-items: center; gap: 16px; margin-top: 6px; }
-.show-replies-btn { color: var(--yt-link); font-weight: 500; font-size: 13px; cursor: pointer; }
-.show-replies-btn:hover { color: white; }
-.reaction-btn { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--yt-secondary); cursor: pointer; transition: color 0.2s ease, transform 0.1s ease; }
-.reaction-btn:hover { color: var(--yt-text); }
-.reaction-btn:active { transform: scale(0.9); }
-.reaction-btn .icon { font-size: 16px; }
-.reaction-btn.active { color: var(--yt-link); font-weight: 500; }
+.message-text {
+    color: #222;
+    line-height: 1.6;
+    word-wrap: break-word;
+}
+.message-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.show-replies-btn {
+    color: #000;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.reaction-btn { color: #555; cursor: pointer; }
+.reaction-btn.active { color: #000; font-weight: 700; }
+.message-reply-button { color: #000; cursor: pointer; font-size: 1.1rem; }
 
-.sub-chat-container { margin-top: 10px; padding-left: 14px; }
-.inline-reply-form { display: flex; margin-top: 8px; animation: fadeIn 0.3s ease; }
-.inline-reply-input { flex-grow: 1; background: #222; border: 1px solid #444; color: var(--yt-text); padding: 8px 12px; border-radius: 18px; font-size: 13px; outline: none; margin-right: 8px; transition: border-color 0.2s ease; }
-.inline-reply-input:focus { border-color: var(--yt-link); }
-.inline-reply-send { background: var(--yt-link); color: #000; border: none; font-size: 13px; font-weight: 500; border-radius: 18px; cursor: pointer; padding: 8px 14px; transition: background-color 0.2s ease; }
-.inline-reply-send:hover { background-color: #62baff; }
+/* --- Reply Pipeline Styling --- */
+.replies-container {
+    padding-top: 0.5rem;
+    margin-left: 1rem; /* Indent all replies */
+    border-left: 3px solid var(--reply-pipeline-color);
+}
+.replies-container .chat-message-item {
+    border-bottom: none; /* No dividers between replies */
+    padding: 0.75rem 0 0.75rem 1.25rem; /* Add left padding */
+    position: relative;
+}
+/* The "elbow" of the pipeline */
+.replies-container .chat-message-item::before {
+    content: "";
+    position: absolute;
+    top: 1.7rem; /* Align with middle of the (non-existent) avatar */
+    left: -1.25rem; /* Connect to the main vertical line */
+    width: 1rem;
+    height: 3px;
+    background-color: var(--reply-pipeline-color);
+}
 
-.sub-chat-container .chat-message-item { position: relative; padding-left: 30px; }
-.sub-chat-container .chat-message-item::before { content: ''; position: absolute; top: 0; left: 0; width: 1px; height: 100%; background-color: var(--yt-pipeline); }
-.sub-chat-container .chat-message-item::after { content: ''; position: absolute; top: 14px; left: 1px; width: 18px; height: 1px; background-color: var(--yt-pipeline); }
-.sub-chat-container .chat-message-item:first-child::before { top: -14px; height: calc(100% + 14px); }
-.sub-chat-container .chat-message-item:last-child::before { height: 14px; }
+/* Input area styled as .card__form */
+.input-area {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    flex-shrink: 0;
+}
 
-.input-area { display: flex; padding: 12px; background: rgba(0,0,0,0.15); flex-shrink: 0; border-top: 1px solid #303030; }
-.input-area input { flex-grow: 1; border: 1px solid #383838; background: #121212; color: var(--yt-text); padding: 10px 16px; border-radius: 20px; font-size: 14px; outline: none; transition: all 0.3s ease; }
-.input-area input:focus { border-color: var(--yt-link); box-shadow: 0 0 8px rgba(62,166,255,0.5); background: #1f1f1f; }
-.input-area button { background: var(--yt-link); color: #000; border: none; padding: 10px 18px; margin-left: 8px; font-size: 14px; font-weight: 700; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-.input-area button:hover { background: #5aaeff; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+.input-area input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 3px solid #000;
+    font-size: 16px;
+    font-family: inherit;
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+    width: 100%;
+}
 
-.hidden { display: none !important; }
+.input-area input:focus {
+    outline: none;
+    transform: scale(1.02);
+    background-color: #000;
+    color: #ffffff;
+}
 
-@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+/* Send button styled as .card__button */
+.send-button {
+    border: 3px solid #000;
+    background: #000;
+    color: #fff;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+    width: 150px;
+}
+
+.send-button::before {
+    content: "Post it!";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 105%;
+    background-color: #5ad641;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.send-button:hover::before {
+    transform: translateY(0);
+}
+.send-button:active {
+    transform: scale(0.95);
+}
+
+/* Hiding original avatar and timestamp elements to be re-created in JS for better styling control */
+.message-avatar, .message-time { display: none; } 
 </style>
 </head>
 <body>
 
-<div class="chat-header">Discussions</div>
-<div class="chat-container">
-    <div class="message-log" id="message-log"></div>
-    <div class="input-area" id="chat-input-area">
-        <input type="text" id="message-input" placeholder="Say something..." />
-        <button id="send-button">Send</button>
+<div class="page-container">
+    <div class="chat-card">
+        <div class="chat-header">Discussions</div>
+        <div class="message-log" id="message-log">
+            </div>
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Say something..." />
+            <button id="send-button" class="send-button">Send</button>
+        </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
     const CHAT_ROOM_ID = "<%=file._id%>";
     const msgInput = document.getElementById('message-input');
     const sendBtn = document.getElementById('send-button');
@@ -179,7 +283,11 @@ const createMessageElement = (msgObject, isReply = false, parentId = null) => {
     content.className = 'message-content';
 
     const time = timeAgo(msgObject.createdAt);
-    let headerHTML = `<span class="message-username"><b>${msgObject.author.username}</b> &nbsp <em style="opacity:0.5;font-size:12px">${time}</em></span>`;
+    let headerHTML = `
+        <div class="message-header">
+            <span class="message-username"><b>${msgObject.author.username}</b></span>
+            <span class="message-timestamp">${time}</span>
+        </div>`;
     if(msgObject.author.badge){
         const badgeClass=`${msgObject.author.badge}-badge`;
         const badgeIcon=msgObject.author.badge==='mod'?'🔧':'✔';
@@ -200,7 +308,6 @@ const createMessageElement = (msgObject, isReply = false, parentId = null) => {
     if(currentUser && msgObject.reactions.dislikes.includes(currentUser.userId)) dislikeBtn.classList.add('active');
     dislikeBtn.innerHTML = `<span class="icon">👎</span><span class="count">${msgObject.reactions.dislikes.length}</span>`;
 
-    // **Use replyId if this is a reply**
     const reactionTargetId = isReply ? msgObject._id : msgObject._id;
     likeBtn.onclick = () => handleReaction(isReply ? parentId : msgObject._id, isReply ? msgObject._id : null, 'likes');
     dislikeBtn.onclick = () => handleReaction(isReply ? parentId : msgObject._id, isReply ? msgObject._id : null, 'dislikes');
@@ -223,29 +330,28 @@ const createMessageElement = (msgObject, isReply = false, parentId = null) => {
 
     const replyButton = document.createElement('span');
     replyButton.className = 'message-reply-button';
-    replyButton.innerHTML = `<i style="color:blue;" class="fa-solid fa-reply fa-flip-vertical"></i>`;
+    // Use CSS variable for the reply icon color
+    replyButton.innerHTML = `<i style="color:var(--theme-accent);" class="fa-solid fa-reply fa-flip-vertical"></i>`;
     replyButton.onclick = () => initiateInlineReply(msgObject._id, content);
 
     item.append(avatar, content, replyButton);
     return item;
 }
 
-
     const renderAllMessages=()=>{ messageLog.innerHTML=''; chatMessages.slice().sort((a,b)=>b.reactions.likes.length-a.reactions.likes.length).forEach(msg=>{ messageLog.appendChild(createMessageElement(msg)); }); scrollToBottom(); }
 
-const toggleReplies = (msgObject, container, button) => {
-    const isHidden = container.classList.contains('hidden');
-    container.innerHTML = '';
-    if (isHidden) {
-        msgObject.replies.forEach(reply => container.appendChild(createMessageElement(reply, true, msgObject._id)));
-        container.classList.remove('hidden');
-        button.textContent = 'Hide replies';
-    } else {
-        container.classList.add('hidden');
-        button.textContent = `View ${msgObject.replies.length} ${msgObject.replies.length > 1 ? 'replies' : 'reply'}`;
+    const toggleReplies = (msgObject, container, button) => {
+        const isHidden = container.classList.contains('hidden');
+        container.innerHTML = '';
+        if (isHidden) {
+            msgObject.replies.forEach(reply => container.appendChild(createMessageElement(reply, true, msgObject._id)));
+            container.classList.remove('hidden');
+            button.textContent = 'Hide replies';
+        } else {
+            container.classList.add('hidden');
+            button.textContent = `View ${msgObject.replies.length} ${msgObject.replies.length > 1 ? 'replies' : 'reply'}`;
+        }
     }
-}
-
 
     const initiateInlineReply=(parentId, contentElement)=>{
         if(!currentUser){ alert("Please login to reply."); return; }
@@ -305,6 +411,24 @@ const toggleReplies = (msgObject, container, button) => {
 
     startChat();
 });
+    // NOTE: A small change is required in the JavaScript to create the timestamp element for styling.
+    // I will use your existing `timeAgo` function.
+
+    // Find this line in your script:
+    // let headerHTML = `<span class="message-username"><b>${msgObject.author.username}</b> &nbsp <em style="opacity:0.5;font-size:12px">${time}</em></span>`;
+
+    // And replace it with this to create separate elements for better styling:
+    // const time = timeAgo(msgObject.createdAt);
+    // let headerHTML = `
+    //     <div class="message-header">
+    //         <span class="message-username"><b>${msgObject.author.username}</b></span>
+    //         <span class="message-timestamp">${time}</span>
+    //     </div>`;
+    
+    // The rest of your Javascript can remain the same.
 </script>
 </body>
 </html>
+
+
+

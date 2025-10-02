@@ -1,6 +1,6 @@
 <%-include("header")%>
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8" />
@@ -9,9 +9,9 @@
     <title>
         <% if(file.price==0) { %>
             <%= file.filename || 'File Download' %> • Download | Vidyari
-                <% } else { %>
-                    <%= file.filename || 'File Checkout' %> • Secure Checkout | Vidyari
-                        <% } %>
+        <% } else { %>
+            <%= file.filename || 'File Checkout' %> • Secure Checkout | Vidyari
+        <% } %>
     </title>
 
     <meta name="description"
@@ -31,7 +31,7 @@
 
     <link rel="icon" href="/images/logo.svg" type="image/svg" />
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
-    <meta name="theme-color" content="#111827">
+    <meta name="theme-color" content="#000000">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -39,122 +39,229 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* --- Minimal Custom CSS for Galactic Dark Theme --- */
         :root {
-            --font-family-sora: 'Sora', sans-serif;
-            --color-primary: #8b5cf6;
-            --color-secondary: #ec4899;
-            --color-bg-dark: #111827;
-            --bs-body-bg: var(--color-bg-dark);
-            --bs-body-font-family: var(--font-family-sora);
-            --bs-body-color: #e5e7eb;
+            --font-main: 'Inter', sans-serif;
+            --font-display: 'Anton', sans-serif;
+            --color-black: #000;
+            --color-white: #fff;
+            /* UPDATED ACCENT COLOR */
+            --color-accent: #0052FF; /* A vibrant, strong blue */
         }
 
         body {
-            /* Starry night background */
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%231f2937"><circle cx="20" cy="20" r="1.5"/><circle cx="50" cy="50" r="1"/><circle cx="80" cy="30" r="1.2"/><circle cx="10" cy="70" r="1"/><circle cx="90" cy="80" r="1.5"/></g></svg>');
+            background-color: var(--color-black);
+            color: var(--color-white);
+            font-family: var(--font-main);
+        }
+.container{
+    max-width: 100%;
+    margin: 0 auto;
+    /* padding: 0 1rem; */
+}
+        .brutalist-container {
+            background-color: var(--color-white);
+            color: var(--color-black);
+            border: 6px solid var(--color-black);
+            box-shadow: 12px 12px 0 var(--color-black);
+            padding: 2rem 2.5rem; 
+            /* margin-top: 2rem; */
+            margin-bottom: 2rem;
         }
 
-        .pdf-preview {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 35px -5px rgba(139, 92, 246, 0.25);
-            transition: transform 0.3s ease-in-out;
-            max-width: 100%;
-        }
-
-        .pdf-preview:hover {
-            transform: scale(1.03);
-        }
-
-        .category-badge {
-            background-image: linear-gradient(to right, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
-            color: var(--color-primary);
-            font-weight: 600;
-        }
-
-        .stats-bar .stars {
-            color: #f59e0b;
-        }
-
-        .description-box {
-            background-color: rgba(31, 41, 55, 0.5);
-            border-left: 3px solid var(--color-primary);
-        }
-
-        .detail-item {
-            background-color: rgba(31, 41, 55, 0.5);
+        /* Typography & Spacing */
+        h1, .display-5 {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            color: var(--color-black);
+            font-size: 3.5rem;
+            margin-bottom: 1.25rem; /* Added spacing */
         }
 
         .price {
+            font-family: var(--font-display);
             font-size: 3rem;
-            font-weight: 800;
-            color: #46e646;
+            color: var(--color-black);
+            line-height: 1;
         }
 
-        .btn-purchase {
-            padding: 1em 1.5em;
+        .description-box {
+            background-color: #f0f0f0;
+            border-left: 4px solid var(--color-black);
+            padding: 1.25rem; 
+            color: var(--color-black);
+            line-height: 1.6; /* Improved readability */
+            margin-bottom: 2rem; /* Added spacing */
+        }
+
+        /* Components */
+        .pdf-preview-wrapper {
+            width: 100%;
+            padding-bottom: 125%; 
+            position: relative;
+            background-color: #f0f0f0;
+            border: 4px solid var(--color-black);
+            box-shadow: 8px 8px 0 var(--color-black);
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+        .pdf-preview-wrapper:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0 var(--color-black);
+        }
+        .pdf-preview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .no-preview-placeholder {
+            width: 100%;
+            padding-bottom: 125%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-black);
+            color: var(--color-white);
+            border: 4px solid var(--color-black);
+            box-shadow: 8px 8px 0 var(--color-black);
+            font-size: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            background-color: var(--color-black);
+            color: var(--color-white);
+            padding: 0.5rem 1rem;
             font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 1rem; /* Added spacing */
+        }
+        
+        .stats-bar {
+            border-top: 3px solid var(--color-black);
+            border-bottom: 3px solid var(--color-black);
+            padding: 0.75rem 0; /* Increased padding */
+            color: var(--color-black);
+            font-weight: 700;
+            margin-bottom: 1.5rem; /* Added spacing */
+        }
+        
+        .detail-item-grid {
+            margin-bottom: 2.5rem; /* Major spacing element */
+        }
+        .detail-item {
+            border: 3px solid var(--color-black);
+            padding: 1rem;
+            height: 100%;
+        }
+        .detail-item .small {
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #555;
+        }
+        .detail-item .fw-semibold {
             font-size: 1.1rem;
-            border: none;
-            color: #fff;
-            box-shadow: 0 0.7em 1.5em -0.5em hsla(249, 62%, 51%, 0.5);
-            transition: transform 0.3s ease-in-out;
-        }
-        .btn-purchase:hover {
-            transform: scale(1.03);
-            color: #fff;
-        }
-        .btn-purchase.buy {
-            background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-        }
-        .btn-purchase.download {
-            background: linear-gradient(90deg, rgba(77, 54, 208, 1) 0%, rgba(132, 116, 254, 1) 100%);
-        }
-
-        .trust-badges i {
-            color: var(--color-primary);
-            font-size: 1.2rem;
-        }
-
-        .LikesBtn-file {
-            font-size: 2.5rem; /* Adjusted from 50px */
-            cursor: pointer;
+            color: var(--color-black);
         }
 
         .user-profile-link {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 24px;
-            background-color: #f3f4f6;
-            transition: all 0.3s;
-            color: #2563eb;
-            font-weight: 600;
             text-decoration: none;
+            font-weight: 700;
+            color: var(--color-black);
+            transition: transform 0.2s;
         }
         .user-profile-link:hover {
-            background-color: #e5e7eb;
-            text-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
             transform: scale(1.05);
-            color: #1d4ed8;
+            text-decoration: underline;
         }
         .user-profile-link img {
             width: 32px;
             height: 32px;
             border-radius: 50%;
+            border: 2px solid var(--color-black);
             object-fit: cover;
+        }
+        
+        .actions-bar {
+            margin-bottom: 2rem; /* Added spacing */
+        }
+
+        .LikesBtn-file {
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--color-black);
+            transition: transform 0.2s;
+        }
+        .LikesBtn-file:hover {
+            transform: scale(1.1);
+        }
+        
+        .brutalist-button {
+            border: 3px solid var(--color-black);
+            background: var(--color-black);
+            color: var(--color-white);
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.5);
+            text-align: center;
+            text-decoration: none;
+        }
+        .brutalist-button:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 9px 9px 0px rgba(0,0,0,0.5);
+            color: var(--color-white);
+        }
+        .brutalist-button::before {
+            content: "Sure?";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 105%;
+            background-color: var(--color-accent); /* Using BLUE accent color */
+            color: var(--color-black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        .brutalist-button:hover::before {
+            transform: translateY(0);
+        }
+        
+        .trust-badges {
+            border-top: 3px solid var(--color-black);
+            padding-top: 1.5rem; /* Increased spacing */
+            color: var(--color-black);
+            font-weight: 700;
+            margin-top: 2rem; /* Added spacing */
+        }
+        .trust-badges i {
+            font-size: 1.5rem;
         }
     </style>
 </head>
 
 <body>
-    <!-- <%- include('header') %> -->
-
     <% // Helper function for formatting file size
     const formatBytes=(bytes, decimals=2)=> {
         if (!+bytes) return '0 Bytes';
@@ -165,105 +272,107 @@
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
     }; %>
 
-    <main class="py-5">
+    <main class="py-4">
         <div class="container">
-            <div class="row align-items-center g-4 g-lg-5">
+            <div class="brutalist-container">
+                <div class="row align-items-center g-4 g-lg-5">
 
-                <div class="col-lg-7">
-                    <% if (previewUrl) { %>
-                        <img class="pdf-preview rounded-4" src="<%= previewUrl %>" alt="PDF Preview of <%= file.filename %>">
-                    <% } else { %>
-                        <div class="p-5 text-center bg-dark rounded-4">No Preview Available</div>
-                    <% } %>
-                </div>
-
-                <div class="col-lg-5">
-                    <div class="d-flex flex-column gap-3">
-
-                        <div class="mb-2">
-                            <span class="category-badge badge rounded-pill px-3 py-2">
-                                <%= file.category %>
-                            </span>
-                        </div>
-
-                        <h1 class="fw-bolder display-5"><%- file.filename || 'Untitled File' %></h1>
-
-                        <div class="stats-bar d-flex align-items-center gap-3 text-muted">
-                            <span class="stars" title="Rating"><i class="fas fa-star"></i> 4.5</span>
-                            <span>|</span>
-                            <span title="Total Downloads">
-                                <i class="fas fa-download me-1"></i>
-                                <%= (file.downloadCount || 0).toLocaleString() %>
-                            </span>
-                        </div>
-
-                        <% if (file.filedescription) { %>
-                            <div class="description-box p-3 rounded-3 text-muted small">
-                                <%-file.filedescription %>
+                    <div class="col-lg-7">
+                        <% if (previewUrl) { %>
+                            <div class="pdf-preview-wrapper rounded-0">
+                                <img class="pdf-preview" src="<%= previewUrl %>" alt="PDF Preview of <%= file.filename %>">
                             </div>
-                        <% } %>
-                        
-                        <div class="row row-cols-2 g-3 my-2">
-                            <div class="col">
-                                <div class="detail-item p-3 rounded-3 h-100">
-                                    <span class="text-muted d-block small mb-1">File Type</span>
-                                    <span class="fw-semibold"><%= file.fileType || 'PDF' %></span>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="detail-item p-3 rounded-3 h-100">
-                                    <span class="text-muted d-block small mb-1">File Size</span>
-                                    <span class="fw-semibold"><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="detail-item p-3 rounded-3 h-100">
-                                    <span class="text-muted d-block small mb-1">Uploaded</span>
-                                    <span class="fw-semibold"><%= file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'N/A' %></span>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="detail-item p-3 rounded-3 h-100">
-                                    <span class="text-muted d-block small mb-1">User Profile</span>
-                                    <a href="/profile/<%= file.user || 'admin' %>" class="user-profile-link">
-                                        <img src="<%= sellerprofilepic || '/images/avatar.jpg' %>" alt="profile"/>
-                                        <span><%= file.user || 'Admin' %></span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-center justify-content-between my-2">
-                            <span class="LikesBtn-file text-white">
-                                </span>
-                            <div class="price">₹<%= file.price %></div>
-                        </div>
-
-                        <% if (Number(file.price) > 0) { %>
-                            <button id="rzp-button" class="btn btn-purchase buy rounded-pill w-100 d-flex align-items-center justify-content-center gap-2" type="button">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                                <span>Buy Now</span>
-                            </button>
                         <% } else { %>
-                            <a href="/download?file_id=<%=file._id%>" class="btn btn-purchase download rounded-pill w-100 d-flex align-items-center justify-content-center gap-2" id="downloadBtn">
-                               <i class="fa-solid fa-download"></i>
-                                <span>Download Now</span>
-                            </a>
+                            <div class="no-preview-placeholder rounded-0">No Preview Available</div>
                         <% } %>
+                    </div>
 
-                        <div class="trust-badges d-flex justify-content-around text-center text-muted small mt-3 pt-3 border-top border-secondary">
-                            <div><i class="fas fa-shield-alt d-block mb-1"></i>Secure Payment</div>
-                            <div><i class="fas fa-bolt d-block mb-1"></i>Instant Download</div>
-                            <div><i class="fas fa-thumbs-up d-block mb-1"></i>Trusted Quality</div>
+                    <div class="col-lg-5">
+                        <div class="d-flex flex-column">
+
+                            <div class="category-badge">
+                                <%= file.category %>
+                            </div>
+
+                            <h1 class="fw-bolder display-5"><%- file.filename || 'Untitled File' %></h1>
+
+                            <div class="stats-bar d-flex align-items-center gap-3">
+                                <span title="Rating"><i class="fas fa-star"></i> 4.5</span>
+                                <span>|</span>
+                                <span title="Total Downloads">
+                                    <i class="fas fa-download me-1"></i>
+                                    <%= (file.downloadCount || 0).toLocaleString() %>
+                                </span>
+                            </div>
+
+                            <% if (file.filedescription) { %>
+                                <div class="description-box small">
+                                    <%-file.filedescription %>
+                                </div>
+                            <% } %>
+                            
+                            <div class="row row-cols-2 g-3 detail-item-grid">
+                                <div class="col">
+                                    <div class="detail-item">
+                                        <span class="d-block small mb-1">File Type</span>
+                                        <span class="fw-semibold"><%= file.fileType || 'PDF' %></span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="detail-item">
+                                        <span class="d-block small mb-1">File Size</span>
+                                        <span class="fw-semibold"><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="detail-item">
+                                        <span class="d-block small mb-1">Uploaded</span>
+                                        <span class="fw-semibold"><%= file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'N/A' %></span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="detail-item">
+                                        <span class="d-block small mb-1">Creator</span>
+                                        <a href="/profile/<%= file.user || 'admin' %>" class="user-profile-link">
+                                            <img src="<%= sellerprofilepic || '/images/avatar.jpg' %>" alt="profile"/>
+                                            <span><%= file.user || 'Admin' %></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between actions-bar">
+                                <span class="LikesBtn-file"></span>
+                                <div class="price">₹<%= file.price %></div>
+                            </div>
+
+                            <% if (Number(file.price) > 0) { %>
+                                <button id="rzp-button" class="brutalist-button w-100 d-flex align-items-center justify-content-center gap-2" type="button">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                    <span>Buy Now</span>
+                                </button>
+                            <% } else { %>
+                                <a href="/download?file_id=<%=file._id%>" class="brutalist-button w-100 d-flex align-items-center justify-content-center gap-2" id="downloadBtn">
+                                   <i class="fa-solid fa-download"></i>
+                                   <span>Download Now</span>
+                                </a>
+                            <% } %>
+
+                            <div class="trust-badges d-flex justify-content-around text-center small">
+                                <div><i class="fas fa-shield-alt d-block mb-1"></i>Secure Payment</div>
+                                <div><i class="fas fa-bolt d-block mb-1"></i>Instant Download</div>
+                                <div><i class="fas fa-thumbs-up d-block mb-1"></i>Trusted Quality</div>
+                            </div>
+
                         </div>
-
                     </div>
                 </div>
-            </div>
-
-            <div class="mt-5">
+                <div class="mt-5">
                 <%- include("reporttemplate") %>
             </div>
+            </div>
+
+            
              <%- include("chat") %>
 
         </div>
@@ -272,7 +381,7 @@
     <%- include('footer') %>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
             const likeBtnfile = document.querySelector(".LikesBtn-file");
             if (!likeBtnfile) return;
 
@@ -312,9 +421,9 @@
                     e.preventDefault();
                 }
             }
-        });
-    </script>
+        });    </script>
 
 </body>
 
 </html>
+   
