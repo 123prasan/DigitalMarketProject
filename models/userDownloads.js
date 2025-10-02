@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userdownloads = new mongoose.Schema(
+const userdownloadsSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     filename: { type: String, required: true },
@@ -11,8 +11,7 @@ const userdownloads = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Compound unique index: one user can't download same file twice,
-// but different users can download the same file
-userdownloads.index({ userId: 1, fileId: 1 }, { unique: true });
+// compound index
+userdownloadsSchema.index({ userId: 1, fileId: 1 }, { unique: true });
 
-module.exports = mongoose.model("userdownloads", userdownloads);
+module.exports = mongoose.model("userdownloads", userdownloadsSchema);
