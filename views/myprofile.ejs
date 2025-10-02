@@ -1,4 +1,6 @@
-    <%-include("header")%>
+   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
+     crossorigin="anonymous"></script>
+   <%-include("header")%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -182,11 +184,14 @@
             <div class="vidyari-profile-avatar-wrapper">
                 <img src="<%= userData.profilePicUrl %>" alt="User Avatar" class="vidyari-profile-avatar" id="profileAvatar" onerror="this.onerror=null; this.src='/images/avatar.jpg';"/>
             </div>
-            <% if (userData.ISVERIFIED) { %>
+            
+            <div class="vidyari-profile-info">
+                <div style="display:flex ; gap:5px; align-items: center; justify-content: flex-start;">
+                <h1 class="vidyari-profile-name" id="profileName"><%= userData.fullname || userData.username %></h1>
+                <% if (userData.ISVERIFIED) { %>
                  <span title="Verified User"><img style="width: 50px; height: 50px;" src="/images/verify.png" alt="Verified Badge"/></span>
             <% } %>
-            <div class="vidyari-profile-info">
-                <h1 class="vidyari-profile-name" id="profileName"><%= userData.fullname || userData.username %></h1>
+            </div>
                 <p class="vidyari-profile-username" id="profileUsername">@<%= userData.username %></p>
                 <p class="vidyari-profile-bio" id="profileBio"><%= userData.bio || 'No bio yet. Click edit to add one!' %></p>
                 <div class="vidyari-profile-extra-info">

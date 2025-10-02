@@ -49,11 +49,7 @@ userSchema.pre("save", function (next) {
   }
 
   // Auto set ISVERIFIED if followers >= 1000
-  if (this.followers && this.followers.length >= 1000) {
-    this.ISVERIFIED = true;
-  } else {
-    this.ISVERIFIED = false;
-  }
+ 
 
   // Set joinedOn only when creating a new document
   if (this.isNew) {

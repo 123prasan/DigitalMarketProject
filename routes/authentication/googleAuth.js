@@ -745,13 +745,25 @@ router.get(
     const files = await File.find({ userId: user._id });
     const numsOfDocs = files.length;
     const numOfCourses = 0; // For now only
-    const fileUrl = `${userData.profilePicUrl}`;
-    console.log(fileUrl);
-    if (fileUrl) {
-      const url = new URL(fileUrl);
-      const key = url.pathname.substring(1); // remove leading "/"
-      userData.profilePicUrl = `${CF_DOMAIN}/${key}`;
+   let fileUrl = userData.profilePicUrl;
+console.log(fileUrl);
+
+if (fileUrl) {
+  try {
+    // If fileUrl is relative (starts with /), prepend your domain
+    if (fileUrl.startsWith("/")) {
+      fileUrl = `${CF_DOMAIN}${fileUrl}`;
     }
+
+    const url = new URL(fileUrl); // now this should always work
+    const key = url.pathname.substring(1); // remove leading "/"
+    userData.profilePicUrl = `${CF_DOMAIN}/${key}`;
+  } catch (err) {
+    console.error("Invalid URL for profile pic:", fileUrl, err);
+    userData.profilePicUrl = null; // fallback
+  }
+}
+
 
 
 
@@ -806,7 +818,41 @@ const s3Storage = multerS3({
     cb(null, fileName);
   },
 });
+router.get('/following',authenticateJWT_user,reaquireAuth, async (req, res) => {
+    try {
+        // Example: Fetch the current user and populate their 'following' list
+        const currentUser = await User.findById(req.user.id).populate({
+            path: 'following',
+            select: 'username fullname profilePicUrl' // Only get the fields you need
+        });
 
+        res.render('following', {
+            followingList: currentUser.following // This must be an array of user objects
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    }
+});
+
+router.get('/followers',authenticateJWT_user,reaquireAuth, async (req, res) => {
+    try {
+        // Example: Fetch the current user and populate their 'followers' list
+        const currentUser = await User.findById(req.user.id).populate({
+            path: 'followers',
+            select: 'username fullname profilePicUrl' // Only get the fields you need
+        });
+
+        res.render('followers', {
+            followersList: currentUser.followers // Pass the populated array to the EJS file
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    }
+});
 const upload = multer({ storage: s3Storage });
 
 // --- User Detail Update Route ---
@@ -1024,7 +1070,7 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
     const user = await User.findOne({
       username: new RegExp(`^${req.params.username}$`, "i")
     });
-
+console.log("user id is",user._id)
 
     // 1. Handle user not found case FIRST and exit immediately.
     if (!user) {

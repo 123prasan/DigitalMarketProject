@@ -1,4 +1,4 @@
-<%-include("header")%>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,6 +74,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            
             width: 100%;
             gap: 1rem;
             margin-bottom: 1.5rem;
@@ -238,12 +239,14 @@
             <div class="profile-info">
                 <div class="profile-main-info">
                     <div class="profile-name-block">
-                        <h1 class="profile-name"><%= userData.fullname || userData.username %></h1>
-                         <% if (userData.ISVERIFIED) { %>
-                            <span title="Verified User">
+                         
+                            <span title="Verified User" style="display: flex; align-items: center; gap: 0.5rem;">
+                                                        <h1 class="profile-name"><%= userData.fullname || userData.username %></h1>
+<% if (userData.ISVERIFIED) { %>
                                 <img style="width: 40px; height: 40px;" src="/images/verify.png" alt="Verified Badge"/>
+                            <% } %>
                             </span>
-                         <% } %>
+                         
                     </div>
                     <button class="chunky-btn" id="followBtn" data-user-id="<%= userData._id %>"></button>
                 </div>
@@ -365,4 +368,3 @@
     </script>
 </body>
 </html>
-<%-include("footer")%>

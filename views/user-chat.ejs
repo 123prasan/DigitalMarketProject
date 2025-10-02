@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with <%= recipientId %> - Vidyari</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+    .chat-page-wrapper {
+        --font-main: 'Montserrat', sans-serif;
+        --color-bg: #fff;
+        --color-black: #000000;
+        --color-primary: #ff66a3; /* Pink */
+        --color-secondary: #4ade80; /* Green */
+        --color-accent: #ffd60a;   /* Yellow */
+        --color-focus: #1ac2ff;   /* Blue */
+        --transition: 0.2s ease;
+    }
+    .chat-page-wrapper {
+        font-family: var(--font-main);
+        background-color: var(--color-primary);
+        color: var(--color-black);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    .chat-app {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 800px;
+        margin: 2rem auto;
+        height: 80vh;
+        background-color: var(--color-bg);
+        border: 4px solid var(--color-black);
+        box-shadow: 12px 12px 0 var(--color-black);
+        overflow: hidden;
+    }
+    .chat-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 4px solid var(--color-black);
+        flex-shrink: 0;
+    }
+    .chat-header h3 {
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin: 0;
+    }
+    .chat-header p {
+        font-size: 0.8rem;
+        color: #555;
+        margin: 4px 0 0;
+        font-weight: 600;
+    }
+    .chat-body {
+        flex-grow: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    .message-container { display: flex; flex-direction: column; gap: 0.75rem; }
+    @keyframes message-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; translateY(0); } }
+    .message {
+        max-width: 75%;
+        padding: 0.75rem 1rem;
+        border: 3px solid var(--color-black);
+        line-height: 1.5;
+        font-weight: 600;
+        animation: message-fade-in 0.3s ease-out;
+    }
+    .message.sent {
+        background-color: var(--color-secondary);
+        align-self: flex-end;
+    }
+    .message.received {
+        background-color: #f0f0f0;
+        align-self: flex-start;
+    }
+    .chat-footer {
+        padding: 1rem;
+        border-top: 4px solid var(--color-black);
+        display: flex;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+    .chat-footer input {
+        flex-grow: 1;
+        border: 3px solid var(--color-black);
+        box-shadow: 4px 4px 0 var(--color-black);
+        padding: 0.75rem 1rem;
+        font-family: var(--font-main);
+        font-size: 1rem;
+        font-weight: 600;
+        outline: none;
+        transition: all var(--transition);
+    }
+    .chat-footer input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 var(--color-black);
+    }
+    .chat-footer button {
+        background-color: var(--color-accent);
+        border: 3px solid var(--color-black);
+        box-shadow: 4px 4px 0 var(--color-black);
+        color: var(--color-black);
+        width: 54px;
+        height: 54px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all var(--transition);
+        flex-shrink: 0;
+    }
+    .chat-footer button:hover {
+        background-color: var(--color-focus);
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--color-black);
+    }
+    .chat-footer button:disabled {
+        background-color: #ccc;
+        border-color: #999;
+        box-shadow: 4px 4px 0 #999;
+        cursor: not-allowed;
+    }
+</style>
+</head>
+<body>
+    <div class="chat-page-wrapper">
+        <%- include("header") %>
+
+        <div class="chat-app">
+            <div class="chat-header">
+                <h3 id="chat-with-id">Chat with: <%= recipientId %></h3>
+                <p>Your ID: <strong id="my-user-id"><%= myUserId %></strong></p>
+            </div>
+            <div class="chat-body" id="chat-body">
+                <div class="message-container" id="message-container">
+                </div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" id="message-input" placeholder="Type a message..." disabled>
+                <button id="send-button" disabled><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const myUserId = "<%= myUserId %>";
+    const recipientId = "<%= recipientId %>";
+
+    const messageContainerEl = document.getElementById('message-container');
+    const messageInputEl = document.getElementById('message-input');
+    const sendButtonEl = document.getElementById('send-button');
+
+    // *** THIS IS THE CORRECTED LINE ***
+    // It dynamically creates the correct WebSocket URL based on your current page's address.
+    const ws = new WebSocket('ws://127.0.0.1:8000/');
+
+    const fetchInitialMessages = async () => {
+        try {
+            const response = await fetch(`/UserMessages/${recipientId}`);
+            const history = await response.json();
+              console.log("this exicuted")
+            history.forEach(msg => {
+                const type = msg.senderId === myUserId ? 'sent' : 'received';
+                const messageEl = createMessageElement(msg.text, type);
+                messageContainerEl.prepend(messageEl);
+            });
+        } catch (error) {
+            console.error("Failed to fetch message history:", error);
+        }
+    };
+
+    ws.onopen = () => {
+        console.log('Connected to WebSocket server.');
+        ws.send(JSON.stringify({ type: 'register', userId: myUserId }));
+
+        messageInputEl.disabled = false;
+        sendButtonEl.disabled = false;
+        messageInputEl.focus();
+
+        fetchInitialMessages();
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'private_message') {
+            if (data.senderId === recipientId) {
+                const messageEl = createMessageElement(data.text, 'received');
+                messageContainerEl.prepend(messageEl);
+            }
+        }
+    };
+
+    ws.onclose = () => console.log('Disconnected from WebSocket server.');
+
+    function sendMessage() {
+        const text = messageInputEl.value.trim();
+        if (!text) return;
+        
+        const messageEl = createMessageElement(text, 'sent');
+        messageContainerEl.prepend(messageEl);
+        
+        ws.send(JSON.stringify({
+            type: 'private_message',
+            recipientId: recipientId,
+            text
+        }));
+
+        messageInputEl.value = '';
+    }
+
+    function createMessageElement(text, type) {
+        const el = document.createElement('div');
+        el.className = `message ${type}`;
+        el.textContent = text;
+        return el;
+    }
+
+    sendButtonEl.addEventListener('click', sendMessage);
+    messageInputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+});
+</script>
+</body>
+</html>
