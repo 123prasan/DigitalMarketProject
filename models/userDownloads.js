@@ -3,7 +3,7 @@ const mongoose=require("mongoose");
 const userdownloads=new mongoose.Schema({
     userId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
     filename:{type:String,required:true},
-    fileId:{type:mongoose.Schema.Types.ObjectId,ref:"File",required:true},
+    fileId:{type:String,required:true},
     fileUrl:{type:String,required:true},
     fileType:{type:String,required:true}
 },{timestamps:true});
