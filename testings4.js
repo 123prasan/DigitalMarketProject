@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 
 // Import your Mongoose models
-const User = require('./models/UserData.js');
+const User = require('./models/userData.js');
 const UserMessage = require('./models/UserMessage.js');
 const File = require('./models/file.js');
 const authenticateJWT_user  = require('./routes/authentication/jwtAuth.js');
