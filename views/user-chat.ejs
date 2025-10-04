@@ -975,7 +975,9 @@
             const myUserId = "<%= myUserId %>";
             const recipientId = "<%= recipientId %>";
             const recipientName = "<%= recipientUsername %>";
-            const ws = new WebSocket('ws://localhost:8000/');
+          const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+const host = window.location.host; // includes hostname and port
+const ws = new WebSocket(`${protocol}://${host}/`);
 
             const elements = {
                 chatFooter: document.getElementById('chat-footer'), chatBody: document.getElementById('chat-body'),
