@@ -167,7 +167,7 @@
 
             // --- WEBSOCKET ---
             ws.onopen = () => {
-                console.log('Connected to chat list WebSocket.');
+                // console.log('Connected to chat list WebSocket.');
                 ws.send(JSON.stringify({ type: 'register', userId: myUserId }));
             };
 

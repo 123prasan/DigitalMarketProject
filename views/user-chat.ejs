@@ -1046,7 +1046,7 @@
             // --- 2. WEBSOCKET LOGIC ---
             // =================================================================================
             ws.onopen = () => {
-                console.log('Connected to WebSocket server.');
+                // console.log('Connected to WebSocket server.');
                 ws.send(JSON.stringify({ type: 'register', userId: myUserId, recipientId: recipientId }));
                 elements.messageInput.disabled = false;
                 elements.sendButton.disabled = true;
