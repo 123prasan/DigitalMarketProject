@@ -41,20 +41,413 @@ const File = require("./models/file");
 const courseRoutes = require("./routes/courseroutes");
 const progressRoutes = require("./routes/progressroutes");
 const authenticateJWT_user = require("./routes/authentication/jwtAuth.js");
-const User = require("./models/userData.js");
+const User = require("./models/userData");
 const UserDownloads = require("./models/userDownloads.js");
 const Userpurchases = require("./models/userPerchase.js");
 const requireAuth = require("./routes/authentication/reaquireAuth.js");
 const Usernotifications = require("./models/userNotifications");
 const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 const Usertransaction = require("./models/userTransactions.js");
-const { UserChats, initializeChat } = require('./routes/chatRoutes');
+const UserChats = require('./testings4.js'); // <-- IMPORT THE NEW ROUTER
+
 const WebSocket = require('ws');
+const UserMessage = require('./models/UserMessage.js');
 
 const app = express();
+app.use(cookieParser());
+app.use("/",UserChats);
+ // Use cookie-parser middleware
+
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+const clients = new Map();
+// --- Helper Functions ---
+
+/**
+
+ * Sends a JSON payload to a specific user if they are online.
+
+ * @param {string} userId - The ID of the user to notify.
+
+ * @param {object} payload - The JSON object to send.
+
+ */
+
+// --- In your Node.js Server file ---
 
 
 
+// ... (keep your existing setup code)
+
+
+
+// Helper function to broadcast a message to a user if they are online
+
+function notifyUser(userId, payload) {
+
+  // CRITICAL FIX: Always convert the userId to a string before looking it up in the Map.
+
+  const userSocket = clients.get(String(userId));
+
+
+
+  // Optional: Add a log to see if the user was found
+
+  console.log(`Attempting to notify user ${String(userId)}. Online: ${!!userSocket}`);
+
+
+
+  if (userSocket && userSocket.readyState === WebSocket.OPEN) {
+
+    userSocket.send(JSON.stringify(payload));
+
+  }
+
+}
+
+
+
+// --- WebSocket Logic (REPLACE THIS ENTIRE SECTION) ---
+
+wss.on('connection', (ws) => {
+
+  let userId; // This will store the ID for this specific connection
+
+  const broadcastStatus = (targetUserId, isOnline) => {
+
+    const statusPayload = JSON.stringify({
+
+      type: 'user_status_update',
+
+      userId: targetUserId,
+
+      isOnline: isOnline
+
+    });
+
+    // Inform all connected clients of the status change
+
+    clients.forEach(client => {
+
+      if (client.readyState === WebSocket.OPEN) {
+
+        client.send(statusPayload);
+
+      }
+
+    });
+
+    console.log(`[Status] Broadcast: User ${targetUserId} is ${isOnline ? 'Online' : 'Offline'}`);
+
+  };
+
+  ws.on('message', async (message) => {
+
+    try {
+
+      const data = JSON.parse(message);
+
+
+
+      if (data.type !== 'register' && !userId) {
+
+        return console.error("Message received from unregistered client.");
+
+      }
+
+
+
+      switch (data.type) {
+
+        // In your backend server file
+
+        case 'register':
+
+          userId = String(data.userId);
+
+          clients.set(userId, ws);
+
+          console.log(`[Connect] User ${userId} connected.`);
+
+
+
+          // Broadcast that this new user is online to everyone
+
+          broadcastStatus(userId, true);
+
+
+
+          // --- THIS IS THE FIX ---
+
+          // Check the status of the person this user is talking to and send it back ONLY to them.
+
+          const recipientId = String(data.recipientId);
+
+          if (clients.has(recipientId)) {
+
+            const statusPayload = {
+
+              type: 'user_status_update',
+
+              userId: recipientId,
+
+              isOnline: true
+
+            };
+
+            // Send the recipient's status back to the newly registered user
+
+            ws.send(JSON.stringify(statusPayload));
+
+          }
+
+          break;
+
+
+
+        case 'private_message':
+
+        case 'reply_message': {
+
+          const { id, recipientId, text, repliedTo, createdAt } = data;
+
+          const conversationId = [userId, recipientId].sort().join('--');
+
+
+
+          const messageDoc = new UserMessage({
+
+            id,
+
+            conversationId,
+
+            senderId: userId,
+
+            recipientId,
+
+            text,
+
+            repliedTo: repliedTo || null,
+
+            createdAt,
+
+            status: clients.has(String(recipientId)) ? 'delivered' : 'sent',
+
+          });
+
+          await messageDoc.save();
+
+
+
+          const fullMessagePayload = { ...messageDoc.toObject(), type: data.type };
+
+          notifyUser(recipientId, fullMessagePayload);
+
+
+
+          if (messageDoc.status === 'delivered') {
+
+            notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
+
+          }
+
+          console.log(`[Message] User ${userId} sent a message to ${recipientId}`);
+
+          break;
+
+        }
+
+
+
+        case 'message_read': {
+
+          const { messageId, senderId } = data;
+
+          console.log(`[Step 2] Backend RECEIVED read event for message: ${messageId}. Notifying sender: ${senderId}`);
+
+
+
+          await UserMessage.updateOne(
+
+            { id: messageId, status: { $ne: 'read' } },
+
+            { $set: { status: 'read' } }
+
+          );
+
+
+
+          // This is the notification that was failing. It will now work correctly.
+
+          const readPayload = { type: 'message_status_update', messageId, status: 'read', senderId: senderId };
+
+          notifyUser(senderId, readPayload);
+
+          console.log(`[Read] Message ${messageId} was read by user ${userId}`);
+
+          break;
+
+        }
+
+
+
+        case 'delete_message': {
+
+          const { messageId, recipientId } = data;
+
+
+
+          await UserMessage.updateOne(
+
+            { id: messageId, senderId: userId },
+
+            { $set: { isDeleted: true, text: "" } }
+
+          );
+
+
+
+          const deletePayload = { type: 'message_deleted', messageId };
+
+          notifyUser(userId, deletePayload);
+
+          notifyUser(recipientId, deletePayload);
+
+          console.log(`[Delete] User ${userId} deleted message ${messageId}`);
+
+          break;
+
+        }
+
+
+
+        case 'edit_message': {
+
+          const { messageId, newText, recipientId } = data;
+
+
+
+          await UserMessage.updateOne(
+
+            { id: messageId, senderId: userId },
+
+            { $set: { text: newText, isEdited: true } }
+
+          );
+
+
+
+          const editPayload = { type: 'message_edited', messageId, newText };
+
+          notifyUser(userId, editPayload);
+
+          notifyUser(recipientId, editPayload);
+
+          console.log(`[Edit] User ${userId} edited message ${messageId}`);
+
+          break;
+
+        }
+
+
+
+        case 'typing': {
+
+          // Forward the typing status to the recipient without saving to DB
+
+          notifyUser(data.recipientId, {
+
+            type: 'typing_status',
+
+            senderId: userId,
+
+            isTyping: data.isTyping
+
+          });
+
+          break;
+
+        }
+
+        case 'product_message': {
+
+          const { id, recipientId, productInfo, createdAt } = data;
+
+          const conversationId = [userId, recipientId].sort().join('--');
+
+
+
+          const messageDoc = new UserMessage({
+
+            id,
+
+            conversationId,
+
+            senderId: userId,
+
+            recipientId,
+
+            text: `Shared product: ${productInfo.name}`, // Fallback text
+
+            productInfo: productInfo,
+
+            status: clients.has(String(recipientId)) ? 'delivered' : 'sent',
+
+          });
+
+          await messageDoc.save();
+
+
+
+          const fullMessagePayload = { ...messageDoc.toObject(), type: data.type };
+
+          notifyUser(recipientId, fullMessagePayload);
+
+
+
+          if (messageDoc.status === 'delivered') {
+
+            notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
+
+          }
+
+          console.log(`[Product] User ${userId} shared a product with ${recipientId}`);
+
+          break;
+
+        }
+
+      }
+
+    } catch (err) {
+
+      console.error("❌ Failed to process message:", err);
+
+    }
+
+  });
+
+
+
+  ws.on('close', () => {
+
+    if (userId) {
+
+      // CRITICAL FIX: Ensure you delete using the string key.
+
+      clients.delete(String(userId));
+
+      console.log(`[Disconnect] User ${String(userId)} disconnected.`);
+
+      broadcastStatus(userId, false);
+
+
+
+    }
+
+  });
+
+});
 // --- Middleware Setup ---
 // Make sure you have your standard middleware here
 app.use(express.json());
@@ -71,6 +464,7 @@ app.use(cors());
 
 app.use("/api/courses", courseRoutes);
 app.use("/api/progress", progressRoutes);
+
 // app.use(cookieParser())
 function getcategories() {
   return categories.find({}).then((cats) => cats.map((cat) => cat.name));
@@ -81,6 +475,11 @@ app.use((req, res, next) => {
   // console.log('Cookies Received by Server:', req.cookies);
   next();
 });
+
+
+
+// your normal routes
+
 app.use(fileroute);
 app.post("/save-location", async (req, res) => {
   let ip = req.body.ip;
@@ -134,23 +533,13 @@ require("./routes/bots/cleanUpAcc.js");
 require("./video-trans/sql.js");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Parse JSON bodies
-app.use(cookieParser()); // Use cookie-parser middleware
 
 // Set views and static folder
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/chat", chatRoutes);
-const server = http.createServer(app); // Create an HTTP server from the Express app
 
-// Define Mongoose schema and model for Files
-// In your file model (e.g., models/File.js)
-// --- Use the Chat Router ---
-app.use(UserChats); // This will handle the /chat/:userId and /messages/:userId routes
-
-// --- Initialize the WebSocket Server ---
-// Pass the HTTP server instance to the chat initializer
-initializeChat(server);
 
 // This is a helper function to create a clean, URL-safe string
 function slugify(text) {
@@ -1132,7 +1521,7 @@ app.post("/delete-file", authenticateJWT, async (req, res) => {
 
 // Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 

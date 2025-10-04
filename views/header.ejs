@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vidyari</title>
-
+     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
+     crossorigin="anonymous"></script>
     <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU" />
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-
     <style>
-        /* ==========================================================================
-           1. Global Variables & Base Styles
-           ========================================================================== */
         :root {
             --font-main: 'Montserrat', sans-serif;
             --color-bg: #fff;
@@ -34,9 +30,6 @@
             color: var(--color-black);
         }
         
-        /* ==========================================================================
-           2. Header & Navigation
-           ========================================================================== */
         .site-header {
             background-color: var(--color-bg);
             border-bottom: 4px solid var(--color-black);
@@ -45,99 +38,94 @@
             z-index: 1020;
             padding: 0.75rem 1.5rem;
         }
-
-        .brand-logo {
-            height: 40px;
-            width: 40px;
-            transition: transform var(--transition-fast);
-        }
+        .brand-logo { height: 40px; width: 40px; transition: transform var(--transition-fast); }
         .brand-logo:hover { transform: scale(1.05) rotate(-5deg); }
         .brand-name { font-size: 1.5rem; font-weight: 900; color: var(--color-black); }
 
         .main-nav a {
-            color: var(--color-black);
-            font-weight: 700;
-            padding: 0.5rem 1rem;
-            margin: 0 0.5rem;
-            transition: all var(--transition-fast);
-            text-decoration: none;
-            font-size: 1rem;
-            border: 3px solid transparent;
+            color: var(--color-black); font-weight: 700; padding: 0.5rem 1rem;
+            margin: 0 0.5rem; transition: all var(--transition-fast); text-decoration: none;
+            font-size: 1rem; border: 3px solid transparent;
         }
         .main-nav a:hover, .main-nav a.active {
-            background-color: var(--color-accent);
-            border: 3px solid var(--color-black);
+            background-color: var(--color-accent); border: 3px solid var(--color-black);
             box-shadow: 3px 3px 0 var(--color-black);
         }
         
         .header-actions { gap: 0.75rem; }
 
         .chunky-btn {
-            border: 3px solid var(--color-black);
-            box-shadow: 4px 4px 0 var(--color-black);
-            font-weight: 700;
-            transition: all var(--transition-fast);
-            cursor: pointer;
-            padding: 8px 16px;
-            background-color: var(--color-secondary);
-            color: var(--color-black);
-            text-decoration: none;
-            display: inline-block;
+            border: 3px solid var(--color-black); box-shadow: 4px 4px 0 var(--color-black);
+            font-weight: 700; transition: all var(--transition-fast); cursor: pointer;
+            padding: 8px 16px; background-color: var(--color-secondary);
+            color: var(--color-black); text-decoration: none; display: inline-block;
         }
-        .chunky-btn:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 var(--color-black);
-            background-color: var(--color-focus);
-        }
-        .chunky-btn:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0 0 0 var(--color-black);
-        }
-
-        .header-icon-btn {
-            width: 42px; height: 42px;
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 0;
-        }
-
-        /* ==========================================================================
-           3. Dropdowns (User & Grip)
-           ========================================================================== */
-        .user-avatar {
-            width: 42px; height: 42px; border-radius: 50%;
-            cursor: pointer;
-            border: 3px solid var(--color-black);
-        }
-        .dropdown-menu {
-            background-color: var(--color-bg);
-            border: 3px solid var(--color-black);
-            box-shadow: 8px 8px 0 var(--color-black);
-            border-radius: 0;
-            padding: 0.5rem; min-width: 240px;
-            margin-top: 15px !important;
-        }
-        .dropdown-item { 
-            color: var(--color-black);
+        .chunky-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--color-black); background-color: var(--color-focus); }
+        .chunky-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--color-black); }
+        .header-icon-btn { width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+        
+        .chat-popup-wrapper { position: relative; }
+        #chat-feature-popup {
+            position: absolute;
+            top: calc(100% + 15px);
+            right: -20px;
+            width: 220px;
+            background-color: var(--color-black);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
             font-weight: 600;
-            padding: 0.75rem 1rem;
+            line-height: 1.5;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1050;
+            cursor: pointer;
+            animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform-origin: top right;
         }
+        #chat-feature-popup.hidden { display: none; }
+        #chat-feature-popup::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            width: 0; height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--color-black);
+        }
+        #close-popup-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        #close-popup-btn:hover { color: white; }
+
+        @keyframes bounce-in {
+            0% { opacity: 0; transform: scale(0.5) translateY(-20px); }
+            70% { opacity: 1; transform: scale(1.05) translateY(5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .user-avatar { width: 42px; height: 42px; border-radius: 50%; cursor: pointer; border: 3px solid var(--color-black); }
+        .dropdown-menu {
+            background-color: var(--color-bg); border: 3px solid var(--color-black);
+            box-shadow: 8px 8px 0 var(--color-black); border-radius: 0;
+            padding: 0.5rem; min-width: 240px; margin-top: 15px !important;
+        }
+        .dropdown-item { color: var(--color-black); font-weight: 600; padding: 0.75rem 1rem; }
         .dropdown-item:hover { background-color: var(--color-accent); }
         .dropdown-divider { border-color: var(--color-black); }
         
-        .apps-dropdown {
-            display: none; position: absolute; top: calc(100% + 15px); right: 0;
-            width: 320px; background-color: var(--color-bg);
-            border: 3px solid var(--color-black);
-            box-shadow: 8px 8px 0 var(--color-black);
-            padding: 1rem; z-index: 1021;
-        }
+        .apps-dropdown { display: none; position: absolute; top: calc(100% + 15px); right: 0; width: 320px; background-color: var(--color-bg); border: 3px solid var(--color-black); box-shadow: 8px 8px 0 var(--color-black); padding: 1rem; z-index: 1021; }
         .apps-dropdown.is-open { display: block; }
         .apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .app-item {
-            border: 2px solid var(--color-black); background-color: #f0f0f0;
-            padding: 0.75rem; text-decoration: none; text-align: center;
-            transition: all var(--transition-fast);
-        }
+        .app-item { border: 2px solid var(--color-black); background-color: #f0f0f0; padding: 0.75rem; text-decoration: none; text-align: center; transition: all var(--transition-fast); }
         .app-item:hover { background-color: var(--color-accent); transform: translateY(-3px); }
         .app-icon-wrapper { font-size: 1.5rem; margin-bottom: 0.5rem; }
         .app-label { font-size: 0.8rem; color: var(--color-black); font-weight: 600; }
@@ -145,90 +133,30 @@
         .app-icon-wrapper.downloads { color: var(--color-secondary); }
         .app-icon-wrapper.transactions { color: var(--color-focus); }
 
-        /* ==========================================================================
-           4. Mobile Side Panel & Animated Hamburger
-           ========================================================================== */
-        .hamburger-btn {
-            background: none; border: none; width: 42px; height: 42px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; z-index: 1050;
-        }
-        .hamburger-btn span {
-            display: block; width: 24px; height: 2px;
-            background-color: var(--color-black); 
-            border-radius: 2px; transition: transform 0.3s ease, opacity 0.3s ease;
-        }
+        .hamburger-btn { background: none; border: none; width: 42px; height: 42px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; z-index: 1050; }
+        .hamburger-btn span { display: block; width: 24px; height: 2px; background-color: var(--color-black); border-radius: 2px; transition: transform 0.3s ease, opacity 0.3s ease; }
         .hamburger-btn.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
         .hamburger-btn.is-open span:nth-child(2) { opacity: 0; }
         .hamburger-btn.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        .mobile-nav-panel {
-            position: fixed; top: 0; left: 0; width: 280px; height: 100%;
-            background-color: var(--color-bg); border-right: 4px solid var(--color-black);
-            z-index: 1045; transform: translateX(-100%); transition: transform 0.3s ease;
-            display: flex; flex-direction: column;
-        }
+        .mobile-nav-panel { position: fixed; top: 0; left: 0; width: 280px; height: 100%; background-color: var(--color-bg); border-right: 4px solid var(--color-black); z-index: 1045; transform: translateX(-100%); transition: transform 0.3s ease; display: flex; flex-direction: column; }
         .mobile-nav-panel.is-open { transform: translateX(0); }
-        .panel-header {
-            padding: 0.75rem 1.5rem; border-bottom: 4px solid var(--color-black);
-            flex-shrink: 0;
-        }
-        .panel-body { 
-            padding: 1rem; 
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-        .panel-footer { 
-            padding: 1.5rem; border-top: 4px solid var(--color-black); 
-            flex-shrink: 0;
-        }
-        .nav-overlay {
-            position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1040; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-        }
+        .panel-header { padding: 0.75rem 1.5rem; border-bottom: 4px solid var(--color-black); flex-shrink: 0; }
+        .panel-body { padding: 1rem; flex-grow: 1; overflow-y: auto; }
+        .panel-footer { padding: 1.5rem; border-top: 4px solid var(--color-black); flex-shrink: 0; }
+        .nav-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 1040; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .nav-overlay.is-open { opacity: 1; pointer-events: auto; }
-
-        .panel-user-profile {
-            display: flex; align-items: center; gap: 1rem;
-            text-decoration: none; color: var(--color-black);
-            margin-bottom: 1rem;
-        }
-        .panel-user-profile .avatar {
-            width: 48px; height: 48px; border-radius: 50%;
-            border: 3px solid var(--color-black);
-        }
+        .panel-user-profile { display: flex; align-items: center; gap: 1rem; text-decoration: none; color: var(--color-black); margin-bottom: 1rem; }
+        .panel-user-profile .avatar { width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--color-black); }
         .panel-user-profile .username { font-weight: 700; }
         .panel-user-profile .email { font-size: 0.8rem; color: #666; }
-        
-        .panel-divider {
-            height: 2px; background-color: var(--color-black);
-            margin: 1.5rem 0; border: 0;
-        }
-
-        .panel-section-label {
-            font-size: 0.75rem; font-weight: 900;
-            text-transform: uppercase; color: #888;
-            margin-bottom: 0.5rem; padding: 0 0.5rem;
-        }
-
-        .panel-link {
-            display: flex; align-items: center; gap: 1rem;
-            padding: 0.8rem 1rem; border-radius: 0;
-            color: var(--color-black); text-decoration: none;
-            font-weight: 700; font-size: 1rem;
-            border: 3px solid transparent;
-            transition: all var(--transition-fast);
-        }
-        .panel-link:hover {
-            border: 3px solid var(--color-black);
-            background-color: var(--color-accent);
-            box-shadow: 3px 3px 0 var(--color-black);
-        }
-        .panel-link .icon-wrapper {
-            width: 32px; height: 32px; display: inline-flex;
-            align-items: center; justify-content: center;
-            border-radius: 8px; font-size: 1.1rem;
-            color: var(--color-black);
-        }
+        .panel-divider { height: 2px; background-color: var(--color-black); margin: 1.5rem 0; border: 0; }
+        .panel-section-label { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: #888; margin-bottom: 0.5rem; padding: 0 0.5rem; }
+        .panel-link { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem; border-radius: 0; color: var(--color-black); text-decoration: none; font-weight: 700; font-size: 1rem; border: 3px solid transparent; transition: all var(--transition-fast); }
+        .panel-link:hover { border: 3px solid var(--color-black); background-color: var(--color-accent); box-shadow: 3px 3px 0 var(--color-black); }
+        .panel-link .icon-wrapper { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 1.1rem; color: var(--color-black); }
         .icon-home { background-color: #a7f3d0; }
+        .icon-focus { background-color: #bfdbfe; }
         .icon-docs { background-color: #fde68a; }
         .icon-courses { background-color: #bfdbfe; }
         .icon-dashboard { background-color: #c4b5fd; }
@@ -237,180 +165,205 @@
         .icon-profile { background-color: #d1d5db; }
         .icon-seller { background-color: var(--color-secondary); }
         
-        /* ==========================================================================
-           5. Media Queries
-           ========================================================================== */
         @media (max-width: 991.98px) { .main-nav, #grip-container { display: none !important; } }
-        @media (max-width: 575.98px) {
-            .site-header { padding: 0.75rem 1rem; }
-            .brand-name { 
-                font-size: 1rem;
-                font-weight: 700;
-             }
-            .chunky-btn { padding: 5px 8px; font-size: 12px; }
+        @media (max-width: 575.98px) { .site-header { padding: 0.75rem 1rem; } .brand-name { font-size: 1rem; font-weight: 700; } .chunky-btn { padding: 5px 8px; font-size: 12px; } }
+        
+        /* --- THIS IS THE FIX --- */
+        @media (max-width: 400px) {
+            #chat-feature-popup {
+                right: 5px; /* Anchor to the right edge of the screen */
+                left: auto;
+                transform-origin: top right;
+            }
+            #chat-feature-popup::before {
+                right: 50px; /* Adjust arrow position */
+            }
         }
     </style>
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
-     crossorigin="anonymous"></script>
 </head>
 
 <body>
-
-<header class="site-header">
-    <div class="container-fluid d-flex align-items-center justify-content-between">
-        
-        <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
-            <img src="/images/logo.svg" alt="Vidyari Logo" class="brand-logo">
-            <span class="brand-name">Vidyari</span>
-        </a>
-
-        <nav class="main-nav d-none d-lg-flex">
-            <a href="/" class="active">Home</a>
-            <a href="/documents">Documents</a>
-            <a href="/courses">Courses</a>
-        </nav>
-        
-        <div class="d-flex align-items-center header-actions">
-
-            <% if(isLoggedin) { %>
-                <button onclick="window.location.href='/user-notifications'" type="button" class="chunky-btn header-icon-btn" aria-label="Notifications" style="background-color: var(--color-primary);">
-                    <i class="fa-regular fa-bell"></i>
-                </button>
-
-                <div class="position-relative" id="grip-container">
-                    <button id="grip-button" type="button" class="chunky-btn header-icon-btn" aria-label="Apps" style="background-color: var(--color-accent);">
-                        <i class="fas fa-grip"></i>
-                    </button>
-                    <div class="apps-dropdown" id="grip-menu">
-                        <div class="apps-grid">
-                            <a href="/dashboard" class="app-item"><div class="app-icon-wrapper dashboard"><i class="fas fa-table-columns"></i></div><span class="app-label">Dashboard</span></a>
-                            <a href="/downloads" class="app-item"><div class="app-icon-wrapper downloads"><i class="fas fa-cloud-arrow-down"></i></div><span class="app-label">Downloads</span></a>
-                            <a href="/transactions" class="app-item"><div class="app-icon-wrapper transactions"><i class="fas fa-receipt"></i></div><span class="app-label">Transactions</span></a>
+    <header class="site-header">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+            <a href="/" class="d-flex align-items-center gap-3 text-decoration-none">
+                <img src="/images/logo.svg" alt="Vidyari Logo" class="brand-logo">
+                <span class="brand-name">Vidyari</span>
+            </a>
+            <nav class="main-nav d-none d-lg-flex">
+                <a href="/" class="active">Home</a>
+                <a href="/documents">Documents</a>
+                <a href="/courses">Courses</a>
+            </nav>
+            <div class="d-flex align-items-center header-actions">
+                <% if(isLoggedin) { %>
+                    <div class="chat-popup-wrapper">
+                        <a href="/chats" id="chat-icon-btn" class="chunky-btn header-icon-btn" aria-label="Chats" style="background-color: var(--color-focus);">
+                            <i class="fa-solid fa-comments"></i>
+                        </a>
+                        <div id="chat-feature-popup" class="hidden">
+                            <button id="close-popup-btn">&times;</button>
+                            New! You can now chat directly with creators. Tap here to try.
                         </div>
                     </div>
-                </div>
 
-                <div class="dropdown">
-                    <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="px-3 pt-2 pb-3 border-bottom border-dark">
-                            <p class="fw-bold mb-0"><%= username %></p>
-                            <p class="small text-muted mb-0"><%= useremail %></p>
-                        </li>
-                        <li><a class="dropdown-item" href="/user-profile"><i class="fa-solid fa-user-gear fa-fw me-2"></i>Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a></li>
-                    </ul>
-                </div>
-            <% } else { %>
-                <button onclick="window.location.href='/dashboard'" class="chunky-btn">Become Seller</button>
-                <button onclick="window.location.href='/user-login'" class="chunky-btn" style="background-color: var(--color-primary);">Login</button>
-            <% } %>
+                    <button onclick="window.location.href='/user-notifications'" type="button" class="chunky-btn header-icon-btn" aria-label="Notifications" style="background-color: var(--color-primary);">
+                        <i class="fa-regular fa-bell"></i>
+                    </button>
 
-            <button class="hamburger-btn d-lg-none" id="hamburgerBtn" type="button" aria-label="Toggle navigation">
-                <span></span><span></span><span></span>
-            </button>
+                    <div class="position-relative" id="grip-container">
+                        <button id="grip-button" type="button" class="chunky-btn header-icon-btn" aria-label="Apps" style="background-color: var(--color-accent);">
+                            <i class="fas fa-grip"></i>
+                        </button>
+                        <div class="apps-dropdown" id="grip-menu">
+                            <div class="apps-grid">
+                                <a href="/dashboard" class="app-item"><div class="app-icon-wrapper dashboard"><i class="fas fa-table-columns"></i></div><span class="app-label">Dashboard</span></a>
+                                <a href="/downloads" class="app-item"><div class="app-icon-wrapper downloads"><i class="fas fa-cloud-arrow-down"></i></div><span class="app-label">Downloads</span></a>
+                                <a href="/transactions" class="app-item"><div class="app-icon-wrapper transactions"><i class="fas fa-receipt"></i></div><span class="app-label">Transactions</span></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dropdown">
+                        <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="px-3 pt-2 pb-3 border-bottom border-dark">
+                                <p class="fw-bold mb-0"><%= username %></p>
+                                <p class="small text-muted mb-0"><%= useremail %></p>
+                            </li>
+                            <li><a class="dropdown-item" href="/user-profile"><i class="fa-solid fa-user-gear fa-fw me-2"></i>Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                <% } else { %>
+                    <button onclick="window.location.href='/dashboard'" class="chunky-btn">Become Seller</button>
+                    <button onclick="window.location.href='/user-login'" class="chunky-btn" style="background-color: var(--color-primary);">Login</button>
+                <% } %>
+
+                <button class="hamburger-btn d-lg-none" id="hamburgerBtn" type="button" aria-label="Toggle navigation">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<div class="mobile-nav-panel" id="mobileNavPanel">
-    <div class="panel-header">
-        <a href="/"><img src="/images/logo.svg" alt="Vidyari Logo" style="height:32px"></a>
-    </div>
-
-    <% if(isLoggedin) { %>
-        <div class="panel-body">
-            <a href="/user-profile" class="panel-user-profile">
-                <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="avatar">
-                <div>
-                    <p class="username mb-0"><%= username %></p>
-                    <p class="email mb-0"><%= useremail %></p>
+    <div class="mobile-nav-panel" id="mobileNavPanel">
+        <div class="panel-header">
+            <a href="/"><img src="/images/logo.svg" alt="Vidyari Logo" style="height:32px"></a>
+        </div>
+        <% if(isLoggedin) { %>
+            <div class="panel-body">
+                <a href="/user-profile" class="panel-user-profile">
+                    <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="avatar">
+                    <div>
+                        <p class="username mb-0"><%= username %></p>
+                        <p class="email mb-0"><%= useremail %></p>
+                    </div>
+                </a>
+                <hr class="panel-divider">
+                <div class="panel-section">
+                    <p class="panel-section-label">Navigation</p>
+                    <a href="/" class="panel-link"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
+                    <a href="/chats" class="panel-link"><span class="icon-wrapper icon-focus"><i class="fa-solid fa-comments"></i></span><span>Chats</span></a>
+                    <a href="/documents" class="panel-link"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
+                    <a href="/courses" class="panel-link"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
                 </div>
-            </a>
-            
-            <hr class="panel-divider">
-
-            <div class="panel-section">
-                <p class="panel-section-label">Navigation</p>
+                <hr class="panel-divider">
+                <div class="panel-section">
+                    <p class="panel-section-label">Account</p>
+                    <a href="/user-profile" class="panel-link"><span class="icon-wrapper icon-profile"><i class="fa-solid fa-user-gear"></i></span><span>My Profile</span></a>
+                    <a href="/downloads" class="panel-link"><span class="icon-wrapper icon-downloads"><i class="fa-solid fa-cloud-arrow-down"></i></span><span>My Downloads</span></a>
+                    <a href="/transactions" class="panel-link"><span class="icon-wrapper icon-transactions"><i class="fa-solid fa-receipt"></i></span><span>Transactions</span></a>
+                </div>
+                <hr class="panel-divider">
+                <div class="panel-section">
+                    <p class="panel-section-label">Seller</p>
+                    <a href="/dashboard" class="panel-link"><span class="icon-wrapper icon-dashboard"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
+                    <a href="/dashboard" class="panel-link"><span class="icon-wrapper icon-seller"><i class="fa-solid fa-store"></i></span><span>Become a Seller</span></a>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <a href="/logout" class="chunky-btn w-100 text-center" style="background-color: var(--color-primary);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>
+            </div>
+        <% } else { %>
+             <div class="panel-body">
                 <a href="/" class="panel-link"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
                 <a href="/documents" class="panel-link"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
                 <a href="/courses" class="panel-link"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
             </div>
-
-            <hr class="panel-divider">
-
-            <div class="panel-section">
-                <p class="panel-section-label">Account</p>
-                <a href="/user-profile" class="panel-link"><span class="icon-wrapper icon-profile"><i class="fa-solid fa-user-gear"></i></span><span>My Profile</span></a>
-                <a href="/downloads" class="panel-link"><span class="icon-wrapper icon-downloads"><i class="fa-solid fa-cloud-arrow-down"></i></span><span>My Downloads</span></a>
-                <a href="/transactions" class="panel-link"><span class="icon-wrapper icon-transactions"><i class="fa-solid fa-receipt"></i></span><span>Transactions</span></a>
+            <div class="panel-footer">
+                <button onclick="window.location.href='/user-login'" class="chunky-btn w-100" style="background-color: var(--color-primary);">Login / Sign Up</button>
             </div>
-            
-            <hr class="panel-divider">
-            
-            <div class="panel-section">
-                <p class="panel-section-label">Seller</p>
-                 <a href="/dashboard" class="panel-link"><span class="icon-wrapper icon-dashboard"><i class="fa-solid fa-table-columns"></i></span><span>Dashboard</span></a>
-                 <a href="/dashboard" class="panel-link"><span class="icon-wrapper icon-seller"><i class="fa-solid fa-store"></i></span><span>Become a Seller</span></a>
-            </div>
-        </div>
-        <div class="panel-footer">
-            <a href="/logout" class="chunky-btn w-100 text-center" style="background-color: var(--color-primary);"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>
-        </div>
-    <% } else { %>
-        <div class="panel-body">
-            <a href="/" class="panel-link"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
-            <a href="/documents" class="panel-link"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
-            <a href="/courses" class="panel-link"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
-        </div>
-        <div class="panel-footer">
-            <button onclick="window.location.href='/user-login'" class="chunky-btn w-100" style="background-color: var(--color-primary);">Login / Sign Up</button>
-        </div>
-    <% } %>
-</div>
-<div class="nav-overlay" id="navOverlay"></div>
+        <% } %>
+    </div>
+    <div class="nav-overlay" id="navOverlay"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
-<script defer>
-document.addEventListener('DOMContentLoaded', () => {
-    const mobileNavPanel = document.getElementById('mobileNavPanel');
-    const navOverlay = document.getElementById('navOverlay');
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const gripContainer = document.getElementById('grip-container');
-    const gripButton = document.getElementById('grip-button');
-    const gripMenu = document.getElementById('grip-menu');
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobileNavPanel = document.getElementById('mobileNavPanel');
+        const navOverlay = document.getElementById('navOverlay');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const gripContainer = document.getElementById('grip-container');
+        const gripButton = document.getElementById('grip-button');
+        const gripMenu = document.getElementById('grip-menu');
 
-    const toggleMobileNav = () => {
-        const isOpen = mobileNavPanel.classList.toggle('is-open');
-        navOverlay.classList.toggle('is-open');
-        hamburgerBtn.classList.toggle('is-open');
-        document.body.style.overflow = isOpen ? 'hidden' : '';
-    };
+        const toggleMobileNav = () => {
+            const isOpen = mobileNavPanel.classList.toggle('is-open');
+            navOverlay.classList.toggle('is-open');
+            hamburgerBtn.classList.toggle('is-open');
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+        };
 
-    function setupGripMenu() {
-        if (!gripButton) return;
-        gripButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            gripMenu.classList.toggle('is-open');
-        });
-        document.addEventListener('click', (e) => {
-            if (gripContainer && !gripContainer.contains(e.target) && gripMenu.classList.contains('is-open')) {
-                gripMenu.classList.remove('is-open');
+        function setupGripMenu() {
+            if (!gripButton) return;
+            gripButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                gripMenu.classList.toggle('is-open');
+            });
+            document.addEventListener('click', (e) => {
+                if (gripContainer && !gripContainer.contains(e.target) && gripMenu.classList.contains('is-open')) {
+                    gripMenu.classList.remove('is-open');
+                }
+            });
+        }
+
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', toggleMobileNav);
+        }
+        if (navOverlay) {
+            navOverlay.addEventListener('click', toggleMobileNav);
+        }
+
+        setupGripMenu();
+
+        const chatIconButton = document.getElementById('chat-icon-btn');
+        const chatPopup = document.getElementById('chat-feature-popup');
+        const closePopupButton = document.getElementById('close-popup-btn');
+        
+        const popupKey = 'vidyariChatPopup_v1';
+
+        const dismissPopup = () => {
+            if (chatPopup) {
+                chatPopup.classList.add('hidden');
             }
-        });
-    }
+            localStorage.setItem(popupKey, 'true');
+        };
 
-    if (hamburgerBtn) {
-        hamburgerBtn.addEventListener('click', toggleMobileNav);
-    }
-    if (navOverlay) {
-        navOverlay.addEventListener('click', toggleMobileNav);
-    }
+        if (chatIconButton && !localStorage.getItem(popupKey)) {
+            chatPopup.classList.remove('hidden');
 
-    setupGripMenu();
-});
-</script>
+            closePopupButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dismissPopup();
+            });
 
+            chatPopup.addEventListener('click', () => {
+                dismissPopup();
+                window.location.href = '/chats';
+            });
+        }
+    });
+    </script>
 </body>
 </html>

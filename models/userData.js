@@ -87,5 +87,5 @@ userSchema.pre("findOneAndUpdate", function (next) {
   }
 });
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+// const User = mongoose.model("User", userSchema);
+module.exports = mongoose.models.User || mongoose.model("User", userSchema);
