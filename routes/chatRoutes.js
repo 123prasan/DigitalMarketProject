@@ -16,64 +16,68 @@ const clients = new Map();
 // This function will be called from your main server.js file
 const initializeChat = (server) => {
     const wss = new WebSocket.Server({ server });
-    console.log("user websocket")
-    wss.on('connection', (ws) => {
-        let userId;
+    console.log("user websocket1")
+wss.on('connection', (ws, req) => {
+    let userId;
+    console.log("✅ WebSocket client connected:", req.socket.remoteAddress);
 
-        ws.on('UserMessage', async (UserMessage) => {
-            const data = JSON.parse(UserMessage);
+    ws.on('message', async (msg) => {
+        const data = JSON.parse(msg);
 
-            switch (data.type) {
-                case 'register':
-                    userId = data.userId;
-                    clients.set(userId, ws);
-                    console.log(`User ${userId} connected to chat.`);
-                    break;
+        switch (data.type) {
+            case 'register':
+                userId = data.userId;
+                clients.set(userId, ws);
+                console.log(`User ${userId} connected to chat.`);
+                break;
 
-                case 'private_UserMessage':
-                    const { recipientId, text } = data;
-                    const recipientSocket = clients.get(recipientId);
-                    const conversationId = [userId, recipientId].sort().join('--');
+case 'private_message':
+    const { recipientId, text } = data;
+    const recipientSocket = clients.get(recipientId);
+    const conversationId = [userId, recipientId].sort().join('--');
 
-                    const UserMessageToSave = new UserMessage({
-                        conversationId,
-                        senderId: userId,
-                        recipientId,
-                        text,
-                    });
-
-                    try {
-                        // Save the UserMessage to the database
-                        await UserMessageToSave.save();
-
-                        // If the recipient is online, send the UserMessage in real-time
-                        if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
-                            recipientSocket.send(JSON.stringify(UserMessageToSave));
-                        }
-                    } catch (error) {
-                        console.error("Error saving/sending chat UserMessage:", error);
-                    }
-                    break;
-                     case 'typing': {
-            const recipientSocket = clients.get(data.recipientId);
-            if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
-                recipientSocket.send(JSON.stringify({
-                    type: 'typing',
-                    senderId: userId
-                }));
-            }
-            break;
-        }
-            }
-        });
-
-        ws.on('close', () => {
-            if (userId) {
-                clients.delete(userId);
-                console.log(`User ${userId} disconnected from chat.`);
-            }
-        });
+    const UserMessageToSave = new UserMessage({
+        conversationId,
+        senderId: userId,
+        recipientId,
+        text,
     });
+
+    try {
+        await UserMessageToSave.save();
+        if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
+            recipientSocket.send(JSON.stringify({
+                type: 'private_message',
+                senderId: userId,
+                text,
+            }));
+        }
+    } catch (error) {
+        console.error("Error saving/sending chat message:", error);
+    }
+    break;
+
+
+            case 'typing':
+                const recipientSocket2 = clients.get(data.recipientId);
+                if (recipientSocket2 && recipientSocket2.readyState === WebSocket.OPEN) {
+                    recipientSocket2.send(JSON.stringify({
+                        type: 'typing',
+                        senderId: userId
+                    }));
+                }
+                break;
+        }
+    });
+
+    ws.on('close', () => {
+        if (userId) {
+            clients.delete(userId);
+            console.log(`User ${userId} disconnected from chat.`);
+        }
+    });
+});
+
 };
 
 // --- HTTP Routes ---

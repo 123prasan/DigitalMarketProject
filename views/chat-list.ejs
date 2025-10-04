@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Chats - Vidyari</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-main: 'Montserrat', sans-serif;
+            --color-primary: #ff66a3;
+            --color-bg: #f9f9f9;
+            --color-border: #e0e0e0;
+            --color-text-primary: #1c1c1c;
+            --color-text-secondary: #666;
+            --color-online: #4ade80;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body { 
+            margin: 0; 
+            font-family: var(--font-main); 
+            background-color: var(--color-primary);
+            color: var(--color-text-primary);
+        }
+
+        .chat-list-container {
+            width: 100%; 
+            height: 100vh; /* Occupy full viewport height */
+            margin: 0 auto; 
+            background-color: white;
+            display: flex; 
+            flex-direction: column;
+        }
+        
+        .chat-list-header {
+            padding: 1rem 1.5rem; 
+            border-bottom: 2px solid var(--color-border);
+            background-color: #fff;
+            flex-shrink: 0;
+        }
+        .chat-list-header h1 { 
+            margin: 0; 
+            font-size: 1.8rem; 
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        
+        .search-container { 
+            padding: 1rem 1.5rem; 
+            border-bottom: 2px solid var(--color-border);
+            position: relative;
+        }
+        .search-wrapper {
+            position: relative;
+        }
+        #user-search-input {
+            width: 100%; 
+            padding: 0.8rem 2.5rem 0.8rem 2.5rem; 
+            border-radius: 24px;
+            border: 2px solid #ddd; 
+            font-family: var(--font-main);
+            font-size: 1rem; 
+            font-weight: 500; 
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        #user-search-input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(255, 102, 163, 0.2);
+        }
+        .search-icon, #clear-search-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+        .search-icon { left: 1rem; }
+        #clear-search-button { 
+            right: 1rem; 
+            cursor: pointer; 
+            display: none; /* Hidden by default */
+        }
+        
+        .list-body { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            position: relative;
+            scrollbar-width: none;
+        }
+        .chat-list, .search-results-list { 
+            list-style: none; margin: 0; padding: 0; 
+            transition: opacity 0.3s ease;
+        }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .chat-list-item {
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            padding: 1rem 1.5rem;
+            cursor: pointer; 
+            transition: background-color 0.2s;
+            border-bottom: 1px solid var(--color-border);
+            animation: fade-in 0.4s ease-out forwards;
+            opacity: 0;
+        }
+        .chat-list-item:hover { background-color: var(--color-bg); }
+        .profile-pic-container { position: relative; flex-shrink: 0; }
+        .profile-pic { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .online-dot {
+            position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px;
+            border-radius: 50%; background-color: #ccc; border: 2px solid white;
+            transition: background-color 0.3s;
+        }
+        .online-dot.online { background-color: var(--color-online); }
+        .chat-details { flex-grow: 1; min-width: 0; }
+        .chat-details-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .username { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 1.1rem; }
+        .verified-badge { width: 16px; height: 16px; }
+        .timestamp { font-size: 0.75rem; color: var(--color-text-secondary); flex-shrink: 0; }
+        .last-message {
+            font-size: 0.9rem; color: var(--color-text-secondary); white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        #loading-spinner, #no-results { text-align: center; padding: 2rem; color: var(--color-text-secondary); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="chat-list-container">
+        <header class="chat-list-header">
+            <h1>My Chats</h1>
+        </header>
+        <div class="search-container">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="user-search-input" placeholder="Search users to start a new chat...">
+                <i class="fas fa-times-circle" id="clear-search-button"></i>
+            </div>
+        </div>
+        <main class="list-body">
+            <div id="loading-spinner">Loading chats...</div>
+            <ul class="chat-list" id="active-chats-list"></ul>
+            <ul class="search-results-list" id="search-results-list" style="display: none;"></ul>
+            <div id="no-results" style="display: none;">No users found.</div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const myUserId = "<%= myUserId %>";
+            const ws = new WebSocket('ws://localhost:8000/');
+
+            const elements = {
+                searchInput: document.getElementById('user-search-input'),
+                clearSearchBtn: document.getElementById('clear-search-button'),
+                activeChatsList: document.getElementById('active-chats-list'),
+                searchResultsList: document.getElementById('search-results-list'),
+                loadingSpinner: document.getElementById('loading-spinner'),
+                noResults: document.getElementById('no-results'),
+            };
+
+            let searchDebounceTimer;
+
+            // --- WEBSOCKET ---
+            ws.onopen = () => {
+                console.log('Connected to chat list WebSocket.');
+                ws.send(JSON.stringify({ type: 'register', userId: myUserId }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'user_status_update') {
+                    updateUserOnlineStatus(data.userId, data.isOnline);
+                } else if (['private_message', 'reply_message', 'product_message'].includes(data.type)) {
+                    handleRealtimeMessageUpdate(data);
+                }
+            };
+            
+            // --- CORE FUNCTIONS ---
+            const fetchAndRenderActiveChats = async () => {
+                try {
+                    elements.loadingSpinner.style.display = 'block';
+                    elements.loadingSpinner.textContent = 'Loading chats...';
+                    const response = await fetch(`/api/conversations?myId=${myUserId}`);
+                    const conversations = await response.json();
+                    
+                    elements.activeChatsList.innerHTML = '';
+                    if (conversations.length === 0) {
+                        elements.loadingSpinner.textContent = 'No active chats. Start a new one!';
+                    } else {
+                        elements.loadingSpinner.style.display = 'none';
+                    }
+
+                    conversations.forEach((convo, index) => {
+                        const listItem = createChatListItem(convo.partner, convo.lastMessage);
+                        listItem.style.animationDelay = `${index * 50}ms`;
+                        elements.activeChatsList.appendChild(listItem);
+                    });
+
+                } catch (error) {
+                    console.error("Failed to fetch chats:", error);
+                    elements.loadingSpinner.textContent = 'Could not load chats.';
+                }
+            };
+
+            const handleSearch = async (query) => {
+                elements.clearSearchBtn.style.display = query ? 'block' : 'none';
+                if (!query) {
+                    elements.searchResultsList.style.display = 'none';
+                    elements.noResults.style.display = 'none';
+                    elements.activeChatsList.style.display = 'block';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/users/search?myId=${myUserId}&q=${query}`);
+                    const users = await response.json();
+                    
+                    elements.activeChatsList.style.display = 'none';
+                    elements.searchResultsList.innerHTML = '';
+                    
+                    if (users.length > 0) {
+                        elements.noResults.style.display = 'none';
+                        users.forEach((user, index) => {
+                            const userItem = createSearchUserItem(user);
+                            userItem.style.animationDelay = `${index * 50}ms`;
+                            elements.searchResultsList.appendChild(userItem);
+                        });
+                        elements.searchResultsList.style.display = 'block';
+                    } else {
+                        elements.searchResultsList.style.display = 'none';
+                        elements.noResults.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error("Search failed:", error);
+                }
+            };
+
+            const handleRealtimeMessageUpdate = (msg) => {
+                const partner = msg.senderId === myUserId ? msg.partner : { _id: msg.senderId, username: msg.partner.username, profilePicUrl: msg.partner.profilePicUrl, isVerified: msg.partner.isVerified };
+                
+                const conversationId = [myUserId, partner._id].sort().join('--');
+                const existingItem = document.querySelector(`[data-conversation-id="${conversationId}"]`);
+
+                if (existingItem) {
+                    existingItem.querySelector('.last-message').textContent = msg.productInfo ? `Shared: ${msg.productInfo.name}` : (msg.text || "New Message");
+                    existingItem.querySelector('.timestamp').textContent = formatTimestamp(msg.createdAt);
+                    elements.activeChatsList.prepend(existingItem);
+                } else {
+                    const newItem = createChatListItem(partner, msg);
+                    elements.activeChatsList.prepend(newItem);
+                }
+                if (elements.loadingSpinner.textContent.startsWith('No active chats')) {
+                    elements.loadingSpinner.style.display = 'none';
+                }
+            };
+
+            const updateUserOnlineStatus = (userId, isOnline) => {
+                document.querySelectorAll(`.online-dot[data-user-id="${userId}"]`).forEach(dot => {
+                    dot.classList.toggle('online', isOnline);
+                });
+            };
+            
+            // --- HTML CREATION HELPERS ---
+            function createChatListItem(partner, lastMessage) {
+                const listItem = document.createElement('li');
+                listItem.className = 'chat-list-item';
+                listItem.dataset.userId = partner._id;
+                listItem.dataset.conversationId = [myUserId, partner._id].sort().join('--');
+                const lastMessageText = lastMessage.productInfo ? `Shared: ${lastMessage.productInfo.name}` : (lastMessage.text || "...");
+
+                listItem.innerHTML = `
+                    <div class="profile-pic-container">
+                        <img src="${partner.profilePicUrl || '/images/avatar.jpg'}" class="profile-pic">
+                        <div class="online-dot" data-user-id="${partner._id}"></div>
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-details-top">
+                            <span class="username">
+                                ${partner.username}
+                                ${partner.isVerified ? '<img src="/image/verify.png" class="verified-badge" alt="Verified">' : ''}
+                            </span>
+                            <span class="timestamp">${formatTimestamp(lastMessage.createdAt)}</span>
+                        </div>
+                        <p class="last-message">${lastMessageText}</p>
+                    </div>
+                `;
+                return listItem;
+            }
+            
+            function createSearchUserItem(user) {
+                const listItem = document.createElement('li');
+                listItem.className = 'chat-list-item';
+                listItem.dataset.userId = user._id;
+
+                listItem.innerHTML = `
+                    <div class="profile-pic-container">
+                        <img src="${user.profilePicUrl || '/images/avatar.jpg'}" class="profile-pic">
+                    </div>
+                    <div class="chat-details">
+                         <span class="username">
+                            ${user.username}
+                            ${user.isVerified ? '<img src="/image/verify.png" class="verified-badge" alt="Verified">' : ''}
+                        </span>
+                        <p class="last-message">Start a new conversation</p>
+                    </div>
+                `;
+                return listItem;
+            }
+
+            const formatTimestamp = (dateStr) => {
+                const date = new Date(dateStr);
+                const today = new Date();
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (date.toDateString() === today.toDateString()) {
+                    return date.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+                }
+                if (date.toDateString() === yesterday.toDateString()) {
+                    return 'Yesterday';
+                }
+                return date.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            };
+
+            // --- EVENT LISTENERS ---
+            elements.searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => {
+                    handleSearch(e.target.value.trim());
+                }, 300);
+            });
+            
+            elements.clearSearchBtn.addEventListener('click', () => {
+                elements.searchInput.value = '';
+                handleSearch('');
+            });
+
+            const navigateToChat = (e) => {
+                const listItem = e.target.closest('.chat-list-item');
+                if (listItem && listItem.dataset.userId) {
+                    window.location.href = `/user/chat/${listItem.dataset.userId}?user=${myUserId}`;
+                }
+            };
+            elements.activeChatsList.addEventListener('click', navigateToChat);
+            elements.searchResultsList.addEventListener('click', navigateToChat);
+            
+            // --- INITIALIZATION ---
+            fetchAndRenderActiveChats();
+        });
+    </script>
+</body>
+</html>
