@@ -152,7 +152,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const myUserId = "<%= myUserId %>";
-            const ws = new WebSocket('ws://localhost:8000/');
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+const host = window.location.host; // includes hostname and port
+const ws = new WebSocket(`${protocol}://${host}/`);
 
             const elements = {
                 searchInput: document.getElementById('user-search-input'),
