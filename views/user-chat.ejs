@@ -973,7 +973,9 @@ body {
             const myUserId = "<%= myUserId %>";
             const recipientId = "<%= recipientId %>";
             const recipientName = "<%= recipientUsername %>";
-            const ws = new WebSocket('ws://localhost:8000/');
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+const host = window.location.host; 
+const ws = new WebSocket(`${protocol}://${host}/`);
 
             const elements = {
                 chatApp: document.querySelector('.chat-app'),
