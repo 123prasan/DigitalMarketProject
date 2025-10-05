@@ -40,8 +40,7 @@ const userMessageSchema = new mongoose.Schema({
         name: String,
         price: String,
         imageUrl: String,
-            slug: String // <-- ADD THIS LINE
-
+slug: String
     },
     // For message replies
     repliedTo: {
