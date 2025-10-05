@@ -68,8 +68,8 @@
         #chat-feature-popup {
             position: absolute;
             top: calc(100% + 15px);
-            right: -20px;
-            width: 220px;
+            right: -5px;
+            width: 200px;
             background-color: var(--color-black);
             color: white;
             padding: 1rem;
@@ -171,12 +171,12 @@
         /* --- THIS IS THE FIX --- */
         @media (max-width: 400px) {
             #chat-feature-popup {
-                right: 5px; /* Anchor to the right edge of the screen */
+                right: -20px; /* Anchor to the right edge of the screen */
                 left: auto;
                 transform-origin: top right;
             }
             #chat-feature-popup::before {
-                right: 50px; /* Adjust arrow position */
+                right: 30px; /* Adjust arrow position */
             }
         }
     </style>
