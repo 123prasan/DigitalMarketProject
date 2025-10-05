@@ -441,38 +441,44 @@
             // 4. UTILITIES & EVENT LISTENERS
             // =================================================================
 
-            const handleSearch = async (query) => {
-                elements.clearSearchBtn.style.display = query ? 'block' : 'none';
-                if (!query) {
-                    elements.searchResultsList.style.display = 'none';
-                    elements.noResults.style.display = 'none';
-                    elements.activeChatsList.style.display = 'block';
-                    return;
-                }
+const handleSearch = async (query) => {
+    elements.clearSearchBtn.style.display = query ? 'block' : 'none';
+    if (!query) {
+        elements.searchResultsList.style.display = 'none';
+        elements.noResults.style.display = 'none';
+        elements.activeChatsList.style.display = 'block';
+        return;
+    }
 
-                try {
-                    const response = await fetch(`/api/users/search?myId=${myUserId}&q=${query}`);
-                    const users = await response.json();
-                    
-                    elements.activeChatsList.style.display = 'none';
-                    elements.searchResultsList.innerHTML = '';
-                    
-                    if (users.length > 0) {
-                        elements.noResults.style.display = 'none';
-                        users.forEach((user, index) => {
-                            const userItem = createSearchUserItem(user);
-                            userItem.style.animationDelay = `${index * 50}ms`;
-                            elements.searchResultsList.appendChild(userItem);
-                        });
-                        elements.searchResultsList.style.display = 'block';
-                    } else {
-                        elements.searchResultsList.style.display = 'none';
-                        elements.noResults.style.display = 'block';
-                    }
-                } catch (error) {
-                    console.error("Search failed:", error);
-                }
-            };
+    try {
+        const response = await fetch(`/api/users/search?myId=${myUserId}&q=${query}`);
+        const users = await response.json();
+        
+        // 💡 CRITICAL CLIENT-SIDE FILTER: Exclude the current user from the results.
+        // This acts as a safety net in case the server-side filter fails.
+        const filteredUsers = users.filter(user => user._id !== myUserId);
+
+        elements.activeChatsList.style.display = 'none';
+        elements.searchResultsList.innerHTML = '';
+        
+        if (filteredUsers.length > 0) {
+            elements.noResults.style.display = 'none';
+            
+            // Use filteredUsers for rendering
+            filteredUsers.forEach((user, index) => {
+                const userItem = createSearchUserItem(user);
+                userItem.style.animationDelay = `${index * 50}ms`;
+                elements.searchResultsList.appendChild(userItem);
+            });
+            elements.searchResultsList.style.display = 'block';
+        } else {
+            elements.searchResultsList.style.display = 'none';
+            elements.noResults.style.display = 'block';
+        }
+    } catch (error) {
+        console.error("Search failed:", error);
+    }
+};
 
             const updateUserOnlineStatus = (userId, isOnline) => {
                 document.querySelectorAll(`.online-dot[data-user-id="${userId}"]`).forEach(dot => {

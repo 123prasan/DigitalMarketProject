@@ -47,12 +47,26 @@ router.get('/chats',authenticateJWT_user,requireAuth, async (req, res) => {
 });
 
 // Route for a specific one-on-one chat page
-router.get('/user/chat/:userId',authenticateJWT_user,requireAuth, async (req, res) => {
+router.get('/user/chat/:userId', authenticateJWT_user, requireAuth, async (req, res) => {
     try {
         const recipientId = req.params.userId;
-        const myUserId = req.query.user || '68de9bfaf800ec98aea8b6f3'; // Placeholder for testing
-     console.log("recipient",recipientId)
-     console.log("myUserId",myUserId)
+        
+        // 1. **Get the authenticated user's ID.** // We prioritize req.user._id (set by authenticateJWT_user/requireAuth) for security.
+        // We keep the placeholder fallback for local testing if necessary.
+        const myUserId = req.user ? req.user._id.toString() : (req.query.user || '68de9bfaf800ec98aea8b6f3'); 
+        
+        console.log("recipient", recipientId);
+        console.log("myUserId", myUserId);
+
+        // 2. **CRITICAL CHECK: Prevent Self-Chatting**
+        if (String(recipientId) === String(myUserId)) {
+            // Option 1: Redirect to the main chat list or home page
+            // return res.redirect('/user/chats'); 
+            
+            // Option 2: Render an error page or send a forbidden status
+            return res.status(403).send("You cannot chat with yourself.");
+        }
+
         const [user, recipientUser] = await Promise.all([
             User.findById(myUserId).lean(),
             User.findById(recipientId).lean()
@@ -75,24 +89,75 @@ router.get('/user/chat/:userId',authenticateJWT_user,requireAuth, async (req, re
         console.error("❌ Error in /chat/:userId route:", error);
         res.status(500).send("Server error");
     }
-});
+});;
 
 
 // --- API ROUTES ---
 
 // API to get all active conversations for a user
-router.get('/api/conversations',authenticateJWT_user,requireAuth, async (req, res) => {
+router.get('/api/conversations', authenticateJWT_user, requireAuth, async (req, res) => {
     try {
         const myUserId = new mongoose.Types.ObjectId(req.query.myId);
+        
         const conversations = await UserMessage.aggregate([
-            { $match: { $or: [{ senderId: myUserId }, { recipientId: myUserId }] } },
+            { 
+                $match: { 
+                    // 1. Match messages involving the current user (myUserId)
+                    $or: [
+                        { senderId: myUserId }, 
+                        { recipientId: myUserId }
+                    ],
+                    // 2. CRITICAL FIX: Exclude self-chats where senderId equals recipientId
+                    $expr: {
+                        $ne: ["$senderId", "$recipientId"] 
+                    }
+                } 
+            },
             { $sort: { createdAt: -1 } },
             { $group: { _id: "$conversationId", lastMessage: { $first: "$$ROOT" } } },
             { $addFields: { "partnerId": { $cond: { if: { $eq: ["$lastMessage.senderId", myUserId] }, then: "$lastMessage.recipientId", else: "$lastMessage.senderId" } } } },
+            
+            // 💡 ADDED FOR UNREAD COUNT: Calculate unread count for each conversation
+            {
+                $lookup: {
+                    from: "usermessages",
+                    let: { convoId: "$conversationId", userId: myUserId },
+                    pipeline: [
+                        { 
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$conversationId", "$$convoId"] },
+                                        { $eq: ["$recipientId", "$$userId"] }, // Sent to me
+                                        { $in: ["$status", ["sent", "delivered"]] } // Unread status
+                                    ]
+                                }
+                            }
+                        },
+                        { $count: "unreadCount" }
+                    ],
+                    as: "unreadMessages"
+                }
+            },
+            
             { $lookup: { from: "users", localField: "partnerId", foreignField: "_id", as: "partnerDetails" } },
-            { $project: { _id: 0, conversationId: "$_id", lastMessage: "$lastMessage", partner: { $arrayElemAt: ["$partnerDetails", 0] } } },
+            { 
+                $project: { 
+                    _id: 0, 
+                    conversationId: "$_id", 
+                    lastMessage: {
+                        // Project all existing fields from lastMessage
+                        $mergeObjects: ["$lastMessage", {
+                            // Embed the unread count into the lastMessage object for client consumption
+                            unreadCount: { $arrayElemAt: ["$unreadMessages.unreadCount", 0] } 
+                        }]
+                    },
+                    partner: { $arrayElemAt: ["$partnerDetails", 0] } 
+                } 
+            },
             { $sort: { "lastMessage.createdAt": -1 } }
         ]);
+        
         res.json(conversations);
     } catch (error) {
         console.error("Error fetching conversations:", error);
@@ -101,30 +166,42 @@ router.get('/api/conversations',authenticateJWT_user,requireAuth, async (req, re
 });
 
 // API to search for new users to chat with
-router.get('/api/users/search',authenticateJWT_user,requireAuth, async (req, res) => {
+router.get('/api/users/search', authenticateJWT_user, requireAuth, async (req, res) => {
     try {
-        const myUserId = new mongoose.Types.ObjectId(req.query.myId);
+        // 1. Get the current user's ID securely and reliably.
+        // Assume req.user is set by authenticateJWT_user middleware.
+        // Fallback to req.query.myId if req.user is not available, but req.user is highly recommended.
+        const currentUserId = req.user ? req.user._id : req.query.myId;
+        
+        if (!currentUserId) {
+             return res.status(401).json({ message: "Authentication required." });
+        }
+
+        const myObjectId = new mongoose.Types.ObjectId(currentUserId);
         const query = req.query.q;
+        
         if (!query) return res.json([]);
 
-        const messages = await UserMessage.find({ $or: [{ senderId: myUserId }, { recipientId: myUserId }] }).select('senderId recipientId').lean();
-        const existingPartnerIds = new Set();
-        messages.forEach(msg => {
-            if (String(msg.senderId) !== String(myUserId)) existingPartnerIds.add(String(msg.senderId));
-            if (String(msg.recipientId) !== String(myUserId)) existingPartnerIds.add(String(msg.recipientId));
-        });
-        const idsToExclude = [myUserId, ...Array.from(existingPartnerIds).map(id => new mongoose.Types.ObjectId(id))];
-
+        // 2. Simplification: Only exclude the current user (myUserId).
+        // If the intention is to allow searching for existing partners to resume the chat,
+        // this is the correct behavior. If the intention is STRICTLY "New Chats Only," 
+        // the original complex logic is needed, but simplified below.
+        
         const users = await User.find({
             username: { $regex: query, $options: 'i' },
-            _id: { $nin: idsToExclude }
-        }).select('username profilePicUrl isVerified').limit(10).lean();
+            
+            // 💡 CRITICAL CHANGE: Exclude the current user from the results.
+            _id: { $ne: myObjectId } 
+            
+        }).select('_id username profilePicUrl isVerified').limit(10).lean();
+
         res.json(users);
+        
     } catch (error) {
         console.error("❌ Error searching users:", error);
         res.status(500).json([]);
     }
-});
+});;
 
 // API to get products for the "Share Product" modal
 router.get('/api/products',authenticateJWT_user,requireAuth, async (req, res) => {
@@ -163,16 +240,32 @@ router.delete('/api/messages/:conversationId',authenticateJWT_user,requireAuth, 
 });
 
 // API to fetch a specific conversation's history with pagination
-router.get('/UserMessages/:userId',authenticateJWT_user,requireAuth, async (req, res) => {
+router.get('/UserMessages/:userId', authenticateJWT_user, requireAuth, async (req, res) => {
     try {
         const { myId: selfId, before: beforeTimestamp } = req.query;
         const { userId: partnerId } = req.params;
+
+        // 1. **CRITICAL CHECK: Prevent Self-Chatting**
+        if (String(partnerId) === String(selfId)) {
+            console.warn(`[Security] User ${selfId} attempted to load history with self.`);
+            // Return an empty array or a forbidden status, as there should be no self-history
+            return res.status(403).json({ message: "Self-chat history retrieval is not allowed." });
+        }
+
+        // 2. Proceed with history retrieval for the valid conversation
         const query = { conversationId: [selfId, partnerId].sort().join('--') };
+
         if (beforeTimestamp) {
             query.createdAt = { $lt: new Date(beforeTimestamp) };
         }
-        const history = await UserMessage.find(query).sort({ createdAt: -1 }).limit(30).lean();
-        res.json(history.reverse());
+
+        const history = await UserMessage.find(query)
+            .sort({ createdAt: -1 })
+            .limit(30)
+            .lean();
+
+        // Return messages in chronological order (oldest first)
+        res.json(history.reverse()); 
     } catch (error) {
         console.error("❌ Error fetching message history:", error);
         res.status(500).json({ message: "Could not fetch message history." });
