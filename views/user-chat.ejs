@@ -13,26 +13,13 @@
         integrity="sha384-32KMvAMS4DUBcQtHG6fzADguo/tpN1Nh6BAJa2QqZc6/i0K+YPQE+bWiqBRAWuFs"
         crossorigin="anonymous"></script>
     <style>
-        .chat-app {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 800px;
-            height: 100vh;
-            border: 4px solid var(--color-black);
-            box-shadow: 12px 12px 0 var(--color-black);
-            overflow: hidden;
-            background: #e5ddd5 url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            position: relative;
-            
-        }
-
         :root {
             --font-main: 'Montserrat', sans-serif;
             --color-bg: #ffffff;
             --color-black: #000000;
             --color-primary: #ff66a3;
             --color-secondary: #d9fdd3;
+            /* WhatsApp-like green */
             --color-accent: #ffd60a;
             --color-focus: #1ac2ff;
             --color-received: #ffffff;
@@ -45,25 +32,35 @@
             box-sizing: border-box;
         }
 
-        body {
-            margin: 0;
-            font-family: var(--font-main);
-            background-color: var(--color-primary);
-            color: var(--color-black);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+     /* In your <style> block: */
+html, body {
+    height: 100%; /* Change `min-height: 100vh;` to `height: 100%;` */
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-main);
+    background-color: var(--color-primary);
+    color: var(--color-black);
+    /* REMOVE min-height: 100vh; */
+    height: 100%; /* ADD THIS */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
 
         .chat-app {
             display: flex;
             flex-direction: column;
             width: 100%;
+            max-width: 800px;
+            height: 100%;
             border: 4px solid var(--color-black);
             box-shadow: 12px 12px 0 var(--color-black);
             overflow: hidden;
             background: #e5ddd5 url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            position: relative;
         }
 
         .chat-header {
@@ -155,6 +152,8 @@
             border: none;
             box-shadow: none;
             border-radius: 50%;
+            color: #555;
+            font-size: 1.3rem;
         }
 
         #header-menu-button:hover {
@@ -410,12 +409,13 @@
             color: var(--color-primary);
         }
 
-        .message-text {
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            white-space: pre-wrap;
-            line-height: 1.5;
-        }
+      .message-text { 
+    white-space: pre-wrap;       /* Respects new lines you type */
+    word-wrap: break-word;       /* Fallback for older browsers */
+    overflow-wrap: break-word;   /* This is the key: it breaks long words */
+    line-height: 1.5; 
+    max-width: 250px;
+}
 
         .message-text a {
             color: var(--color-focus);
@@ -570,7 +570,7 @@
             border-top: 1px solid #ddd;
             display: flex;
             gap: 0.75rem;
-            align-items: center;
+            align-items: flex-end;
             flex-shrink: 0;
             position: relative;
         }
@@ -578,6 +578,8 @@
         .footer-buttons {
             display: flex;
             gap: 0.75rem;
+            align-items: center;
+            padding-bottom: 5px;
         }
 
         .chat-footer button {
@@ -626,6 +628,13 @@
             color: white;
         }
 
+        #send-button:disabled {
+            background-color: #b0b0b0;
+            cursor: not-allowed;
+            transform: scale(1);
+            box-shadow: none;
+        }
+
         .message-input-wrapper {
             flex-grow: 1;
             position: relative;
@@ -672,7 +681,6 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.9);
-            /* Start slightly smaller */
             background-color: var(--color-black);
             color: white;
             padding: 12px 22px;
@@ -680,19 +688,13 @@
             font-weight: 600;
             z-index: 9999;
             pointer-events: none;
-            /* Prevents clicking on the invisible toast */
-
-            /* --- THIS IS THE CRITICAL PART --- */
             opacity: 0;
-            /* Start invisible */
-            /* Animate the changes to opacity and transform */
             transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
         }
 
         .toast-notification.show {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
-            /* Animate to full size */
         }
 
         #quick-replies-panel {
@@ -857,11 +859,11 @@
             }
 
             .chat-app {
-                height: 100vh;
-                max-height: 100vh;
-                border-radius: 0;
+                height: 100%;
+                max-height: 100%;
                 border: none;
                 box-shadow: none;
+                
             }
 
             .chat-header h3 {
@@ -874,7 +876,8 @@
 
             .chat-footer .footer-buttons {
                 transition: width 0.3s ease, opacity 0.2s ease, margin-right 0.3s ease;
-                overflow: hidden;
+                /* overflow: hidden; */
+                margin-left: -5px;
             }
 
             .chat-footer.input-focused .footer-buttons {
@@ -883,36 +886,33 @@
                 margin-right: -0.5rem;
                 pointer-events: none;
             }
+             #message-input::placeholder{
+                font-size: 10px;
+             }
         }
     </style>
 </head>
 
 <body>
-    <div id="toast-container"></div>
     <div class="chat-app">
         <div class="chat-header">
             <div class="header-main">
-                <% if (recipientProfileUrl) { %>
-  <img id="recipient-profile-img" src="<%= recipientProfileUrl %>" alt="Profile Picture">
-<% } else { %>
-  <img id="recipient-profile-img" src="/images/avatar.jpg" alt="Profile Picture">
-<% } %>
-
-                            <div class="header-info">
-                                <div class="username-line">
-                                    <h3 id="chat-with-id">
-                                        <%= recipientUsername %>
-                                    </h3>
-                                    <% if (locals.isVerified) { %>
-                                        <img src="/images/verify.png" class="verified-badge" alt="Verified"
-                                            title="Verified Seller">
-                                        <% } %>
-                                </div>
-                                <div class="status-line">
-                                    <div class="online-indicator" id="online-indicator"></div>
-                                    <span id="online-status-text">Offline</span>
-                                </div>
-                            </div>
+                <img id="recipient-profile-img" src="<%= recipientProfileUrl || '/images/avatar.jpg' %>"
+                    alt="Profile Picture">
+                <div class="header-info">
+                    <div class="username-line">
+                        <h3 id="chat-with-id">
+                            <%= recipientUsername %>
+                        </h3>
+                        <% if (locals.isVerified) { %>
+                            <img src="/images/verify.png" class="verified-badge" alt="Verified" title="Verified Seller">
+                            <% } %>
+                    </div>
+                    <div class="status-line">
+                        <div class="online-indicator" id="online-indicator"></div>
+                        <span id="online-status-text">Offline</span>
+                    </div>
+                </div>
             </div>
             <div class="header-menu">
                 <button id="header-menu-button" title="Menu"><i class="fa-solid fa-ellipsis-vertical"></i></button>
@@ -936,7 +936,6 @@
                 <div class="typing-dot"></div>
             </div>
         </div>
-
         <div class="chat-footer-container">
             <div class="reply-context" id="reply-context"></div>
             <div class="quick-replies-panel" id="quick-replies-panel"></div>
@@ -956,7 +955,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal-overlay" id="product-modal-overlay">
         <div class="modal-content">
             <h3>Share a Product</h3>
@@ -964,7 +962,6 @@
             <button class="close-modal" id="close-product-modal">&times;</button>
         </div>
     </div>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -976,28 +973,41 @@
             const myUserId = "<%= myUserId %>";
             const recipientId = "<%= recipientId %>";
             const recipientName = "<%= recipientUsername %>";
-          const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-const host = window.location.host; // includes hostname and port
-const ws = new WebSocket(`${protocol}://${host}/`);
+            const ws = new WebSocket('ws://localhost:8000/');
 
             const elements = {
-                chatFooter: document.getElementById('chat-footer'), chatBody: document.getElementById('chat-body'),
-                messageContainer: document.getElementById('message-container'), messageInput: document.getElementById('message-input'),
-                sendButton: document.getElementById('send-button'), spinner: document.getElementById('spinner'),
-                onlineIndicator: document.getElementById('online-indicator'), onlineStatusText: document.getElementById('online-status-text'),
-                emojiButton: document.getElementById('emoji-button'), emojiPicker: document.querySelector('emoji-picker'),
-                replyContext: document.getElementById('reply-context'), quickReplyButton: document.getElementById('quick-reply-button'),
-                quickRepliesPanel: document.getElementById('quick-replies-panel'), shareProductButton: document.getElementById('share-product-button'),
-                productModalOverlay: document.getElementById('product-modal-overlay'), productList: document.getElementById('product-list'),
-                closeProductModal: document.getElementById('close-product-modal'), micButton: document.getElementById('mic-button'),
-                charCounter: document.getElementById('char-counter'), headerMenuButton: document.getElementById('header-menu-button'),
-                dropdownMenu: document.getElementById('dropdown-menu'), clearChatButton: document.getElementById('clear-chat-button'),
+                chatApp: document.querySelector('.chat-app'),
+                chatFooter: document.getElementById('chat-footer'),
+                chatBody: document.getElementById('chat-body'),
+                messageContainer: document.getElementById('message-container'),
+                messageInput: document.getElementById('message-input'),
+                sendButton: document.getElementById('send-button'),
+                spinner: document.getElementById('spinner'),
+                onlineIndicator: document.getElementById('online-indicator'),
+                onlineStatusText: document.getElementById('online-status-text'),
+                emojiButton: document.getElementById('emoji-button'),
+                emojiPicker: document.querySelector('emoji-picker'),
+                replyContext: document.getElementById('reply-context'),
+                quickReplyButton: document.getElementById('quick-reply-button'),
+                quickRepliesPanel: document.getElementById('quick-replies-panel'),
+                shareProductButton: document.getElementById('share-product-button'),
+                productModalOverlay: document.getElementById('product-modal-overlay'),
+                productList: document.getElementById('product-list'),
+                closeProductModal: document.getElementById('close-product-modal'),
+                micButton: document.getElementById('mic-button'),
+                headerMenuButton: document.getElementById('header-menu-button'),
+                dropdownMenu: document.getElementById('dropdown-menu'),
+                clearChatButton: document.getElementById('clear-chat-button'),
                 typingIndicator: document.getElementById('typing-indicator'),
             };
 
             let state = {
-                activeReply: null, isFetchingOlderMessages: false, oldestMessageTimestamp: new Date().toISOString(),
-                hasMoreMessagesToLoad: true, isListening: false, typingTimer: null,
+                activeReply: null,
+                isFetchingOlderMessages: false,
+                oldestMessageTimestamp: new Date().toISOString(),
+                hasMoreMessagesToLoad: true,
+                isListening: false,
+                typingTimer: null,
             };
 
             const quickReplies = [
@@ -1022,34 +1032,47 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                 let finalTranscript = '';
                 recognition.onresult = (event) => {
                     let interimTranscript = '';
-                    finalTranscript = '';
                     for (let i = event.resultIndex; i < event.results.length; ++i) {
-                        const transcript = event.results[i][0].transcript;
                         if (event.results[i].isFinal) {
-                            finalTranscript += transcript;
+                            finalTranscript += event.results[i][0].transcript + ' ';
                         } else {
-                            interimTranscript += transcript;
+                            interimTranscript += event.results[i][0].transcript;
                         }
                     }
                     elements.messageInput.value = finalTranscript + interimTranscript;
-                    updateCharCounter();
+                    updateSendButtonState();
                     autoResizeTextarea();
                 };
 
-                recognition.onstart = () => { finalTranscript = elements.messageInput.value ? elements.messageInput.value.trim() + ' ' : ''; };
-                recognition.onend = () => { if (!state.isListening) { elements.micButton.classList.remove('listening'); } };
+                recognition.onstart = () => {
+                    finalTranscript = elements.messageInput.value ? elements.messageInput.value.trim() + ' ' : '';
+                };
+
+                recognition.onend = () => {
+                    if (state.isListening) {
+                        try { recognition.start(); } catch (e) { console.error(e); }
+                    } else {
+                        elements.micButton.classList.remove('listening');
+                    }
+                };
+
                 recognition.onerror = (event) => {
                     console.error('Speech recognition error:', event.error);
                     showToast(`Voice error: ${event.error}`);
-                    if (state.isListening) { toggleVoiceRecognition(); }
+                    if (state.isListening) {
+                        toggleVoiceRecognition();
+                    }
                 };
-            } else { if (elements.micButton) elements.micButton.style.display = 'none'; }
+            } else {
+                if (elements.micButton) elements.micButton.style.display = 'none';
+            }
 
             // =================================================================================
             // --- 2. WEBSOCKET LOGIC ---
             // =================================================================================
+
             ws.onopen = () => {
-                // console.log('Connected to WebSocket server.');
+                console.log('Connected to WebSocket server.');
                 ws.send(JSON.stringify({ type: 'register', userId: myUserId, recipientId: recipientId }));
                 elements.messageInput.disabled = false;
                 elements.sendButton.disabled = true;
@@ -1057,6 +1080,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                 fetchInitialMessages();
                 setupInfiniteScroll();
             };
+
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
                 if (data.type === 'user_status_update') {
@@ -1073,36 +1097,54 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     }
                     return;
                 }
-                if (data.type === 'message_status_update') { updateMessageStatusInDOM(data.messageId, data.status); return; }
+                if (data.type === 'message_status_update') {
+                    updateMessageStatusInDOM(data.messageId, data.status);
+                    return;
+                }
                 const isChatRelevant = data.senderId === recipientId || data.senderId === myUserId;
                 if (!isChatRelevant) return;
-                if (data.senderId === recipientId) { soundReceived.play().catch(e => console.error("Sound play failed:", e)); }
+                if (data.senderId === recipientId) {
+                    soundReceived.play().catch(e => console.error("Sound play failed:", e));
+                }
                 switch (data.type) {
-                    case 'private_message': case 'reply_message': case 'product_message': appendMessage(data, data.senderId === myUserId ? 'sent' : 'received'); break;
-                    case 'message_edited': updateMessageInDOM(data.messageId, data.newText); break;
-                    case 'message_deleted': deleteMessageInDOM(data.messageId); break;
+                    case 'private_message': case 'reply_message': case 'product_message':
+                        appendMessage(data, data.senderId === myUserId ? 'sent' : 'received');
+                        break;
+                    case 'message_edited':
+                        updateMessageInDOM(data.messageId, data.newText);
+                        break;
+                    case 'message_deleted':
+                        deleteMessageInDOM(data.messageId);
+                        break;
                 }
             };
 
             // =================================================================================
             // --- 3. CORE MESSAGING & UI FUNCTIONS ---
             // =================================================================================
+
             const sendMessage = () => {
                 const text = elements.messageInput.value.trim();
                 if (!text) return;
-                if (state.isListening) { toggleVoiceRecognition(); }
+                if (state.isListening) {
+                    toggleVoiceRecognition();
+                }
                 soundSent.play().catch(e => console.error("Sound play failed:", e));
                 const messageData = {
                     id: `msg_${Date.now()}_${myUserId}`,
                     type: state.activeReply ? 'reply_message' : 'private_message',
-                    senderId: myUserId, recipientId, text, repliedTo: state.activeReply,
-                    createdAt: new Date().toISOString(), status: 'sent'
+                    senderId: myUserId,
+                    recipientId: recipientId,
+                    text,
+                    repliedTo: state.activeReply,
+                    createdAt: new Date().toISOString(),
+                    status: 'sent'
                 };
                 ws.send(JSON.stringify(messageData));
                 appendMessage(messageData, 'sent');
                 elements.messageInput.value = '';
                 elements.messageInput.blur();
-                updateCharCounter();
+                updateSendButtonState();
                 autoResizeTextarea();
                 cancelReply();
             };
@@ -1119,7 +1161,9 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                 }
                 const messageEl = createMessageElement(msg, type);
                 container[method](messageEl);
-                if (type === 'received') { readReceiptObserver.observe(messageEl); }
+                if (type === 'received') {
+                    readReceiptObserver.observe(messageEl);
+                }
                 if (!options.prepend) {
                     setTimeout(() => elements.chatBody.scrollTo({ top: elements.chatBody.scrollHeight, behavior: 'smooth' }), 0);
                 }
@@ -1243,18 +1287,22 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     recognition.stop();
                 }
             };
-            const updateCharCounter = () => {
-                const count = elements.messageInput.value.length;
-                const limit = 1000;
-                elements.charCounter.textContent = `${count} / ${limit}`;
-                elements.sendButton.disabled = count === 0 || count > limit;
+
+            const updateSendButtonState = () => {
+                const hasText = elements.messageInput.value.trim().length > 0;
+                elements.sendButton.disabled = !hasText;
             };
 
             const autoResizeTextarea = () => {
                 const textarea = elements.messageInput;
-                textarea.style.height = 'auto'; // Reset height
-                textarea.style.height = `${textarea.scrollHeight}px`; // Set to content height
-                textarea.style.overflowY = textarea.scrollHeight > 120 ? 'auto' : 'hidden';
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+                const maxHeight = 120;
+                if (textarea.scrollHeight > maxHeight) {
+                    textarea.style.overflowY = 'auto';
+                } else {
+                    textarea.style.overflowY = 'hidden';
+                }
             };
 
             const clearChat = async () => {
@@ -1294,6 +1342,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                 elements.replyContext.querySelector('.close-reply').addEventListener('click', cancelReply);
                 elements.messageInput.focus();
             };
+
             const cancelReply = () => {
                 state.activeReply = null;
                 elements.replyContext.style.display = 'none';
@@ -1342,7 +1391,10 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     showToast("Could not load products.");
                 }
             };
-            const closeProductModal = () => elements.productModalOverlay.classList.remove('show');
+
+            const closeProductModal = () => {
+                elements.productModalOverlay.classList.remove('show');
+            };
 
             const sendProductMessage = (productData) => {
                 const messageData = {
@@ -1368,6 +1420,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     editingInput.remove();
                 }
             };
+
             const startEditing = (wrapperEl) => {
                 cancelAllEdits();
                 const textEl = wrapperEl.querySelector('.message-text');
@@ -1391,6 +1444,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     }
                 });
             };
+
             const deleteMessage = (messageId) => {
                 ws.send(JSON.stringify({ type: 'delete_message', messageId, recipientId }));
                 deleteMessageInDOM(messageId);
@@ -1411,6 +1465,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     }
                 }
             };
+
             const deleteMessageInDOM = (messageId) => {
                 const wrapperEl = document.querySelector(`[data-message-id="${messageId}"]`);
                 if (wrapperEl) {
@@ -1419,6 +1474,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     wrapperEl.querySelector('.message-meta')?.remove();
                 }
             };
+
             const updateMessageStatusInDOM = (messageId, status) => {
                 const selector = `[data-message-id="${messageId}"] .receipt-ticks`;
                 const ticksEl = document.querySelector(selector);
@@ -1428,6 +1484,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     console.warn(`DEBUG: Could not find ticks element with selector:`, selector);
                 }
             };
+
             const updateTicks = (element, status) => {
                 if (!element) return;
                 switch (status) {
@@ -1468,35 +1525,29 @@ const ws = new WebSocket(`${protocol}://${host}/`);
             };
 
             const fetchOlderMessages = async () => {
-                // This top-level check is important to prevent any API calls
-                if (!state.hasMoreMessagesToLoad) return;
-
+                if (!state.hasMoreMessagesToLoad) {
+                    if (state.oldestMessageTimestamp) showToast('No more messages to load.');
+                    state.oldestMessageTimestamp = null;
+                    return;
+                }
                 state.isFetchingOlderMessages = true;
                 elements.spinner.style.display = 'block';
                 try {
                     const response = await fetch(`/UserMessages/${recipientId}?myId=${myUserId}&before=${state.oldestMessageTimestamp}`);
                     if (!response.ok) throw new Error('Failed to fetch older messages');
                     const olderHistory = await response.json();
-
                     if (olderHistory.length > 0) {
                         const currentScrollHeight = elements.chatBody.scrollHeight;
                         olderHistory.forEach(msg => appendMessage(msg, msg.senderId === myUserId ? 'sent' : 'received', { prepend: true }));
                         state.oldestMessageTimestamp = olderHistory[0].createdAt;
                         elements.chatBody.scrollTop = elements.chatBody.scrollHeight - currentScrollHeight;
                     } else {
-                        // --- THIS IS THE FIX ---
-                        // Only show the toast if we previously thought there were more messages.
-                        // This prevents it from showing again on subsequent scroll events.
-                        if (state.hasMoreMessagesToLoad) {
-                            showToast('No more messages to load.');
-                        }
                         state.hasMoreMessagesToLoad = false;
+                        showToast('No more messages to load.');
                     }
                 } catch (error) {
                     console.error(error);
-                    if (state.hasMoreMessagesToLoad) {
-                        showToast('Could not load older messages.');
-                    }
+                    showToast('Could not load older messages.');
                 } finally {
                     elements.spinner.style.display = 'none';
                     state.isFetchingOlderMessages = false;
@@ -1504,10 +1555,13 @@ const ws = new WebSocket(`${protocol}://${host}/`);
             };
 
             const showToast = (message) => {
+                const existingToast = document.querySelector('.toast-notification');
+                if (existingToast) existingToast.remove();
+
                 const toast = document.createElement('div');
                 toast.className = 'toast-notification';
                 toast.textContent = message;
-                document.body.appendChild(toast);
+                document.querySelector('.chat-app').appendChild(toast);
                 setTimeout(() => { toast.classList.add('show'); }, 10);
                 setTimeout(() => {
                     toast.classList.remove('show');
@@ -1544,51 +1598,49 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                 }, 2000);
             };
 
-            // const autoResizeTextarea = () => {
-            //     const textarea = elements.messageInput;
-            //     textarea.style.height = 'auto'; // Reset height
-            //     textarea.style.height = `${textarea.scrollHeight}px`; // Set to content height
-            //     textarea.style.overflowY = textarea.scrollHeight > 120 ? 'auto' : 'hidden';
-            // };
-
-            // const clearChat = async () => {
-            //     if (confirm('Are you sure you want to permanently delete all messages in this chat?')) {
-            //         try {
-            //             const conversationId = [myUserId, recipientId].sort().join('--');
-            //             const response = await fetch(`/api/messages/${conversationId}`, { method: 'DELETE' });
-            //             if (!response.ok) throw new Error('Failed to clear chat.');
-            //             elements.messageContainer.innerHTML = '';
-            //             showToast('Chat history cleared.');
-            //         } catch (error) {
-            //             console.error(error);
-            //             showToast('Error clearing chat.');
-            //         }
-            //     }
-            // };
-
             // =================================================================================
             // --- 5. EVENT LISTENERS ---
             // =================================================================================
+
             elements.sendButton.addEventListener('click', sendMessage);
-            elements.messageInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-            });
-            elements.messageInput.addEventListener('input', () => {
-                handleTyping();
-                autoResizeTextarea();
-                updateCharCounter();
-            });
+
+          elements.messageInput.addEventListener('keydown', (e) => {
+    // Check if the user is on a touch device (a good proxy for mobile)
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (e.key === 'Enter') {
+        if (isMobile || e.shiftKey) {
+            // On mobile, or with Shift key on desktop, allow the default new line behavior.
+            return;
+        } else {
+            // On desktop, without Shift key, send the message.
+            e.preventDefault(); // Prevent a new line from being added
+            sendMessage();
+        }
+    }
+});
+
+          elements.messageInput.addEventListener('input', () => {
+    handleTyping();
+    autoResizeTextarea();
+    updateSendButtonState(); // <-- THIS LINE WAS MISSING
+});
+
             elements.micButton.addEventListener('click', toggleVoiceRecognition);
+
             elements.emojiButton.addEventListener('click', () => {
                 elements.messageInput.blur();
                 elements.emojiPicker.style.display = elements.emojiPicker.style.display === 'none' ? 'block' : 'none';
             });
+
             elements.emojiPicker.addEventListener('emoji-click', e => {
                 elements.messageInput.value += e.detail.unicode;
                 elements.emojiPicker.style.display = 'none';
                 elements.messageInput.focus();
             });
+
             elements.quickReplyButton.addEventListener('click', toggleQuickReplies);
+
             elements.quickRepliesPanel.addEventListener('click', (e) => {
                 if (e.target.tagName === 'LI') {
                     elements.messageInput.value += e.target.dataset.text;
@@ -1596,8 +1648,11 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     elements.messageInput.focus();
                 }
             });
+
             elements.headerMenuButton.addEventListener('click', () => { elements.dropdownMenu.classList.toggle('show'); });
+
             elements.clearChatButton.addEventListener('click', clearChat);
+
             if (elements.shareProductButton) {
                 elements.shareProductButton.addEventListener('click', openProductModal);
                 elements.closeProductModal.addEventListener('click', closeProductModal);
@@ -1609,6 +1664,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     if (productItem) { sendProductMessage(productItem.dataset); }
                 });
             }
+
             document.addEventListener('click', (e) => {
                 if (!elements.quickRepliesPanel.contains(e.target) && !elements.quickReplyButton.contains(e.target)) {
                     elements.quickRepliesPanel.style.display = 'none';
@@ -1620,11 +1676,13 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     elements.dropdownMenu.classList.remove('show');
                 }
             });
+
             elements.messageInput.addEventListener('focus', () => {
                 if (window.innerWidth <= 600) {
                     elements.chatFooter.classList.add('input-focused');
                 }
             });
+
             elements.messageInput.addEventListener('blur', () => {
                 elements.chatFooter.classList.remove('input-focused');
             });

@@ -109,344 +109,204 @@ function notifyUser(userId, payload) {
 
 // --- WebSocket Logic (REPLACE THIS ENTIRE SECTION) ---
 
+// --- ASSUMED EXTERNAL SETUP ---
+// const WebSocket = require('ws');
+// const wss = new WebSocket.Server({ port: 8000 });
+// const clients = new Map(); // Global map of connected clients: Map<userId, ws>
+// const UserMessage = require('./models/UserMessage'); // Your Mongoose model
+// const User = require('./models/User'); // Your User model to fetch profile info
+
+
+
 wss.on('connection', (ws) => {
-
-  let userId; // This will store the ID for this specific connection
-
-  const broadcastStatus = (targetUserId, isOnline) => {
-
-    const statusPayload = JSON.stringify({
-
-      type: 'user_status_update',
-
-      userId: targetUserId,
-
-      isOnline: isOnline
-
-    });
-
-    // Inform all connected clients of the status change
-
-    clients.forEach(client => {
-
-      if (client.readyState === WebSocket.OPEN) {
-
-        client.send(statusPayload);
-
-      }
-
-    });
-
-    console.log(`[Status] Broadcast: User ${targetUserId} is ${isOnline ? 'Online' : 'Offline'}`);
-
-  };
-
-  ws.on('message', async (message) => {
-
-    try {
-
-      const data = JSON.parse(message);
-
-
-
-      if (data.type !== 'register' && !userId) {
-
-        return console.error("Message received from unregistered client.");
-
-      }
-
-
-
-      switch (data.type) {
-
-        // In your backend server file
-
-        case 'register':
-
-          userId = String(data.userId);
-
-          clients.set(userId, ws);
-
-          console.log(`[Connect] User ${userId} connected.`);
-
-
-
-          // Broadcast that this new user is online to everyone
-
-          broadcastStatus(userId, true);
-
-
-
-          // --- THIS IS THE FIX ---
-
-          // Check the status of the person this user is talking to and send it back ONLY to them.
-
-          const recipientId = String(data.recipientId);
-
-          if (clients.has(recipientId)) {
-
-            const statusPayload = {
-
-              type: 'user_status_update',
-
-              userId: recipientId,
-
-              isOnline: true
-
-            };
-
-            // Send the recipient's status back to the newly registered user
-
-            ws.send(JSON.stringify(statusPayload));
-
-          }
-
-          break;
-
-
-
-        case 'private_message':
-
-        case 'reply_message': {
-
-          const { id, recipientId, text, repliedTo, createdAt } = data;
-
-          const conversationId = [userId, recipientId].sort().join('--');
-
-
-
-          const messageDoc = new UserMessage({
-
-            id,
-
-            conversationId,
-
-            senderId: userId,
-
-            recipientId,
-
-            text,
-
-            repliedTo: repliedTo || null,
-
-            createdAt,
-
-            status: clients.has(String(recipientId)) ? 'delivered' : 'sent',
-
-          });
-
-          await messageDoc.save();
-
-
-
-          const fullMessagePayload = { ...messageDoc.toObject(), type: data.type };
-
-          notifyUser(recipientId, fullMessagePayload);
-
-
-
-          if (messageDoc.status === 'delivered') {
-
-            notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
-
-          }
-
-          console.log(`[Message] User ${userId} sent a message to ${recipientId}`);
-
-          break;
-
-        }
-
-
-
-        case 'message_read': {
-
-          const { messageId, senderId } = data;
-
-          console.log(`[Step 2] Backend RECEIVED read event for message: ${messageId}. Notifying sender: ${senderId}`);
-
-
-
-          await UserMessage.updateOne(
-
-            { id: messageId, status: { $ne: 'read' } },
-
-            { $set: { status: 'read' } }
-
-          );
-
-
-
-          // This is the notification that was failing. It will now work correctly.
-
-          const readPayload = { type: 'message_status_update', messageId, status: 'read', senderId: senderId };
-
-          notifyUser(senderId, readPayload);
-
-          console.log(`[Read] Message ${messageId} was read by user ${userId}`);
-
-          break;
-
-        }
-
-
-
-        case 'delete_message': {
-
-          const { messageId, recipientId } = data;
-
-
-
-          await UserMessage.updateOne(
-
-            { id: messageId, senderId: userId },
-
-            { $set: { isDeleted: true, text: "" } }
-
-          );
-
-
-
-          const deletePayload = { type: 'message_deleted', messageId };
-
-          notifyUser(userId, deletePayload);
-
-          notifyUser(recipientId, deletePayload);
-
-          console.log(`[Delete] User ${userId} deleted message ${messageId}`);
-
-          break;
-
-        }
-
-
-
-        case 'edit_message': {
-
-          const { messageId, newText, recipientId } = data;
-
-
-
-          await UserMessage.updateOne(
-
-            { id: messageId, senderId: userId },
-
-            { $set: { text: newText, isEdited: true } }
-
-          );
-
-
-
-          const editPayload = { type: 'message_edited', messageId, newText };
-
-          notifyUser(userId, editPayload);
-
-          notifyUser(recipientId, editPayload);
-
-          console.log(`[Edit] User ${userId} edited message ${messageId}`);
-
-          break;
-
-        }
-
-
-
-        case 'typing': {
-
-          // Forward the typing status to the recipient without saving to DB
-
-          notifyUser(data.recipientId, {
-
-            type: 'typing_status',
-
-            senderId: userId,
-
-            isTyping: data.isTyping
-
-          });
-
-          break;
-
-        }
-
-        case 'product_message': {
-
-          const { id, recipientId, productInfo, createdAt } = data;
-
-          const conversationId = [userId, recipientId].sort().join('--');
-
-
-
-          const messageDoc = new UserMessage({
-
-            id,
-
-            conversationId,
-
-            senderId: userId,
-
-            recipientId,
-
-            text: `Shared product: ${productInfo.name}`, // Fallback text
-
-            productInfo: productInfo,
-
-            status: clients.has(String(recipientId)) ? 'delivered' : 'sent',
-
-          });
-
-          await messageDoc.save();
-
-
-
-          const fullMessagePayload = { ...messageDoc.toObject(), type: data.type };
-
-          notifyUser(recipientId, fullMessagePayload);
-
-
-
-          if (messageDoc.status === 'delivered') {
-
-            notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
-
-          }
-
-          console.log(`[Product] User ${userId} shared a product with ${recipientId}`);
-
-          break;
-
-        }
-
-      }
-
-    } catch (err) {
-
-      console.error("❌ Failed to process message:", err);
-
-    }
-
-  });
-
-
-
-  ws.on('close', () => {
-
-    if (userId) {
-
-      // CRITICAL FIX: Ensure you delete using the string key.
-
-      clients.delete(String(userId));
-
-      console.log(`[Disconnect] User ${String(userId)} disconnected.`);
-
-      broadcastStatus(userId, false);
-
-
-
-    }
-
-  });
-
+    let userId; // This will store the ID for this specific connection
+
+    const broadcastStatus = (targetUserId, isOnline) => {
+        const statusPayload = JSON.stringify({
+            type: 'user_status_update',
+            userId: targetUserId,
+            isOnline: isOnline
+        });
+        // Inform all connected clients of the status change
+        clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(statusPayload);
+            }
+        });
+        console.log(`[Status] Broadcast: User ${targetUserId} is ${isOnline ? 'Online' : 'Offline'}`);
+    };
+
+    ws.on('message', async (message) => {
+        try {
+            const data = JSON.parse(message);
+
+            if (data.type !== 'register' && !userId) {
+                return console.error("Message received from unregistered client.");
+            }
+
+            switch (data.type) {
+                case 'register':
+                    userId = String(data.userId);
+                    clients.set(userId, ws);
+                    console.log(`[Connect] User ${userId} connected.`);
+
+                    // Broadcast that this new user is online to everyone
+                    broadcastStatus(userId, true);
+
+                    // Check the status of the person this user is talking to and send it back ONLY to them.
+                    const recipientId = String(data.recipientId);
+                    if (clients.has(recipientId)) {
+                        const statusPayload = {
+                            type: 'user_status_update',
+                            userId: recipientId,
+                            isOnline: true
+                        };
+                        // Send the recipient's status back to the newly registered user
+                        ws.send(JSON.stringify(statusPayload));
+                    }
+                    break;
+
+                case 'private_message':
+                case 'reply_message':
+                case 'product_message': {
+                    const { id, recipientId, text, repliedTo, productInfo, createdAt } = data;
+                    const conversationId = [userId, recipientId].sort().join('--');
+                    const isProduct = data.type === 'product_message';
+                    
+                    // 1. Get sender profile for chat list update
+                    const senderProfile = await User.findById(userId).select('username profilePicUrl isVerified');
+
+                    // 2. Create and save the message
+                    const messageDoc = new UserMessage({
+                        id,
+                        conversationId,
+                        senderId: userId,
+                        recipientId,
+                        text: isProduct ? `Shared product: ${productInfo.name}` : text,
+                        repliedTo: repliedTo || null,
+                        productInfo: productInfo || null,
+                        createdAt,
+                        // Determine status based on recipient's connection
+                        status: clients.has(String(recipientId)) ? 'delivered' : 'sent', 
+                    });
+                    await messageDoc.save();
+
+                    // 3. Prepare payload for the RECIPIENT
+                    // This payload needs the sender's details for the recipient's chat list to update
+                    const fullMessagePayload = { 
+                        ...messageDoc.toObject(), 
+                        type: data.type,
+                        partner: {
+                            _id: userId,
+                            username: senderProfile.username,
+                            profilePicUrl: senderProfile.profilePicUrl,
+                            isVerified: senderProfile.isVerified
+                        }
+                    };
+                    notifyUser(recipientId, fullMessagePayload);
+
+                    // 4. Notify the SENDER of delivery status if client is connected
+                    if (messageDoc.status === 'delivered') {
+                        notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
+                    }
+                    console.log(`[Message] User ${userId} sent a message to ${recipientId} (${data.type})`);
+                    break;
+                }
+
+                case 'mark_as_read': {
+                    // This action comes from the CHAT PAGE when the user opens the conversation
+                    const { partnerId } = data; 
+
+                    // 1. Update all UNREAD incoming messages from the partner to 'read'
+                    const result = await UserMessage.updateMany(
+                        {
+                            senderId: partnerId, // Messages SENT by the partner
+                            recipientId: userId, // Messages RECEIVED by the current user
+                            status: { $in: ['sent', 'delivered'] } 
+                        },
+                        { $set: { status: 'read' } }
+                    );
+
+                    console.log(`[Read All] User ${userId} marked ${result.modifiedCount} messages from ${partnerId} as read.`);
+
+                    // 2. Notify the chat list client to remove the badge.
+                    // This is essential for real-time badge clearance across devices/tabs.
+                    const badgeClearPayload = {
+                        type: 'unread_count_clear',
+                        partnerId: partnerId // Client uses this to identify which chat to clear
+                    };
+                    notifyUser(userId, badgeClearPayload); 
+                    
+                    break;
+                }
+
+                case 'message_read': {
+                    // This action comes from the CHAT PAGE when the user SCROLLS to see the message
+                    const { messageId, senderId } = data; 
+                    console.log(`[Read Status] Message: ${messageId}. Notifying sender: ${senderId}`);
+
+                    await UserMessage.updateOne(
+                        { id: messageId, status: { $ne: 'read' } },
+                        { $set: { status: 'read' } }
+                    );
+
+                    const readPayload = { type: 'message_status_update', messageId, status: 'read' };
+                    notifyUser(senderId, readPayload);
+                    break;
+                }
+
+                case 'delete_message': {
+                    const { messageId, recipientId } = data;
+
+                    await UserMessage.updateOne(
+                        { id: messageId, senderId: userId },
+                        { $set: { isDeleted: true, text: "" } }
+                    );
+
+                    const deletePayload = { type: 'message_deleted', messageId };
+                    notifyUser(userId, deletePayload);
+                    notifyUser(recipientId, deletePayload);
+                    console.log(`[Delete] User ${userId} deleted message ${messageId}`);
+                    break;
+                }
+
+                case 'edit_message': {
+                    const { messageId, newText, recipientId } = data;
+
+                    await UserMessage.updateOne(
+                        { id: messageId, senderId: userId },
+                        { $set: { text: newText, isEdited: true } }
+                    );
+
+                    const editPayload = { type: 'message_edited', messageId, newText };
+                    notifyUser(userId, editPayload);
+                    notifyUser(recipientId, editPayload);
+                    console.log(`[Edit] User ${userId} edited message ${messageId}`);
+                    break;
+                }
+
+                case 'typing': {
+                    // Forward the typing status to the recipient without saving to DB
+                    notifyUser(data.recipientId, {
+                        type: 'typing_status',
+                        senderId: userId,
+                        isTyping: data.isTyping
+                    });
+                    break;
+                }
+            }
+        } catch (err) {
+            console.error("❌ Failed to process message:", err);
+        }
+    });
+
+    ws.on('close', () => {
+        if (userId) {
+            clients.delete(String(userId));
+            console.log(`[Disconnect] User ${String(userId)} disconnected.`);
+            broadcastStatus(userId, false);
+        }
+    });
 });
 // --- Middleware Setup ---
 // Make sure you have your standard middleware here

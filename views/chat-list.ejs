@@ -6,128 +6,205 @@
     <title>My Chats - Vidyari</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --font-main: 'Montserrat', sans-serif;
-            --color-primary: #ff66a3;
-            --color-bg: #f9f9f9;
-            --color-border: #e0e0e0;
-            --color-text-primary: #1c1c1c;
-            --color-text-secondary: #666;
-            --color-online: #4ade80;
-        }
+<style>
+    :root {
+        --font-main: 'Montserrat', sans-serif;
+        --color-primary: #ff66a3; /* Your main pink color */
+        --color-bg: #f9f9f9;
+        --color-border: #e0e0e0;
+        --color-text-primary: #1c1c1c;
+        --color-text-secondary: #666;
+        --color-online: #4ade80; /* Your existing online green */
+        
+        /* NEW: Vibrant green for the unread badge */
+        --color-unread-badge: #25D366; 
+    }
 
-        *, *::before, *::after { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
 
-        body { 
-            margin: 0; 
-            font-family: var(--font-main); 
-            background-color: var(--color-primary);
-            color: var(--color-text-primary);
-        }
+    /* --- Full Height Fix & Layout --- */
+    html, body { 
+        height: 100%; 
+        margin: 0;
+    }
 
+    body { 
+        font-family: var(--font-main); 
+        background-color: var(--color-primary);
+        color: var(--color-text-primary);
+    }
+    
+    /* Use 100% height and modern mobile viewport unit */
+    .chat-list-container {
+        width: 100%; 
+        height: 100%;
+        /* max-width: 600px; Max width for desktop/tablet view */
+        margin: 0 auto; 
+        background-color: white;
+        display: flex; 
+        flex-direction: column;
+    }
+
+    @supports (height: 100dvh) {
         .chat-list-container {
-            width: 100%; 
-            height: 100vh; /* Occupy full viewport height */
-            margin: 0 auto; 
-            background-color: white;
-            display: flex; 
-            flex-direction: column;
+            height: 100dvh;
         }
-        
-        .chat-list-header {
-            padding: 1rem 1.5rem; 
-            border-bottom: 2px solid var(--color-border);
-            background-color: #fff;
-            flex-shrink: 0;
-        }
-        .chat-list-header h1 { 
-            margin: 0; 
-            font-size: 1.8rem; 
-            font-weight: 900;
-            text-transform: uppercase;
-        }
-        
-        .search-container { 
-            padding: 1rem 1.5rem; 
-            border-bottom: 2px solid var(--color-border);
-            position: relative;
-        }
-        .search-wrapper {
-            position: relative;
-        }
-        #user-search-input {
-            width: 100%; 
-            padding: 0.8rem 2.5rem 0.8rem 2.5rem; 
-            border-radius: 24px;
-            border: 2px solid #ddd; 
-            font-family: var(--font-main);
-            font-size: 1rem; 
-            font-weight: 500; 
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        #user-search-input:focus {
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 4px rgba(255, 102, 163, 0.2);
-        }
-        .search-icon, #clear-search-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #aaa;
-            font-size: 1.1rem;
-        }
-        .search-icon { left: 1rem; }
-        #clear-search-button { 
-            right: 1rem; 
-            cursor: pointer; 
-            display: none; /* Hidden by default */
-        }
-        
-        .list-body { 
-            flex-grow: 1; 
-            overflow-y: auto; 
-            position: relative;
-            scrollbar-width: none;
-        }
-        .chat-list, .search-results-list { 
-            list-style: none; margin: 0; padding: 0; 
-            transition: opacity 0.3s ease;
-        }
-        @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    }
+    
+    .chat-list-header {
+        padding: 1rem 1.5rem; 
+        border-bottom: 2px solid var(--color-border);
+        background-color: #fff;
+        flex-shrink: 0;
+    }
+    .chat-list-header h1 { 
+        margin: 0; 
+        font-size: 1.8rem; 
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+    
+    .search-container { 
+        padding: 1rem 1.5rem; 
+        border-bottom: 2px solid var(--color-border);
+        position: relative;
+        flex-shrink: 0;
+    }
+    .search-wrapper {
+        position: relative;
+    }
+    #user-search-input {
+        width: 100%; 
+        padding: 0.8rem 2.5rem 0.8rem 2.5rem; 
+        border-radius: 24px;
+        border: 2px solid #ddd; 
+        font-family: var(--font-main);
+        font-size: 1rem; 
+        font-weight: 500; 
+        outline: none;
+        transition: all 0.3s ease;
+    }
+    #user-search-input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px rgba(255, 102, 163, 0.2);
+    }
+    .search-icon, #clear-search-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 1.1rem;
+    }
+    .search-icon { left: 1rem; }
+    #clear-search-button { 
+        right: 1rem; 
+        cursor: pointer; 
+        display: none; 
+    }
+    
+    .list-body { 
+        flex-grow: 1; 
+        overflow-y: auto; 
+        position: relative;
+        scrollbar-width: none;
+    }
+    .chat-list, .search-results-list { 
+        list-style: none; margin: 0; padding: 0; 
+        transition: opacity 0.3s ease;
+    }
+    @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .chat-list-item {
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            padding: 1rem 1.5rem;
-            cursor: pointer; 
-            transition: background-color 0.2s;
-            border-bottom: 1px solid var(--color-border);
-            animation: fade-in 0.4s ease-out forwards;
-            opacity: 0;
-        }
-        .chat-list-item:hover { background-color: var(--color-bg); }
-        .profile-pic-container { position: relative; flex-shrink: 0; }
-        .profile-pic { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .online-dot {
-            position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px;
-            border-radius: 50%; background-color: #ccc; border: 2px solid white;
-            transition: background-color 0.3s;
-        }
-        .online-dot.online { background-color: var(--color-online); }
-        .chat-details { flex-grow: 1; min-width: 0; }
-        .chat-details-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .username { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 1.1rem; }
-        .verified-badge { width: 16px; height: 16px; }
-        .timestamp { font-size: 0.75rem; color: var(--color-text-secondary); flex-shrink: 0; }
-        .last-message {
-            font-size: 0.9rem; color: var(--color-text-secondary); white-space: nowrap;
-            overflow: hidden; text-overflow: ellipsis;
-        }
-        #loading-spinner, #no-results { text-align: center; padding: 2rem; color: var(--color-text-secondary); font-weight: 600; }
-    </style>
+    .chat-list-item {
+        display: flex; 
+        align-items: center; 
+        gap: 15px; 
+        padding: 1rem 1.5rem;
+        cursor: pointer; 
+        transition: background-color 0.2s;
+        border-bottom: 1px solid var(--color-border);
+        animation: fade-in 0.4s ease-out forwards;
+        opacity: 0;
+    }
+    .chat-list-item:hover { background-color: var(--color-bg); }
+    .profile-pic-container { position: relative; flex-shrink: 0; }
+    .profile-pic { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .online-dot {
+        position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px;
+        border-radius: 50%; background-color: #ccc; border: 2px solid white;
+        transition: background-color 0.3s;
+    }
+    .online-dot.online { background-color: var(--color-online); }
+    
+    /* --- CHAT DETAILS LAYOUT --- */
+    .chat-details { 
+        flex-grow: 1; 
+        min-width: 0; 
+        display: flex; 
+        flex-direction: column; 
+    }
+    
+    .chat-details-top { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        margin-bottom: 4px; 
+    }
+    
+    /* --- Bottom row for message and badge --- */
+    .chat-details-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .username { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 1.1rem; }
+    .verified-badge { width: 16px; height: 16px; }
+    
+    .timestamp { 
+        font-size: 0.75rem; 
+        color: var(--color-text-secondary); 
+        flex-shrink: 0; 
+    }
+    
+    .last-message {
+        font-size: 0.9rem; 
+        color: var(--color-text-secondary); 
+        white-space: nowrap;
+        overflow: hidden; 
+        text-overflow: ellipsis;
+        flex-grow: 1; 
+        margin-right: 10px; 
+    }
+    
+    /* --- UNREAD STYLES --- */
+    .last-message.unread {
+        color: var(--color-text-primary); 
+        font-weight: 600;
+    }
+    
+    .timestamp.unread {
+        color: var(--color-primary); /* Use primary color for unread time */
+        font-weight: 600;
+    }
+
+    .unread-count-badge {
+        background-color: var(--color-unread-badge); /* Uses the vibrant green */
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 12px;
+        min-width: 24px;
+        height: 24px;
+        display: flex; 
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0; 
+    }
+    /* --------------------- */
+    
+    #loading-spinner, #no-results { text-align: center; padding: 2rem; color: var(--color-text-secondary); font-weight: 600; }
+</style>
 </head>
 <body>
     <div class="chat-list-container">
@@ -152,9 +229,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const myUserId = "<%= myUserId %>";
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-const host = window.location.host; // includes hostname and port
-const ws = new WebSocket(`${protocol}://${host}/`);
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const host = window.location.host; // includes hostname and port
+            const ws = new WebSocket(`${protocol}://${host}/`);
 
             const elements = {
                 searchInput: document.getElementById('user-search-input'),
@@ -167,10 +244,14 @@ const ws = new WebSocket(`${protocol}://${host}/`);
 
             let searchDebounceTimer;
 
-            // --- WEBSOCKET ---
+            // =================================================================
+            // 1. WEBSOCKET HANDLERS
+            // =================================================================
+
             ws.onopen = () => {
-                // console.log('Connected to chat list WebSocket.');
-                ws.send(JSON.stringify({ type: 'register', userId: myUserId }));
+                // Register and request status updates for the list view
+                ws.send(JSON.stringify({ type: 'register', userId: myUserId, listMode: true }));
+                fetchAndRenderActiveChats();
             };
 
             ws.onmessage = (event) => {
@@ -179,19 +260,31 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                 if (data.type === 'user_status_update') {
                     updateUserOnlineStatus(data.userId, data.isOnline);
                 } else if (['private_message', 'reply_message', 'product_message'].includes(data.type)) {
+                    // Message sent/received: update content and increment count if received
                     handleRealtimeMessageUpdate(data);
+                } else if (data.type === 'unread_count_clear') {
+                    // New event from server after user views the chat in another tab/device
+                    clearUnreadBadge(data.partnerId);
                 }
             };
-            
-            // --- CORE FUNCTIONS ---
+
+            // =================================================================
+            // 2. CORE FUNCTIONS
+            // =================================================================
+
             const fetchAndRenderActiveChats = async () => {
                 try {
                     elements.loadingSpinner.style.display = 'block';
                     elements.loadingSpinner.textContent = 'Loading chats...';
+                    
+                    // The server endpoint MUST provide the 'unreadCount' property in 'lastMessage'
                     const response = await fetch(`/api/conversations?myId=${myUserId}`);
+                    if (!response.ok) throw new Error('Failed to fetch conversations.');
+
                     const conversations = await response.json();
                     
                     elements.activeChatsList.innerHTML = '';
+                    
                     if (conversations.length === 0) {
                         elements.loadingSpinner.textContent = 'No active chats. Start a new one!';
                     } else {
@@ -199,9 +292,11 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     }
 
                     conversations.forEach((convo, index) => {
-                        const listItem = createChatListItem(convo.partner, convo.lastMessage);
-                        listItem.style.animationDelay = `${index * 50}ms`;
-                        elements.activeChatsList.appendChild(listItem);
+                        if (convo.lastMessage) {
+                            const listItem = createChatListItem(convo.partner, convo.lastMessage);
+                            listItem.style.animationDelay = `${index * 50}ms`;
+                            elements.activeChatsList.appendChild(listItem);
+                        }
                     });
 
                 } catch (error) {
@@ -209,6 +304,142 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     elements.loadingSpinner.textContent = 'Could not load chats.';
                 }
             };
+
+            const handleRealtimeMessageUpdate = (msg) => {
+                // Determine the partner ID based on who sent/received the message
+                const partnerId = msg.senderId === myUserId ? msg.recipientId : msg.senderId;
+                const conversationId = [myUserId, partnerId].sort().join('--');
+                let existingItem = document.querySelector(`[data-conversation-id="${conversationId}"]`);
+
+                const lastMessageText = msg.productInfo 
+                    ? (msg.productInfo.name ? `Shared: ${msg.productInfo.name}` : "Shared a product") 
+                    : (msg.text || "New Message");
+
+                if (!existingItem && msg.partner) {
+                    // If the conversation item doesn't exist (e.g., new chat), create it based on the payload's partner info
+                    existingItem = createChatListItem(msg.partner, msg);
+                    elements.activeChatsList.prepend(existingItem);
+                }
+                
+                if (existingItem) {
+                    const lastMsgEl = existingItem.querySelector('.last-message');
+                    const timestampEl = existingItem.querySelector('.timestamp');
+                    let unreadBadgeEl = existingItem.querySelector('.unread-count-badge');
+                    
+                    // 1. Update Message & Timestamp
+                    lastMsgEl.textContent = lastMessageText;
+                    timestampEl.textContent = formatTimestamp(msg.createdAt);
+
+                    // 2. Update Unread Count (Only for RECEIVED messages)
+                    if (msg.senderId !== myUserId) {
+                        let currentCount = parseInt(unreadBadgeEl?.dataset.unreadCount || 0);
+                        let newCount = currentCount + 1;
+                        
+                        // Apply unread styles
+                        lastMsgEl.classList.add('unread');
+                        timestampEl.classList.add('unread');
+                        timestampEl.classList.add('unread'); // Add this to highlight time
+                        
+                        // Create or update the badge
+                        if (!unreadBadgeEl) {
+                            const badgeContainer = existingItem.querySelector('.chat-details-bottom');
+                            unreadBadgeEl = document.createElement('span');
+                            unreadBadgeEl.className = 'unread-count-badge';
+                            badgeContainer.appendChild(unreadBadgeEl);
+                        }
+                        
+                        unreadBadgeEl.textContent = newCount > 99 ? '99+' : newCount;
+                        unreadBadgeEl.dataset.unreadCount = newCount;
+
+                    } else {
+                        // For SENT messages, clear unread status and remove badge
+                        if (unreadBadgeEl) unreadBadgeEl.remove();
+                        lastMsgEl.classList.remove('unread');
+                        timestampEl.classList.remove('unread');
+                    }
+
+                    // 3. Move to top
+                    elements.activeChatsList.prepend(existingItem);
+                }
+            };
+
+            const clearUnreadBadge = (partnerId) => {
+                const conversationId = [myUserId, partnerId].sort().join('--');
+                const existingItem = document.querySelector(`[data-conversation-id="${conversationId}"]`);
+
+                if (existingItem) {
+                    existingItem.querySelector('.unread-count-badge')?.remove();
+                    existingItem.querySelector('.last-message')?.classList.remove('unread');
+                    existingItem.querySelector('.timestamp')?.classList.remove('unread');
+                }
+            };
+
+            // =================================================================
+            // 3. HTML RENDERING HELPERS
+            // =================================================================
+            
+            function createChatListItem(partner, lastMessage) {
+                const listItem = document.createElement('li');
+                listItem.className = 'chat-list-item';
+                listItem.dataset.userId = partner._id;
+                listItem.dataset.conversationId = [myUserId, partner._id].sort().join('--');
+
+                // --- Unread Count Logic ---
+                const unreadCount = lastMessage.unreadCount || 0; 
+                const isUnread = unreadCount > 0;
+                
+                const lastMessageText = lastMessage.productInfo 
+                    ? (lastMessage.productInfo.name ? `Shared: ${lastMessage.productInfo.name}` : "Shared a product") 
+                    : (lastMessage.text || "...");
+
+                // This structure ensures the message and badge are aligned horizontally
+                listItem.innerHTML = `
+                    <div class="profile-pic-container">
+                        <img src="${partner.profilePicUrl || '/images/avatar.jpg'}" class="profile-pic">
+                        <div class="online-dot" data-user-id="${partner._id}"></div>
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-details-top">
+                            <span class="username">
+                                ${partner.username}
+                                ${partner.isVerified ? '<img src="/image/verify.png" class="verified-badge" alt="Verified">' : ''}
+                            </span>
+                            <span class="timestamp ${isUnread ? 'unread' : ''}">${formatTimestamp(lastMessage.createdAt)}</span>
+                        </div>
+                        <div class="chat-details-bottom">
+                            <p class="last-message ${isUnread ? 'unread' : ''}">${lastMessageText}</p>
+                            ${isUnread ? `<span class="unread-count-badge" data-unread-count="${unreadCount}">${unreadCount > 99 ? '99+' : unreadCount}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+                return listItem;
+            }
+
+            function createSearchUserItem(user) {
+                const listItem = document.createElement('li');
+                listItem.className = 'chat-list-item';
+                listItem.dataset.userId = user._id;
+
+                listItem.innerHTML = `
+                    <div class="profile-pic-container">
+                        <img src="${user.profilePicUrl || '/images/avatar.jpg'}" class="profile-pic">
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-details-top">
+                            <span class="username">
+                                ${user.username}
+                                ${user.isVerified ? '<img src="/image/verify.png" class="verified-badge" alt="Verified">' : ''}
+                            </span>
+                        </div>
+                        <p class="last-message">Start a new conversation</p>
+                    </div>
+                `;
+                return listItem;
+            }
+
+            // =================================================================
+            // 4. UTILITIES & EVENT LISTENERS
+            // =================================================================
 
             const handleSearch = async (query) => {
                 elements.clearSearchBtn.style.display = query ? 'block' : 'none';
@@ -238,28 +469,8 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                         elements.searchResultsList.style.display = 'none';
                         elements.noResults.style.display = 'block';
                     }
-
                 } catch (error) {
                     console.error("Search failed:", error);
-                }
-            };
-
-            const handleRealtimeMessageUpdate = (msg) => {
-                const partner = msg.senderId === myUserId ? msg.partner : { _id: msg.senderId, username: msg.partner.username, profilePicUrl: msg.partner.profilePicUrl, isVerified: msg.partner.isVerified };
-                
-                const conversationId = [myUserId, partner._id].sort().join('--');
-                const existingItem = document.querySelector(`[data-conversation-id="${conversationId}"]`);
-
-                if (existingItem) {
-                    existingItem.querySelector('.last-message').textContent = msg.productInfo ? `Shared: ${msg.productInfo.name}` : (msg.text || "New Message");
-                    existingItem.querySelector('.timestamp').textContent = formatTimestamp(msg.createdAt);
-                    elements.activeChatsList.prepend(existingItem);
-                } else {
-                    const newItem = createChatListItem(partner, msg);
-                    elements.activeChatsList.prepend(newItem);
-                }
-                if (elements.loadingSpinner.textContent.startsWith('No active chats')) {
-                    elements.loadingSpinner.style.display = 'none';
                 }
             };
 
@@ -268,53 +479,6 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                     dot.classList.toggle('online', isOnline);
                 });
             };
-            
-            // --- HTML CREATION HELPERS ---
-            function createChatListItem(partner, lastMessage) {
-                const listItem = document.createElement('li');
-                listItem.className = 'chat-list-item';
-                listItem.dataset.userId = partner._id;
-                listItem.dataset.conversationId = [myUserId, partner._id].sort().join('--');
-                const lastMessageText = lastMessage.productInfo ? `Shared: ${lastMessage.productInfo.name}` : (lastMessage.text || "...");
-
-                listItem.innerHTML = `
-                    <div class="profile-pic-container">
-                        <img src="${partner.profilePicUrl || '/images/avatar.jpg'}" class="profile-pic">
-                        <div class="online-dot" data-user-id="${partner._id}"></div>
-                    </div>
-                    <div class="chat-details">
-                        <div class="chat-details-top">
-                            <span class="username">
-                                ${partner.username}
-                                ${partner.isVerified ? '<img src="/image/verify.png" class="verified-badge" alt="Verified">' : ''}
-                            </span>
-                            <span class="timestamp">${formatTimestamp(lastMessage.createdAt)}</span>
-                        </div>
-                        <p class="last-message">${lastMessageText}</p>
-                    </div>
-                `;
-                return listItem;
-            }
-            
-            function createSearchUserItem(user) {
-                const listItem = document.createElement('li');
-                listItem.className = 'chat-list-item';
-                listItem.dataset.userId = user._id;
-
-                listItem.innerHTML = `
-                    <div class="profile-pic-container">
-                        <img src="${user.profilePicUrl || '/images/avatar.jpg'}" class="profile-pic">
-                    </div>
-                    <div class="chat-details">
-                         <span class="username">
-                            ${user.username}
-                            ${user.isVerified ? '<img src="/image/verify.png" class="verified-badge" alt="Verified">' : ''}
-                        </span>
-                        <p class="last-message">Start a new conversation</p>
-                    </div>
-                `;
-                return listItem;
-            }
 
             const formatTimestamp = (dateStr) => {
                 const date = new Date(dateStr);
@@ -331,7 +495,7 @@ const ws = new WebSocket(`${protocol}://${host}/`);
                 return date.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
             };
 
-            // --- EVENT LISTENERS ---
+            // --- Event Listeners ---
             elements.searchInput.addEventListener('input', (e) => {
                 clearTimeout(searchDebounceTimer);
                 searchDebounceTimer = setTimeout(() => {
@@ -347,14 +511,11 @@ const ws = new WebSocket(`${protocol}://${host}/`);
             const navigateToChat = (e) => {
                 const listItem = e.target.closest('.chat-list-item');
                 if (listItem && listItem.dataset.userId) {
-                    window.location.href = `/user/chat/${listItem.dataset.userId}?user=${myUserId}`;
+                    window.location.href = `/user/chat/${listItem.dataset.userId}`; 
                 }
             };
             elements.activeChatsList.addEventListener('click', navigateToChat);
             elements.searchResultsList.addEventListener('click', navigateToChat);
-            
-            // --- INITIALIZATION ---
-            fetchAndRenderActiveChats();
         });
     </script>
 </body>
