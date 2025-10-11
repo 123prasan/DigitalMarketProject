@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community: <%= communityName %> - Vidyari</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap"
+        rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.3/index.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/twemoji@1402/dist/twemoji.min.js"
+        integrity="sha384-32KMvAMS4DUBcQtHG6fzADguo/tpN1Nh6BAJa2QqZc6/i0K+YPQE+bWiqBRAWuFs"
+        crossorigin="anonymous"></script>
+    <style>
+        /* ----------------------------------------------------------- */
+        /* --- RETRO/POP-ART COMMUNITY CHAT THEME (FINAL) --- */
+        /* ----------------------------------------------------------- */
+        :root {
+            --font-main: 'Montserrat', sans-serif;
+            --color-black: #000000;
+            --color-primary: #ff66a3;
+            --color-secondary: #d9fdd3;
+            --color-accent: #ffd60a;
+            --color-focus: #1ac2ff;
+            --color-bg: #e5ddd5;
+            --color-received: #ffffff;
+            --color-surface: #f0f2f5;
+            --color-text-dark: #333333;
+            --color-text-muted: #555555;
+            --color-group-name-1: var(--color-focus);
+            --color-group-name-2: var(--color-primary);
+            --color-group-name-3: var(--color-accent);
+            --color-group-name-4: #52b346;
+            --transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* --- GENERAL & LAYOUT --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-primary);
+            color: var(--color-text-dark);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .chat-app {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
+            border: 4px solid var(--color-black);
+            box-shadow: 12px 12px 0 var(--color-black);
+            overflow: hidden;
+            background: var(--color-bg) url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            position: relative;
+        }
+
+        /* --- HEADER --- */
+        .chat-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--color-black);
+            flex-shrink: 0;
+            background-color: var(--color-surface);
+            color: var(--color-text-dark);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-grow: 1;
+            min-width: 0;
+        }
+        #recipient-profile-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--color-focus);
+            flex-shrink: 0;
+        }
+        .chat-header h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--color-black);
+            margin: 0;
+        }
+        .header-info .active-users-line {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+        .header-menu button {
+            color: var(--color-black);
+            background: none;
+            border: none;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .header-menu button:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.1);
+        }
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 0px;
+            background-color: var(--color-received);
+            border: 2px solid var(--color-black);
+            box-shadow: 4px 4px 0 var(--color-black);
+            border-radius: 6px;
+            z-index: 100;
+            min-width: 180px;
+            display: none;
+            padding: 0;
+            overflow: hidden;
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            cursor: pointer;
+            color: var(--color-text-dark);
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #eee;
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background-color: #f0f0f0; }
+        .dropdown-item i { margin-right: 10px; color: var(--color-primary); }
+        
+        /* --- CHAT BODY & MESSAGES --- */
+        .chat-body {
+            flex-grow: 1;
+            padding: 0 1rem;
+            overflow-y: auto;
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 1rem;
+            scrollbar-width: none;
+        }
+        .chat-body::-webkit-scrollbar { display: none; }
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 1rem 0;
+            margin-top: auto;
+            flex-grow: 1;
+        }
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            margin-bottom: 3px;
+        }
+        .message-wrapper.sent,
+        .message-wrapper.received {
+            align-self: flex-start;
+            align-items: flex-start;
+            margin-left: 0;
+        }
+        .group-sender-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 3px;
+            margin-top: 10px;
+        }
+        .group-sender-name {
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+        .group-sender-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--color-black);
+        }
+        .message {
+            padding: 0.6rem 0.9rem;
+            font-weight: 500;
+            position: relative;
+            border-radius: 8px;
+            width: fit-content;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+            border-bottom-left-radius: 2px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .message.sent {
+            background-color: var(--color-secondary);
+            color: var(--color-text-dark);
+            margin-left: 36px;
+        }
+        .message.received {
+            background-color: var(--color-received);
+            color: var(--color-text-dark);
+        }
+        .message::after {
+            display: none;
+        }
+        .message-text {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.5;
+        }
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--color-received);
+            padding: 10px 15px;
+            border-radius: 20px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+            width: fit-content;
+            margin-bottom: 0.5rem;
+            margin-left: 10px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+        .typing-indicator.show {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .typing-dot {
+            width: 8px; height: 8px; background: var(--color-text-muted); border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+        .message-wrapper .message-meta {
+            align-self: flex-start;
+            margin-left: 10px;
+            color: var(--color-text-muted);
+            font-size: 0.7rem;
+            margin-top: 2px;
+        }
+        
+        /* Spinner */
+        #spinner {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .loader {
+            width: 30px;
+            height: 30px;
+            border: 4px solid #ccc;
+            border-top: 4px solid var(--color-black);
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- FOOTER & INPUTS --- */
+        .chat-footer-container {
+            background-color: var(--color-surface);
+            z-index: 2;
+            border-top: 2px solid var(--color-black);
+        }
+        .chat-footer {
+            padding: 0.75rem 1rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        /* Input Wrapper - Contains the textarea and mic button */
+        .message-input-wrapper {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            background: white;
+            border: 2px solid var(--color-black);
+            box-shadow: 4px 4px 0 var(--color-black);
+            border-radius: 24px;
+        }
+
+        #message-input {
+            width: 100%;
+            border: none;
+            box-shadow: none;
+            padding: 0.8rem 4rem 0.8rem 1rem;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.2s ease;
+            background: transparent;
+            resize: none;
+            overflow-y: hidden;
+            line-height: 1.5;
+            max-height: 120px;
+            border-radius: 24px;
+        }
+        #message-input:focus {
+            box-shadow: 0 0 0 2px var(--color-primary) inset;
+            border-color: var(--color-primary);
+        }
+        
+        /* Mic Button position inside the input wrapper */
+        #mic-button {
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            background: none;
+            border: none;
+            color: var(--color-black);
+            font-size: 1.3rem;
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            padding: 0;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+        #mic-button:hover {
+            background-color: #eee;
+        }
+        #mic-button.listening {
+            color: white;
+            background-color: #ff4d4d;
+            animation: ripple 1.5s infinite;
+        }
+        @keyframes ripple {
+            0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 77, 77, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); }
+        }
+
+        /* Send Button */
+        #send-button {
+            background-color: var(--color-accent);
+            color: var(--color-black);
+            border: 2px solid var(--color-black);
+            box-shadow: 4px 4px 0 var(--color-black);
+            width: 48px;
+            height: 48px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+        }
+        #send-button:hover:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--color-black);
+        }
+        #send-button:disabled {
+            background-color: #b0b0b0;
+            border-color: var(--color-black);
+            box-shadow: 4px 4px 0 var(--color-black);
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        /* Footer Buttons (Quick Reply, Product Share, Emoji) */
+        .footer-buttons {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+            padding-bottom: 4px;
+        }
+        .footer-buttons button {
+            color: var(--color-black);
+            background-color: var(--color-surface);
+            border: 2px solid var(--color-black);
+            box-shadow: 4px 4px 0 var(--color-black);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.3rem;
+            transition: all 0.2s ease;
+            padding-bottom: 0;
+        }
+        .footer-buttons button:hover {
+            background-color: var(--color-accent);
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--color-black);
+        }
+
+        /* Quick Replies Panel - Using the defined retro style */
+        #quick-replies-panel {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 1rem;
+            background: var(--color-received);
+            border: 3px solid var(--color-black);
+            box-shadow: 4px 4px 0 var(--color-black);
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            padding: 0.5rem 0;
+            width: fit-content;
+            min-width: 150px;
+        }
+        .quick-replies-panel ul { list-style: none; margin: 0; padding: 0; }
+        .quick-replies-panel li {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 0; 
+            color: var(--color-black);
+        }
+        .quick-replies-panel li:hover {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        /* Product Modal Styles */
+        /* FIX: Corrected modal overlay styling for proper background dimming */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent black dimmer */
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-out; /* Transition the opacity of the dimmer */
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border: 4px solid var(--color-black);
+            box-shadow: 8px 8px 0 var(--color-black);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        .modal-content h3 {
+            margin-top: 0;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-black);
+            padding-bottom: 10px;
+        }
+        .product-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.1s;
+        }
+        .product-item:hover {
+            background-color: var(--color-secondary);
+        }
+        .product-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .product-item h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        .product-item p {
+            margin: 0;
+            color: #555;
+            font-weight: 600;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--color-black);
+            transition: color 0.2s;
+        }
+        .close-modal:hover {
+            color: var(--color-primary);
+        }
+
+
+        /* Toast Notification (Small, bold) */
+        .toast-notification {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background-color: var(--color-black);
+            color: var(--color-accent);
+            padding: 12px 22px;
+            border-radius: 25px;
+            font-weight: 700;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+            border: 2px solid var(--color-accent);
+        }
+        .toast-notification.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* --- MOBILE OVERRIDES (Responsive Fixes) --- */
+@media (max-width: 600px) { 
+        body { padding: 0; } 
+        .chat-app { border: none; box-shadow: none; height: 100vh; border-radius: 0; } 
+        html, body { padding: 0; }
+
+        /* Mobile specific styles for the footer buttons */
+        .chat-footer .footer-buttons {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform-origin: left center;
+        }
+
+        /* CRITICAL FIX: Hide buttons when input is focused */
+        .chat-footer.input-focused .footer-buttons {
+            transform: translateX(-100%);
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+            margin-right: -0.5rem; /* Pull back the empty space */
+        }
+        
+        /* Adjusting button sizes for mobile (already done, kept for context) */
+        .footer-buttons button { width: 40px; height: 40px; box-shadow: 2px 2px 0 var(--color-black); }
+        #send-button { width: 40px; height: 40px; box-shadow: 2px 2px 0 var(--color-black); }
+        #message-input { padding: 0.5rem 30px 0.5rem 1rem; }
+    }
+    </style>
+</head>
+
+<body>
+    <div class="chat-app">
+        <div class="chat-header">
+            <div class="header-main">
+                <img id="recipient-profile-img" src="<%= communityProfileUrl || '/images/group-avatar.jpg' %>"
+                    alt="Community Icon">
+                <div class="header-info">
+                    <h3 id="chat-with-id">
+                        <%= communityName %>
+                    </h3>
+                    <div class="active-users-line">
+                        <i class="fa-solid fa-user-group"></i>
+                        <span id="active-users-count"><%= activeUsersCount %></span> Active Members
+                    </div>
+                </div>
+            </div>
+            <div class="header-menu">
+                <button id="header-menu-button" title="Menu"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                <div class="dropdown-menu" id="dropdown-menu">
+                    <div class="dropdown-item" id="leave-community-button">
+                        <i class="fa-solid fa-person-walking-arrow-right"></i>
+                        <span>Leave Community</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div id="spinner">
+                <div class="loader"></div>
+            </div>
+            <div class="message-container" id="message-container"></div>
+            <div class="typing-indicator" id="typing-indicator">
+                <span>Someone is typing...</span>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+        <div class="chat-footer-container">
+            <div class="reply-context" id="reply-context"></div>
+            <div class="quick-replies-panel" id="quick-replies-panel"></div>
+            <div class="chat-footer" id="chat-footer">
+                <div class="footer-buttons">
+                    <button id="quick-reply-button" title="Quick Replies"><i class="fa-solid fa-bolt"></i></button>
+                    <button id="share-product-button" title="Share Product"><i class="fa-solid fa-store"></i></button>
+                    <button id="emoji-button" title="Emojis"><i class="fa-regular fa-face-smile"></i></button>
+                </div>
+                <div class="message-input-wrapper">
+                    <textarea id="message-input" placeholder="Say something to the community..." disabled rows="1"></textarea>
+                    <button id="mic-button" title="Voice to Text"><i class="fa-solid fa-microphone"></i></button>
+                </div>
+                <button id="send-button" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                <emoji-picker class="light"
+                    style="display: none; position: absolute; bottom: 85px; z-index: 101;"></emoji-picker>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="product-modal-overlay">
+        <div class="modal-content">
+            <h3>Share a Product (Free)</h3>
+            <div class="product-list" id="product-list">
+                </div>
+            <button class="close-modal" id="close-product-modal">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // =================================================================================
+            // --- 1. SETUP & CONFIG ---
+            // =================================================================================
+            const myUserId = "<%= myUserId %>";
+            const myUsername = "<%= myUsername %>"; 
+            const communityId = "<%= communityId %>"; 
+            const communityName = "<%= communityName %>"; 
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const ws = new WebSocket(`${protocol}://${window.location.host}`);
+
+            const elements = {
+                chatApp: document.querySelector('.chat-app'),
+                chatFooter: document.getElementById('chat-footer'),
+                chatBody: document.getElementById('chat-body'),
+                messageContainer: document.getElementById('message-container'),
+                messageInput: document.getElementById('message-input'),
+                sendButton: document.getElementById('send-button'),
+                spinner: document.getElementById('spinner'),
+                typingIndicator: document.getElementById('typing-indicator'),
+                activeUsersCountEl: document.getElementById('active-users-count'),
+                quickReplyButton: document.getElementById('quick-reply-button'),
+                shareProductButton: document.getElementById('share-product-button'),
+                emojiButton: document.getElementById('emoji-button'),
+                emojiPicker: document.querySelector('emoji-picker'),
+                headerMenuButton: document.getElementById('header-menu-button'),
+                dropdownMenu: document.getElementById('dropdown-menu'),
+                leaveCommunityButton: document.getElementById('leave-community-button'),
+                quickRepliesPanel: document.getElementById('quick-replies-panel'),
+                micButton: document.getElementById('mic-button'),
+                productModalOverlay: document.getElementById('product-modal-overlay'),
+                productList: document.getElementById('product-list'),
+                closeProductModal: document.getElementById('close-product-modal'),
+            };
+
+            let state = {
+                isFetchingOlderMessages: false,
+                oldestMessageTimestamp: new Date().toISOString(),
+                hasMoreMessagesToLoad: true,
+                isListening: false,
+                typingTimer: null,
+            };
+
+            const quickReplies = [
+                { title: 'Hello', text: 'Hello, everyone!' },
+                { title: 'Question', text: 'Does anyone know about...?' },
+                { title: 'Welcome', text: 'Welcome to the group! Ask if you need help.' },
+            ];
+            
+            const groupColors = [
+                'var(--color-group-name-1)', 'var(--color-group-name-2)', 'var(--color-group-name-3)', 
+                '#E37400', '#D50000'
+            ];
+
+            const getSenderColor = (userId) => {
+                let hash = 0;
+                for (let i = 0; i < userId.length; i++) {
+                    hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                const index = Math.abs(hash) % groupColors.length;
+                return groupColors[index];
+            };
+            
+            const soundSent = new Audio('/audios/message-sent.mp3');
+            const soundReceived = new Audio('/audios/message-received.mp3');
+            
+            // --- Mic/Speech Recognition Setup ---
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            let recognition; 
+
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = () => {
+                    elements.micButton.classList.add('listening');
+                    state.isListening = true;
+                };
+
+                recognition.onresult = (event) => {
+                    const finalTranscript = event.results[0][0].transcript;
+                    elements.messageInput.value = finalTranscript;
+                    autoResizeTextarea();
+                    updateSendButtonState();
+                    toggleVoiceRecognition();
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    showToast(`Voice error: ${event.error}`);
+                    toggleVoiceRecognition(true);
+                };
+
+                recognition.onend = () => {
+                    elements.micButton.classList.remove('listening');
+                    state.isListening = false;
+                };
+            } else {
+                if (elements.micButton) elements.micButton.style.display = 'none';
+            }
+
+
+            // =================================================================================
+            // --- 2. WEBSOCKET LOGIC (Remains similar) ---
+            // =================================================================================
+
+            ws.onopen = () => {
+                console.log('Connected to WebSocket server for community.');
+                ws.send(JSON.stringify({ type: 'register', userId: myUserId })); 
+                elements.messageInput.disabled = false;
+                fetchInitialMessages();
+                
+                ws.send(JSON.stringify({ 
+                    type: 'community_message', 
+                    communityId: communityId,
+                    text: '', 
+                    senderId: myUserId, 
+                    createdAt: new Date().toISOString(),
+                    senderInfo: { username: myUsername, profilePicUrl: '/images/my-avatar.jpg' } 
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                switch (data.type) {
+                    case 'community_message':
+                    case 'product_message': // Handle both text and product messages from server
+                        if (data.communityId === communityId) {
+                            if (data.productInfo || data.text.trim().length > 0) {
+                                // CRITICAL FIX: Append the message when received from the server
+                                // This prevents the double message issue
+                                appendMessage(data, data.senderId === myUserId ? 'sent' : 'received');
+                            }
+                        }
+                        break;
+                    case 'community_status_update':
+                        if (elements.activeUsersCountEl) elements.activeUsersCountEl.textContent = data.count;
+                        break;
+                    case 'typing_status':
+                        if (data.communityId === communityId && data.senderId !== myUserId) {
+                             elements.typingIndicator.classList.toggle('show', data.isTyping);
+                             if (data.isTyping) { elements.chatBody.scrollTo({ top: elements.chatBody.scrollHeight, behavior: 'smooth' }); }
+                        }
+                        break;
+                }
+            };
+            
+            // =================================================================================
+            // --- 3. CORE MESSAGING & UI FUNCTIONS ---
+            // =================================================================================
+
+            // FIX: Updated sendMessage to handle productInfo transmission correctly
+            const sendMessage = (text, type = 'community_message', productInfo = null) => {
+                const final_text = text ? text.trim() : '';
+                if (!final_text && !productInfo) return;
+
+                const messageData = {
+                    id: `msg_${Date.now()}_${myUserId}`,
+                    type: productInfo ? 'product_message' : type,
+                    senderId: myUserId,
+                    communityId: communityId, 
+                    text: final_text,
+                    senderInfo: { 
+                        username: myUsername, 
+                        profilePicUrl: '/images/my-avatar.jpg' 
+                    }, 
+                    productInfo: productInfo, // IMPORTANT: Include structured data
+                    createdAt: new Date().toISOString(),
+                };
+                
+                // CRITICAL FIX: Send the message structure with productInfo
+                ws.send(JSON.stringify(messageData));
+                
+                // NO LONGER APPENDING LOCALLY HERE - IT'S HANDLED IN ws.onmessage
+                // This resolves the double sending issue.
+
+                elements.messageInput.value = '';
+                updateSendButtonState();
+                autoResizeTextarea();
+            };
+            
+            const appendMessage = (msg, type, options = { prepend: false }) => {
+                const messageEl = createMessageElement(msg, type);
+                const method = options.prepend ? 'prepend' : 'append';
+                elements.messageContainer[method](messageEl); 
+                
+                if (!options.prepend) {
+                    setTimeout(() => elements.chatBody.scrollTo({ top: elements.chatBody.scrollHeight, behavior: 'smooth' }), 0);
+                }
+            };
+
+            function createMessageElement(msg, type) {
+                const wrapperEl = document.createElement('div');
+                wrapperEl.className = `message-wrapper ${type}`;
+                wrapperEl.dataset.messageId = msg.id;
+                
+                let html = '';
+                
+                const senderColor = getSenderColor(msg.senderId);
+                const senderProfileUrl = (msg.senderInfo && msg.senderInfo.profilePicUrl) 
+                    ? msg.senderInfo.profilePicUrl 
+                    : '/images/group-avatar.jpg'; 
+
+                html += `
+                    <div class="group-sender-info">
+                        <img id="sender-avatar-${msg.id}" src="${senderProfileUrl}" class="group-sender-avatar">
+                        <span class="group-sender-name" style="color: ${senderColor};">
+                            ${msg.senderInfo ? msg.senderInfo.username : 'Unknown'}
+                        </span>
+                    </div>
+                `;
+                
+                let messageContent = msg.text || '';
+                
+                // Check for productInfo and render as a card
+                if (msg.productInfo) {
+                    messageContent = `
+                        <div class="product-card" style="border-left: 4px solid var(--color-primary); padding: 10px; background: #f9f9f9; border-radius: 4px; display: flex; align-items: center; max-width: 300px;">
+                            <img src="${msg.productInfo.imageUrl || '/images/default-product.jpg'}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px;">
+                            <div>
+                                <h4 style="margin: 0; font-size: 0.9rem;">${msg.productInfo.name}</h4>
+                                <p style="margin: 0; font-weight: bold; color: var(--color-primary); font-size: 0.8rem;">${msg.productInfo.price}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+
+                html += `
+                    <div class="message ${type}">
+                        <div class="message-text">${messageContent}</div>
+                    </div>
+                    <div class="message-meta">
+                        <span>${new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                `;
+
+                wrapperEl.innerHTML = html;
+                return wrapperEl;
+            }
+
+            const fetchInitialMessages = async () => {
+                elements.spinner.style.display = 'block';
+                try {
+                    const response = await fetch(`/CommunityMessages/${communityId}?myId=${myUserId}`);
+                    if (!response.ok) throw new Error('Failed to fetch history');
+                    const history = await response.json();
+                    elements.messageContainer.innerHTML = '';
+                    
+                    history.forEach(msg => {
+                        const type = msg.senderId === myUserId ? 'sent' : 'received';
+                        appendMessage(msg, type); 
+                    });
+                } catch (error) {
+                    console.error("Error loading community messages:", error);
+                    showToast('Could not load community messages.');
+                } finally {
+                    elements.spinner.style.display = 'none';
+                    setTimeout(() => { elements.chatBody.scrollTop = elements.chatBody.scrollHeight; }, 100);
+                }
+            };
+
+            // --- Full Helper Function Definitions ---
+            const autoResizeTextarea = () => {
+                const textarea = elements.messageInput;
+                textarea.style.height = 'auto';
+                textarea.style.height = `${textarea.scrollHeight}px`;
+            };
+            const updateSendButtonState = () => {
+                const hasText = elements.messageInput.value.trim().length > 0;
+                elements.sendButton.disabled = !hasText;
+            };
+            const showToast = (message) => {
+                const existingToast = document.querySelector('.toast-notification');
+                if (existingToast) existingToast.remove();
+                const toast = document.createElement('div');
+                toast.className = 'toast-notification';
+                toast.textContent = message;
+                document.querySelector('.chat-app').appendChild(toast);
+                setTimeout(() => { toast.classList.add('show'); }, 10);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 3000);
+            };
+            const setupInfiniteScroll = () => { 
+                 elements.chatBody.addEventListener('scroll', () => {
+                    // Logic for loading older messages on scroll top
+                 });
+            };
+            const handleTyping = () => {
+                clearTimeout(state.typingTimer);
+                ws.send(JSON.stringify({ type: 'typing', communityId: communityId, isTyping: true }));
+                state.typingTimer = setTimeout(() => {
+                    ws.send(JSON.stringify({ type: 'typing', communityId: communityId, isTyping: false }));
+                }, 2000);
+            };
+            
+            const toggleVoiceRecognition = (forceStop = false) => { 
+                if (!SpeechRecognition) return showToast('Voice recognition is not supported by your browser.');
+                
+                if (state.isListening || forceStop) {
+                    recognition.stop();
+                } else {
+                    try {
+                        recognition.start();
+                        elements.messageInput.focus();
+                    } catch (e) {
+                        console.error("Recognition start failed:", e);
+                        showToast('Microphone blocked or busy.');
+                    }
+                }
+            };
+            
+            const toggleQuickReplies = () => { 
+                 elements.quickRepliesPanel.innerHTML = '';
+                 const ul = document.createElement('ul');
+                 quickReplies.forEach(reply => {
+                     const li = document.createElement('li');
+                     li.textContent = reply.title;
+                     li.dataset.text = reply.text;
+                     ul.appendChild(li);
+                 });
+                 elements.quickRepliesPanel.appendChild(ul);
+                 
+                 const isHidden = elements.quickRepliesPanel.style.display !== 'block';
+                 elements.quickRepliesPanel.style.display = isHidden ? 'block' : 'none';
+                 
+                 if (isHidden) {
+                     elements.messageInput.focus();
+                 }
+            };
+
+            const openProductModal = async () => { 
+                 elements.productList.innerHTML = '<div class="loader" style="margin: 20px auto;"></div>';
+
+                 try {
+                     const response = await fetch('/api/products');
+                     if (!response.ok) throw new Error('Network response was not ok: ' + response.statusText);
+                     const products = await response.json();
+
+                     elements.productList.innerHTML = ''; 
+
+                     if (products.length === 0) {
+                         elements.productList.innerHTML = '<p style="text-align: center; color: var(--color-text-muted);">No products found.</p>';
+                         elements.productModalOverlay.classList.add('show');
+                         return;
+                     }
+                     
+                     products.forEach(product => {
+                         const item = document.createElement('div');
+                         item.className = 'product-item';
+                         
+                         item.dataset.productId = product._id;
+                         item.dataset.name = product.name;
+                         item.dataset.price = product.price;
+                         item.dataset.imageUrl = product.imageUrl;
+                         item.dataset.slug = product.slug;
+
+                         item.innerHTML = `
+                            <img src="${product.imageUrl || '/images/default-product.jpg'}" alt="${product.name}">
+                            <div>
+                                <h4>${product.name}</h4>
+                                <p>${product.price}</p>
+                            </div>
+                         `;
+                         
+                         item.addEventListener('click', () => {
+                             sendProductMessage({
+                                 productId: product._id,
+                                 name: product.name,
+                                 price: product.price,
+                                 imageUrl: product.imageUrl,
+                                 slug: product.slug
+                             });
+                             closeProductModal();
+                         });
+
+                         elements.productList.appendChild(item);
+                     });
+
+                     elements.productModalOverlay.classList.add('show');
+
+                 } catch (error) {
+                     console.error("Failed to fetch products from API:", error);
+                     elements.productList.innerHTML = '<p style="color: red; text-align: center;">Failed to load products. Check console for error.</p>';
+                     elements.productModalOverlay.classList.add('show');
+                 }
+            };
+
+            const closeProductModal = () => {
+                elements.productModalOverlay.classList.remove('show');
+            };
+
+            // FIX: This function now correctly calls sendMessage with productInfo
+            const sendProductMessage = (productData) => {
+                const defaultText = `Check out this product: ${productData.name}`;
+                sendMessage(defaultText, 'product_message', productData); 
+            };
+            
+            const handleLeaveCommunity = () => {
+                if (confirm('Are you sure you want to leave this community? Your messages will be gone.')) {
+                    showToast('Leaving community...');
+                }
+            };
+            
+            // =================================================================================
+            // --- 4. EVENT LISTENERS ---
+            // =================================================================================
+            
+            elements.sendButton.addEventListener('click', () => sendMessage(elements.messageInput.value));
+
+            elements.messageInput.addEventListener('keydown', (e) => {
+                const isMobile = window.innerWidth <= 600;
+                if (e.key === 'Enter') {
+                    if (isMobile || e.shiftKey) { return; } 
+                    else { e.preventDefault(); sendMessage(elements.messageInput.value); }
+                }
+            });
+
+            elements.messageInput.addEventListener('input', () => {
+                handleTyping();
+                autoResizeTextarea();
+                updateSendButtonState();
+            });
+
+            elements.emojiButton.addEventListener('click', () => {
+                 elements.emojiPicker.style.display = elements.emojiPicker.style.display === 'none' ? 'block' : 'none';
+                 elements.messageInput.focus();
+            });
+
+            elements.emojiPicker.addEventListener('emoji-click', e => {
+                 elements.messageInput.value += e.detail.unicode;
+                 updateSendButtonState();
+                 autoResizeTextarea();
+                 elements.emojiPicker.style.display = 'none';
+                 elements.messageInput.focus();
+            });
+            
+            elements.micButton.addEventListener('click', toggleVoiceRecognition);
+
+            elements.quickReplyButton.addEventListener('click', toggleQuickReplies);
+            
+            elements.quickRepliesPanel.addEventListener('click', (e) => {
+                 if (e.target.tagName === 'LI') {
+                      elements.messageInput.value += e.target.dataset.text;
+                      elements.quickRepliesPanel.style.display = 'none';
+                      elements.messageInput.focus();
+                      updateSendButtonState();
+                      autoResizeTextarea();
+                 }
+            });
+elements.messageInput.addEventListener('focus', () => {
+                // Add the 'input-focused' class to the chat-footer element
+                elements.chatFooter.classList.add('input-focused');
+            });
+
+            elements.messageInput.addEventListener('blur', () => {
+                // Remove the 'input-focused' class
+                elements.chatFooter.classList.remove('input-focused');
+            });
+            elements.shareProductButton.addEventListener('click', openProductModal); 
+            elements.leaveCommunityButton.addEventListener('click', handleLeaveCommunity);
+            
+            elements.headerMenuButton.addEventListener('click', () => { elements.dropdownMenu.classList.toggle('show'); });
+            
+            // Modal closing listener
+            if (elements.closeProductModal) {
+                 elements.closeProductModal.addEventListener('click', closeProductModal);
+                 elements.productModalOverlay.addEventListener('click', (e) => {
+                     if (e.target === elements.productModalOverlay) closeProductModal();
+                 });
+            }
+
+            // Global click handler to close dropdowns/pickers
+            document.addEventListener('click', (e) => {
+                 if (!elements.headerMenuButton.contains(e.target) && !elements.dropdownMenu.contains(e.target)) {
+                     elements.dropdownMenu.classList.remove('show');
+                 }
+                 if (!elements.quickReplyButton.contains(e.target) && !elements.quickRepliesPanel.contains(e.target)) {
+                    elements.quickRepliesPanel.style.display = 'none';
+                 }
+                 if (elements.emojiPicker && !elements.emojiButton.contains(e.target) && !elements.emojiPicker.contains(e.target)) {
+                    elements.emojiPicker.style.display = 'none';
+                 }
+            });
+            
+            // Mobile Focus Handling
+            elements.messageInput.addEventListener('focus', () => {
+                if (window.innerWidth <= 600) {
+                    elements.chatFooter.classList.add('input-focused');
+                }
+            });
+
+            elements.messageInput.addEventListener('blur', () => {
+                elements.chatFooter.classList.remove('input-focused');
+            });
+            
+            setupInfiniteScroll(); 
+        });
+    </script>
+</body>
+
+</html>

@@ -9,7 +9,8 @@ const userPurchaseSchema = new mongoose.Schema({
   totalPrice: { type: Number, required: true }, // price * quantity
   productType: { type: String },
   status: { type: String, enum: ["completed", "pending", "refunded"], default: "completed" },
-  purchaseDate: { type: Date, default: Date.now }
+  purchaseDate: { type: Date, default: Date.now },
+   purchaseId: { type: String },
 }, { timestamps: true });
 
 module.exports = mongoose.model("UserPurchase", userPurchaseSchema);
