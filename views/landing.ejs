@@ -12,18 +12,18 @@
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
      crossorigin="anonymous"></script>
     <style>
-        .vidyari-landing-wrapper {
+        .vidyari-landing-99-wrapper {
             --font-main: 'Montserrat', sans-serif;
             --color-bg: #fff;
             --color-black: #000000;
             --color-primary: #ff66a3; /* Pink */
             --color-secondary: #4ade80; /* Green */
-            --color-accent: #ffd60a;   /* Yellow */
-            --color-focus: #1ac2ff;   /* Blue */
+            --color-accent: #ffd60a;  /* Yellow */
+            --color-focus: #1ac2ff;  /* Blue */
             --transition: 0.2s ease;
         }
 
-        .vidyari-landing-wrapper {
+        .vidyari-landing-99-wrapper {
             font-family: var(--font-main);
             background-color: var(--color-bg);
             color: var(--color-black);
@@ -31,12 +31,12 @@
             overflow-x: hidden;
             position: relative;
         }
-        .vidyari-landing-wrapper * { margin: 0; padding: 0; box-sizing: border-box; }
+        .vidyari-landing-99-wrapper * { margin: 0; padding: 0; box-sizing: border-box; }
 
         /* NEW Animated Gradient Background */
-        .vidyari-animated-background {
+        .vidyari-landing-99-animated-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
+            z-index: -1; /* Set to -1 to be behind the wrapper content */
             background: linear-gradient(135deg, 
                 #ff66a3, /* Pink */
                 #4ade80, /* Green */
@@ -44,33 +44,32 @@
                 #1ac2ff  /* Blue */
             );
             background-size: 400% 400%;
-            animation: animated-gradient 15s ease infinite;
+            animation: vidyari-landing-99-animated-gradient 15s ease infinite;
             opacity: 0.2; /* Kept subtle so content is legible */
         }
-        @keyframes animated-gradient {
+        @keyframes vidyari-landing-99-animated-gradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
         /* END NEW Animated Gradient Background */
 
-
-        .vidyari-main-content-wrapper { position: relative; z-index: 1; }
+        .vidyari-landing-99-main-content-wrapper { position: relative; z-index: 1; }
         
-        section { padding: 80px 20px; }
-        .container { max-width: 1050px; margin: 0 auto; }
+        .vidyari-landing-99-wrapper section { padding: 80px 20px; }
+        .vidyari-landing-99-container { max-width: 1050px; margin: 0 auto; }
         
-        .main-heading {
+        .vidyari-landing-99-main-heading {
             font-size: clamp(2.5rem, 6vw, 4rem);
             font-weight: 900; text-transform: uppercase; text-align: center;
             margin-bottom: 1.5rem;
         }
-        .sub-heading {
+        .vidyari-landing-99-sub-heading {
             max-width: 650px; margin: 0 auto 60px auto; text-align: center;
             font-size: 1.1rem; line-height: 1.8; font-weight: 500;
         }
 
-        .chunky-btn {
+        .vidyari-landing-99-chunky-btn {
             display: inline-block; padding: 16px 36px; font-weight: 700;
             font-size: 1.1rem; text-decoration: none; text-align: center;
             border: 3px solid var(--color-black); cursor: pointer;
@@ -78,195 +77,195 @@
             transition: all var(--transition);
             background-color: var(--color-secondary); color: var(--color-black);
         }
-        .chunky-btn:hover {
+        .vidyari-landing-99-chunky-btn:hover {
             transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--color-black);
             background-color: var(--color-focus);
         }
-        .chunky-btn.alt { background-color: var(--color-accent); }
+        .vidyari-landing-99-chunky-btn.alt { background-color: var(--color-accent); }
 
-        .chunky-card {
+        .vidyari-landing-99-chunky-card {
             background: var(--color-bg); border: 3px solid var(--color-black);
             box-shadow: 10px 10px 0 var(--color-black); padding: 30px;
             transition: all 0.3s ease;
         }
-        .chunky-card:hover {
+        .vidyari-landing-99-chunky-card:hover {
             transform: translateY(-8px);
         }
 
         /* Hero Section */
-        .vidyari-hero-section { padding: 100px 0; text-align: center; }
-        .vidyari-hero-buttons-wrapper { display: flex; gap: 15px; justify-content: center; }
-        .vidyari-hero-promo-image { width: 100%; max-width: 400px; margin: 40px auto; display: block; }
+        .vidyari-landing-99-hero-section { padding: 100px 0; text-align: center; }
+        .vidyari-landing-99-hero-buttons-wrapper { display: flex; gap: 15px; justify-content: center; }
+        .vidyari-landing-99-hero-promo-image { width: 100%; max-width: 400px; margin: 40px auto; display: block; }
         
         /* Grid & Card Styles */
-        .grid-container { display: grid; gap: 30px; }
-        .grid-2-cols { grid-template-columns: repeat(2, 1fr); }
-        .grid-3-cols { grid-template-columns: repeat(3, 1fr); }
+        .vidyari-landing-99-grid-container { display: grid; gap: 30px; }
+        .vidyari-landing-99-grid-2-cols { grid-template-columns: repeat(2, 1fr); }
+        .vidyari-landing-99-grid-3-cols { grid-template-columns: repeat(3, 1fr); }
 
-        .icon-wrapper {
+        .vidyari-landing-99-icon-wrapper {
             width: 48px; height: 48px; border-radius: 50%;
             background-color: var(--color-accent); border: 3px solid var(--color-black);
             display: grid; place-items: center; margin-bottom: 20px; font-size: 1.5rem;
         }
-        .card-heading { font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem; }
-        .card-description { line-height: 1.8; font-weight: 500; }
+        .vidyari-landing-99-card-heading { font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem; }
+        .vidyari-landing-99-card-description { line-height: 1.8; font-weight: 500; }
         
-        .sell-card { text-align: center; }
-        .sell-card-image { max-height: 120px; margin: 20px auto; display: block; }
+        .vidyari-landing-99-sell-card { text-align: center; }
+        .vidyari-landing-99-sell-card-image { max-height: 120px; margin: 20px auto; display: block; }
         
         /* Popular Products Cards */
-        .popular-card-title {
+        .vidyari-landing-99-popular-card-title {
             font-weight: 700; font-size: 1.1rem; margin-bottom: 8px;
         }
-        .popular-card-thumbnail-image {
+        .vidyari-landing-99-popular-card-thumbnail-image {
             width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
             border: 2px solid var(--color-black); margin-bottom: 16px;
         }
-        .popular-card-creator-info {
+        .vidyari-landing-99-popular-card-creator-info {
             display: flex; align-items: center; gap: 8px;
             margin-bottom: 16px; font-size: 0.9rem; font-weight: 600;
         }
-        .popular-card-creator-avatar { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--color-black); }
-        .popular-card-footer { display: flex; justify-content: space-between; align-items: center; }
-        .popular-card-price { font-size: 1.1rem; font-weight: 900; }
+        .vidyari-landing-99-popular-card-creator-avatar { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--color-black); }
+        .vidyari-landing-99-popular-card-footer { display: flex; justify-content: space-between; align-items: center; }
+        .vidyari-landing-99-popular-card-price { font-size: 1.1rem; font-weight: 900; }
 
         /* Learners Section */
-        .learners-grid { align-items: center; }
-        .learners-image { width: 100%; max-width: 400px; display: block; margin: 0 auto; }
-        .learners-feature-list { list-style: none; }
-        .learners-feature-item {
+        .vidyari-landing-99-learners-grid { align-items: center; }
+        .vidyari-landing-99-learners-image { width: 100%; max-width: 400px; display: block; margin: 0 auto; }
+        .vidyari-landing-99-learners-feature-list { list-style: none; }
+        .vidyari-landing-99-learners-feature-item {
             display: flex; align-items: center; gap: 15px;
             margin-bottom: 15px; font-size: 1.1rem; font-weight: 600;
         }
-        .learners-feature-icon { color: var(--color-secondary); }
+        .vidyari-landing-99-learners-feature-icon { color: var(--color-secondary); }
 
         /* Pricing Section */
-        .pricing-image { max-width: 250px; margin: 0 auto 20px; display: block; }
-        .pricing-visualizer {
+        .vidyari-landing-99-pricing-image { max-width: 250px; margin: 0 auto 20px; display: block; }
+        .vidyari-landing-99-pricing-visualizer {
             display: flex; max-width: 700px; margin: 0 auto 40px;
             overflow: hidden; border: 3px solid var(--color-black);
         }
-        .pricing-creator-bar, .pricing-platform-bar {
+        .vidyari-landing-99-pricing-creator-bar, .vidyari-landing-99-pricing-platform-bar {
             padding: 20px; font-weight: 700; font-size: 1.2rem;
             display: flex; justify-content: center; align-items: center;
         }
-        .pricing-creator-bar { flex: 7; background: var(--color-secondary); }
-        .pricing-platform-bar { flex: 3; background: #ddd; }
+        .vidyari-landing-99-pricing-creator-bar { flex: 7; background: var(--color-secondary); }
+        .vidyari-landing-99-pricing-platform-bar { flex: 3; background: #ddd; }
         
         /* FAQ Section */
-        .faq-item {
+        .vidyari-landing-99-faq-item {
             background-color: var(--color-bg); border: 3px solid var(--color-black);
             margin-bottom: 15px;
         }
-        .faq-question-wrapper {
+        .vidyari-landing-99-faq-question-wrapper {
             padding: 20px; cursor: pointer; display: flex;
             justify-content: space-between; align-items: center;
             font-weight: 700; font-size: 1.1rem;
         }
-        .faq-icon-wrapper { transition: transform 0.3s ease; }
-        .faq-item.active .faq-icon-wrapper { transform: rotate(45deg); }
-        .faq-answer-wrapper {
+        .vidyari-landing-99-faq-icon-wrapper { transition: transform 0.3s ease; }
+        .vidyari-landing-99-faq-item.active .vidyari-landing-99-faq-icon-wrapper { transform: rotate(45deg); }
+        .vidyari-landing-99-faq-answer-wrapper {
             max-height: 0; overflow: hidden;
             transition: max-height 0.4s ease, padding 0.4s ease;
             font-weight: 500;
         }
-        .faq-answer-paragraph {
+        .vidyari-landing-99-faq-answer-paragraph {
             padding: 0 20px 20px; line-height: 1.7;
         }
 
         /* Scroll Animation */
-        [data-animation="fade-in"] { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
-        [data-animation="fade-in"].visible { opacity: 1; transform: translateY(0); }
+        .vidyari-landing-99-wrapper [data-animation="fade-in"] { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .vidyari-landing-99-wrapper [data-animation="fade-in"].visible { opacity: 1; transform: translateY(0); }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .grid-2-cols, .grid-3-cols { grid-template-columns: 1fr; }
+            .vidyari-landing-99-grid-2-cols, .vidyari-landing-99-grid-3-cols { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+  <%-include("header")%>
 
-<div class="vidyari-landing-wrapper">
-    <%-include("header")%>
+<div class="vidyari-landing-99-wrapper">
 
-    <div class="vidyari-animated-background"></div>
+    <div class="vidyari-landing-99-animated-background"></div>
 
-    <main class="vidyari-main-content-wrapper">
+    <main class="vidyari-landing-99-main-content-wrapper">
 
-        <section class="vidyari-hero-section">
-            <div class="container" data-animation="fade-in">
-                <h1 class="main-heading">Your Knowledge, Your Currency.</h1>
-                <p class="sub-heading">Vidyari is the premier marketplace for creators to sell digital study materials. Turn your notes, guides, and courses into a sustainable income stream.</p>
-                <img src="./images/video-files.svg" class="vidyari-hero-promo-image" alt="Video Files Illustration">
-                <div class="vidyari-hero-buttons-wrapper">
-                    <a href="/dashboard" class="chunky-btn">Start Selling — It's Free</a>
-                    <a href="/documents" class="chunky-btn alt">Explore Docs</a>
+        <section class="vidyari-landing-99-hero-section">
+            <div class="vidyari-landing-99-container" data-animation="fade-in">
+                <h1 class="vidyari-landing-99-main-heading">Your Knowledge, Your Currency.</h1>
+                <p class="vidyari-landing-99-sub-heading">Vidyari is the premier marketplace for creators to sell digital study materials. Turn your notes, guides, and courses into a sustainable income stream.</p>
+                <img src="./images/video-files.svg" class="vidyari-landing-99-hero-promo-image" alt="Video Files Illustration">
+                <div class="vidyari-landing-99-hero-buttons-wrapper">
+                    <a href="/dashboard" class="vidyari-landing-99-chunky-btn">Start Selling — It's Free</a>
+                    <a href="/documents" class="vidyari-landing-99-chunky-btn alt">Explore Docs</a>
                 </div>
             </div>
         </section>
 
-        <section class="vidyari-why-section">
-            <div class="container">
+        <section class="vidyari-landing-99-why-section">
+            <div class="vidyari-landing-99-container">
                 <div data-animation="fade-in">
-                    <h2 class="main-heading">Everything You Need to Succeed</h2>
-                    <p class="sub-heading">We handle the tech, payments, and delivery, so you can focus on creating amazing content.</p>
+                    <h2 class="vidyari-landing-99-main-heading">Everything You Need to Succeed</h2>
+                    <p class="vidyari-landing-99-sub-heading">We handle the tech, payments, and delivery, so you can focus on creating amazing content.</p>
                 </div>
-                <div class="grid-container grid-2-cols">
-                    <div class="chunky-card" data-animation="fade-in">
-                        <div class="icon-wrapper"><i class="fas fa-store"></i></div>
-                        <h3 class="card-heading">Instant Storefront</h3>
-                        <p class="card-description">No website? No problem. Get a beautiful, high-converting product page the moment you upload a file.</p>
+                <div class="vidyari-landing-99-grid-container vidyari-landing-99-grid-2-cols">
+                    <div class="vidyari-landing-99-chunky-card" data-animation="fade-in">
+                        <div class="vidyari-landing-99-icon-wrapper"><i class="fas fa-store"></i></div>
+                        <h3 class="vidyari-landing-99-card-heading">Instant Storefront</h3>
+                        <p class="vidyari-landing-99-card-description">No website? No problem. Get a beautiful, high-converting product page the moment you upload a file.</p>
                     </div>
-                    <div class="chunky-card" data-animation="fade-in" style="transition-delay: 0.1s;">
-                        <div class="icon-wrapper"><i class="fas fa-credit-card"></i></div>
-                        <h3 class="card-heading">Secure Global Payments</h3>
-                        <p class="card-description">Accept payments from anyone, anywhere. We manage all payment processing and fraud prevention.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="vidyari-sell-section">
-            <div class="container">
-                <div data-animation="fade-in">
-                    <h2 class="main-heading">What Can You Sell?</h2>
-                    <p class="sub-heading">If you can save it, you can sell it. We support a vast range of file types for every kind of knowledge creator.</p>
-                </div>
-                <div class="grid-container grid-3-cols">
-                    <div class="chunky-card sell-card" data-animation="fade-in">
-                        <img src="./images/Notes-bro.svg" class="sell-card-image" alt="Notes Illustration">
-                        <h3 class="card-heading">Lecture Notes & Guides</h3>
-                    </div>
-                    <div class="chunky-card sell-card" data-animation="fade-in" style="transition-delay: 0.1s;">
-                        <img src="./images/Video-tutorial-bro.svg" class="sell-card-image" alt="Video Tutorial Illustration">
-                        <h3 class="card-heading">Video Courses & Tutorials</h3>
-                    </div>
-                    <div class="chunky-card sell-card" data-animation="fade-in" style="transition-delay: 0.2s;">
-                        <img src="./images/Research-paper-bro.svg" class="sell-card-image" alt="Research Paper Illustration">
-                        <h3 class="card-heading">E-books & Checklists</h3>
+                    <div class="vidyari-landing-99-chunky-card" data-animation="fade-in" style="transition-delay: 0.1s;">
+                        <div class="vidyari-landing-99-icon-wrapper"><i class="fas fa-credit-card"></i></div>
+                        <h3 class="vidyari-landing-99-card-heading">Secure Global Payments</h3>
+                        <p class="vidyari-landing-99-card-description">Accept payments from anyone, anywhere. We manage all payment processing and fraud prevention.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="vidyari-popular-section">
-            <div class="container">
+        <section class="vidyari-landing-99-sell-section">
+            <div class="vidyari-landing-99-container">
                 <div data-animation="fade-in">
-                    <h2 class="main-heading">Popular This Week</h2>
-                    <p class="sub-heading">See what's trending. Get instant access to top-rated materials from creators around the world.</p>
+                    <h2 class="vidyari-landing-99-main-heading">What Can You Sell?</h2>
+                    <p class="vidyari-landing-99-sub-heading">If you can save it, you can sell it. We support a vast range of file types for every kind of knowledge creator.</p>
                 </div>
-                <div class="grid-container grid-3-cols">
+                <div class="vidyari-landing-99-grid-container vidyari-landing-99-grid-3-cols">
+                    <div class="vidyari-landing-99-chunky-card vidyari-landing-99-sell-card" data-animation="fade-in">
+                        <img src="./images/Notes-bro.svg" class="vidyari-landing-99-sell-card-image" alt="Notes Illustration">
+                        <h3 class="vidyari-landing-99-card-heading">Lecture Notes & Guides</h3>
+                    </div>
+                    <div class="vidyari-landing-99-chunky-card vidyari-landing-99-sell-card" data-animation="fade-in" style="transition-delay: 0.1s;">
+                        <img src="./images/Video-tutorial-bro.svg" class="vidyari-landing-99-sell-card-image" alt="Video Tutorial Illustration">
+                        <h3 class="vidyari-landing-99-card-heading">Video Courses & Tutorials</h3>
+                    </div>
+                    <div class="vidyari-landing-99-chunky-card vidyari-landing-99-sell-card" data-animation="fade-in" style="transition-delay: 0.2s;">
+                        <img src="./images/Research-paper-bro.svg" class="vidyari-landing-99-sell-card-image" alt="Research Paper Illustration">
+                        <h3 class="vidyari-landing-99-card-heading">E-books & Checklists</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="vidyari-landing-99-popular-section">
+            <div class="vidyari-landing-99-container">
+                <div data-animation="fade-in">
+                    <h2 class="vidyari-landing-99-main-heading">Popular This Week</h2>
+                    <p class="vidyari-landing-99-sub-heading">See what's trending. Get instant access to top-rated materials from creators around the world.</p>
+                </div>
+                <div class="vidyari-landing-99-grid-container vidyari-landing-99-grid-3-cols">
                      <% popularFiles.forEach((file, index) => { %>
-                     <div class="chunky-card" data-animation="fade-in" style="transition-delay: <%= index * 100 %>ms;">
-                         <img class="popular-card-thumbnail-image" src="<%=file.previewUrl%>" alt="Product Thumbnail">
-                         <h4 class="popular-card-title"><%= file.filename %></h4>
-                         <div class="popular-card-creator-info">
-                             <img src="/images/logo.svg" class="popular-card-creator-avatar" alt="Creator Avatar">
+                     <div class="vidyari-landing-99-chunky-card" data-animation="fade-in" style="transition-delay: <%= index * 100 %>ms;">
+                         <img class="vidyari-landing-99-popular-card-thumbnail-image" src="<%=file.previewUrl%>" alt="Product Thumbnail">
+                         <h4 class="vidyari-landing-99-popular-card-title"><%= file.filename %></h4>
+                         <div class="vidyari-landing-99-popular-card-creator-info">
+                             <img src="/images/logo.svg" class="vidyari-landing-99-popular-card-creator-avatar" alt="Creator Avatar">
                              <span>by <%=file.user%></span>
                          </div>
-                         <div class="popular-card-footer">
+                         <div class="vidyari-landing-99-popular-card-footer">
                              <span><i class="fas fa-download"></i> <%=file.downloadCount%></span>
-                             <span class="popular-card-price">₹<%=file.price%></span>
+                             <span class="vidyari-landing-99-popular-card-price">₹<%=file.price%></span>
                          </div>
                      </div>
                      <% }); %>
@@ -274,55 +273,55 @@
             </div>
         </section>
 
-        <section class="vidyari-learners-section">
-            <div class="container" data-animation="fade-in">
-                <div class="grid-container grid-2-cols learners-grid">
+        <section class="vidyari-landing-99-learners-section">
+            <div class="vidyari-landing-99-container" data-animation="fade-in">
+                <div class="vidyari-landing-99-grid-container vidyari-landing-99-grid-2-cols vidyari-landing-99-learners-grid">
                     <div>
-                        <h2 class="main-heading" style="text-align: left;">For Every Kind of Learner</h2>
-                        <p class="card-description" style="text-align: left; margin: 20px 0;">Access a global library of peer-reviewed knowledge to accelerate your learning.</p>
-                        <ul class="learners-feature-list">
-                            <li class="learners-feature-item"><i class="fas fa-check-circle learners-feature-icon"></i> University & College Students</li>
-                            <li class="learners-feature-item"><i class="fas fa-check-circle learners-feature-icon"></i> Professionals Seeking Certifications</li>
-                            <li class="learners-feature-item"><i class="fas fa-check-circle learners-feature-icon"></i> Lifelong Learners & Hobbyists</li>
+                        <h2 class="vidyari-landing-99-main-heading" style="text-align: left;">For Every Kind of Learner</h2>
+                        <p class="vidyari-landing-99-card-description" style="text-align: left; margin: 20px 0;">Access a global library of peer-reviewed knowledge to accelerate your learning.</p>
+                        <ul class="vidyari-landing-99-learners-feature-list">
+                            <li class="vidyari-landing-99-learners-feature-item"><i class="fas fa-check-circle vidyari-landing-99-learners-feature-icon"></i> University & College Students</li>
+                            <li class="vidyari-landing-99-learners-feature-item"><i class="fas fa-check-circle vidyari-landing-99-learners-feature-icon"></i> Professionals Seeking Certifications</li>
+                            <li class="vidyari-landing-99-learners-feature-item"><i class="fas fa-check-circle vidyari-landing-99-learners-feature-icon"></i> Lifelong Learners & Hobbyists</li>
                         </ul>
                     </div>
                     <div>
-                        <img src="./images/Learning-bro.svg" class="learners-image" alt="Person Learning Illustration">
+                        <img src="./images/Learning-bro.svg" class="vidyari-landing-99-learners-image" alt="Person Learning Illustration">
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="vidyari-pricing-section">
-            <div class="container" data-animation="fade-in">
-                <img src="./images/Pricing-plans-amico.svg" class="pricing-image" alt="Pricing Plans Illustration">
-                <h2 class="main-heading">Simple, Transparent Pricing</h2>
-                <p class="sub-heading">No monthly fees. No hidden costs. We only make money when you do.</p>
-                <div class="pricing-visualizer">
-                    <div class="pricing-creator-bar">You Keep 70%</div>
-                    <div class="pricing-platform-bar">Platform Fee 30%</div>
+        <section class="vidyari-landing-99-pricing-section">
+            <div class="vidyari-landing-99-container" data-animation="fade-in">
+                <img src="./images/Pricing-plans-amico.svg" class="vidyari-landing-99-pricing-image" alt="Pricing Plans Illustration">
+                <h2 class="vidyari-landing-99-main-heading">Simple, Transparent Pricing</h2>
+                <p class="vidyari-landing-99-sub-heading">No monthly fees. No hidden costs. We only make money when you do.</p>
+                <div class="vidyari-landing-99-pricing-visualizer">
+                    <div class="vidyari-landing-99-pricing-creator-bar">You Keep 70%</div>
+                    <div class="vidyari-landing-99-pricing-platform-bar">Platform Fee 30%</div>
                 </div>
             </div>
         </section>
 
-        <section class="vidyari-faq-section">
-            <div class="container" data-animation="fade-in">
-                <h2 class="main-heading">Frequently Asked Questions</h2>
+        <section class="vidyari-landing-99-faq-section">
+            <div class="vidyari-landing-99-container" data-animation="fade-in">
+                <h2 class="vidyari-landing-99-main-heading">Frequently Asked Questions</h2>
                 <div style="max-width: 700px; margin: 0 auto;">
-                    <div class="faq-item" data-faq="item" data-animation="fade-in">
-                        <div class="faq-question-wrapper" data-faq="question">How do I get paid? 
-                            <div class="faq-icon-wrapper"><i class="fas fa-plus"></i></div>
+                    <div class="vidyari-landing-99-faq-item" data-faq="item" data-animation="fade-in">
+                        <div class="vidyari-landing-99-faq-question-wrapper" data-faq="question">How do I get paid? 
+                            <div class="vidyari-landing-99-faq-icon-wrapper"><i class="fas fa-plus"></i></div>
                         </div>
-                        <div class="faq-answer-wrapper" data-faq="answer">
-                            <p class="faq-answer-paragraph">We pay out directly to your bank account or PayPal. Payouts are processed automatically every 7 days.</p>
+                        <div class="vidyari-landing-99-faq-answer-wrapper" data-faq="answer">
+                            <p class="vidyari-landing-99-faq-answer-paragraph">We pay out directly to your bank account or PayPal. Payouts are processed automatically every 7 days.</p>
                         </div>
                     </div>
-                    <div class="faq-item" data-faq="item" data-animation="fade-in" style="transition-delay: 0.1s;">
-                        <div class="faq-question-wrapper" data-faq="question">What are the fees? 
-                            <div class="faq-icon-wrapper"><i class="fas fa-plus"></i></div>
+                    <div class="vidyari-landing-99-faq-item" data-faq="item" data-animation="fade-in" style="transition-delay: 0.1s;">
+                        <div class="vidyari-landing-99-faq-question-wrapper" data-faq="question">What are the fees? 
+                            <div class="vidyari-landing-99-faq-icon-wrapper"><i class="fas fa-plus"></i></div>
                         </div>
-                        <div class="faq-answer-wrapper" data-faq="answer">
-                            <p class="faq-answer-paragraph">Vidyari charges a simple, flat 30% fee on each sale. This covers all processing fees, file hosting, and customer support.</p>
+                        <div class="vidyari-landing-99-faq-answer-wrapper" data-faq="answer">
+                            <p class="vidyari-landing-99-faq-answer-paragraph">Vidyari charges a simple, flat 30% fee on each sale. This covers all processing fees, file hosting, and customer support.</p>
                         </div>
                     </div>
                 </div>
@@ -330,10 +329,9 @@
         </section>
     </main>
 
-    <%-include("footer")%>
 </div>
     <script>
-        const animatedElements = document.querySelectorAll('[data-animation="fade-in"]');
+        const animatedElements = document.querySelectorAll('.vidyari-landing-99-wrapper [data-animation="fade-in"]');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -343,7 +341,7 @@
         }, { threshold: 0.1 });
         animatedElements.forEach(el => { observer.observe(el); });
 
-        const faqItems = document.querySelectorAll('[data-faq="item"]');
+        const faqItems = document.querySelectorAll('.vidyari-landing-99-wrapper [data-faq="item"]');
         faqItems.forEach(item => {
             const question = item.querySelector('[data-faq="question"]');
             const answer = item.querySelector('[data-faq="answer"]');
@@ -361,5 +359,6 @@
             });
         });
     </script>
+  <%-include("footer")%>
 </body>
 </html>

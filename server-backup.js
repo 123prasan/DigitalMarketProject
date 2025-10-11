@@ -118,8 +118,261 @@ function notifyUser(userId, payload) {
 
 
 
+// --- ASSUMED EXTERNAL SETUP ---
+// const UserMessage = require('./models/UserMessage'); // Your modified Mongoose model
+// const User = require('./models/userData.js'); // Your User model
+// const clients = new Map(); // Global map of connected clients: Map<userId, ws>
+// const notifyUser = (targetUserId, payload) => { ... } // Assumed helper function
+
+// Global set to track which *WebSocket connections* are currently viewing the community chat
+// const communityClients = new Set(); 
+// const GLOBAL_COMMUNITY_ID = "577426577426"; // The fixed ID for your one community
+
+
+// wss.on('connection', (ws) => {
+//     let userId; // The ID for this specific connection
+
+//     const broadcastStatus = (targetUserId, isOnline) => {
+//         const statusPayload = JSON.stringify({
+//             type: 'user_status_update',
+//             userId: targetUserId,
+//             isOnline: isOnline
+//         });
+//         clients.forEach(client => {
+//             if (client.readyState === WebSocket.OPEN) {
+//                 client.send(statusPayload);
+//             }
+//         });
+//         console.log(`[Status] Broadcast: User ${targetUserId} is ${isOnline ? 'Online' : 'Offline'}`);
+//     };
+    
+//     // Function to broadcast messages within the community
+//     const broadcastToCommunity = (communityId, payload) => {
+//         const payloadString = JSON.stringify(payload);
+//         communityClients.forEach(clientWs => {
+//             if (clientWs.readyState === WebSocket.OPEN) {
+//                 clientWs.send(payloadString);
+//             }
+//         });
+//     };
+
+//     ws.on('message', async (message) => {
+//         try {
+//             const data = JSON.parse(message);
+
+//             // Allow messages if the user is registered OR if it's the initial 'register'
+//             if (!userId && data.type !== 'register') {
+//                 return console.error("Message received from unregistered client.");
+//             }
+
+//             switch (data.type) {
+                
+//                 case 'register':
+//                     userId = String(data.userId);
+//                     clients.set(userId, ws);
+//                     console.log(`[Connect] User ${userId} connected.`);
+//                     broadcastStatus(userId, true);
+
+//                     const recipientId = String(data.recipientId);
+//                     if (clients.has(recipientId)) {
+//                         const statusPayload = { type: 'user_status_update', userId: recipientId, isOnline: true };
+//                         ws.send(JSON.stringify(statusPayload));
+//                     }
+//                     break;
+                    
+//                 case 'private_message':
+//                 case 'reply_message':
+//                 case 'product_message': {
+//                     const { id, recipientId, text, repliedTo, productInfo, createdAt } = data;
+//                     const conversationId = [userId, recipientId].sort().join('--');
+//                     const isProduct = data.type === 'product_message';
+                    
+//                     const senderProfile = await User.findById(userId).select('username profilePicUrl isVerified');
+
+//                     // Save private message with community fields set to null
+//                     const messageDoc = new UserMessage({
+//                         id,
+//                         conversationId,
+//                         senderId: userId,
+//                         recipientId,
+//                         text: isProduct ? `Shared product: ${productInfo.name}` : text,
+//                         repliedTo: repliedTo || null,
+//                         productInfo: productInfo || null,
+//                         createdAt,
+//                         status: clients.has(String(recipientId)) ? 'delivered' : 'sent', 
+//                         communityId: null, 
+//                         senderInfo: null
+//                     });
+//                     await messageDoc.save();
+
+//                     const fullMessagePayload = { 
+//                         ...messageDoc.toObject(), 
+//                         type: data.type,
+//                         partner: {
+//                             _id: userId, username: senderProfile.username, profilePicUrl: senderProfile.profilePicUrl, isVerified: senderProfile.isVerified
+//                         }
+//                     };
+//                     notifyUser(recipientId, fullMessagePayload);
+
+//                     if (messageDoc.status === 'delivered') {
+//                         notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
+//                     }
+//                     console.log(`[Private] User ${userId} sent a message to ${recipientId} (${data.type})`);
+//                     break;
+//                 }
+                
+//                 case 'community_message': {
+//                     const { id, text, senderInfo, createdAt } = data;
+//                     const currentCommunityId = data.communityId || GLOBAL_COMMUNITY_ID;
+                    
+//                     // 1. AUTO-JOIN THE CLIENT TO THE BROADCAST LIST
+//                     if (!communityClients.has(ws)) {
+//                         communityClients.add(ws);
+//                         console.log(`[Community] User ${userId} auto-joined broadcast.`);
+//                         // Here you would implement logic to update active user count for all others
+//                     }
+                    
+//                     // 2. Save community message to database
+//                     const messageDoc = new UserMessage({
+//                         id,
+//                         communityId: currentCommunityId,
+//                         senderId: userId,
+//                         text: text,
+//                         createdAt,
+//                         senderInfo: senderInfo,
+//                         // Private chat fields are null/undefined
+//                         conversationId: null,
+//                         recipientId: null, 
+//                         status: 'read' // Group messages are typically marked read immediately
+//                     });
+//                     await messageDoc.save();
+
+//                     // 3. Broadcast the message to all community clients
+//                     const broadcastPayload = { 
+//                         ...messageDoc.toObject(),
+//                         type: 'community_message'
+//                     };
+//                     broadcastToCommunity(currentCommunityId, broadcastPayload);
+                    
+//                     console.log(`[Community] User ${userId} sent message to ${currentCommunityId}`);
+//                     break;
+//                 }
+                
+//                 case 'typing': {
+//                     if (data.communityId) {
+//                         const currentCommunityId = data.communityId || GLOBAL_COMMUNITY_ID;
+//                         const typingPayload = {
+//                             type: 'typing_status',
+//                             senderId: userId,
+//                             communityId: currentCommunityId,
+//                             isTyping: data.isTyping
+//                         };
+//                         // Broadcast only to others in the community (Exclude the sender, 'ws')
+//                         communityClients.forEach(clientWs => {
+//                             if (clientWs !== ws && clientWs.readyState === WebSocket.OPEN) {
+//                                 clientWs.send(JSON.stringify(typingPayload));
+//                             }
+//                         });
+//                         return;
+//                     }
+                    
+//                     // Fallback to original private typing handler:
+//                     notifyUser(data.recipientId, {
+//                         type: 'typing_status',
+//                         senderId: userId,
+//                         isTyping: data.isTyping
+//                     });
+//                     break;
+//                 }
+
+                
+//             }
+//         } catch (err) {
+//             console.error("❌ Failed to process message:", err);
+//         }
+//     });
+
+//     ws.on('close', () => {
+//         if (userId) {
+//             clients.delete(String(userId));
+            
+//             // CRITICAL: Remove the WebSocket instance from the community set on disconnect
+//             if (communityClients.has(ws)) {
+//                  communityClients.delete(ws); 
+//                  console.log(`[Community] User ${userId} removed from broadcast.`);
+//             }
+
+//             console.log(`[Disconnect] User ${String(userId)} disconnected.`);
+//             broadcastStatus(userId, false);
+//         }
+//     });
+// });
+// --- ASSUMED EXTERNAL SETUP ---
+// const UserMessage = require('./models/UserMessage'); // Your modified Mongoose model
+// const User = require('./models/userData.js'); // Your User model
+// const clients = new Map(); // Global map of connected private chat clients: Map<userId, ws>
+// const notifyUser = (targetUserId, payload) => { ... } // Assumed helper function
+
+// Global set to track which *WebSocket connections* are currently viewing the community chat.
+const communityClients = new Set(); 
+const GLOBAL_COMMUNITY_ID = "577426577426"; 
+
+// NEW: Tracks which user IDs are typing in the community. Map<communityId, Set<userId>>
+// Since there's only one community, we just use a Set of user IDs.
+const typingUsers = new Set(); 
+
+
+// Function to notify all community members of the current active count
+const broadcastCommunityCount = () => {
+    const count = communityClients.size;
+    const payload = JSON.stringify({ 
+        type: 'community_status_update', 
+        count: count 
+    });
+    
+    // Broadcast to everyone connected to the community
+    communityClients.forEach(clientWs => {
+        if (clientWs.readyState === WebSocket.OPEN) {
+            clientWs.send(payload);
+        }
+    });
+    console.log(`[Community Status] Broadcast: Active users count is ${count}`);
+};
+
+// Function to notify all community members of generic typing status
+const broadcastCommunityTypingStatus = (communityId) => {
+    // Check if ANY user is typing in this community
+    const isTyping = typingUsers.size > 0;
+
+    const payload = JSON.stringify({ 
+        type: 'typing_status', 
+        communityId: communityId, 
+        isTyping: isTyping 
+    });
+
+    communityClients.forEach(clientWs => {
+        if (clientWs.readyState === WebSocket.OPEN) {
+            clientWs.send(payload);
+        }
+    });
+};
+
+// Function to broadcast messages within the community
+const broadcastToCommunity = (communityId, payload) => {
+    const payloadString = JSON.stringify(payload);
+    communityClients.forEach(clientWs => {
+        if (clientWs.readyState === WebSocket.OPEN) {
+            clientWs.send(payloadString);
+        }
+    });
+};
+
+
 wss.on('connection', (ws) => {
-    let userId; // This will store the ID for this specific connection
+    let userId; // The ID for this specific connection
+
+    // Flag to ensure we only broadcast count updates if this client is a community viewer
+    let isCommunityViewer = false; 
 
     const broadcastStatus = (targetUserId, isOnline) => {
         const statusPayload = JSON.stringify({
@@ -127,7 +380,6 @@ wss.on('connection', (ws) => {
             userId: targetUserId,
             isOnline: isOnline
         });
-        // Inform all connected clients of the status change
         clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(statusPayload);
@@ -135,158 +387,117 @@ wss.on('connection', (ws) => {
         });
         console.log(`[Status] Broadcast: User ${targetUserId} is ${isOnline ? 'Online' : 'Offline'}`);
     };
+    
 
     ws.on('message', async (message) => {
         try {
             const data = JSON.parse(message);
 
-            if (data.type !== 'register' && !userId) {
+            if (!userId && data.type !== 'register') {
                 return console.error("Message received from unregistered client.");
+            }
+            
+            // Set userId after initial successful register
+            if (data.userId && !userId) {
+                userId = String(data.userId);
             }
 
             switch (data.type) {
+                
                 case 'register':
                     userId = String(data.userId);
                     clients.set(userId, ws);
                     console.log(`[Connect] User ${userId} connected.`);
-
-                    // Broadcast that this new user is online to everyone
                     broadcastStatus(userId, true);
 
-                    // Check the status of the person this user is talking to and send it back ONLY to them.
                     const recipientId = String(data.recipientId);
                     if (clients.has(recipientId)) {
-                        const statusPayload = {
-                            type: 'user_status_update',
-                            userId: recipientId,
-                            isOnline: true
-                        };
-                        // Send the recipient's status back to the newly registered user
+                        const statusPayload = { type: 'user_status_update', userId: recipientId, isOnline: true };
                         ws.send(JSON.stringify(statusPayload));
                     }
+                    
+                    // NEW: Check if the client is loading the community chat page (based on communityId existence)
+                    if (data.communityId === GLOBAL_COMMUNITY_ID && !isCommunityViewer) {
+                        isCommunityViewer = true;
+                        communityClients.add(ws);
+                        broadcastCommunityCount(); // Initial count broadcast
+                    }
+                    
                     break;
-
+                    
                 case 'private_message':
                 case 'reply_message':
                 case 'product_message': {
+                    // ... (Private chat logic remains the same, using communityId: null)
                     const { id, recipientId, text, repliedTo, productInfo, createdAt } = data;
                     const conversationId = [userId, recipientId].sort().join('--');
                     const isProduct = data.type === 'product_message';
-                    
-                    // 1. Get sender profile for chat list update
                     const senderProfile = await User.findById(userId).select('username profilePicUrl isVerified');
-
-                    // 2. Create and save the message
+                    
                     const messageDoc = new UserMessage({
-                        id,
-                        conversationId,
-                        senderId: userId,
-                        recipientId,
+                        id, conversationId, senderId: userId, recipientId,
                         text: isProduct ? `Shared product: ${productInfo.name}` : text,
-                        repliedTo: repliedTo || null,
-                        productInfo: productInfo || null,
-                        createdAt,
-                        // Determine status based on recipient's connection
+                        repliedTo: repliedTo || null, productInfo: productInfo || null, createdAt,
                         status: clients.has(String(recipientId)) ? 'delivered' : 'sent', 
+                        communityId: null, senderInfo: null
                     });
                     await messageDoc.save();
 
-                    // 3. Prepare payload for the RECIPIENT
-                    // This payload needs the sender's details for the recipient's chat list to update
-                    const fullMessagePayload = { 
-                        ...messageDoc.toObject(), 
-                        type: data.type,
-                        partner: {
-                            _id: userId,
-                            username: senderProfile.username,
-                            profilePicUrl: senderProfile.profilePicUrl,
-                            isVerified: senderProfile.isVerified
-                        }
+                    const fullMessagePayload = { ...messageDoc.toObject(), type: data.type,
+                        partner: { _id: userId, username: senderProfile.username, profilePicUrl: senderProfile.profilePicUrl, isVerified: senderProfile.isVerified }
                     };
                     notifyUser(recipientId, fullMessagePayload);
 
-                    // 4. Notify the SENDER of delivery status if client is connected
                     if (messageDoc.status === 'delivered') {
                         notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
                     }
-                    console.log(`[Message] User ${userId} sent a message to ${recipientId} (${data.type})`);
                     break;
                 }
-
-                case 'mark_as_read': {
-                    // This action comes from the CHAT PAGE when the user opens the conversation
-                    const { partnerId } = data; 
-
-                    // 1. Update all UNREAD incoming messages from the partner to 'read'
-                    const result = await UserMessage.updateMany(
-                        {
-                            senderId: partnerId, // Messages SENT by the partner
-                            recipientId: userId, // Messages RECEIVED by the current user
-                            status: { $in: ['sent', 'delivered'] } 
-                        },
-                        { $set: { status: 'read' } }
-                    );
-
-                    console.log(`[Read All] User ${userId} marked ${result.modifiedCount} messages from ${partnerId} as read.`);
-
-                    // 2. Notify the chat list client to remove the badge.
-                    // This is essential for real-time badge clearance across devices/tabs.
-                    const badgeClearPayload = {
-                        type: 'unread_count_clear',
-                        partnerId: partnerId // Client uses this to identify which chat to clear
-                    };
-                    notifyUser(userId, badgeClearPayload); 
+                
+                case 'community_message': {
+                    const currentCommunityId = data.communityId || GLOBAL_COMMUNITY_ID;
                     
+                    // 1. AUTO-JOIN THE CLIENT TO THE BROADCAST LIST
+                    if (!communityClients.has(ws)) {
+                        communityClients.add(ws);
+                        isCommunityViewer = true;
+                        broadcastCommunityCount(); 
+                    }
+                    
+                    // 2. Clear typing status immediately after message is sent
+                    typingUsers.delete(userId);
+                    broadcastCommunityTypingStatus(currentCommunityId);
+
+                    // 3. Save message to database
+                    const messageDoc = new UserMessage({
+                        id: data.id, communityId: currentCommunityId, senderId: userId, text: data.text,
+                        createdAt: data.createdAt, senderInfo: data.senderInfo,
+                        conversationId: null, recipientId: null, status: 'read' 
+                    });
+                    await messageDoc.save();
+
+                    // 4. Broadcast the message to all community clients
+                    const broadcastPayload = { ...messageDoc.toObject(), type: 'community_message' };
+                    broadcastToCommunity(currentCommunityId, broadcastPayload);
                     break;
                 }
-
-                case 'message_read': {
-                    // This action comes from the CHAT PAGE when the user SCROLLS to see the message
-                    const { messageId, senderId } = data; 
-                    console.log(`[Read Status] Message: ${messageId}. Notifying sender: ${senderId}`);
-
-                    await UserMessage.updateOne(
-                        { id: messageId, status: { $ne: 'read' } },
-                        { $set: { status: 'read' } }
-                    );
-
-                    const readPayload = { type: 'message_status_update', messageId, status: 'read' };
-                    notifyUser(senderId, readPayload);
-                    break;
-                }
-
-                case 'delete_message': {
-                    const { messageId, recipientId } = data;
-
-                    await UserMessage.updateOne(
-                        { id: messageId, senderId: userId },
-                        { $set: { isDeleted: true, text: "" } }
-                    );
-
-                    const deletePayload = { type: 'message_deleted', messageId };
-                    notifyUser(userId, deletePayload);
-                    notifyUser(recipientId, deletePayload);
-                    console.log(`[Delete] User ${userId} deleted message ${messageId}`);
-                    break;
-                }
-
-                case 'edit_message': {
-                    const { messageId, newText, recipientId } = data;
-
-                    await UserMessage.updateOne(
-                        { id: messageId, senderId: userId },
-                        { $set: { text: newText, isEdited: true } }
-                    );
-
-                    const editPayload = { type: 'message_edited', messageId, newText };
-                    notifyUser(userId, editPayload);
-                    notifyUser(recipientId, editPayload);
-                    console.log(`[Edit] User ${userId} edited message ${messageId}`);
-                    break;
-                }
-
+                
                 case 'typing': {
-                    // Forward the typing status to the recipient without saving to DB
+                    if (data.communityId === GLOBAL_COMMUNITY_ID) {
+                        const currentCommunityId = data.communityId;
+
+                        if (data.isTyping) {
+                            typingUsers.add(userId);
+                        } else {
+                            typingUsers.delete(userId);
+                        }
+
+                        // Broadcast the change in generic typing status
+                        broadcastCommunityTypingStatus(currentCommunityId);
+                        return;
+                    }
+                    
+                    // Fallback to original private typing handler:
                     notifyUser(data.recipientId, {
                         type: 'typing_status',
                         senderId: userId,
@@ -294,6 +505,43 @@ wss.on('connection', (ws) => {
                     });
                     break;
                 }
+case 'mark_as_read': {
+                    const { partnerId } = data; 
+                    const result = await UserMessage.updateMany(
+                        { senderId: partnerId, recipientId: userId, status: { $in: ['sent', 'delivered'] } },
+                        { $set: { status: 'read' } }
+                    );
+                    const badgeClearPayload = { type: 'unread_count_clear', partnerId: partnerId };
+                    notifyUser(userId, badgeClearPayload); 
+                    break;
+                }
+
+                case 'message_read': {
+                    const { messageId, senderId } = data; 
+                    await UserMessage.updateOne({ id: messageId, status: { $ne: 'read' } }, { $set: { status: 'read' } });
+                    const readPayload = { type: 'message_status_update', messageId, status: 'read' };
+                    notifyUser(senderId, readPayload);
+                    break;
+                }
+                
+                case 'delete_message': {
+                    const { messageId, recipientId } = data;
+                    await UserMessage.updateOne({ id: messageId, senderId: userId }, { $set: { isDeleted: true, text: "" } });
+                    const deletePayload = { type: 'message_deleted', messageId };
+                    notifyUser(userId, deletePayload);
+                    notifyUser(recipientId, deletePayload);
+                    break;
+                }
+
+                case 'edit_message': {
+                    const { messageId, newText, recipientId } = data;
+                    await UserMessage.updateOne({ id: messageId, senderId: userId }, { $set: { text: newText, isEdited: true } });
+                    const editPayload = { type: 'message_edited', messageId, newText };
+                    notifyUser(userId, editPayload);
+                    notifyUser(recipientId, editPayload);
+                    break;
+                }
+              
             }
         } catch (err) {
             console.error("❌ Failed to process message:", err);
@@ -303,8 +551,16 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         if (userId) {
             clients.delete(String(userId));
-            console.log(`[Disconnect] User ${String(userId)} disconnected.`);
             broadcastStatus(userId, false);
+
+            // CRITICAL: Handle community disconnects
+            if (isCommunityViewer) {
+                 communityClients.delete(ws); 
+                 typingUsers.delete(userId); // Also clear typing status
+                 broadcastCommunityCount(); // Broadcast the reduced count
+            }
+
+            console.log(`[Disconnect] User ${String(userId)} disconnected.`);
         }
     });
 });
@@ -557,7 +813,6 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     let paymentDetails;
     try {
       paymentDetails = await razorpay.payments.fetch(razorpay_payment_id);
-      console.log("Payment details fetched:", paymentDetails);
     } catch (err) {
       console.error("Razorpay fetch failed:", err);
       return res
@@ -631,8 +886,6 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
         price: file.price,
         totalPrice: totalprice,
         productName: file.filename,
-        orderId: razorpay_order_id,
-        perchaseid: razorpay_payment_id,
       },
       { upsert: true, new: true }
     );
@@ -1470,15 +1723,12 @@ const s3 = new AWS.S3({
 app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
   try {
     const fileId = req.query.file_id;
-
-    // Validate fileId
     if (!fileId || fileId.length !== 24) return res.render("file-not-found");
 
-    // Find file
     const file = await File.findById(fileId);
     if (!file) return res.render("file-not-found");
 
-    // Purchase check for paid files
+    // Purchase check
     if (file.price > 0) {
       const purchase = await Userpurchases.findOne({
         userId: req.user._id,
@@ -1487,27 +1737,26 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       if (!purchase) return res.render("404");
     }
 
-    const extension = path.extname(file.fileUrl).toLowerCase() || ".pdf";
+    const fileKey = `main-files/${file.fileUrl}`;
+    const extension = path.extname(file.fileUrl).toLowerCase();
     const baseName = path.basename(file.filename, path.extname(file.filename));
     const finalFilename = `${baseName}${extension}`;
-    const fileKey = `main-files/${file.fileUrl}`;
 
-    // Increment total download count in File document
-    await File.findByIdAndUpdate(fileId, { $inc: { downloadCount: 1 } });
-
-    // Log per-user download and increment count
-    await UserDownloads.findOneAndUpdate(
-      { userId: req.user._id, fileId: file._id },
-      {
-        $setOnInsert: {
-          filename: file.filename,
-          fileUrl: file.fileUrl,
-          fileType: extension,
-        },
-        $inc: { downloadCount: 1 },
-      },
-      { upsert: true, new: true }
-    );
+    // Log download
+    const existing = await UserDownloads.findOne({
+      userId: req.user._id,
+      fileId: file._id,
+    });
+    if (!existing) {
+      await new UserDownloads({
+        filename: file.filename,
+        userId: req.user._id,
+        fileId: file._id,
+        fileUrl: file.fileUrl,
+        fileType: extension,
+      }).save();
+      console.log("Download saved");
+    }
 
     // Get S3 object stream
     const s3Stream = s3
@@ -1518,10 +1767,16 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       .createReadStream();
 
     // Set headers for direct download
-    res.setHeader("Content-Disposition", `attachment; filename="${finalFilename}"`);
-    res.setHeader("Content-Type", mime.lookup(extension) || "application/octet-stream");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${finalFilename}"`
+    );
+    res.setHeader(
+      "Content-Type",
+      mime.lookup(extension) || "application/octet-stream"
+    );
 
-    // Pipe S3 stream to response
+    // Pipe S3 stream directly to response
     s3Stream.pipe(res).on("error", (err) => {
       console.error("S3 stream error:", err);
       res.status(500).render("500");
@@ -1531,7 +1786,6 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
     res.status(500).render("500");
   }
 });
-;
 
 const dotenv = require("dotenv");
 const usernotifications = require("./models/userNotifications.js");

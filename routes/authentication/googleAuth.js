@@ -659,7 +659,7 @@ router.post("/auth/forgot-pass", async (req, res) => {
     );
 
     // Reset link
-    const resetLink = `https://yourdomain.com/reset-password/${resetToken}`;
+    const resetLink = `https://www.vidyari.com/reset-password/${resetToken}`;
 
     // Send password reset email
     await PassReset(

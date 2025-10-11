@@ -99,7 +99,8 @@
       </div>
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 <style>
     .purchase-history-scope-xyz {
         --font-main: 'Montserrat', sans-serif;
@@ -414,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentItemInModal = item;
         document.getElementById('purchaseHistoryModalTitle').textContent = item.productName || 'Product Details';
         document.getElementById('purchaseHistoryModalImage').src = item.productDetails?.imageUrl || '';
-        document.getElementById('purchaseHistoryModalPurchaseId').textContent = item._id || 'N/A';
+        document.getElementById('purchaseHistoryModalPurchaseId').textContent = item.purchaseId || 'N/A';
         document.getElementById('purchaseHistoryModalPrice').textContent = formatCurrency(item.totalPrice);
         document.getElementById('purchaseHistoryModalDate').textContent = formatDate(item.purchaseDate);
         document.getElementById('purchaseHistoryModalStatus').textContent = (item.status || 'N/A').charAt(0).toUpperCase() + (item.status || 'N/A').slice(1);
@@ -435,45 +436,69 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const generateInvoicePdf = (item) => {
-        if (!item) return;
-        const doc = new window.jspdf.jsPDF();
-        doc.setFontSize(20);
-        doc.text("Invoice", 105, 20, { align: 'center' });
-        doc.setFontSize(12);
-        doc.text(`Invoice ID: ${item._id || 'N/A'}`, 14, 40);
-        doc.text(`Date: ${formatDate(item.purchaseDate)}`, 14, 46);
-        doc.line(14, 60, 196, 60);
-        doc.autoTable({
-            startY: 65,
-            head: [['Description', 'Type', 'Status', 'Total']],
-            body: [[ item.productName || 'N/A', item.productType || 'N/A', item.status || 'N/A', formatCurrency(item.totalPrice) ]],
-            theme: 'striped'
-        });
-        doc.save(`invoice-${item._id}.pdf`);
-    };
+        if (!item) return;
+        
+        // Ensure jspdf is loaded (as per our previous conversation)
+        if (typeof window.jspdf === 'undefined') {
+            console.error("jsPDF library is not loaded. Please ensure the CDN links are included.");
+            return;
+        }
 
-    const exportToPdf = () => {
-        const doc = new window.jspdf.jsPDF();
-        doc.text("Purchase History Report", 14, 22);
-        doc.autoTable({
-            startY: 30,
-            head: [['Date', 'Product Name', 'Type', 'Status', 'Price']],
-            body: currentFilteredData.map(item => [
-                formatDate(item.purchaseDate), item.productName || 'N/A', item.productType || 'N/A', item.status || 'N/A', formatCurrency(item.totalPrice)
-            ]),
-            theme: 'striped', headStyles: { fillColor: [30, 30, 30] }
-        });
-        doc.save(`purchase-history-${Date.now()}.pdf`);
-    };
+        const doc = new window.jspdf.jsPDF();
+        
+        doc.setFontSize(20);
+        doc.text("Invoice", 105, 20, { align: 'center' });
+        
+        // 👇 ADDED/UPDATED: Use item.purchaseId and format the date
+        doc.setFontSize(12);
+        doc.text(`PERCHASEID: ${item.purchaseId || 'N/A'}`, 14, 40); // <-- Uses item.purchaseId
+        doc.text(`DATE: ${formatDate(item.purchaseDate)}`, 14, 46);     // <-- Uses item.purchaseDate
+        // 👆 END UPDATED SECTION
+        
+        doc.line(14, 60, 196, 60);
+        doc.autoTable({
+            startY: 65,
+            head: [['Description', 'Type', 'Status', 'Total']],
+            body: [[ item.productName || 'N/A', item.productType || 'N/A', item.status || 'N/A', formatCurrency(item.totalPrice) ]],
+            theme: 'striped'
+        });
+        doc.save(`invoice-${item.purchaseId || 'document'}.pdf`); // <-- Updated filename for clarity
+    };
 
-    const exportToCsv = () => {
-        const headers = ['Date', 'ProductName', 'ProductType', 'Status', 'Price'];
-        const rows = currentFilteredData.map(item => [
-            formatDate(item.purchaseDate), `"${(item.productName || '').replace(/"/g, '""')}"`, item.productType || '', item.status || '', (item.totalPrice || 0).toFixed(2)
-        ]);
-        const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
-        downloadFile(csvContent, `purchase-history-${Date.now()}.csv`, 'text/csv;charset=utf-8;');
-    };
+const exportToPdf = () => {
+        const doc = new window.jspdf.jsPDF();
+        doc.text("Purchase History Report", 14, 22);
+        doc.autoTable({
+            startY: 30,
+            // 👇 MODIFIED: Added 'ID'
+            head: [['Date', 'ID', 'Product Name', 'Type', 'Status', 'Price']],
+            body: currentFilteredData.map(item => [
+                formatDate(item.purchaseDate), 
+                item.purchaseId || 'N/A', // <-- Added Purchase ID
+                item.productName || 'N/A', 
+                item.productType || 'N/A', 
+                item.status || 'N/A', 
+                formatCurrency(item.totalPrice)
+            ]),
+            theme: 'striped', headStyles: { fillColor: [30, 30, 30] }
+        });
+        doc.save(`purchase-history-${Date.now()}.pdf`);
+    };
+
+const exportToCsv = () => {
+        // 👇 MODIFIED: Added 'PurchaseId'
+        const headers = ['Date', 'PurchaseId', 'ProductName', 'ProductType', 'Status', 'Price'];
+        const rows = currentFilteredData.map(item => [
+            formatDate(item.purchaseDate), 
+            `"${item.purchaseId || ''}"`, // <-- Added Purchase ID
+            `"${(item.productName || '').replace(/"/g, '""')}"`, 
+            item.productType || '', 
+            item.status || '', 
+            (item.totalPrice || 0).toFixed(2)
+        ]);
+        const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+        downloadFile(csvContent, `purchase-history-${Date.now()}.csv`, 'text/csv;charset=utf-8;');
+    };
 
     const exportToJson = () => {
         const jsonContent = JSON.stringify(currentFilteredData, null, 2);
