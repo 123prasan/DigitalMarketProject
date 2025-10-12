@@ -721,43 +721,48 @@ router.post("/auth/reset-password/:token", async (req, res) => {
     const { password } = req.body;
 
     if (!password || password.length < 8) {
-      return res
-        .status(400)
-        .json({ message: "Password must be at least 8 characters long." });
+      return res.status(400).json({
+        message: "Password must be at least 8 characters long.",
+      });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT secret not configured");
     }
 
     // Verify token
     let decoded;
     try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET || "supersecret");
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch (err) {
-      return res
-        .status(400)
-        .json({ message: "Invalid or expired reset link." });
+      return res.status(400).json({ message: "Invalid or expired reset link." });
     }
 
-    // Find user by ID
+    // Find user
     const user = await User.findById(decoded.userId);
     if (!user) {
       return res.status(400).json({ message: "User not found." });
     }
 
     // Hash new password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Save new password
     user.passwordHash = hashedPassword;
+
+    // Optional: invalidate other sessions or refresh tokens here
+
     await user.save();
 
     res.status(200).json({
-      message:
-        "Password reset successful. You can now log in with your new password.",
+      message: "Password reset successful. You can now log in with your new password.",
     });
   } catch (err) {
     console.error("Reset password error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 //endpoint to view user profile
 router.get(
