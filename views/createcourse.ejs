@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creator Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
     <link rel="icon" href="/images/logo.svg" type="image/x-icon">
@@ -16,133 +18,632 @@
             --font-main: 'Montserrat', sans-serif;
             --color-bg: #fff;
             --color-black: #000000;
-            --color-primary: #ff66a3; /* Pink */
-            --color-secondary: #4ade80; /* Green */
-            --color-accent: #ffd60a;   /* Yellow */
-            --color-focus: #1ac2ff;   /* Blue */
+            --color-primary: #ff66a3;
+            /* Pink */
+            --color-secondary: #4ade80;
+            /* Green */
+            --color-accent: #ffd60a;
+            /* Yellow */
+            --color-focus: #1ac2ff;
+            /* Blue */
             --transition-fast: 0.2s ease;
         }
-        body { font-family: var(--font-main); background-color: var(--color-bg); color: var(--color-black); -webkit-font-smoothing: antialiased; }
-        .antialiased { font-family: var(--font-main) !important; }
-        .bg-\[\#1a1a1a\] { background-color: var(--color-bg) !important; }
-        .bg-\[\#242424\] { background-color: #f0f0f0 !important; }
-        .text-white { color: var(--color-black) !important; }
-        .text-gray-300 { color: #555 !important; }
-        .text-gray-400 { color: #777 !important; }
-        .border-gray-700 { border-color: var(--color-black) !important; }
-        .shadow-xl { box-shadow: none !important; }
-        .sidebar-unique { transition: transform 0.3s ease-in-out; background-color: var(--color-bg) !important; border-right: 4px solid var(--color-black) !important; }
-        .nav-link-unique { transition: all var(--transition-fast); font-weight: 700; border: 3px solid transparent; border-radius: 0 !important; color: var(--color-black) !important; }
-        .nav-link-unique:hover { border-color: var(--color-black); background-color: var(--color-accent) !important; box-shadow: 4px 4px 0 var(--color-black); }
-        .nav-active-unique { background-color: var(--color-black) !important; color: #fff !important; font-weight: 700 !important; }
-        .nav-active-unique:hover { background-color: #333 !important; }
-        .sidebar-overlay-unique { background-color: rgba(0, 0, 0, 0.5); }
-        main > header { background-color: var(--color-bg) !important; border-bottom: 4px solid var(--color-black) !important; box-shadow: none !important; }
-        main > header h1 { font-weight: 900; text-transform: uppercase; font-size: 1.5rem; }
-        main > header img { border: 3px solid var(--color-black) !important; }
-        #sidebar-toggle { color: var(--color-black) !important; }
-        .data-card-unique, .data-table-container-unique, .file-card-unique, .coming-soon-container, .md\:col-span-2 { background-color: var(--color-bg) !important; border: 3px solid var(--color-black) !important; box-shadow: 8px 8px 0 var(--color-black) !important; border-radius: 0 !important; padding: 1.5rem; }
-        .coming-soon-text { font-weight: 900 !important; font-size: 2rem !important; color: var(--color-black) !important; }
-        .coming-soon-icon { color: var(--color-primary) !important; }
-        .data-table-unique thead th { background-color: var(--color-accent) !important; font-weight: 900; text-transform: uppercase; }
-        .data-table-unique tbody tr { border-bottom: 2px solid #ddd !important; }
-        .data-table-unique tbody tr:hover { background-color: #f0f0f0 !important; }
-        .filter-input-unique, select, textarea, input[type="text"], input[type="number"], input[type="date"] { background-color: var(--color-bg) !important; border: 3px solid var(--color-black) !important; color: var(--color-black) !important; font-weight: 600; border-radius: 0 !important; padding: 10px !important; box-shadow: 4px 4px 0 var(--color-black) !important; }
-        .filter-input-unique:focus, select:focus, textarea:focus, input:focus { outline: none !important; border-color: var(--color-primary) !important; box-shadow: 0 0 0 var(--color-black) !important; }
-        .chunky-btn, button[type="button"], button { border: 3px solid var(--color-black); box-shadow: 4px 4px 0 var(--color-black); font-weight: 700; transition: all var(--transition-fast); cursor: pointer; padding: 8px 16px; background-color: var(--color-secondary); color: var(--color-black) !important; text-decoration: none; }
-        .chunky-btn:hover, button[type="button"]:hover, button:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--color-black); background-color: var(--color-focus) !important; }
-        .chunky-btn:disabled { background-color: #ccc !important; border-color: #999 !important; box-shadow: 4px 4px 0 #999 !important; cursor: not-allowed; }
-        .bg-red-600 { background-color: var(--color-primary) !important; }
-        .bg-gray-600 { background-color: #aaa !important; }
-        .status-pill-unique { border: 2px solid var(--color-black); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 900; }
-        .status-completed { background-color: var(--color-secondary) !important; color: var(--color-black) !important; }
-        .status-pending { background-color: var(--color-accent) !important; color: var(--color-black) !important; }
-        .status-failed { background-color: var(--color-primary) !important; color: var(--color-black) !important; }
-        .file-card-unique { padding: 1rem !important; gap: 0.5rem; }
-        .file-card-name { font-weight: 700 !important; }
-        .file-card-price { font-weight: 900 !important; color: var(--color-black) !important; }
-        .modal-backdrop-unique { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .modal-backdrop-unique.visible { opacity: 1; pointer-events: auto; }
-        .modal-dialog-unique { background-color: var(--color-bg) !important; border: 4px solid var(--color-black) !important; box-shadow: 12px 12px 0 var(--color-black) !important; border-radius: 0 !important; width: 90%; max-width: 480px; transform: scale(0.95); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
-        .modal-backdrop-unique.visible .modal-dialog-unique { transform: scale(1); opacity: 1; }
-        @media (max-width: 768px) { main.main-content-unique { width: 100%; } }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-bg);
+            color: var(--color-black);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .antialiased {
+            font-family: var(--font-main) !important;
+        }
+
+        .bg-\[\#1a1a1a\] {
+            background-color: var(--color-bg) !important;
+        }
+
+        .bg-\[\#242424\] {
+            background-color: #f0f0f0 !important;
+        }
+
+        .text-white {
+            color: var(--color-black) !important;
+        }
+
+        .text-gray-300 {
+            color: #555 !important;
+        }
+
+        .text-gray-400 {
+            color: #777 !important;
+        }
+
+        .border-gray-700 {
+            border-color: var(--color-black) !important;
+        }
+
+        .shadow-xl {
+            box-shadow: none !important;
+        }
+
+        .sidebar-unique {
+            transition: transform 0.3s ease-in-out;
+            background-color: var(--color-bg) !important;
+            border-right: 4px solid var(--color-black) !important;
+        }
+
+        .nav-link-unique {
+            transition: all var(--transition-fast);
+            font-weight: 700;
+            border: 3px solid transparent;
+            border-radius: 0 !important;
+            color: var(--color-black) !important;
+        }
+
+        .nav-link-unique:hover {
+            border-color: var(--color-black);
+            background-color: var(--color-accent) !important;
+            box-shadow: 4px 4px 0 var(--color-black);
+        }
+
+        .nav-active-unique {
+            background-color: var(--color-black) !important;
+            color: #fff !important;
+            font-weight: 700 !important;
+        }
+
+        .nav-active-unique:hover {
+            background-color: #333 !important;
+        }
+
+        .sidebar-overlay-unique {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        main>header {
+            background-color: var(--color-bg) !important;
+            border-bottom: 4px solid var(--color-black) !important;
+            box-shadow: none !important;
+        }
+
+        main>header h1 {
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+        }
+
+        main>header img {
+            border: 3px solid var(--color-black) !important;
+        }
+
+        #sidebar-toggle {
+            color: var(--color-black) !important;
+        }
+
+        .data-card-unique,
+        .data-table-container-unique,
+        .file-card-unique,
+        .coming-soon-container,
+        .md\:col-span-2 {
+            background-color: var(--color-bg) !important;
+            border: 3px solid var(--color-black) !important;
+            box-shadow: 8px 8px 0 var(--color-black) !important;
+            border-radius: 0 !important;
+            padding: 1.5rem;
+        }
+
+        .coming-soon-text {
+            font-weight: 900 !important;
+            font-size: 2rem !important;
+            color: var(--color-black) !important;
+        }
+
+        .coming-soon-icon {
+            color: var(--color-primary) !important;
+        }
+
+        .data-table-unique thead th {
+            background-color: var(--color-accent) !important;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .data-table-unique tbody tr {
+            border-bottom: 2px solid #ddd !important;
+        }
+
+        .data-table-unique tbody tr:hover {
+            background-color: #f0f0f0 !important;
+        }
+
+        .filter-input-unique,
+        select,
+        textarea,
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            background-color: var(--color-bg) !important;
+            border: 3px solid var(--color-black) !important;
+            color: var(--color-black) !important;
+            font-weight: 600;
+            border-radius: 0 !important;
+            padding: 10px !important;
+            box-shadow: 4px 4px 0 var(--color-black) !important;
+        }
+
+        .filter-input-unique:focus,
+        select:focus,
+        textarea:focus,
+        input:focus {
+            outline: none !important;
+            border-color: var(--color-primary) !important;
+            box-shadow: 0 0 0 var(--color-black) !important;
+        }
+
+        .chunky-btn,
+        button[type="button"],
+        button {
+            border: 3px solid var(--color-black);
+            box-shadow: 4px 4px 0 var(--color-black);
+            font-weight: 700;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            padding: 8px 16px;
+            background-color: var(--color-secondary);
+            color: var(--color-black) !important;
+            text-decoration: none;
+        }
+
+        .chunky-btn:hover,
+        button[type="button"]:hover,
+        button:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--color-black);
+            background-color: var(--color-focus) !important;
+        }
+
+        .chunky-btn:disabled {
+            background-color: #ccc !important;
+            border-color: #999 !important;
+            box-shadow: 4px 4px 0 #999 !important;
+            cursor: not-allowed;
+        }
+
+        .bg-red-600 {
+            background-color: var(--color-primary) !important;
+        }
+
+        .bg-gray-600 {
+            background-color: #aaa !important;
+        }
+
+        .status-pill-unique {
+            border: 2px solid var(--color-black);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 900;
+        }
+
+        .status-completed {
+            background-color: var(--color-secondary) !important;
+            color: var(--color-black) !important;
+        }
+
+        .status-pending {
+            background-color: var(--color-accent) !important;
+            color: var(--color-black) !important;
+        }
+
+        .status-failed {
+            background-color: var(--color-primary) !important;
+            color: var(--color-black) !important;
+        }
+
+        .file-card-unique {
+            padding: 1rem !important;
+            gap: 0.5rem;
+        }
+
+        .file-card-name {
+            font-weight: 700 !important;
+        }
+
+        .file-card-price {
+            font-weight: 900 !important;
+            color: var(--color-black) !important;
+        }
+
+        .modal-backdrop-unique {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop-unique.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-dialog-unique {
+            background-color: var(--color-bg) !important;
+            border: 4px solid var(--color-black) !important;
+            box-shadow: 12px 12px 0 var(--color-black) !important;
+            border-radius: 0 !important;
+            width: 90%;
+            max-width: 480px;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .modal-backdrop-unique.visible .modal-dialog-unique {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            main.main-content-unique {
+                width: 100%;
+            }
+        }
+
         /* STYLES FOR CHART FILTER BUTTONS */
-        .chart-filter-btn { padding: 4px 12px !important; font-size: 0.8rem !important; box-shadow: 2px 2px 0 var(--color-black) !important; background-color: #f0f0f0 !important; }
-        .chart-filter-btn:hover { transform: translate(1px, 1px) !important; box-shadow: 1px 1px 0 var(--color-black) !important; background-color: var(--color-focus) !important; }
-        .chart-filter-btn.active { background-color: var(--color-primary) !important; transform: translate(2px, 2px) !important; box-shadow: 0 0 0 var(--color-black) !important; }
+        .chart-filter-btn {
+            padding: 4px 12px !important;
+            font-size: 0.8rem !important;
+            box-shadow: 2px 2px 0 var(--color-black) !important;
+            background-color: #f0f0f0 !important;
+        }
+
+        .chart-filter-btn:hover {
+            transform: translate(1px, 1px) !important;
+            box-shadow: 1px 1px 0 var(--color-black) !important;
+            background-color: var(--color-focus) !important;
+        }
+
+        .chart-filter-btn.active {
+            background-color: var(--color-primary) !important;
+            transform: translate(2px, 2px) !important;
+            box-shadow: 0 0 0 var(--color-black) !important;
+        }
     </style>
 </head>
 
 <body class="antialiased">
     <div id="sidebar-overlay" class="sidebar-overlay-unique md:hidden hidden"></div>
     <div class="flex h-screen">
-        <aside id="sidebar" class="sidebar-unique fixed md:static top-0 left-0 h-full w-64 p-4 overflow-y-auto transform -translate-x-full md:translate-x-0 z-50 transition-transform duration-300">
-            <div class="flex items-center space-x-3 mb-8 px-2"><a href="/" class="h-10 w-10 bg-sky-300 rounded-full flex items-center justify-center font-bold text-[#242424] text-xl no-underline">V</a><span class="text-xl font-semibold text-black">Dashboard</span></div><nav class="flex-grow" id="main-nav"><ul class="space-y-2"><li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3 nav-active-unique" data-target="upload-file-section"><i class="fa-solid fa-file-arrow-up w-5 h-5"></i><span>Upload Docs</span></a></li><li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3" data-target="my-courses-section"><i class="fa-solid fa-book-open w-5 h-5"></i><span>My Courses</span></a></li><li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3" data-target="create-course-section"><i class="fa-solid fa-circle-plus w-5 h-5"></i><span>Create Course</span></a></li><li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3" data-target="student-list-section"><i class="fa-solid fa-user-graduate w-5 h-5"></i><span>Student List</span></a></li><li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3" data-target="uploaded-docs-section"><i class="fa-solid fa-folder-open w-5 h-5"></i><span>Uploaded Docs</span></a></li><li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3" data-target="transactions-section"><i class="fa-solid fa-arrow-right-arrow-left w-5 h-5"></i><span>Transactions</span></a></li><li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3" data-target="payouts-section"><i class="fa-solid fa-money-bill-wave w-5 h-5"></i><span>Payouts</span></a></li><li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3" data-target="settings-section"><i class="fa-solid fa-gear w-5 h-5"></i><span>Settings</span></a></li></ul></nav>
+        <aside id="sidebar"
+            class="sidebar-unique fixed md:static top-0 left-0 h-full w-64 p-4 overflow-y-auto transform -translate-x-full md:translate-x-0 z-50 transition-transform duration-300">
+            <div class="flex items-center space-x-3 mb-8 px-2"><a href="/"
+                    class="h-10 w-10 bg-sky-300 rounded-full flex items-center justify-center font-bold text-[#242424] text-xl no-underline">V</a><span
+                    class="text-xl font-semibold text-black">Dashboard</span></div>
+            <nav class="flex-grow" id="main-nav">
+                <ul class="space-y-2">
+                    <li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3 nav-active-unique"
+                            data-target="upload-file-section"><i
+                                class="fa-solid fa-file-arrow-up w-5 h-5"></i><span>Upload Docs</span></a></li>
+                    <li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3"
+                            data-target="my-courses-section"><i class="fa-solid fa-book-open w-5 h-5"></i><span>My
+                                Courses</span></a></li>
+                    <li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3"
+                            data-target="create-course-section"><i
+                                class="fa-solid fa-circle-plus w-5 h-5"></i><span>Create Course</span></a></li>
+                    <li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3"
+                            data-target="student-list-section"><i
+                                class="fa-solid fa-user-graduate w-5 h-5"></i><span>Student List</span></a></li>
+                    <li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3"
+                            data-target="uploaded-docs-section"><i
+                                class="fa-solid fa-folder-open w-5 h-5"></i><span>Uploaded Docs</span></a></li>
+                    <li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3"
+                            data-target="transactions-section"><i
+                                class="fa-solid fa-arrow-right-arrow-left w-5 h-5"></i><span>Transactions</span></a>
+                    </li>
+                    <li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3"
+                            data-target="payouts-section"><i
+                                class="fa-solid fa-money-bill-wave w-5 h-5"></i><span>Payouts</span></a></li>
+                    <li><a href="#" class="nav-link-unique flex items-center space-x-3 p-3"
+                            data-target="settings-section"><i
+                                class="fa-solid fa-gear w-5 h-5"></i><span>Settings</span></a></li>
+                </ul>
+            </nav>
         </aside>
         <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black/50 z-40 md:hidden"></div>
         <main class="main-content-unique flex-1 flex flex-col overflow-x-hidden overflow-y-auto relative">
             <header class="flex-shrink-0 p-4 sm:p-6 flex justify-between items-center z-40">
-                <button id="sidebar-toggle" class="md:hidden focus:outline-none"><i class="fas fa-bars text-xl"></i></button>
-                <div class="flex-1 text-center"><h1>Creator Dashboard</h1></div>
-                <div class="flex items-center gap-4"><img src="<%= profileUrl ? profileUrl : '/images/avatar.jpg' %>" alt="User Profile" class="w-10 h-10 rounded-full object-cover"/></div>
+                <button id="sidebar-toggle" class="md:hidden focus:outline-none"><i
+                        class="fas fa-bars text-xl"></i></button>
+                <div class="flex-1 text-center">
+                    <h1>Creator Dashboard</h1>
+                </div>
+                <div class="flex items-center gap-4"><img src="<%= profileUrl ? profileUrl : '/images/avatar.jpg' %>"
+                        alt="User Profile" class="w-10 h-10 rounded-full object-cover" /></div>
             </header>
-            
-            <% let totalIncome = 0; if (typeof transactions !== 'undefined' && transactions.length > 0) { totalIncome = transactions.reduce((acc, t) => acc + t.totalAmount, 0); } %>
 
-            <div id="content-container" class="flex-1 p-4 lg:p-8">
-                <div id="upload-file-section" class="content-section"><%-include("fileupload")%></div>
-                <div id="my-courses-section" class="content-section hidden"><div class="coming-soon-container"><div class="text-center"><i class="fas fa-rocket coming-soon-icon"></i><h2 class="coming-soon-text">My Courses Coming Soon!</h2></div></div></div>
-                <div id="create-course-section" class="content-section hidden"><div class="coming-soon-container"><div class="text-center"><i class="fas fa-pencil-ruler coming-soon-icon"></i><h2 class="coming-soon-text">Course Creator Coming Soon!</h2></div></div></div>
-                <div id="student-list-section" class="content-section hidden"><div class="coming-soon-container"><div class="text-center"><i class="fas fa-users coming-soon-icon"></i><h2 class="coming-soon-text">Student List Coming Soon!</h2></div></div></div>
-                <div id="uploaded-docs-section" class="content-section hidden"> <h2 class="text-2xl font-bold mb-6">Uploaded Documents</h2> <div id="file-card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"> <% if (typeof files !== 'undefined' && files.length > 0) { %> <% files.forEach(file => { %> <div class="file-card-unique" data-file-id="<%= file.id %>"> <div class="flex-grow flex flex-col items-center text-center"> <i class="fa-solid fa-file-pdf text-5xl" style="color: var(--color-primary);"></i> <p class="file-card-name mt-4 text-sm break-all" title="<%= file.filename %>"><%= file.filename %></p> <p class="text-xs mt-1"><%= file.size %></p> </div> <div class="mt-4 pt-3 border-t flex justify-between items-center"> <span class="file-card-price">₹<%= file.price.toFixed(2) %></span> <div class="flex items-center gap-2"> <button class="delete-file-btn" title="Delete File" data-file-id="<%= file.id %>" data-file-name="<%= file.filename %>"><i class="fa-solid fa-trash-can"></i></button> <button class="edit-file-btn text-xs" data-file-id="<%= file.id %>" data-file-name="<%= file.filename %>" data-file-description="<%= file.description %>" data-file-price="<%= file.price %>" data-file-coupons='<%- JSON.stringify(file.coupons || []) %>'>Edit</button> </div> </div> </div> <% }) %> <% } %> </div></div>
+            <% let totalIncome=0; if (typeof transactions !=='undefined' && transactions.length> 0) { totalIncome =
+                transactions.reduce((acc, t) => acc + t.totalAmount, 0); } %>
 
-                <div id="transactions-section" class="content-section hidden">
-                    <div class="space-y-6">
-                        <div class="data-card-unique">
-                            <div class="flex flex-wrap justify-between items-center gap-y-2 mb-4">
-                                <h3 class="text-lg font-bold uppercase">Revenue Analytics</h3>
-                                <div id="chart-time-filter" class="flex items-center gap-2">
-                                    <button class="chunky-btn chart-filter-btn active" data-range="7days">7 Days</button>
-                                    <button class="chunky-btn chart-filter-btn" data-range="month">30 Days</button>
-                                    <button class="chunky-btn chart-filter-btn" data-range="year">Year</button>
-                                </div>
-                            </div>
-                            <div class="h-64">
-                                <canvas id="revenueChart"></canvas>
+                <div id="content-container" class="flex-1 p-4 lg:p-8">
+                    <div id="upload-file-section" class="content-section"><%-include("fileupload")%></div>
+                    <div id="my-courses-section" class="content-section hidden">
+                        <div class="coming-soon-container">
+                            <div class="text-center"><i class="fas fa-rocket coming-soon-icon"></i>
+                                <h2 class="coming-soon-text">My Courses Coming Soon!</h2>
                             </div>
                         </div>
+                    </div>
+                    <div id="create-course-section" class="content-section hidden">
+                        <div class="coming-soon-container">
+                            <div class="text-center"><i class="fas fa-pencil-ruler coming-soon-icon"></i>
+                                <h2 class="coming-soon-text">Course Creator Coming Soon!</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="student-list-section" class="content-section hidden">
+                        <div class="coming-soon-container">
+                            <div class="text-center"><i class="fas fa-users coming-soon-icon"></i>
+                                <h2 class="coming-soon-text">Student List Coming Soon!</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="uploaded-docs-section" class="content-section hidden">
+                        <h2 class="text-2xl font-bold mb-6">Uploaded Documents</h2>
+                        <div id="file-card-grid"
+                            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                            <% if (typeof files !=='undefined' && files.length> 0) { %> <% files.forEach(file=> { %>
+                                    <div class="file-card-unique" data-file-id="<%= file.id %>">
+                                        <div class="flex-grow flex flex-col items-center text-center"> <i
+                                                class="fa-solid fa-file-pdf text-5xl"
+                                                style="color: var(--color-primary);"></i>
+                                            <p class="file-card-name mt-4 text-sm break-all"
+                                                title="<%= file.filename %>">
+                                                <%= file.filename %>
+                                            </p>
+                                            <p class="text-xs mt-1">
+                                                <%= file.size %>
+                                            </p>
+                                        </div>
+                                        <div class="mt-4 pt-3 border-t flex justify-between items-center"> <span
+                                                class="file-card-price">₹<%= file.price.toFixed(2) %></span>
+                                            <div class="flex items-center gap-2"> <button class="delete-file-btn"
+                                                    title="Delete File" data-file-id="<%= file.id %>"
+                                                    data-file-name="<%= file.filename %>"><i
+                                                        class="fa-solid fa-trash-can"></i></button> <button
+                                                    class="edit-file-btn text-xs" data-file-id="<%= file.id %>"
+                                                    data-file-name="<%= file.filename %>"
+                                                    data-file-description="<%= file.description %>"
+                                                    data-file-price="<%= file.price %>"
+                                                    data-file-coupons='<%- JSON.stringify(file.coupons || []) %>'>Edit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+                    </div>
 
-                        <div class="data-card-unique">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: var(--color-secondary);"><i class="fa-solid fa-wallet text-2xl text-black"></i></div>
-                                <div>
-                                    <p class="text-sm">Total Income</p>
-                                    <p class="text-3xl font-bold" id="total-income-value" data-total="<%= totalIncome %>">₹0.00</p>
+                    <div id="transactions-section" class="content-section hidden">
+                        <div class="space-y-6">
+                            <div class="data-card-unique">
+                                <div class="flex flex-wrap justify-between items-center gap-y-2 mb-4">
+                                    <h3 class="text-lg font-bold uppercase">Revenue Analytics</h3>
+                                    <div id="chart-time-filter" class="flex items-center gap-2">
+                                        <button class="chunky-btn chart-filter-btn active" data-range="7days">7
+                                            Days</button>
+                                        <button class="chunky-btn chart-filter-btn" data-range="month">30 Days</button>
+                                        <button class="chunky-btn chart-filter-btn" data-range="year">Year</button>
+                                    </div>
+                                </div>
+                                <div class="h-64">
+                                    <canvas id="revenueChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="data-card-unique">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-lg flex items-center justify-center"
+                                        style="background-color: var(--color-secondary);"><i
+                                            class="fa-solid fa-wallet text-2xl text-black"></i></div>
+                                    <div>
+                                        <p class="text-sm">Total Income</p>
+                                        <p class="text-3xl font-bold" id="total-income-value"
+                                            data-total="<%= totalIncome %>">₹0.00</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="data-table-container-unique">
+                                <div class="p-4 flex flex-wrap items-center justify-between gap-4">
+                                    <div class="relative flex-grow sm:flex-grow-0"><i
+                                            class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2"></i><input
+                                            type="text" id="transaction-search-input" placeholder="Search..."
+                                            class="filter-input-unique w-full sm:w-64 pl-10 pr-4 py-2 text-sm"></div>
+                                    <div class="flex flex-wrap items-center gap-2"><input type="date"
+                                            id="transaction-date-start"
+                                            class="filter-input-unique py-2 px-3 text-sm"><span
+                                            class="font-bold">-</span><input type="date" id="transaction-date-end"
+                                            class="filter-input-unique py-2 px-3 text-sm"><select
+                                            id="transaction-sort-select" class="filter-input-unique py-2 px-3 text-sm">
+                                            <option value="date-desc">Newest First</option>
+                                            <option value="date-asc">Oldest First</option>
+                                        </select></div>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="data-table-unique min-w-full text-sm">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-left font-semibold p-3">Product Name</th>
+                                                <th class="text-left font-semibold p-3">Transaction ID</th>
+                                                <th class="text-left font-semibold p-3">Date</th>
+                                                <th class="text-left font-semibold p-3">Amount</th>
+                                                <th class="text-left font-semibold p-3">Discount</th>
+                                                <th class="text-left font-semibold p-3">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="transactions-table-body">
+                                            <% if (typeof transactions !=='undefined' && transactions.length> 0) { %><%
+                                                    transactions.forEach(transaction=> { %><tr
+                                                        data-date="<%= new Date(transaction.createdAt).toISOString().split('T')[0] %>"
+                                                        data-amount="<%= transaction.totalAmount %>"
+                                                        class="transaction-row-unique">
+                                                        <td class="p-3 font-medium">
+                                                            <%= transaction.ProductName %>
+                                                        </td>
+                                                        <td class="p-3">
+                                                            <%= transaction.transactionId %>
+                                                        </td>
+                                                        <td class="p-3">
+                                                            <%= new
+                                                                Date(transaction.createdAt).toLocaleDateString('en-GB',
+                                                                { day: 'numeric' , month: 'short' , year: 'numeric' })
+                                                                %>
+                                                        </td>
+                                                        <td class="p-3 font-semibold">₹<%=
+                                                                transaction.totalAmount.toFixed(2) %>
+                                                        </td>
+                                                        <td class="p-3">₹<%= transaction.discount.toFixed(2) %>
+                                                        </td>
+                                                        <td class="p-3"><span
+                                                                class="status-pill-unique status-<%= transaction.status.toLowerCase() %>">
+                                                                <%= transaction.status %>
+                                                            </span></td>
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="6" class="text-center p-6">No transactions
+                                                                    found.</td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
-                        <div class="data-table-container-unique">
-                            <div class="p-4 flex flex-wrap items-center justify-between gap-4"><div class="relative flex-grow sm:flex-grow-0"><i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2"></i><input type="text" id="transaction-search-input" placeholder="Search..." class="filter-input-unique w-full sm:w-64 pl-10 pr-4 py-2 text-sm"></div><div class="flex flex-wrap items-center gap-2"><input type="date" id="transaction-date-start" class="filter-input-unique py-2 px-3 text-sm"><span class="font-bold">-</span><input type="date" id="transaction-date-end" class="filter-input-unique py-2 px-3 text-sm"><select id="transaction-sort-select" class="filter-input-unique py-2 px-3 text-sm"><option value="date-desc">Newest First</option><option value="date-asc">Oldest First</option></select></div></div><div class="overflow-x-auto"><table class="data-table-unique min-w-full text-sm"><thead><tr><th class="text-left font-semibold p-3">Product Name</th><th class="text-left font-semibold p-3">Transaction ID</th><th class="text-left font-semibold p-3">Date</th><th class="text-left font-semibold p-3">Amount</th><th class="text-left font-semibold p-3">Discount</th><th class="text-left font-semibold p-3">Status</th></tr></thead><tbody id="transactions-table-body"><% if (typeof transactions !== 'undefined' && transactions.length > 0) { %><% transactions.forEach(transaction => { %><tr data-date="<%= new Date(transaction.createdAt).toISOString().split('T')[0] %>" data-amount="<%= transaction.totalAmount %>" class="transaction-row-unique"><td class="p-3 font-medium"><%= transaction.ProductName %></td><td class="p-3"><%= transaction.transactionId %></td><td class="p-3"><%= new Date(transaction.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></td><td class="p-3 font-semibold">₹<%= transaction.totalAmount.toFixed(2) %></td><td class="p-3">₹<%= transaction.discount.toFixed(2) %></td><td class="p-3"><span class="status-pill-unique status-<%= transaction.status.toLowerCase() %>"><%= transaction.status %></span></td></tr><% }) %><% } else { %><tr><td colspan="6" class="text-center p-6">No transactions found.</td></tr><% } %></tbody></table></div>
+                    </div>
+
+                    <div id="payouts-section" class="content-section hidden">
+                        <div class="space-y-6">
+                            <div class="data-card-unique flex flex-wrap items-center justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 rounded-lg flex items-center justify-center"
+                                        style="background-color: var(--color-focus);"><i
+                                            class="fa-solid fa-indian-rupee-sign text-2xl text-black"></i></div>
+                                    <div>
+                                        <p class="text-sm">Available Balance</p>
+                                        <p class="text-3xl font-bold" id="total-balance-display">₹<%=
+                                                totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2 }) %>
+                                        </p>
+                                    </div>
+                                </div><button id="withdraw-btn" class="chunky-btn" <% if (totalIncome < 1000) {
+                                    %>disabled<% } %> ><i class="fa-solid fa-paper-plane"></i> Withdraw</button>
+                            </div>
+                            <div class="data-table-container-unique">
+                                <div class="p-4">
+                                    <h3 class="text-lg font-bold">Payout History</h3>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="data-table-unique min-w-full text-sm">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-left font-semibold p-3">Payout ID</th>
+                                                <th class="text-left font-semibold p-3">Date</th>
+                                                <th class="text-left font-semibold p-3">Amount</th>
+                                                <th class="text-left font-semibold p-3">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (typeof payouts !=='undefined' && payouts.length> 0) { %><%
+                                                    payouts.forEach(payout=> { %><tr>
+                                                        <td class="p-3">
+                                                            <%= payout.payoutId %>
+                                                        </td>
+                                                        <td class="p-3">
+                                                            <%= new Date(payout.createdAt).toLocaleDateString('en-GB', {
+                                                                day: 'numeric' , month: 'short' , year: 'numeric' }) %>
+                                                        </td>
+                                                        <td class="p-3 font-semibold">₹<%= payout.amount.toFixed(2) %>
+                                                        </td>
+                                                        <td class="p-3"><span
+                                                                class="status-pill-unique status-<%= payout.status.toLowerCase() %>">
+                                                                <%= payout.status %>
+                                                            </span></td>
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="4" class="text-center p-6">No payout
+                                                                    history.</td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="settings-section" class="content-section hidden">
+                        <div class="space-y-8">
+                            <div>
+                                <h2 class="text-3xl font-bold">Settings</h2>
+                                <p class="mt-1">Manage your payment preferences.</p>
+                            </div>
+                            <div class="border-b-4 border-black">
+                                <nav id="settings-tabs" class="-mb-px flex space-x-6"><a href="#"
+                                        data-target="billings-settings"
+                                        class="settings-tab-unique whitespace-nowrap py-4 px-1 border-b-4 font-medium text-sm">Billings</a>
+                                </nav>
+                            </div>
+                            <div id="billings-settings" class="settings-content-unique space-y-8">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    <div class="md:col-span-1">
+                                        <h3 class="text-lg font-medium leading-6">Payment Method</h3>
+                                        <p class="mt-1 text-sm">Update your payout details.</p>
+                                    </div>
+                                    <div class="md:col-span-2 p-6">
+                                        <div class="space-y-6">
+                                            <div><label class="block text-sm font-medium">UPI ID</label>
+                                                <div class="mt-2 space-y-3"><input type="text" id="upi-id"
+                                                        placeholder="your-upi-id@okhdfcbank" value="<%= upiId ? upiId : ''%>"
+                                                        class="filter-input-unique block w-full py-2 px-3 sm:text-sm">
+                                                    <div class="flex justify-end"><button id="save-upi-btn"
+                                                            type="button" class="chunky-btn">Save UPI</button></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <div id="payouts-section" class="content-section hidden"><div class="space-y-6"><div class="data-card-unique flex flex-wrap items-center justify-between gap-4"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: var(--color-focus);"><i class="fa-solid fa-indian-rupee-sign text-2xl text-black"></i></div><div><p class="text-sm">Available Balance</p><p class="text-3xl font-bold" id="total-balance-display">₹<%= totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></p></div></div><button id="withdraw-btn" class="chunky-btn" <% if (totalIncome < 1000) { %>disabled<% } %>><i class="fa-solid fa-paper-plane"></i> Withdraw</button></div><div class="data-table-container-unique"><div class="p-4"><h3 class="text-lg font-bold">Payout History</h3></div><div class="overflow-x-auto"><table class="data-table-unique min-w-full text-sm"><thead><tr><th class="text-left font-semibold p-3">Payout ID</th><th class="text-left font-semibold p-3">Date</th><th class="text-left font-semibold p-3">Amount</th><th class="text-left font-semibold p-3">Status</th></tr></thead><tbody><% if (typeof payouts !== 'undefined' && payouts.length > 0) { %><% payouts.forEach(payout => { %><tr><td class="p-3"><%= payout.payoutId %></td><td class="p-3"><%= new Date(payout.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></td><td class="p-3 font-semibold">₹<%= payout.amount.toFixed(2) %></td><td class="p-3"><span class="status-pill-unique status-<%= payout.status.toLowerCase() %>"><%= payout.status %></span></td></tr><% }) %><% } else { %><tr><td colspan="4" class="text-center p-6">No payout history.</td></tr><% } %></tbody></table></div></div></div></div>
-                <div id="settings-section" class="content-section hidden"><div class="space-y-8"><div><h2 class="text-3xl font-bold">Settings</h2><p class="mt-1">Manage your payment preferences.</p></div><div class="border-b-4 border-black"><nav id="settings-tabs" class="-mb-px flex space-x-6"><a href="#" data-target="billings-settings" class="settings-tab-unique whitespace-nowrap py-4 px-1 border-b-4 font-medium text-sm">Billings</a></nav></div><div id="billings-settings" class="settings-content-unique space-y-8"><div class="grid grid-cols-1 md:grid-cols-3 gap-8"><div class="md:col-span-1"><h3 class="text-lg font-medium leading-6">Payment Method</h3><p class="mt-1 text-sm">Update your payout details.</p></div><div class="md:col-span-2 p-6"><div class="space-y-6"><div><label class="block text-sm font-medium">UPI ID</label><div class="mt-2 space-y-3"><input type="text" id="upi-id" placeholder="your-upi-id@okhdfcbank" class="filter-input-unique block w-full py-2 px-3 sm:text-sm"><div class="flex justify-end"><button id="save-upi-btn" type="button" class="chunky-btn">Save UPI</button></div></div></div></div></div></div></div></div></div>
-            </div>
         </main>
     </div>
-    <div id="universal-modal" class="modal-backdrop-unique"><div id="universal-modal-dialog" class="modal-dialog-unique p-6"></div></div>
+    <div id="universal-modal" class="modal-backdrop-unique">
+        <div id="universal-modal-dialog" class="modal-dialog-unique p-6"></div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let revenueChartInstance = null; 
-            const transactionsData = <%- JSON.stringify(typeof transactions !== 'undefined' ? transactions : []) %>;
+            let revenueChartInstance = null;
+            const transactionsData = <%-JSON.stringify(typeof transactions !== 'undefined' ? transactions : [])%>;
             const chartTimeFilter = document.getElementById('chart-time-filter');
 
             const overlay = document.getElementById("sidebar-overlay");
             overlay.addEventListener("click", () => { sidebar.classList.add("-translate-x-full"); overlay.classList.add("hidden"); });
-            const totalIncome = typeof transactions !== 'undefined' ? transactions.reduce((acc, t) => acc + t.totalAmount, 0) : 0;
+const totalIncome = transactionsData.reduce((acc, t) => acc + t.totalAmount, 0);
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -162,7 +663,7 @@
                 const targetId = link.dataset.target;
                 const targetSection = document.getElementById(targetId);
                 if (targetSection) targetSection.classList.remove('hidden');
-                
+
                 if (targetId === 'transactions-section') {
                     animateCountUp('total-income-value');
                     renderRevenueChart(transactionsData, '7days'); // Initial render
@@ -209,7 +710,7 @@
                         if (diffDays >= 0 && diffDays < 7) { data[6 - diffDays] += t.totalAmount; }
                     });
                 } else if (timeRange === 'month') {
-                     for (let i = 29; i >= 0; i--) {
+                    for (let i = 29; i >= 0; i--) {
                         const date = new Date(today);
                         date.setDate(today.getDate() - i);
                         labels.push(date.toLocaleDateString('en-GB', { day: 'numeric' }));
@@ -228,10 +729,10 @@
                         labels.push(`${monthNames[date.getMonth()]} '${String(date.getFullYear()).slice(2)}`);
                         data.push(0);
                     }
-                     transactions.forEach(t => {
+                    transactions.forEach(t => {
                         const tDate = new Date(t.createdAt);
                         const monthsAgo = (today.getFullYear() - tDate.getFullYear()) * 12 + (today.getMonth() - tDate.getMonth());
-                         if (monthsAgo >= 0 && monthsAgo < 12) { data[11-monthsAgo] += t.totalAmount; }
+                        if (monthsAgo >= 0 && monthsAgo < 12) { data[11 - monthsAgo] += t.totalAmount; }
                     });
                 }
 
@@ -242,21 +743,21 @@
 
                 revenueChartInstance = new Chart(ctx, {
                     type: 'line',
-                    data: { 
-                        labels: labels, 
-                        datasets: [{ 
-                            label: 'Revenue', 
-                            data: data, 
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Revenue',
+                            data: data,
                             fill: true, // Make gradient visible
-                            borderColor: 'var(--color-primary)', 
+                            borderColor: 'var(--color-primary)',
                             backgroundColor: gradient, // Apply gradient
                             tension: 0.4, // Smoother curves
-                            borderWidth: 4, 
-                            pointBackgroundColor: 'var(--color-black)', 
-                            pointBorderColor: 'var(--color-black)', 
-                            pointRadius: 6, 
-                            pointHoverRadius: 8 
-                        }] 
+                            borderWidth: 4,
+                            pointBackgroundColor: 'var(--color-black)',
+                            pointBorderColor: 'var(--color-black)',
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
                     },
                     options: {
                         responsive: true, maintainAspectRatio: false,
@@ -266,21 +767,21 @@
                         },
                         plugins: {
                             legend: { display: false },
-                            tooltip: { 
-                                enabled: true, 
-                                backgroundColor: 'var(--color-black)', 
-                                titleFont: { family: 'var(--font-main)', weight: 'bold' }, 
-                                bodyFont: { family: 'var(--font-main)'}, 
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'var(--color-black)',
+                                titleFont: { family: 'var(--font-main)', weight: 'bold' },
+                                bodyFont: { family: 'var(--font-main)' },
                                 displayColors: false,
-                                callbacks: { 
-                                    label: function(context) { 
-                                        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(context.parsed.y); 
-                                    } 
+                                callbacks: {
+                                    label: function (context) {
+                                        return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(context.parsed.y);
+                                    }
                                 }
                             }
                         },
                         scales: {
-                            y: { beginAtZero: true, grid: { color: '#e0e0e0', borderDash: [5, 5] }, ticks: { color: 'var(--color-black)', font: { family: 'var(--font-main)', weight: '600' }, callback: function(value) { return '₹' + value; } } },
+                            y: { beginAtZero: true, grid: { color: '#e0e0e0', borderDash: [5, 5] }, ticks: { color: 'var(--color-black)', font: { family: 'var(--font-main)', weight: '600' }, callback: function (value) { return '₹' + value; } } },
                             x: { grid: { display: false }, ticks: { color: 'var(--color-black)', font: { family: 'var(--font-main)', weight: '600' } } }
                         }
                     }
@@ -301,4 +802,5 @@
         });
     </script>
 </body>
+
 </html>

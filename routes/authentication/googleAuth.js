@@ -22,6 +22,9 @@ const reaquireAuth = require("./reaquireAuth.js");
 const Notification = require("../../models/userNotifications");
 const File = require("../../models/file.js");
 const UserDownloads = require("../../models/userDownloads");
+const paymentMethod = require("../../models/userPayout.js");
+const validator = require("validator");
+const xss = require("xss");
 const Report = require("../../models/userReports");
 const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 
@@ -67,6 +70,7 @@ console.log(process.env.GOOGLE_CLIENT_ID);
 console.log(process.env.GOOGLE_CLIENT_SECRET);
 console.log(process.env.GOOGLE_CALLBACK_URL);
 // ----- Passport Google OAuth -----
+
 passport.use(
   new GoogleStrategy(
     {
@@ -332,8 +336,9 @@ router.get(
         console.log("User profile pic URL:", user.profilePicUrl);
       }
     }
+    const userPaymentMethod = await paymentMethod.findOne({ userId: req.user._id });
     res.render("createcourse", {
-
+      upiId: userPaymentMethod ? userPaymentMethod.upi : null,
       transactions: userTransactions,
       payouts,
       isLoggedin: !!req.user,
@@ -344,7 +349,7 @@ router.get(
     });
   }
 );
-const paymentMethod = require("../../models/userPayout.js");
+
 const withdrawelReq = require("../../models/admin/withdrawelRequests.js");
 router.post(
   "/user/withdrawel",
@@ -402,7 +407,7 @@ router.post(
         },
         { upsert: true, new: true }
       );
-   console.log("updated user payment method")
+      console.log("updated user payment method")
       return res.status(200).json({
         success: true,
         message: "Payment method updated successfully",
@@ -478,59 +483,89 @@ router.get("/logout", (req, res) => {
     });
   res.redirect("/user-login");
 });
+
+
+
+
 router.post("/auth/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+  
+    // Step 1: Basic validation
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
-    // Find user by email
+    // Step 2: Sanitize and normalize input
+    email = validator.normalizeEmail(xss(email.trim().toLowerCase()));
+    password = xss(password.trim());
+
+    // Step 3: Validate email format
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    // Step 4: Check for JWT secret
+    if (!process.env.JWT_SECRET_USER_LOGIN) {
+      throw new Error("JWT secret not configured");
+    }
+
+    // Step 5: Find user by email
     const user = await User.findOne({ email });
+  
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-
-    // Compare password
+  
+    // Step 6: Compare password hash
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Generate JWT
+    // Step 7: Check email verification
+    if (!user.isEmailVerified) {
+      return res.status(403).json({
+        message: "Email not verified. Please verify your email to continue.",
+      });
+    }
+
+    // Step 8: Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET_USER_LOGIN,
       { expiresIn: "7d" }
     );
-    console.log(token);
-    console.log(process.env.NODE_ENV==="production")
-    // Set cookie
+
+    // Step 9: Set secure cookie
     res.cookie("token", token, {
-httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS only in prod
-      sameSite: "strict", // or "lax" if you need cross-site redirects (Google OAuth)
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // only HTTPS in production
+      sameSite: "strict", // prevents CSRF
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined, // allow across subdomains
+      domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined,
+      path: "/",
     });
 
-    // Send response
-    if (!user.isEmailVerified) {
-      return res
-        .status(401)
-        .json({ message: "Email not verified Please verify your email" });
-    }
+    // Step 10: Send response
     res.status(200).json({
       message: "Login successful",
       token,
       user: {
         id: user._id,
         email: user.email,
-        username: user.username, // consistent with signup response
+        username: user.username,
+        role: user.role,
       },
     });
+
   } catch (err) {
-    console.log(err);
+    console.error("Login error:", err);
     res.status(500).json({ message: "Error logging in", error: err.message });
   }
 });
+
+
 router.post("/auth/signup", async (req, res) => {
   try {
     const { email, password, username } = req.body;
@@ -561,7 +596,7 @@ router.post("/auth/signup", async (req, res) => {
     );
 
     res.cookie("token", token, {
-   httpOnly: true,
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production", // HTTPS only in prod
       sameSite: "strict", // or "lax" if you need cross-site redirects (Google OAuth)
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -745,24 +780,24 @@ router.get(
     const files = await File.find({ userId: user._id });
     const numsOfDocs = files.length;
     const numOfCourses = 0; // For now only
-   let fileUrl = userData.profilePicUrl;
-console.log(fileUrl);
+    let fileUrl = userData.profilePicUrl;
+    console.log(fileUrl);
 
-if (fileUrl) {
-  try {
-    // If fileUrl is relative (starts with /), prepend your domain
-    if (fileUrl.startsWith("/")) {
-      fileUrl = `${CF_DOMAIN}${fileUrl}`;
+    if (fileUrl) {
+      try {
+        // If fileUrl is relative (starts with /), prepend your domain
+        if (fileUrl.startsWith("/")) {
+          fileUrl = `${CF_DOMAIN}${fileUrl}`;
+        }
+
+        const url = new URL(fileUrl); // now this should always work
+        const key = url.pathname.substring(1); // remove leading "/"
+        userData.profilePicUrl = `${CF_DOMAIN}/${key}`;
+      } catch (err) {
+        console.error("Invalid URL for profile pic:", fileUrl, err);
+        userData.profilePicUrl = null; // fallback
+      }
     }
-
-    const url = new URL(fileUrl); // now this should always work
-    const key = url.pathname.substring(1); // remove leading "/"
-    userData.profilePicUrl = `${CF_DOMAIN}/${key}`;
-  } catch (err) {
-    console.error("Invalid URL for profile pic:", fileUrl, err);
-    userData.profilePicUrl = null; // fallback
-  }
-}
 
 
 
@@ -818,72 +853,72 @@ const s3Storage = multerS3({
     cb(null, fileName);
   },
 });
-router.get('/following',authenticateJWT_user,reaquireAuth, async (req, res) => {
-    try {
-        // Example: Fetch the current user and populate their 'following' list
-        const currentUser = await User.findById(req.user.id).populate({
-            path: 'following',
-            select: 'username fullname profilePicUrl' // Only get the fields you need
-        });
-let user = null;
+router.get('/following', authenticateJWT_user, reaquireAuth, async (req, res) => {
+  try {
+    // Example: Fetch the current user and populate their 'following' list
+    const currentUser = await User.findById(req.user.id).populate({
+      path: 'following',
+      select: 'username fullname profilePicUrl' // Only get the fields you need
+    });
+    let user = null;
 
-      if (req.user) {
-        const userId = req.user._id;
-        // Fetch only the necessary fields
-        user = await User.findById(userId).select(
-          "profilePicUrl username email"
-        );
-        if (user) {
-          console.log("User profile pic URL:", user.profilePicUrl);
-        }
+    if (req.user) {
+      const userId = req.user._id;
+      // Fetch only the necessary fields
+      user = await User.findById(userId).select(
+        "profilePicUrl username email"
+      );
+      if (user) {
+        console.log("User profile pic URL:", user.profilePicUrl);
       }
-     
-        res.render('following', {
-           isLoggedin: !!req.user,
-profileUrl: user?.profilePicUrl || null,
-        username: user?.username || null,
-        useremail: user?.email || null,
-            followingList: currentUser.following // This must be an array of user objects
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Server error");
     }
+
+    res.render('following', {
+      isLoggedin: !!req.user,
+      profileUrl: user?.profilePicUrl || null,
+      username: user?.username || null,
+      useremail: user?.email || null,
+      followingList: currentUser.following // This must be an array of user objects
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
 });
 
-router.get('/followers',authenticateJWT_user,reaquireAuth, async (req, res) => {
-    try {
-        // Example: Fetch the current user and populate their 'followers' list
-        const currentUser = await User.findById(req.user.id).populate({
-            path: 'followers',
-            select: 'username fullname profilePicUrl' // Only get the fields you need
-        });
-let user = null;
+router.get('/followers', authenticateJWT_user, reaquireAuth, async (req, res) => {
+  try {
+    // Example: Fetch the current user and populate their 'followers' list
+    const currentUser = await User.findById(req.user.id).populate({
+      path: 'followers',
+      select: 'username fullname profilePicUrl' // Only get the fields you need
+    });
+    let user = null;
 
-      if (req.user) {
-        const userId = req.user._id;
-        // Fetch only the necessary fields
-        user = await User.findById(userId).select(
-          "profilePicUrl username email"
-        );
-        if (user) {
-          console.log("User profile pic URL:", user.profilePicUrl);
-        }
+    if (req.user) {
+      const userId = req.user._id;
+      // Fetch only the necessary fields
+      user = await User.findById(userId).select(
+        "profilePicUrl username email"
+      );
+      if (user) {
+        console.log("User profile pic URL:", user.profilePicUrl);
       }
-     
-        res.render('followers', {
-          isLoggedin: !!req.user,
-profileUrl: user?.profilePicUrl || null,
-        username: user?.username || null,
-        useremail: user?.email || null,
-            followersList: currentUser.followers // Pass the populated array to the EJS file
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Server error");
     }
+
+    res.render('followers', {
+      isLoggedin: !!req.user,
+      profileUrl: user?.profilePicUrl || null,
+      username: user?.username || null,
+      useremail: user?.email || null,
+      followersList: currentUser.followers // Pass the populated array to the EJS file
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
 });
 const upload = multer({ storage: s3Storage });
 
@@ -1102,7 +1137,7 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
     const user = await User.findOne({
       username: new RegExp(`^${req.params.username}$`, "i")
     });
-console.log("user id is",user._id)
+    console.log("user id is", user._id)
 
     // 1. Handle user not found case FIRST and exit immediately.
     if (!user) {
