@@ -82,8 +82,8 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
-        let userWithEmail=await User.findOne({email:profile.emails[0].value})
-        if (!user&& !userWithEmail) {
+        let userWithEmail = await User.findOne({ email: profile.emails[0].value })
+        if (!user && !userWithEmail) {
           let username = profile.displayName;
           let finalUsername = username;
 
@@ -105,16 +105,16 @@ passport.use(
             isEmailVerified: true,
           });
         }
-       if (userWithEmail && !user) {
-  await User.findByIdAndUpdate(
-    userWithEmail._id,       // pass the ID directly
-    {
-      googleId: profile.id,  // update field
-    }
-  );
-}
+        if (userWithEmail && !user) {
+          await User.findByIdAndUpdate(
+            userWithEmail._id,       // pass the ID directly
+            {
+              googleId: profile.id,  // update field
+            }
+          );
+        }
 
-      
+
 
         return done(null, user);
       } catch (err) {
@@ -365,11 +365,11 @@ router.post(
       const paymentmethod = await paymentMethod.findOne({
         userId: req.user._id,
       });
-      if(!paymentmethod.upi){
+      if (!paymentmethod.upi) {
         res.send("No payment Method  found Please set Your Payment Method First")
         return;
       }
-      console.log("-------------------||------------",paymentmethod);
+      console.log("-------------------||------------", paymentmethod);
       const withdrawelRequests = new withdrawelReq({
         userId: req.user._id,
         Amount: amount,
@@ -499,7 +499,7 @@ router.get("/logout", (req, res) => {
 router.post("/auth/login", async (req, res) => {
   try {
     let { email, password } = req.body;
-  
+
     // Step 1: Basic validation
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
@@ -521,11 +521,11 @@ router.post("/auth/login", async (req, res) => {
 
     // Step 5: Find user by email
     const user = await User.findOne({ email });
-  
+
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-  
+
     // Step 6: Compare password hash
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
@@ -537,36 +537,38 @@ router.post("/auth/login", async (req, res) => {
       return res.status(403).json({
         message: "Email not verified. Please verify your email to continue.",
       });
+    } else {
+      // Step 8: Generate JWT token
+      const token = jwt.sign(
+        { userId: user._id, email: user.email },
+        process.env.JWT_SECRET_USER_LOGIN,
+        { expiresIn: "7d" }
+      );
+
+      // Step 9: Set secure cookie
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production", // only HTTPS in production
+        sameSite: "strict", // prevents CSRF
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined,
+        path: "/",
+      });
+
+      // Step 10: Send response
+      res.status(200).json({
+        message: "Login successful",
+        token,
+        user: {
+          id: user._id,
+          email: user.email,
+          username: user.username,
+          role: user.role,
+        },
+      });
     }
 
-    // Step 8: Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET_USER_LOGIN,
-      { expiresIn: "7d" }
-    );
 
-    // Step 9: Set secure cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // only HTTPS in production
-      sameSite: "strict", // prevents CSRF
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined,
-      path: "/",
-    });
-
-    // Step 10: Send response
-    res.status(200).json({
-      message: "Login successful",
-      token,
-      user: {
-        id: user._id,
-        email: user.email,
-        username: user.username,
-        role: user.role,
-      },
-    });
 
   } catch (err) {
     console.error("Login error:", err);
@@ -598,19 +600,19 @@ router.post("/auth/signup", async (req, res) => {
       username: finalUsername,
     });
 
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET_USER_LOGIN,
-      { expiresIn: "7d" }
-    );
+    // const token = jwt.sign(
+    //   { userId: user._id, email: user.email },
+    //   process.env.JWT_SECRET_USER_LOGIN,
+    //   { expiresIn: "7d" }
+    // );
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS only in prod
-      sameSite: "strict", // or "lax" if you need cross-site redirects (Google OAuth)
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined, // allow across subdomains
-    });
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production", // HTTPS only in prod
+    //   sameSite: "strict", // or "lax" if you need cross-site redirects (Google OAuth)
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    //   domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined, // allow across subdomains
+    // });
 
     //email verification token
     const verificationToken = jwt.sign(
