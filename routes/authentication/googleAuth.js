@@ -360,7 +360,7 @@ router.post(
       const paymentmethod = await paymentMethod.findOne({
         userId: req.user._id,
       });
-
+      console.log(paymentmethod);
       const withdrawelRequests = new withdrawelReq({
         userId: req.user._id,
         Amount: amount,
