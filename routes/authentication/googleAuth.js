@@ -361,7 +361,7 @@ router.post(
         userId: req.user._id,
       });
       if(!paymentmethod.upi){
-        res.status(400).message("Now payment Method  found Please set Your Payment Method First")
+        res.send("No payment Method  found Please set Your Payment Method First")
       }
       console.log(paymentmethod);
       const withdrawelRequests = new withdrawelReq({
