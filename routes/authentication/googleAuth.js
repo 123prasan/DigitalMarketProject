@@ -360,6 +360,9 @@ router.post(
       const paymentmethod = await paymentMethod.findOne({
         userId: req.user._id,
       });
+      if(!paymentmethod.upi){
+        res.status(400).message("Now payment Method  found Please set Your Payment Method First")
+      }
       console.log(paymentmethod);
       const withdrawelRequests = new withdrawelReq({
         userId: req.user._id,
