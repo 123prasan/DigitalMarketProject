@@ -506,7 +506,9 @@ router.post("/auth/login", async (req, res) => {
     }
 
     // Step 2: Sanitize and normalize input
-    email = validator.normalizeEmail(xss(email.trim().toLowerCase()));
+    
+email = xss(email.trim().toLowerCase());
+     
     password = xss(password.trim());
 
     // Step 3: Validate email format
@@ -520,8 +522,10 @@ router.post("/auth/login", async (req, res) => {
     }
 
     // Step 5: Find user by email
-    const user = await User.findOne({ email });
+ const user = await User.findOne({ email: email });
 
+   
+    
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -538,6 +542,8 @@ router.post("/auth/login", async (req, res) => {
         message: "Email not verified. Please verify your email to continue.",
       });
     } else {
+      
+
       // Step 8: Generate JWT token
       const token = jwt.sign(
         { userId: user._id, email: user.email },
@@ -592,7 +598,7 @@ router.post("/auth/signup", async (req, res) => {
       finalUsername = `${username}_${Math.floor(Math.random() * 10000)}`;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await User.create({
       email,
@@ -762,7 +768,7 @@ router.post("/auth/reset-password/:token", async (req, res) => {
     user.passwordHash = hashedPassword;
 
     // Optional: invalidate other sessions or refresh tokens here
-
+   console.log("password save for user ",user.username,"passwordHash",user.passwordHash)
     await user.save();
 
     res.status(200).json({
