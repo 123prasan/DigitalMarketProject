@@ -416,7 +416,14 @@
                                             </p>
                                         </div>
                                         <div class="mt-4 pt-3 border-t flex justify-between items-center"> <span
-                                                class="file-card-price">₹<%= file.price.toFixed(2) %></span>
+
+                                                class="file-card-price">₹
+                                               <% if(file.price){%>
+                                                    <%= file.price.toFixed(2) %>
+                                                <%}else{%>
+                                                    0.00
+                                                <%}%>
+                                                
                                             <div class="flex items-center gap-2"> <button class="delete-file-btn"
                                                     title="Delete File" data-file-id="<%= file.id %>"
                                                     data-file-name="<%= file.filename %>"><i
