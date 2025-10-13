@@ -82,8 +82,8 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
-
-        if (!user) {
+        let userWithEmail=await User.findOne({email:profile.emails[0].value})
+        if (!user&& !userWithEmail) {
           let username = profile.displayName;
           let finalUsername = username;
 
@@ -105,11 +105,16 @@ passport.use(
             isEmailVerified: true,
           });
         }
+       if (userWithEmail && !user) {
+  await User.findByIdAndUpdate(
+    userWithEmail._id,       // pass the ID directly
+    {
+      googleId: profile.id,  // update field
+    }
+  );
+}
 
-        await log_activities.create({
-          userId: user._id,
-          last_logged_in: [{ date: new Date() }],
-        });
+      
 
         return done(null, user);
       } catch (err) {
