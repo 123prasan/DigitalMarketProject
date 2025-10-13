@@ -362,6 +362,7 @@ router.post(
       });
       if(!paymentmethod.upi){
         res.send("No payment Method  found Please set Your Payment Method First")
+        return;
       }
       console.log(paymentmethod);
       const withdrawelRequests = new withdrawelReq({
