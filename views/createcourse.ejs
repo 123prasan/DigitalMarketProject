@@ -550,10 +550,10 @@
                                             class="fa-solid fa-indian-rupee-sign text-2xl text-black"></i></div>
                                     <div>
                                         <p class="text-sm">Available Balance</p>
-                                        <p class="text-3xl font-bold" id="total-balance-display">₹<%=
-                                                Ubalance.toLocaleString('en-IN', { minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2 }) %>
-                                        </p>
+                                        <p class="text-3xl font-bold" id="total-balance-display" data-total="<%= Ubalance %>">₹<%=
+    Ubalance.toLocaleString('en-IN', { minimumFractionDigits: 2,
+    maximumFractionDigits: 2 }) %>
+</p>
                                     </div>
                                 </div><button id="withdraw-btn" class="chunky-btn" <% if ( Ubalance < 1000) {
                                     %>disabled<% } %> ><i class="fa-solid fa-paper-plane"></i> Withdraw</button>
@@ -684,6 +684,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("<%=Ubalance%>")
             let revenueChartInstance = null;
             const transactionsData = <%-JSON.stringify(typeof transactions !== 'undefined' ? transactions : [])%>;
             const chartTimeFilter = document.getElementById('chart-time-filter');
@@ -715,7 +716,7 @@ const totalIncome = transactionsData.reduce((acc, t) => acc + t.totalAmount, 0);
                     animateCountUp('total-income-value');
                     renderRevenueChart(transactionsData, '7days'); // Initial render
                 }
-                if (targetId === 'payouts-section') { animateCountUp('total-balance-display', false); }
+                if (targetId === 'payouts-section') {  }
                 if (window.innerWidth < 768) { toggleSidebar(); }
             });
 

@@ -355,7 +355,7 @@ const userTransactions = await UserTransactions.find({
     UserId:req.user._id
    });
    console.log(userwithreq)
-   console.log(Ubalance)
+   console.log(Ubalance.Balance)
     res.render("createcourse", {
       upiId: userPaymentMethod ? userPaymentMethod.upi : null,
       transactions: userTransactions,
