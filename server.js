@@ -459,7 +459,7 @@ const ADMIN_USER = {
 };
 
 // --- Routes ---
-app.get("/:id/:impression",authenticateJWT_user,requireAuth, async (req, res) => {
+app.get("/files/impression/:id/:impression",authenticateJWT_user,requireAuth, async (req, res) => {
   try {
     const { id, impression } = req.params;
     const update = {};
@@ -1753,6 +1753,115 @@ app.get('/files', async (req, res) => {
         res.status(500).json({ message: "Server error while fetching files." });
     }
 });
+// ASSUMPTIONS:
+// 1. You are using Mongoose/MongoDB.
+// 2. The File model has fields: _id, filename, filedescription, category, price, user.
+
+// Your Mongoose model
+
+app.get('/products/related', async (req, res) => {
+    const currentFileId = req.query.fileId;
+    
+    if (!currentFileId) {
+        return res.status(400).json({ message: 'Missing fileId parameter.' });
+    }
+
+    try {
+        // 1. Find the source file data
+        const sourceFile = await File.findById(currentFileId);
+
+        if (!sourceFile) {
+            return res.status(404).json({ message: 'Source file not found.' });
+        }
+
+        // Extract key criteria
+        const sourceCategory = sourceFile.category;
+        const sourcePrice = sourceFile.price || 0; // Use 0 if price is null/undefined
+
+        // Define a simple structure for the pipeline
+        const relatedDocs = await File.aggregate([
+            
+            // --- Stage 1: Initial Filtering (MUST be first since $text is removed) ---
+            {
+                $match: {
+                    _id: { $ne: sourceFile._id }, // Exclude the source file
+                    category: { $ne: null }, 
+                    price: { $ne: null }
+                }
+            },
+
+            // --- Stage 2: Calculate Relevance Score (Max 70 points total) ---
+            {
+                $addFields: {
+                    relevanceScore: {
+                        $add: [
+                            // 1. Category Match (Weighted Highly - Max 40 points)
+                            {
+                                $cond: {
+                                    if: { $eq: ["$category", sourceCategory] },
+                                    then: 40,
+                                    else: 0
+                                }
+                            },
+
+                            // 2. Price Similarity (Weighted Moderately - Max 30 points)
+                            // Score decreases as the normalized price difference increases.
+                            {
+                                $multiply: [
+                                    30, // Max score for price similarity
+                                    {
+                                        $subtract: [
+                                            1, // Start at 100% similarity (1)
+                                            {
+                                                $min: [1, {
+                                                    $divide: [
+                                                        { $abs: { $subtract: ["$price", sourcePrice] } },
+                                                        // Ensure the denominator is never zero
+                                                        { $max: [sourcePrice, 1] } 
+                                                    ]
+                                                }]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            
+            // --- Stage 3: Sort and Limit ---
+            // Primary sort by the calculated score (highest relevance first)
+            { $sort: { relevanceScore: -1, downloadCount: -1 } }, 
+            
+            // Limit to a reasonable number of results (e.g., 20)
+            { $limit: 20 },
+
+            // --- Stage 4: Select Required Fields ---
+            {
+                $project: {
+                    _id: 1,
+                    filename: 1,
+                    filedescription: 1,
+                    category: 1,
+                    price: 1,
+                    previewUrl: 1,
+                    slug: 1,
+                    user: 1,
+                    relevanceScore: 1
+                }
+            }
+        ]);
+
+        res.json(relatedDocs);
+
+    } catch (error) {
+        console.error('Error fetching related documents:', error);
+        res.status(500).json({ message: 'Internal server error while fetching related documents.' });
+    }
+});
+
+
 // The Most Advanced Suggestions Route
 app.get('/suggestions', async (req, res) => {
   const q = req.query.q?.toLowerCase().trim();
