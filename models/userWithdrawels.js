@@ -4,6 +4,6 @@ const WithDraw=new mongoose.Schema({
     userId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
     status:{type:String,default:"pending",enum:["pending","success","failed"]},
     transactionId:{type:String,required:true},
-    createAt:{type:Date,default:Date.now}
+    createdAt:{type:Date,default:Date.now}
 })
 module.exports=mongoose.model("WithDraw",WithDraw);

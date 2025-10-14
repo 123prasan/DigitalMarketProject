@@ -615,13 +615,13 @@
                                             <% if (typeof payouts !=='undefined' && payouts.length> 0) { %><%
                                                     payouts.forEach(payout=> { %><tr>
                                                         <td class="p-3">
-                                                            <%= payout.payoutId %>
+                                                            <%= payout.transactionId %>
                                                         </td>
                                                         <td class="p-3">
                                                             <%= new Date(payout.createdAt).toLocaleDateString('en-GB', {
                                                                 day: 'numeric' , month: 'short' , year: 'numeric' }) %>
                                                         </td>
-                                                        <td class="p-3 font-semibold">₹<%= payout.amount.toFixed(2) %>
+                                                        <td class="p-3 font-semibold">₹<%= payout.totalAmount.toFixed(2) %>
                                                         </td>
                                                         <td class="p-3"><span
                                                                 class="status-pill-unique status-<%= payout.status.toLowerCase() %>">
