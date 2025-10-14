@@ -357,7 +357,7 @@ router.get(
 
 const withdrawelReq = require("../../models/admin/withdrawelRequests.js");
 router.post(
-  "/user/withdrawel",
+  "/user/withdrawal",
   authenticateJWT_user,
   reaquireAuth,
   async (req, res) => {
