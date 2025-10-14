@@ -52,7 +52,7 @@ const UserChats = require('./testings4.js'); // <-- IMPORT THE NEW ROUTER
 
 const WebSocket = require('ws');
 const UserMessage = require('./models/UserMessage.js');
-const userbal=require("../../models/userBalance.js");
+const userbal=require("./models/userBalance.js");
 
 const app = express();
 app.use(cookieParser());
