@@ -321,7 +321,14 @@
                     <div class="file-card-wrapper">
                         <div class="file-card">
                             <div class="head" title="${file.filename}">${file.filename}</div>
-                            <div class="card-img"><img src="${file.previewUrl}" alt="${file.filename}" loading="lazy"></div>
+<div class="card-img">
+  <img 
+    src="${file.previewUrl || './images/fileDemo.jpg'}" 
+    alt="${file.filename}" 
+    loading="lazy"
+    onerror="this.onerror=null; this.src='./images/fileDemo.jpg';"
+  >
+</div>
                             <div class="content">
                                 <span class="meta-item" title="Creator"><i class="fas fa-user"></i> ${file.user || 'Admin'}</span>
                                 <span class="meta-item" title="Downloads"><i class="fas fa-download"></i> ${(file.downloadCount || 0).toLocaleString()}</span>

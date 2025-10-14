@@ -365,6 +365,8 @@ router.post(
       const paymentmethod = await paymentMethod.findOne({
         userId: req.user._id,
       });
+      let amount = req.body.amount;
+     
       if (!paymentmethod.upi) {
         res.send("No payment Method  found Please set Your Payment Method First")
         return;
