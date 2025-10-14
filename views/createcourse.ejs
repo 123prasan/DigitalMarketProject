@@ -577,7 +577,7 @@
                                                     userwithreq.forEach(userreq=> { %><tr>
                                                         
                                                         <td class="p-3">
-                                                            <%= new Date(userreq.createdAt).toLocaleDateString('en-GB', {
+                                                            <%= new Date(userreq.createAt).toLocaleDateString('en-GB', {
                                                                 day: 'numeric' , month: 'short' , year: 'numeric' }) %>
                                                         </td>
                                                         <td class="p-3 font-semibold">₹<%= userreq.Amount.toFixed(2) %>
