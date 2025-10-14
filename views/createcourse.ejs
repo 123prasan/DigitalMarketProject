@@ -416,25 +416,24 @@
                                             </p>
                                         </div>
                                         <div class="mt-4 pt-3 border-t flex justify-between items-center"> <span
-                                                class="file-card-price">₹
-                                                <% if(file.price){%>
-                                                    <%= file.price.toFixed(2) %>
-                                                        <%}else{%>
-                                                            0.00
-                                                            <%}%>
 
-                                                                <div class="flex items-center gap-2"> <button
-                                                                        class="delete-file-btn" title="Delete File"
-                                                                        data-file-id="<%= file.id %>"
-                                                                        data-file-name="<%= file.filename %>"><i
-                                                                            class="fa-solid fa-trash-can"></i></button>
-                                                                    <button class="edit-file-btn text-xs"
-                                                                        data-file-id="<%= file.id %>"
-                                                                        data-file-name="<%= file.filename %>"
-                                                                        data-file-description="<%= file.description %>"
-                                                                        data-file-price="<%= file.price %>"
-                                                                        data-file-coupons='<%- JSON.stringify(file.coupons || []) %>'>Edit</button>
-                                                                </div>
+                                                class="file-card-price">₹
+                                               <% if(file.price){%>
+                                                    <%= file.price.toFixed(2) %>
+                                                <%}else{%>
+                                                    0.00
+                                                <%}%>
+                                                
+                                            <div class="flex items-center gap-2"> <button class="delete-file-btn"
+                                                    title="Delete File" data-file-id="<%= file.id %>"
+                                                    data-file-name="<%= file.filename %>"><i
+                                                        class="fa-solid fa-trash-can"></i></button> <button
+                                                    class="edit-file-btn text-xs" data-file-id="<%= file.id %>"
+                                                    data-file-name="<%= file.filename %>"
+                                                    data-file-description="<%= file.description %>"
+                                                    data-file-price="<%= file.price %>"
+                                                    data-file-coupons='<%- JSON.stringify(file.coupons || []) %>'>Edit</button>
+                                            </div>
                                         </div>
                                     </div>
                                     <% }) %>
@@ -624,8 +623,7 @@
                                         <div class="space-y-6">
                                             <div><label class="block text-sm font-medium">UPI ID</label>
                                                 <div class="mt-2 space-y-3"><input type="text" id="upi-id"
-                                                        placeholder="your-upi-id@okhdfcbank"
-                                                        value="<%= upiId ? upiId : ''%>"
+                                                        placeholder="your-upi-id@okhdfcbank" value="<%= upiId ? upiId : ''%>"
                                                         class="filter-input-unique block w-full py-2 px-3 sm:text-sm">
                                                     <div class="flex justify-end"><button id="save-upi-btn"
                                                             type="button" class="chunky-btn">Save UPI</button></div>
@@ -647,12 +645,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let revenueChartInstance = null;
-            const transactionsData = <% -JSON.stringify(typeof transactions !== 'undefined' ? transactions : []) %>;
+            const transactionsData = <%-JSON.stringify(typeof transactions !== 'undefined' ? transactions : [])%>;
             const chartTimeFilter = document.getElementById('chart-time-filter');
 
             const overlay = document.getElementById("sidebar-overlay");
             overlay.addEventListener("click", () => { sidebar.classList.add("-translate-x-full"); overlay.classList.add("hidden"); });
-            const totalIncome = transactionsData.reduce((acc, t) => acc + t.totalAmount, 0);
+const totalIncome = transactionsData.reduce((acc, t) => acc + t.totalAmount, 0);
             const sidebar = document.getElementById('sidebar');
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
