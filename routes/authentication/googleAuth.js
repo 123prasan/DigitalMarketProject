@@ -380,13 +380,18 @@ router.post(
     try {
       const paymentmethod = await paymentMethod.findOne({ userId: req.user._id });
       const amount = req.body.amount;
-
+     
       if (!paymentmethod || !paymentmethod.upi) {
         return res
           .status(400)
           .json({ success: false, message: "No payment method found. Please set your payment method first." });
       }
-
+      const Ubalance=await userbal.findOne({
+        UserId:req.user._id
+       });
+      if(req.body.amount>Ubalance.Balance){
+         return res.status(400).json({ success: false, message: "Insufficient Balance" });
+      }
       const withdrawalRequest = new withdrawelReq({
         userId: req.user._id,
         Amount: amount,
