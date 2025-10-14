@@ -375,7 +375,7 @@ router.post(
       const withdrawelRequests = new withdrawelReq({
         userId: req.user._id,
         Amount: amount,
-        upi: paymentmethod.upi,
+       paymentway: `${paymentmethod.upi}`,
         status: "pending",
       });
       await withdrawelRequests.save();
