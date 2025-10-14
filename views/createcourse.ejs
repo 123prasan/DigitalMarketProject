@@ -486,6 +486,7 @@
                                             <option value="date-asc">Oldest First</option>
                                         </select></div>
                                 </div>
+                                
                                 <div class="overflow-x-auto">
                                     <table class="data-table-unique min-w-full text-sm">
                                         <thead>
@@ -550,12 +551,51 @@
                                     <div>
                                         <p class="text-sm">Available Balance</p>
                                         <p class="text-3xl font-bold" id="total-balance-display">₹<%=
-                                                totalIncome.toLocaleString('en-IN', { minimumFractionDigits: 2,
+                                                Ubalance.toLocaleString('en-IN', { minimumFractionDigits: 2,
                                                 maximumFractionDigits: 2 }) %>
                                         </p>
                                     </div>
-                                </div><button id="withdraw-btn" class="chunky-btn" <% if (totalIncome < 1000) {
+                                </div><button id="withdraw-btn" class="chunky-btn" <% if ( Ubalance < 1000) {
                                     %>disabled<% } %> ><i class="fa-solid fa-paper-plane"></i> Withdraw</button>
+                            </div>
+                             <div class="data-table-container-unique">
+                                <div class="p-4">
+                                    <h3 class="text-lg font-bold">Payout Requests</h3>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="data-table-unique min-w-full text-sm">
+                                        <thead>
+                                            <tr>
+                                                
+                                                <th class="text-left font-semibold p-3">Date</th>
+                                                <th class="text-left font-semibold p-3">Amount</th>
+                                                <th class="text-left font-semibold p-3">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (typeof userwithreq !=='undefined' && userwithreq.length> 0) { %><%
+                                                    userwithreq.forEach(userreq=> { %><tr>
+                                                        
+                                                        <td class="p-3">
+                                                            <%= new Date(userreq.createdAt).toLocaleDateString('en-GB', {
+                                                                day: 'numeric' , month: 'short' , year: 'numeric' }) %>
+                                                        </td>
+                                                        <td class="p-3 font-semibold">₹<%= userreq.Amount.toFixed(2) %>
+                                                        </td>
+                                                        <td class="p-3"><span
+                                                                class="status-pill-unique status-<%= payout.status.toLowerCase() %>">
+                                                                <%= userreq.status %>
+                                                            </span></td>
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="4" class="text-center p-6">No Payment Requests</td>
+                                                            </tr>
+                                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div class="data-table-container-unique">
                                 <div class="p-4">

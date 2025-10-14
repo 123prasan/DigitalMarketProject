@@ -26,6 +26,8 @@ const paymentMethod = require("../../models/userPayout.js");
 const validator = require("validator");
 const xss = require("xss");
 const Report = require("../../models/userReports");
+const userbal=require("../../models/userBalance.js");
+
 const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 
 router.use(express.json());
@@ -323,10 +325,13 @@ router.get(
   async (req, res) => {
     const latestCourse = await Course.findOne().sort({ _id: -1 });
     console.log("Latest course ID:", latestCourse._id);
-    const userTransactions = await UserTransactions.find({
-      userId: req.user._id,
-    });
-    console.log(userTransactions);
+const userTransactions = await UserTransactions.find({
+  userId: req.user._id,
+});
+
+
+
+    
     // const reports= await Report.find({userId:req.user._id})
     const payouts = await Payouts.find({ userId: req.user._id });
     const files = await File.find({ userId: req.user._id });
@@ -342,6 +347,15 @@ router.get(
       }
     }
     const userPaymentMethod = await paymentMethod.findOne({ userId: req.user._id });
+    const userwithreq=await withdrawelReq.find({
+      userId:req.user._id
+    });
+   
+   const Ubalance=await userbal.findOne({
+    UserId:req.user._id
+   });
+   console.log(userwithreq)
+   console.log(Ubalance)
     res.render("createcourse", {
       upiId: userPaymentMethod ? userPaymentMethod.upi : null,
       transactions: userTransactions,
@@ -351,6 +365,8 @@ router.get(
       username: user?.username || null,
       useremail: user?.email || null,
       files,
+      userwithreq,
+      Ubalance:Ubalance.Balance
     });
   }
 );

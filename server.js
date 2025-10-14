@@ -52,6 +52,7 @@ const UserChats = require('./testings4.js'); // <-- IMPORT THE NEW ROUTER
 
 const WebSocket = require('ws');
 const UserMessage = require('./models/UserMessage.js');
+const userbal=require("../../models/userBalance.js");
 
 const app = express();
 app.use(cookieParser());
@@ -588,7 +589,15 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
       },
       { upsert: true, new: true }
     );
-
+   await userbal.findOneAndUpdate(
+      { userId: req.user._id },
+      {
+        $inc: {
+          Balance: sellerShare,
+        },
+      },
+      { upsert: true, new: true }
+    );
     // Update admin balance
     await Adminbal.findOneAndUpdate(
       {},
