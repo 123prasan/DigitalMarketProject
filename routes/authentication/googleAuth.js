@@ -362,30 +362,35 @@ router.post(
   reaquireAuth,
   async (req, res) => {
     try {
-      const paymentmethod = await paymentMethod.findOne({
-        userId: req.user._id,
-      });
-      let amount = req.body.amount;
-     
-      if (!paymentmethod.upi) {
-        res.send("No payment Method  found Please set Your Payment Method First")
-        return;
+      const paymentmethod = await paymentMethod.findOne({ userId: req.user._id });
+      const amount = req.body.amount;
+
+      if (!paymentmethod || !paymentmethod.upi) {
+        return res
+          .status(400)
+          .json({ success: false, message: "No payment method found. Please set your payment method first." });
       }
-      console.log("-------------------||------------", paymentmethod);
-      const withdrawelRequests = new withdrawelReq({
+
+      const withdrawalRequest = new withdrawelReq({
         userId: req.user._id,
         Amount: amount,
-       paymentway: `${paymentmethod.upi}`,
+        paymentway: paymentmethod.upi,
         status: "pending",
       });
-      await withdrawelRequests.save();
-      res.status(200).message("withdrawel request sent successfully");
+
+      await withdrawalRequest.save();
+
+      return res
+        .status(200)
+        .json({ success: true, message: "Withdrawal request sent successfully" });
+
     } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Server error" });
+      console.error("Error while creating withdrawal request:", err);
+      return res.status(500).json({ success: false, message: "Server error" });
     }
   }
 );
+
 function isValidUpi(upi) {
   const upiRegex = /^[\w.-]{2,}@[a-zA-Z]{2,64}$/;
   return upiRegex.test(upi);
