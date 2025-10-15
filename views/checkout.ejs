@@ -538,8 +538,8 @@ const savingsAmountElement = document.getElementById('savingsAmount');
 const modalCloseBtn = document.getElementById('modalCloseBtn');
 
 const productQuantityInput = document.getElementById('productQuantity');
-const decreaseQtyBtn = document.getElementById('decreaseQtyBtn');
-const increaseQtyBtn = document.getElementById('increaseQtyBtn');
+// const decreaseQtyBtn = document.getElementById('decreaseQtyBtn');
+// const increaseQtyBtn = document.getElementById('increaseQtyBtn');
 const displayQuantity = document.getElementById('displayQuantity');
 const subtotalPriceDisplay = document.getElementById('subtotalPrice');
 
@@ -607,38 +607,38 @@ function updateUI(newPriceDetails, currentSavings = 0) {
 }
 
 // --- Quantity Handlers ---
-decreaseQtyBtn.addEventListener('click', () => {
-    if (currentQuantity > 1) {
-        currentQuantity--;
-        productQuantityInput.value = currentQuantity;
-        // Recalculate with potentially applied coupon
-        const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
-        updateUI(priceDetails, savings);
-    }
-});
+// decreaseQtyBtn.addEventListener('click', () => {
+//     if (currentQuantity > 1) {
+//         currentQuantity--;
+//         productQuantityInput.value = currentQuantity;
+//         // Recalculate with potentially applied coupon
+//         const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
+//         updateUI(priceDetails, savings);
+//     }
+// });
 
-increaseQtyBtn.addEventListener('click', () => {
-    // Assuming a max quantity of 10 for demonstration
-    if (currentQuantity < 10) { 
-        currentQuantity++;
-        productQuantityInput.value = currentQuantity;
-        // Recalculate with potentially applied coupon
-        const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
-        updateUI(priceDetails, savings);
-    }
-});
+// increaseQtyBtn.addEventListener('click', () => {
+//     // Assuming a max quantity of 10 for demonstration
+//     if (currentQuantity < 10) { 
+//         currentQuantity++;
+//         productQuantityInput.value = currentQuantity;
+//         // Recalculate with potentially applied coupon
+//         const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
+//         updateUI(priceDetails, savings);
+//     }
+// });
 
-productQuantityInput.addEventListener('change', (e) => {
-    let newQty = parseInt(e.target.value);
-    if (isNaN(newQty) || newQty < 1) newQty = 1;
-    if (newQty > 10) newQty = 10; // Cap at max 10
+// productQuantityInput.addEventListener('change', (e) => {
+//     let newQty = parseInt(e.target.value);
+//     if (isNaN(newQty) || newQty < 1) newQty = 1;
+//     if (newQty > 10) newQty = 10; // Cap at max 10
 
-    currentQuantity = newQty;
-    e.target.value = currentQuantity;
-    // Recalculate with potentially applied coupon
-    const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
-    updateUI(priceDetails, savings);
-});
+//     currentQuantity = newQty;
+//     e.target.value = currentQuantity;
+//     // Recalculate with potentially applied coupon
+//     const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
+//     updateUI(priceDetails, savings);
+// });
 
 
 // Confetti generator (adapted colors)
