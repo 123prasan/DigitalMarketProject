@@ -30,7 +30,7 @@ const URL_EXPIRATION_SECONDS = 21600;
 // --- S3 Client ---
 const s3Client = new S3Client({
     region: REGION,
-    useAccelerateEndpoint: true
+    useAccelerateEndpoint: false
 });
 
 // --- Middleware ---

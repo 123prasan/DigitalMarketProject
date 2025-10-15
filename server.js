@@ -1252,29 +1252,37 @@ app.get("/notifications", async (req, res) => {
 
 const VALID_IMAGE_TYPES = ["jpg", "jpeg", "png", "webp", "gif"];
 
-async function getValidFileUrl(file, CF_DOMAIN, validTypes = VALID_IMAGE_TYPES) {
+// const axios = require('axios');
+
+// const VALID_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp'];
+
+async function getValidFileUrl(file, REGION = 'ap-south-1', validTypes = VALID_IMAGE_TYPES) {
   const triedExtensions = new Set();
 
-  // 1️⃣ Try file.imageType first
+  // 👇 Replace CF domain with your actual S3 bucket URL
+  const S3_BUCKET = 'vidyari2';
+  const BASE_URL = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com`;
+
+  // 1️⃣ Try the file.imageType first
   if (file.imageType) {
-    const url = `${CF_DOMAIN}/files-previews/images/${file._id}.${file.imageType}`;
+    const url = `${BASE_URL}/files-previews/images/${file._id}.${file.imageType}`;
     triedExtensions.add(file.imageType);
     try {
       const res = await axios.head(url);
       if (res.status === 200) return url;
     } catch (err) {
-      // ignore and continue
+      // Ignore 403/404 errors (not found)
     }
   }
 
-  // 2️⃣ Try remaining extensions
+  // 2️⃣ Try other possible extensions
   for (const ext of validTypes) {
-    if (triedExtensions.has(ext)) continue; // skip already tried
-    const url = `${CF_DOMAIN}/files-previews/images/${file._id}.${ext}`;
+    if (triedExtensions.has(ext)) continue;
+    const url = `${BASE_URL}/files-previews/images/${file._id}.${ext}`;
     try {
       const res = await axios.head(url);
       if (res.status === 200) {
-        // Update DB with valid type
+        // ✅ Found valid image — update DB if needed
         if (file.imageType !== ext) {
           file.imageType = ext;
           await file.save();
@@ -1287,9 +1295,10 @@ async function getValidFileUrl(file, CF_DOMAIN, validTypes = VALID_IMAGE_TYPES) 
     }
   }
 
-  // 3️⃣ Fallback to .jpg
-  return `${CF_DOMAIN}/files-previews/images/${file._id}.jpg`;
+  // 3️⃣ Fallback (default to .jpg)
+  return `${BASE_URL}/files-previews/images/${file._id}.jpg`;
 }
+
 
 app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
   try {
@@ -1318,7 +1327,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
     }
 
     // Build URLs (CloudFront) with valid preview URL
-    const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
+    const previewUrl = await getValidFileUrl(file);
     const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
 
     console.log("Preview URL:", previewUrl);
@@ -1548,29 +1557,37 @@ dotenv.config();
 
 // const axios = require("axios");
 
-async function getValidFileUrl(file, CF_DOMAIN, extensions = ["jpg", "jpeg", "png", "webp", "gif"]) {
+// const axios = require('axios');
+
+// const VALID_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp'];
+
+async function getValidFileUrl(file, REGION = 'ap-south-1', validTypes = VALID_IMAGE_TYPES) {
   const triedExtensions = new Set();
 
-  // 1️⃣ Try file.imageType first
+  // 👇 Replace CF domain with your actual S3 bucket URL
+  const S3_BUCKET = 'vidyari2';
+  const BASE_URL = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com`;
+
+  // 1️⃣ Try the file.imageType first
   if (file.imageType) {
-    const url = `${CF_DOMAIN}/files-previews/images/${file._id}.${file.imageType}`;
+    const url = `${BASE_URL}/files-previews/images/${file._id}.${file.imageType}`;
     triedExtensions.add(file.imageType);
     try {
       const res = await axios.head(url);
       if (res.status === 200) return url;
     } catch (err) {
-      // ignore and continue
+      // Ignore 403/404 errors (not found)
     }
   }
 
-  // 2️⃣ Try remaining extensions
-  for (const ext of extensions) {
-    if (triedExtensions.has(ext)) continue; // skip already tried
-    const url = `${CF_DOMAIN}/files-previews/images/${file._id}.${ext}`;
+  // 2️⃣ Try other possible extensions
+  for (const ext of validTypes) {
+    if (triedExtensions.has(ext)) continue;
+    const url = `${BASE_URL}/files-previews/images/${file._id}.${ext}`;
     try {
       const res = await axios.head(url);
       if (res.status === 200) {
-        // Update DB with valid type
+        // ✅ Found valid image — update DB if needed
         if (file.imageType !== ext) {
           file.imageType = ext;
           await file.save();
@@ -1578,15 +1595,15 @@ async function getValidFileUrl(file, CF_DOMAIN, extensions = ["jpg", "jpeg", "pn
         return url;
       }
     } catch (err) {
-      // ignore 403/404 and continue
       if (err.response && (err.response.status === 403 || err.response.status === 404)) continue;
       console.error("Unexpected error checking file:", err.message);
     }
   }
 
-  // 3️⃣ Fallback to .jpg if nothing works
-  return `${CF_DOMAIN}/files-previews/images/${file._id}.jpg`;
+  // 3️⃣ Fallback (default to .jpg)
+  return `${BASE_URL}/files-previews/images/${file._id}.jpg`;
 }
+
 
 // app.get("/documents", authenticateJWT_user, async (req, res) => {
 //   try {
@@ -1732,7 +1749,7 @@ app.get('/files', async (req, res) => {
         // --- 5. PROCESS PREVIEW URLS ---
         const filesWithPreviews = await Promise.all(
             filesFromDB.map(async (file) => {
-                const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
+                const previewUrl = await getValidFileUrl(file);
                 return { ...file, previewUrl };
             })
         );
