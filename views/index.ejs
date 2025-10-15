@@ -429,10 +429,10 @@
                                 <i class="fas fa-copy copy-icon-hover" data-url="${filePermalink}" title="Copy Link"></i>
                                 
                               <img 
-                                src="${file.previewUrl || './images/fileDemo.jpg'}" 
+                                src="${file.previewUrl || './images/File_Demo.svg'}" 
                                 alt="${file.filename}" 
                                 loading="lazy"
-                                onerror="this.onerror=null; this.src='./images/fileDemo.jpg';"
+                                onerror="this.onerror=null; this.src='./images/File_Demo.svg';"
                               >
                             </a>
                             
@@ -549,7 +549,7 @@
                         modalSuggestions.innerHTML = suggestions.slice(0, 10).map(file => { 
                             const fileUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
                             const title = file.filename.replace(new RegExp(query, 'gi'), (match) => `<strong>${match}</strong>`); 
-                            return `<a href="${fileUrl}" class="suggestion-item"><img src="${file.previewUrl || './images/fileDemo.jpg'}" class="suggestion-thumb" alt="${file.filename}"><div class="suggestion-info"><span class="suggestion-title">${title}</span><span class="suggestion-user">by ${file.user || 'Admin'}</span></div></a>`;
+                            return `<a href="${fileUrl}" class="suggestion-item"><img src="${file.previewUrl || './images/File_Demo.svg'}" class="suggestion-thumb" alt="${file.filename}"><div class="suggestion-info"><span class="suggestion-title">${title}</span><span class="suggestion-user">by ${file.user || 'Admin'}</span></div></a>`;
                         }).join('');
                     } else {
                         modalSuggestions.innerHTML = '<p style="font-weight: 600; color: #777; text-align: center;">No suggestions found. Press Enter to search anyway.</p>';

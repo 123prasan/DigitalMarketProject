@@ -3,191 +3,647 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirm Your Order</title>
+<title>Confirm Your Order - Bold Mixed Color</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
-/* --- your CSS stays mostly same --- */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    overflow-x: hidden;
-}
-.checkout-container {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 900px;
-    width: 100%;
-    background-color: #2c2c2c;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-    position: relative;
-}
-.confirmation-section {
-    flex: 2;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-.page-title { font-size: 2.5rem; margin-bottom: 15px; color: #f8f8f8; font-weight: 600; }
-.page-subtitle { font-size: 1.1rem; color: #b0b0b0; margin-bottom: 30px; max-width: 400px; }
-.cta-button {
-    width: 100%;
-    max-width: 300px;
-    padding: 16px;
-    background-color: #28a745;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.3rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 15px rgba(40,167,69,0.4);
-}
-.cta-button:hover { background-color: #218838; transform: translateY(-2px); }
+    /* --- BOLD MINIMAL MIXED COLOR THEME --- */
+    :root {
+        --font-color: #1a1a1a; /* Dark text */
+        --font-color-sub: #4f4f4f; /* Medium grey text */
+        --bg-color-light: #ffffff; /* White background */
+        --bg-color-dark: #f0f0f0; /* Light grey background for contrast */
+        --main-color: #3f51b5; /* Primary Blue (Border/Main Accent) */
+        --main-focus: #ffc107; /* Secondary Yellow (Accent/Focus) */
+        --success-color: #28a745;
+        --error-color: #dc3545;
+        --card-shadow: 4px 4px var(--main-color);
+        --border-style: 2px solid var(--main-color);
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        background-color: var(--bg-color-dark); /* Light grey body background */
+        color: var(--font-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 40px 20px;
+        position: relative;
+    }
+    
+    /* Main Container adopts the card styling */
+    .checkout-container {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1000px;
+        width: 100%;
+        background-color: var(--bg-color-light);
+        border: var(--border-style);
+        box-shadow: var(--card-shadow);
+        border-radius: 5px;
+        overflow: hidden;
+        z-index: 10;
+        transition: all 0.3s;
+    }
 
-.order-summary-container {
-    flex: 1;
-    background-color: #3a3a3a;
-    padding: 40px;
-    border-left: 1px solid #4a4a4a;
-    display: flex;
-    flex-direction: column;
-}
-.order-summary-container h3 { font-size: 2rem; margin-bottom: 20px; color: #f8f8f8; }
-.order-item { display: flex; justify-content: space-between; margin-bottom: 15px; }
-.item-name { font-weight: bold; }
-.item-price { font-weight: 500; }
-.coupon-section {
-    margin: 20px 0;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #4a4a4a;
-}
-.coupon-input-group { display: flex; gap: 10px; margin-top: 10px; }
-.coupon-input-group input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #5a5a5a;
-    background-color: #4a4a4a;
-    color: #f0f0f0;
-    border-radius: 6px;
-}
-.coupon-input-group input::placeholder { color: #a0a0a0; }
-.coupon-input-group button {
-    padding: 10px 16px;
-    border: none;
-    background-color: #218838;
-    color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-.coupon-input-group button:hover { background-color: #19692c; }
-.coupon-message { margin-top: 10px; font-size: 0.95rem; display: none; }
-.success { color: #4CAF50; }
-.error { color: #FF6347; }
+    /* Left Side: Product Details & Confirmation - Uses contrasting background */
+    .product-details-section { 
+        flex: 2;
+        padding: 40px 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        background: var(--bg-color-dark); /* Darker grey left panel */
+        border-right: 2px dashed var(--main-color); /* Dashed separator with Main Blue */
+    }
+    .product-image-wrapper {
+        width: 180px;
+        height: 180px;
+        margin-bottom: 25px;
+        border: var(--border-style);
+        border-radius: 5px;
+        box-shadow: 2px 2px var(--main-color);
+        overflow: hidden;
+        transition: transform 0.3s;
+    }
+    .product-image-wrapper:hover {
+        transform: translateY(-3px);
+    }
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-.price-breakdown { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-.price-breakdown p { display: flex; justify-content: space-between; align-items: center; color: #cccccc; }
-.price-breakdown span { font-weight: normal; color: #b0b0b0; }
-.info-text { font-size: 0.85rem; color: #9a9a9a; font-style: italic; flex-basis: 60%; text-align: right; }
+    /* Card Title/Subtitle Styling */
+    .product-title { 
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--font-color);
+        margin-bottom: 5px;
+    }
+    .product-description, .page-subtitle { 
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--font-color-sub);
+        max-width: 400px;
+        line-height: 1.4;
+    }
+    .page-title { /* Section title */
+        font-size: 20px; 
+        font-weight: 600;
+        color: var(--font-color);
+        margin-top: 25px;
+        padding-top: 15px;
+        width: 100%;
+        border-top: 1px solid var(--font-color-sub);
+    }
 
-hr { border: 0; height: 1px; background: #5a5a5a; margin: 25px 0; }
-.total-price-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem; font-weight: bold; color: #f8f8f8; margin-top: 10px; }
-.total-price { font-size: 2rem; color: #ffc107; }
+    /* Quantity Selector Styling (adapted to the theme) */
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        margin: 20px 0 30px;
+        border: 1px solid var(--font-color-sub);
+        border-radius: 5px;
+        background-color: var(--bg-color-light);
+    }
+    .quantity-selector button {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: var(--main-color);
+        cursor: pointer;
+        padding: 8px 15px;
+        transition: color 0.2s;
+    }
+    .quantity-selector button:hover {
+        color: var(--main-focus);
+    }
+    .quantity-selector input {
+        width: 50px;
+        text-align: center;
+        border: none;
+        background: none;
+        font-size: 16px;
+        color: var(--font-color);
+        padding: 8px 0;
+        border-left: 1px solid var(--font-color-sub);
+        border-right: 1px solid var(--font-color-sub);
+        -moz-appearance: textfield;
+    }
+    .quantity-selector input::-webkit-outer-spin-button,
+    .quantity-selector input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-/* Confetti */
-.confetti {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    opacity: 0.9;
-    pointer-events: none;
-    z-index: 9999;
-    border-radius: 50%;
-}
-@keyframes confettiFall {
-    0% { transform: translateY(0) rotate(0deg); opacity:1; }
-    100% { transform: translateY(500px) rotate(720deg); opacity:0; }
-}
-@media (max-width: 768px) {
-    .checkout-container { flex-direction: column; }
-    .confirmation-section, .order-summary-container { padding: 30px; }
-    .order-summary-container { border-left: none; border-top: 1px solid #4a4a4a; }
-    .page-title { font-size: 2rem; }
-    .page-subtitle { font-size: 1rem; }
-    .cta-button { font-size: 1.2rem; width: 100%; }
-    .total-price { font-size: 1.6rem; }
-    .total-price-row { font-size: 1.2rem; }
-}
+    /* CTA Button adopts card-btn styling */
+    .cta-button {
+        width: 100%;
+        max-width: 350px;
+        height: 45px;
+        background: var(--main-focus); /* Yellow CTA */
+        border: 2px solid var(--main-color);
+        border-radius: 5px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--font-color);
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 2px 2px var(--main-color);
+    }
+    .cta-button i {
+        color: var(--font-color);
+        transition: all 0.3s;
+        font-size: 1.1em;
+    }
+    .cta-button:hover {
+        background: #f0b300; /* Darker Yellow on hover */
+        border: 2px solid var(--main-color);
+        color: var(--font-color);
+        box-shadow: 4px 4px var(--main-color);
+    }
+    .cta-button:active {
+        transform: translateY(4px); /* Full press down */
+        box-shadow: 0 0 var(--main-color); /* Shadow disappears on press */
+    }
+
+    /* Right Side: Order Summary - Uses white background */
+    .order-summary-container {
+        flex: 1;
+        min-width: 300px;
+        background-color: var(--bg-color-light);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+    }
+    .order-summary-container h3 { 
+        font-size: 24px; 
+        font-weight: 600;
+        margin-bottom: 25px; 
+        color: var(--main-color); /* Blue title */
+        border-bottom: 1px solid var(--font-color-sub);
+        padding-bottom: 10px;
+    }
+
+    /* Price Details Styling */
+    .order-item { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        padding: 10px 0; 
+        border-bottom: 1px solid var(--font-color-sub);
+        font-size: 15px;
+    }
+    .order-item:last-of-type { border-bottom: none; }
+
+    .item-name { font-weight: 500; color: var(--font-color); }
+    .item-price { font-weight: 500; color: var(--main-color); }
+
+    /* Coupon Section */
+    .coupon-section {
+        margin: 20px 0;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--font-color-sub);
+    }
+    .coupon-section h4 {
+        color: var(--main-color);
+        font-size: 14px;
+        margin-bottom: 10px;
+        font-weight: 500;
+    }
+    .coupon-input-group { display: flex; gap: 10px; margin-top: 10px; }
+    .coupon-input-group input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid var(--font-color-sub);
+        background-color: var(--bg-color-light);
+        color: var(--font-color);
+        border-radius: 5px;
+        transition: border-color 0.3s;
+    }
+    .coupon-input-group input:focus { 
+        border-color: var(--main-focus);
+        outline: none;
+    }
+    .coupon-input-group button {
+        padding: 0 15px;
+        height: 38px;
+        border: 2px solid var(--main-color);
+        background-color: var(--success-color); /* Solid green button */
+        color: var(--bg-color-light);
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s;
+        box-shadow: 2px 2px var(--main-color);
+    }
+    .coupon-input-group button:hover { 
+        background-color: #218838;
+        border-color: var(--main-color); 
+        color: var(--bg-color-light);
+    }
+    .coupon-input-group button:active { 
+        transform: translateY(2px); 
+        box-shadow: 1px 1px var(--main-color);
+    }
+
+    .coupon-message { 
+        margin-top: 10px; 
+        font-size: 0.85rem; 
+        font-weight: 500;
+        padding-left: 5px;
+        display: none;
+    }
+    .success { color: var(--success-color); }
+    .error { color: var(--error-color); }
+
+    /* Price Breakdown */
+    .price-breakdown { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+    .price-breakdown p { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        color: var(--font-color-sub); 
+        font-size: 14px;
+    }
+    .price-breakdown span { font-weight: 500; color: var(--font-color); }
+    .discount { color: var(--success-color); font-weight: 600; }
+
+    .card-divider { /* Replicating the divider style */
+        width: 100%;
+        border: none;
+        height: 2px; /* Thicker divider */
+        background-color: var(--main-color);
+        margin: 20px 0;
+    }
+    
+    .total-price-row { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        font-size: 20px; 
+        font-weight: 500; 
+        color: var(--font-color); 
+        padding: 10px 0;
+    }
+    .total-price { 
+        font-size: 24px; 
+        font-weight: 600;
+        color: var(--main-focus); /* Yellow price */
+    }
+    .total-price span { /* Symbol styling */
+        font-size: 20px;
+        font-weight: 500;
+        color: var(--font-color-sub);
+    }
+
+    /* --- Confetti (Visual effect) --- */
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        opacity: 0.9;
+        pointer-events: none;
+        z-index: 9999;
+        border-radius: 50%;
+    }
+    @keyframes confettiFall {
+        0% { transform: translateY(0) rotate(0deg); opacity:1; }
+        100% { transform: translateY(500px) rotate(720deg); opacity:0; }
+    }
+
+    /* --- Impressive Coupon Success Modal --- */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4); 
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(2px);
+    }
+    .success-modal {
+        background: var(--bg-color-light);
+        border: var(--border-style);
+        box-shadow: var(--card-shadow);
+        border-radius: 5px;
+        padding: 30px;
+        width: 90%;
+        max-width: 450px;
+        text-align: center;
+        transform: scale(0.7);
+        opacity: 0;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    }
+    .modal-show .success-modal {
+        transform: scale(1);
+        opacity: 1;
+    }
+    .modal-show .modal-backdrop {
+        display: flex;
+    }
+    .success-icon-container {
+        width: 60px;
+        height: 60px;
+        background-color: var(--success-color);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 15px;
+        animation: pulse 1s infinite alternate;
+        border: 2px solid var(--main-color); /* Icon Border */
+    }
+    .success-icon-container i {
+        font-size: 2rem;
+        color: white;
+    }
+    .modal-title {
+        font-size: 24px; 
+        font-weight: 600;
+        color: var(--main-color); /* Blue Title */
+        margin-bottom: 10px;
+    }
+    .savings-text {
+        font-size: 16px;
+        color: var(--font-color-sub);
+        margin-bottom: 15px;
+    }
+    .savings-amount {
+        font-size: 32px; 
+        font-weight: 700;
+        color: var(--main-focus); /* Yellow Savings */
+        display: block;
+        margin-top: 10px;
+    }
+    .modal-close-btn {
+        height: 35px;
+        padding: 0 15px;
+        background: var(--main-color);
+        border: var(--border-style);
+        border-radius: 5px;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--bg-color-light); /* White text */
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 2px 2px var(--font-color); /* Dark shadow for contrast */
+    }
+    .modal-close-btn:hover {
+        background: var(--main-focus);
+        color: var(--font-color);
+    }
+    .modal-close-btn:active {
+        transform: translateY(2px);
+        box-shadow: 1px 1px var(--font-color);
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); }
+        100% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 850px) {
+        body { padding: 20px 10px; }
+        .checkout-container { flex-direction: column; border: none; box-shadow: none; }
+        .product-details-section { 
+            padding: 30px 20px; 
+            border-right: none; 
+            border-bottom: 2px solid var(--main-color); 
+        }
+        .order-summary-container { 
+            border-left: none; 
+            padding: 30px 20px;
+            min-width: unset;
+        }
+        .product-image-wrapper { margin-bottom: 20px; width: 150px; height: 150px; }
+        .product-title { font-size: 24px; }
+        .page-title { font-size: 18px; padding-top: 15px; margin-top: 20px; }
+        .cta-button { font-size: 1.1rem; max-width: 100%; height: 40px; }
+        .total-price { font-size: 20px; }
+        .total-price-row { font-size: 16px; }
+    }
 </style>
 </head>
 <body>
 
 <div class="checkout-container">
-    <div class="confirmation-section">
-        <h1 class="page-title">Ready to Complete Your Order?</h1>
-        <p class="page-subtitle">Your final order details are on the right. Click below to proceed with payment securely.</p>
-        <button type="button" class="cta-button">Pay ₹<%=priceDetails.total%></button>
+    <div class="product-details-section">
+        <div class="product-image-wrapper">
+<img 
+  src="<%= file.imageType 
+          ? `https://vidyari2.s3.ap-south-1.amazonaws.com/files-previews/images/${file._id}.${file.imageType}` 
+          : '/images/File-Demo.svg' %>" 
+  alt="<%= file.filename %>" 
+  class="product-image">
+        </div>
+        
+        <div class="card-title product-title"><%=file.title%></div>
+        <div class="card-subtitle product-description">
+            <%=file.filename%>. A clear and concise description of the product you are about to purchase.
+        </div>
+
+       
+        
+        <div class="page-title">Ready to Checkout?</div>
+        <div class="card-subtitle page-subtitle">
+            Your summary is on the right. Hit the Yellow button below to complete the secure purchase.
+        </div>
+        
+        <button type="button" class="cta-button">
+            <i class="fas fa-arrow-right"></i> Pay ₹<span id="ctaTotalPrice"><%=priceDetails.total%></span>
+        </button>
     </div>
 
     <div class="order-summary-container">
         <h3>Order Summary</h3>
-        <div class="order-item">
-            <p class="item-name"><%=file.title%></p>
-            <p class="item-price">₹<%=priceDetails.originalPrice%></p>
+        
+        <div class="order-item" id="mainOrderItem">
+            <div class="item-name"><%=file.title%> (x<span id="displayQuantity">1</span>)</div>
+            <div class="item-price">₹<span id="itemBasePrice"><%=priceDetails.originalPrice%></span></div>
         </div>
 
         <div class="coupon-section">
-            <h4>Have a coupon code?</h4>
+            <h4><i class="fas fa-tag"></i> Got a code?</h4>
             <div class="coupon-input-group">
                 <input type="text" id="coupon-code" placeholder="Enter coupon code">
                 <button id="apply-coupon-btn">Apply</button>
             </div>
-            <p id="coupon-message" class="coupon-message"></p>
+            <div id="coupon-message" class="coupon-message"></div>
         </div>
 
         <div class="price-breakdown" id="price-breakdown">
-            <p><span>Item Price:</span> ₹<%=priceDetails.originalPrice%></p>
+            <p><span>Item Subtotal:</span> ₹<span id="subtotalPrice"><%=priceDetails.originalPrice%></span></p>
             <p><span>Service Fee:</span> ₹<%=priceDetails.serviceFee%></p>
-            <p><span>GST:</span> ₹<%=priceDetails.gstTax%></p>
-            <% if(priceDetails.discountedPrice != priceDetails.originalPrice) { %>
-                <p><span>Discount Applied:</span> -₹<%= (priceDetails.originalPrice - priceDetails.discountedPrice).toFixed(2) %></p>
+            <p><span>GST/Tax:</span> ₹<%=priceDetails.gstTax%></p>
+            <% if(priceDetails.discountedPrice && priceDetails.discountedPrice < priceDetails.originalPrice) { %>
+                <p><span>Coupon Discount:</span> <span class="discount">-₹<%= (priceDetails.originalPrice - priceDetails.discountedPrice).toFixed(2) %></span></p>
             <% } %>
         </div>
 
-        <hr>
+        <hr class="card-divider">
 
-        <div class="total-price-row">
-            <p>Total Amount</p>
-            <p class="total-price">₹<%=priceDetails.total%></p>
+        <div class="card-footer total-price-row">
+            <p class="card-title">Total Amount</p>
+            <div class="card-price total-price">
+                <span>₹</span><span id="finalTotalPrice"><%=priceDetails.total%></span>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="modal-backdrop" id="successModalBackdrop">
+    <div class="success-modal">
+        <div class="success-icon-container">
+            <i class="fas fa-check"></i> 
+        </div>
+        <div class="modal-title">Success! Discount Applied.</div>
+        <div class="savings-text">
+            You've locked in the savings! You saved:
+            <div class="savings-amount">₹<span id="savingsAmount">0.00</span></div>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn">Continue to Pay</button>
+    </div>
+</div>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 const fileId = "<%=file._id%>";
+const originalPricePerItem = <%=priceDetails.originalPrice%>; 
+const serviceFee = <%=priceDetails.serviceFee%>;
+const gstTax = <%=priceDetails.gstTax%>;
+let currentQuantity = 1; 
+
 const applyBtn = document.getElementById('apply-coupon-btn');
 const couponInput = document.getElementById('coupon-code');
 const couponMessage = document.getElementById('coupon-message');
-const totalAmountElement = document.querySelector('.total-price');
+const totalAmountElement = document.getElementById('finalTotalPrice');
+const ctaTotalPrice = document.getElementById('ctaTotalPrice');
 const payButton = document.querySelector('.cta-button');
 const priceBreakdown = document.getElementById('price-breakdown');
+const successModalBackdrop = document.getElementById('successModalBackdrop');
+const savingsAmountElement = document.getElementById('savingsAmount');
+const modalCloseBtn = document.getElementById('modalCloseBtn');
 
-// Confetti generator
+const productQuantityInput = document.getElementById('productQuantity');
+const decreaseQtyBtn = document.getElementById('decreaseQtyBtn');
+const increaseQtyBtn = document.getElementById('increaseQtyBtn');
+const displayQuantity = document.getElementById('displayQuantity');
+const subtotalPriceDisplay = document.getElementById('subtotalPrice');
+
+let currentPriceDetails = {
+    originalPrice: <%=priceDetails.originalPrice%>,
+    discountedPrice: <%=priceDetails.discountedPrice%>,
+    serviceFee: <%=priceDetails.serviceFee%>,
+    gstTax: <%=priceDetails.gstTax%>,
+    total: <%=priceDetails.total%>
+};
+let appliedCouponData = null; 
+
+// --- Pricing Calculation Function (Client-side estimate) ---
+function calculatePrices(quantity, couponData = null) {
+    const itemSubtotal = originalPricePerItem * quantity;
+    let actualDiscountedPrice = itemSubtotal;
+    let calculatedDiscount = 0;
+
+    // IMPORTANT: Assuming backend will return the final, quantity-adjusted prices
+    if (couponData && couponData.valid && couponData.priceDetails) {
+        return {
+            priceDetails: couponData.priceDetails,
+            savings: (originalPricePerItem * quantity) - couponData.priceDetails.discountedPrice
+        };
+    } 
+    
+    // Fallback/Initial Calculation (No Coupon)
+    let prices = {
+        originalPrice: itemSubtotal, 
+        discountedPrice: actualDiscountedPrice,
+        serviceFee: serviceFee * quantity, 
+        gstTax: gstTax * quantity 
+    };
+
+    prices.total = prices.discountedPrice + prices.serviceFee + prices.gstTax;
+    
+    return {
+        priceDetails: prices,
+        savings: calculatedDiscount
+    };
+}
+
+
+// --- Update UI with new prices ---
+function updateUI(newPriceDetails, currentSavings = 0) {
+    currentPriceDetails = newPriceDetails;
+
+    displayQuantity.textContent = currentQuantity;
+    subtotalPriceDisplay.textContent = newPriceDetails.originalPrice.toFixed(2);
+    totalAmountElement.textContent = newPriceDetails.total.toFixed(2);
+    ctaTotalPrice.textContent = newPriceDetails.total.toFixed(2); // Update CTA button text
+
+    let discountHtml = '';
+    const actualDiscountValue = newPriceDetails.originalPrice - newPriceDetails.discountedPrice;
+    if (actualDiscountValue > 0) {
+         discountHtml = `<p><span>Coupon Discount:</span> <span class="discount">-₹${actualDiscountValue.toFixed(2)}</span></p>`;
+    }
+
+    priceBreakdown.innerHTML = `
+        <p><span>Item Subtotal:</span> ₹${newPriceDetails.originalPrice.toFixed(2)}</p>
+        <p><span>Service Fee:</span> ₹${newPriceDetails.serviceFee.toFixed(2)}</p>
+        <p><span>GST/Tax:</span> ₹${newPriceDetails.gstTax.toFixed(2)}</p>
+        ${discountHtml}
+    `;
+}
+
+// --- Quantity Handlers ---
+decreaseQtyBtn.addEventListener('click', () => {
+    if (currentQuantity > 1) {
+        currentQuantity--;
+        productQuantityInput.value = currentQuantity;
+        // Recalculate with potentially applied coupon
+        const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
+        updateUI(priceDetails, savings);
+    }
+});
+
+increaseQtyBtn.addEventListener('click', () => {
+    // Assuming a max quantity of 10 for demonstration
+    if (currentQuantity < 10) { 
+        currentQuantity++;
+        productQuantityInput.value = currentQuantity;
+        // Recalculate with potentially applied coupon
+        const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
+        updateUI(priceDetails, savings);
+    }
+});
+
+productQuantityInput.addEventListener('change', (e) => {
+    let newQty = parseInt(e.target.value);
+    if (isNaN(newQty) || newQty < 1) newQty = 1;
+    if (newQty > 10) newQty = 10; // Cap at max 10
+
+    currentQuantity = newQty;
+    e.target.value = currentQuantity;
+    // Recalculate with potentially applied coupon
+    const { priceDetails, savings } = calculatePrices(currentQuantity, appliedCouponData);
+    updateUI(priceDetails, savings);
+});
+
+
+// Confetti generator (adapted colors)
 function createConfetti() {
-    const colors = ['#28a745','#ffc107','#ff5733','#33c4ff','#ff33f6','#ff6f33','#8e44ad'];
+    const colors = ['var(--main-focus)','var(--success-color)','var(--main-color)','#f5a4c5','#f5d266','#a0e8a7','#a8a8a8']; // Theme colors
     for(let i=0;i<100;i++){
         const confetti = document.createElement('div');
         confetti.classList.add('confetti');
@@ -205,6 +661,24 @@ function createConfetti() {
     }
 }
 
+// Modal functions
+function showSuccessModal(savings) {
+    if (savings > 0) {
+        savingsAmountElement.textContent = savings.toFixed(2);
+        successModalBackdrop.classList.add('modal-show');
+        createConfetti();
+    }
+}
+function hideSuccessModal() {
+    successModalBackdrop.classList.remove('modal-show');
+}
+modalCloseBtn.addEventListener('click', hideSuccessModal);
+successModalBackdrop.addEventListener('click', (e) => {
+    if (e.target.id === 'successModalBackdrop') {
+        hideSuccessModal();
+    }
+});
+
 // Apply coupon logic
 applyBtn.addEventListener('click', async ()=>{
     const couponCode = couponInput.value.trim();
@@ -214,112 +688,120 @@ applyBtn.addEventListener('click', async ()=>{
         couponMessage.style.display = 'block';
         return;
     }
+    couponMessage.style.display = 'none';
 
     try {
-        const response = await fetch(`/check/coupon?fileId=${fileId}&couponCode=${couponCode}`);
-        const data = await response.json();
+        const response = await fetch(`/check/coupon?fileId=${fileId}&couponCode=${couponCode}&quantity=${currentQuantity}`);
+        const result = await response.json(); 
 
-        if(data.valid){
-            const p = data.priceDetails;
-            totalAmountElement.textContent = `₹${p.total}`;
-            payButton.textContent = `Pay ₹${p.total}`;
-            priceBreakdown.innerHTML = `
-                <p><span>Item Price:</span> ₹${p.originalPrice}</p>
-                <p><span>Service Fee:</span> ₹${p.serviceFee}</p>
-                <p><span>GST:</span> ₹${p.gstTax}</p>
-                ${p.discountedPrice != p.originalPrice 
-                    ? `<p><span>Discount Applied:</span> -₹${(p.originalPrice - p.discountedPrice).toFixed(2)}</p>` 
-                    : ""}
-            `;
-            couponMessage.textContent = 'Coupon applied successfully!';
-            couponMessage.className = 'coupon-message success';
-            couponMessage.style.display = 'block';
-            createConfetti();
+        if(result.valid){
+            appliedCouponData = result;
+
+            const p = result.priceDetails;
+            const savings = (originalPricePerItem * currentQuantity) - p.discountedPrice;
+            
+            updateUI(p, savings);
+
+            couponMessage.style.display = 'none';
+            showSuccessModal(savings); 
         } else {
-            couponMessage.textContent = data.message || 'Invalid or expired coupon.';
+            appliedCouponData = null;
+            const { priceDetails: nonCouponPriceDetails } = calculatePrices(currentQuantity, null);
+            updateUI(nonCouponPriceDetails, 0);
+            couponMessage.textContent = result.message || 'Invalid or expired code.';
             couponMessage.className = 'coupon-message error';
             couponMessage.style.display = 'block';
         }
     } catch (err) {
         console.error(err);
+        appliedCouponData = null;
+        const { priceDetails: nonCouponPriceDetails } = calculatePrices(currentQuantity, null);
+        updateUI(nonCouponPriceDetails, 0);
         couponMessage.textContent = 'Server error. Please try again.';
         couponMessage.className = 'coupon-message error';
         couponMessage.style.display = 'block';
     }
-
-    
 });
+
 const buyButton=document.querySelector('.cta-button');
-    // rezorpay
-     if (buyButton) {
-               buyButton.onclick = function (e) {
-                // window.location.href = "/checkout?file_id=<%=file._id%>";
-                e.preventDefault();
-                buyButton.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"></div><span class="ms-2">Processing...</span>`;
-                buyButton.disabled = true;
+// Razorpay Integration
+if (buyButton) {
+    buyButton.onclick = function (e) {
+        e.preventDefault();
+        buyButton.innerHTML = `<span class="spinner-border"></span><span>Processing...</span>`;
+        buyButton.disabled = true;
 
-                fetch('/create-order', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    fileId: "<%= file._id %>",
-                    price: <%=priceDetails.total %>,
-                    filename: "<%= file.filename %>"
-                  })
-                })
-
-                  .then(res => res.json())
-                  .then(order => {
-
-                    var options = {
-                      key: "<%= razorpayKey %>",
-                      amount: order.amount,
-                      currency: order.currency,
-                      name: "Vidyari",
-                      description: "<%= file.filename %>",
-                      order_id: order.id,
-                      handler: function (response) {
-                        fetch('/verify-payment', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            fileId: "<%= file._id %>",
-                            totalprice:"<%=priceDetails.total%>",
-                            filename:"<%=file.filename%>"
-                          })
+        fetch('/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              fileId: "<%= file._id %>",
+              price: currentPriceDetails.total,
+              filename: "<%= file.filename %>",
+              quantity: currentQuantity,
+              couponCode: couponInput.value.trim()
+            })
+        })
+        .then(res => res.json())
+        .then(order => {
+            var options = {
+                key: "<%= razorpayKey %>",
+                amount: order.amount,
+                currency: order.currency,
+                name: "Vidyari",
+                description: "<%= file.filename %> (x" + currentQuantity + ")",
+                order_id: order.id,
+                
+                handler: function (response) {
+                    fetch('/verify-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          razorpay_order_id: response.razorpay_order_id,
+                          razorpay_payment_id: response.razorpay_payment_id,
+                          razorpay_signature: response.razorpay_signature,
+                          fileId: "<%= file._id %>",
+                          totalprice: currentPriceDetails.total,
+                          filename:"<%=file.filename%>",
+                          quantity: currentQuantity,
+                          CouponData: appliedCouponData && appliedCouponData.valid ? appliedCouponData : null
                         })
-                          .then(res => res.json())
-                          .then(data => {
-
-                            if (data.success) {
-                              window.location.href = data.downloadUrl;
-                            } else {
-                              alert("Payment verification failed. Please contact support.");
-                              buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                              buyButton.disabled = false;
-                            }
-                          });
-                      },
-                      modal: {
-                        ondismiss: function () {
-                          buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                          buyButton.disabled = false;
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = data.downloadUrl;
+                        } else {
+                            alert("Payment verification failed. Please contact support.");
+                            buyButton.innerHTML = `<i class="fas fa-arrow-right"></i> Pay ₹${currentPriceDetails.total.toFixed(2)}`;
+                            buyButton.disabled = false;
                         }
-                      }
-                    };
-                    var rzp1 = new Razorpay(options);
-                    rzp1.open();
-                  }).catch(err => {
-                    console.error("Error creating order", err);
-                    alert("Could not initiate payment. Please try again.");
-                    buyButton.innerHTML = `<svg class="btn-purchase__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg><span>Buy Now</span>`;
-                    buyButton.disabled = false;
-                  });
-              }
-            }
+                    });
+                },
+                modal: {
+                    ondismiss: function () {
+                         buyButton.innerHTML = `<i class="fas fa-arrow-right"></i> Pay ₹${currentPriceDetails.total.toFixed(2)}`;
+                         buyButton.disabled = false;
+                    }
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        }).catch(err => {
+            console.error("Error creating order", err);
+            alert("Could not initiate payment. Please try again.");
+            buyButton.innerHTML = `<i class="fas fa-arrow-right"></i> Pay ₹${currentPriceDetails.total.toFixed(2)}`;
+            buyButton.disabled = false;
+        });
+    }
+}
+
+// Initial UI update when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    const { priceDetails } = calculatePrices(currentQuantity, null);
+    updateUI(priceDetails, 0);
+});
+
 </script>
 </body>
 </html>

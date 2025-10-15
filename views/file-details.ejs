@@ -16,23 +16,11 @@
 
     <meta name="description"
         content="Securely purchase and instantly download '<%= file.filename %>'. <%= file.filedescription %> | Vidyari Checkout">
-    <meta name="keywords"
-        content="<%= file.filename %>, <%= file.category %>, secure checkout, study material download, premium notes purchase">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Vidyari">
     <meta property="og:type" content="product">
-    <meta property="og:url"
-        content="https://vidyari.com/file/<%= file.slug || slugify(file.filename) %>/<%= file._id %>/checkout">
     <meta property="og:title" content="Checkout • <%= file.filename %> | Vidyari">
-    <meta property="og:description"
-        content="Instant and secure checkout for '<%= file.filename %>' on Vidyari. Download your study notes safely.">
-    <meta property="og:image" content="<%= file.previewUrl || 'https://vidyari.com/images/logo-1200x630.png' %>">
-    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:image" content="<%= previewUrl || 'https://vidyari.com/images/logo-1200x630.png' %>">
 
     <link rel="icon" href="/images/logo.svg" type="image/svg" />
-    <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
-    <meta name="theme-color" content="#000000">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
@@ -42,218 +30,312 @@
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
+        /* --- Root and Base Styles --- */
         :root {
             --font-main: 'Inter', sans-serif;
             --font-display: 'Anton', sans-serif;
             --color-black: #000;
             --color-white: #fff;
-            --color-accent: #0052FF;
-            --color-primary-card: #ff66a3;
-            --color-detail-bar: #fff;
+            --color-accent: #1ac2ff; 
+            --color-primary-card: #ff66a3; 
+            --color-sidebar: #f0f0f0; 
             --color-paid: #E84C86;
             --color-free: #30B45E;
-            --color-focus: #1ac2ff;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
         body {
             background-color: var(--color-black);
             color: var(--color-white);
             font-family: var(--font-main);
-            overflow-x: hidden; /* Prevents horizontal overflow */
+            overflow-x: hidden;
+            font-size: 1rem; 
         }
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
+        
+        main {
+            /* padding: 0 !important;  */
         }
-        .brutalist-container {
+
+        .container-xl {
+            /* max-width: 1300px;  */
+            width: 100%;
+            /* height: 100vh; */
+            /* margin: 0 auto; */
+            /* padding-top: 3rem;  */
+            /* padding-bottom: 3rem;  */
+        }
+        
+        /* --- High-Contrast Block Styling --- */
+        .product-block {
             background-color: var(--color-white);
             color: var(--color-black);
-            border: 6px solid var(--color-black);
-            box-shadow: 12px 12px 0 var(--color-black);
-            padding: 2rem 2.5rem; 
-            margin-bottom: 2rem;
-            /* Ensure text wraps correctly in container */
-            word-wrap: break-word; 
-            overflow-wrap: break-word;
+            /* border: 6px solid var(--color-black); */
+            box-shadow: 15px 15px 0 var(--color-black); 
+            padding: 1.5rem; 
+            /* margin-bottom: 3rem; */
         }
 
-        /* General Typography */
-        h1, .display-5 {
+        /* --- Typography --- */
+        h1 {
             font-family: var(--font-display);
             text-transform: uppercase;
-            color: var(--color-black);
-            font-size: clamp(2rem, 5vw, 3.5rem); /* Responsive font size */
-            margin-bottom: 1.25rem;
-            word-wrap: break-word;
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
         }
-        .price {
+        
+        /* --- Product Details and Spacing --- */
+        .details-box { 
+            border: 2px dashed var(--color-black); 
+            padding: 1.5rem; 
+            margin-top: 2rem; 
+            line-height: 1.7; 
+            background-color: #fcfcfc; 
+        }
+        .details-box h2 {
             font-family: var(--font-display);
-            font-size: 3rem;
-            color: var(--color-black);
-            line-height: 1;
-        }
-        
-        /* Main File Details Components */
-        .pdf-preview-wrapper {
-            width: 100%; padding-bottom: 125%; position: relative; background-color: #f0f0f0;
-            border: 4px solid var(--color-black); box-shadow: 8px 8px 0 var(--color-black);
-            transition: transform 0.3s, box-shadow 0.3s; overflow: hidden;
-        }
-        .description-box { background-color: #f0f0f0; border-left: 4px solid var(--color-black); padding: 1.25rem; color: var(--color-black); line-height: 1.6; margin-bottom: 2rem; }
-        .stats-bar { border-top: 3px solid var(--color-black); border-bottom: 3px solid var(--color-black); padding: 0.75rem 0; color: var(--color-black); font-weight: 700; margin-bottom: 1.5rem; }
-        .brutalist-button { 
-            border: 3px solid var(--color-black); background: var(--color-black); color: var(--color-white); padding: 1rem;
-            font-size: 1.2rem; font-weight: 700; text-transform: uppercase; cursor: pointer; position: relative;
-            overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; box-shadow: 6px 6px 0px rgba(0,0,0,0.5);
-            text-align: center; text-decoration: none;
-        }
-        
-        /* FIX: Creator Profile Styling */
-        .user-profile-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            color: var(--color-black);
-            transition: transform 0.2s;
-            /* Ensure name doesn't overflow */
-            max-width: 100%; 
-        }
-        .user-profile-link:hover {
-            transform: scale(1.05);
-            text-decoration: underline;
-        }
-        .user-profile-link img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid var(--color-black);
-            object-fit: cover;
-        }
-        .user-profile-link span {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* FIX: Like Button Styling */
-        .LikesBtn-file {
-            font-size: 1.5rem; /* Adjusted for better fit */
-            cursor: pointer;
-            color: var(--color-black);
-            transition: transform 0.2s;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .LikesBtn-file:hover {
-            transform: scale(1.1);
-        }
-        .LikesBtn-file .fa-solid {
-            color: var(--color-primary-card); /* Highlight liked state */
-        }
-
-        /* --- RELATED DOCS SLIDER & MODAL STYLES --- */
-        .related-header {
-            display: flex; justify-content: space-between; align-items: center;
-            font-family: var(--font-display); text-transform: uppercase;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            margin-bottom: 1.5rem; color: var(--color-black);
-            border-bottom: 4px solid var(--color-black); padding-bottom: 10px;
-        }
-        
-        /* Horizontal Slider Wrapper */
-        .related-slider-wrapper { overflow-x: scroll; -webkit-overflow-scrolling: touch; padding-bottom: 15px; margin-bottom: 20px; }
-        .related-slider-wrapper::-webkit-scrollbar { height: 8px; }
-        .related-slider-wrapper::-webkit-scrollbar-thumb { background: var(--color-accent); border: 2px solid var(--color-black); }
-        .related-slider { display: flex; gap: 15px; width: max-content; padding: 5px 0; }
-        
-        /* Card Structure for Slider */
-        .file-card-wrapper { 
-            transition: all 0.3s ease; height: 100%; padding: 0;
-            width: 150px; flex-shrink: 0; 
-        }
-        @media (min-width: 576px) { .file-card-wrapper { width: 180px; } }
-        @media (min-width: 992px) { .file-card-wrapper { width: 220px; } }
-
-        .file-card {
-            border: 3px solid var(--color-black); box-shadow: 4px 4px 0 var(--color-black);
-            background: var(--color-primary-card); display: flex; flex-direction: column; 
-            height: 100%; text-decoration: none; color: var(--color-black);
-        }
-
-        /* Card Elements */
-        .file-card .card-img { flex-grow: 1; min-height: 120px; background-color: #fff; padding: 5px; position: relative; overflow: hidden; }
-        .file-card .card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .stats-overlay { position: absolute; top: 0; left: 0; padding: 5px 8px; font-size: 0.7rem; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0)); z-index: 5; }
-        .file-card .detail-bar { min-height: 40px; padding: 6px 8px; border-top: 3px solid var(--color-black); background: var(--color-detail-bar); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .file-title-related { font-size: 0.85rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; color: var(--color-black); }
-        .price-badge-related { padding: 2px 5px; border: 2px solid var(--color-black); font-weight: 900; font-size: 0.55rem; box-shadow: 1px 1px 0 var(--color-black); text-transform: uppercase; flex-shrink: 0; }
-        .badge-free { background-color: var(--color-free); color: var(--color-white); }
-        .badge-paid { background-color: var(--color-paid); color: var(--color-white); }
-        .view-all-btn { background: var(--color-accent); color: var(--color-white); font-weight: 700; padding: 8px 15px; text-transform: uppercase; border: 3px solid var(--color-black); box-shadow: 3px 3px 0 var(--color-black); transition: all 0.2s; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
-        .view-all-btn:hover { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--color-black); color: var(--color-white); }
-
-        /* --- Full Grid Modal Styling (FIXED) --- */
-        /* IMPORTANT: Setting .modal-dialog to full viewport height/width */
-        /* --- Full Grid Modal Styling (FIXED) --- */
-/* IMPORTANT: Setting .modal-dialog to full viewport height/width */
-.modal-dialog {
-    margin: 0;
-    width: 100vw;
-    max-width: 100vw; 
-    height: 100vh;
-    padding: 0;
-    transform: translate(0, 0) !important; /* Override Bootstrap centering */
-}
-/* FIX: Modal content must also be 100% */
-.modal-content-full {
-    height: 100%; /* Ensure it fills the dialog */
-    width: 100%;  /* Ensure it fills the dialog */
-    background: var(--color-white);
-    border: none;
-    border-radius: 0;
-}
-        .modal-body-full {
-            padding: 15px;
-            overflow-y: auto;
-        }
-        .modal-header-full {
-            background: var(--color-black);
-            color: var(--color-white);
-            border-bottom: 4px solid var(--color-accent);
-            padding: 15px;
-            font-family: var(--font-display);
-            text-transform: uppercase;
             font-size: 1.5rem;
+            border-bottom: 2px solid var(--color-black); 
+            padding-bottom: 5px; 
+            margin-bottom: 1rem;
         }
-        .modal-close-btn {
-            color: var(--color-white);
-            font-size: 2rem;
-            opacity: 1;
-            padding: 0;
-            margin: 0;
-            background: none;
-            border: none;
+        .details-box p, 
+        .details-box ul, 
+        .details-box ol, 
+        .details-box blockquote {
+            margin-bottom: 1rem; 
         }
-        .modal-related-grid .file-card-wrapper { padding: 5px; }
-        .modal-related-grid .file-card { box-shadow: 6px 6px 0 var(--color-black); }
+
+        /* --- Image Previews --- */
+        .preview-image-wrapper {
+            width: 100%; 
+            max-width: 380px; 
+            aspect-ratio: 1 / 1.414; 
+            position: relative; 
+            border: 4px solid var(--color-black); 
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.5); 
+            overflow: hidden;
+            margin: 0 auto 1.5rem auto; 
+            background-color: #eee;
+            cursor: zoom-in; /* Indicate clickable for zoom */
+        }
+        .preview-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
         
-        /* Modal Grid setup */
-        .related-grid {
-            --bs-gutter-x: 10px;
-            --bs-gutter-y: 10px;
+        /* Style for the new image modal - OPTIMIZED FOR FULL, CLEAR VIEW */
+        #imageModal .modal-dialog {
+            display: flex; /* Flexbox for centering */
+            align-items: center; /* Vertically center */
+            justify-content: center; /* Horizontally center */
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            padding: 0 !important;
         }
-        @media (max-width: 576px) {
-            .related-grid { --bs-gutter-x: 5px; --bs-gutter-y: 5px; }
+        #imageModal .modal-content {
+            background-color: rgba(0, 0, 0, 0.95); /* Deeper black background */
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+        #imageModal .modal-header {
+            position: fixed; /* Keep close button visible */
+            top: 0;
+            right: 0;
+            z-index: 1056; /* Above the image */
+            border-bottom: none;
+            padding: 1rem;
+        }
+        #imageModal .modal-body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px; /* Small padding buffer */
+            overflow: auto; /* Allow scrolling if image is truly huge */
+            flex-grow: 1;
+        }
+        #imageModal img {
+            /* Key for no cut: object-fit: contain */
+            object-fit: contain;
+            max-height: 100%; /* Fill 100% of the modal body height */
+            max-width: 100%;  /* Fill 100% of the modal body width */
+            width: auto;      /* Maintain aspect ratio */
+            height: auto;     /* Maintain aspect ratio */
+            display: block;
+            
+            /* Animation for smooth zoom */
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother transition curve */ 
+            transform: scale(0.85); /* Initial scale for distinct zoom-in effect */
+        }
+        #imageModal.show #modalFullImage {
+            transform: scale(1); /* Final scale when modal is shown (100% size) */
+        }
+        #imageModal .btn-close {
+            filter: invert(1);
+            opacity: 1;
+            box-shadow: none; /* Clean up button focus */
+        }
+
+        /* --- Creator Info --- */
+        .creator-info { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+        .creator-info .profile-pic { 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            border: 3px solid var(--color-black); 
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .category-tag {
+            display: inline-block; background-color: var(--color-primary-card); color: var(--color-black); padding: 0.2rem 0.6rem; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; border: 2px solid var(--color-black); box-shadow: 2px 2px 0 var(--color-black); margin-bottom: 0.5rem;
+        }
+        /* New styles for improved details layout */
+        .spec-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 1rem 0;
+        }
+        .spec-list li {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--color-black);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .spec-list li span {
+            font-weight: 400;
+            color: #333;
+        }
+
+        /* --- Buy Box (Sidebar) --- */
+        .buy-action-sidebar {
+            border: 4px solid var(--color-black);
+            padding: 1.5rem;
+            background-color: var(--color-sidebar); 
+            /* box-shadow: 10px 10px 0 var(--color-black); */
+            position: sticky; 
+            top: 20px;
+        }
+        .price-large {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            color: var(--color-paid); 
+            line-height: 1;
+            margin-top: 1rem;
+        }
+        .buy-action-sidebar .btn-action {
+            border: 3px solid var(--color-black); 
+            background: var(--color-accent); 
+            color: var(--color-black); 
+            padding: 1rem;
+            font-size: 1.25rem; 
+            font-weight: 900;
+            text-transform: uppercase; 
+            box-shadow: 6px 6px 0 var(--color-black);
+            transition: all 0.1s;
+            text-decoration: none;
+        }
+        .buy-action-sidebar .btn-action:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 4px 4px 0 var(--color-black);
+            background: var(--color-primary-card);
+        }
+
+        /* --- Related Documents Styling - GRID --- */
+        .related-header {
+            font-family: var(--font-display); 
+            text-transform: uppercase;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            border-bottom: 4px solid var(--color-black); 
+            padding-bottom: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Base setting for larger screens (usually 3+ columns) */
+        .related-grid { 
+            display: grid;
+            /* Responsive grid: minimum card width 180px for tablets/desktops */
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 20px;
+            padding: 5px 0; 
+            margin-bottom: 20px; 
+        }
+
+        /* MEDIA QUERY: Force 2 cards per row on narrow screens (e.g., phones < 576px) */
+        @media (max-width: 575.98px) {
+            .related-grid {
+                 /* Set min width lower and reduce gap to ensure 2 columns fit */
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+                gap: 10px; 
+            }
+        }
+        
+        .file-card-wrapper { 
+            width: 100%; 
+            display: block;
+            text-decoration: none;
+        }
+        .file-card {
+            border: 3px solid var(--color-black); 
+            box-shadow: 4px 4px 0 var(--color-black); 
+            background: var(--color-primary-card);
+            height: 100%; 
+            display: flex; 
+            flex-direction: column;
+            text-decoration: none;
+        }
+        .file-card .card-img {
+            aspect-ratio: 1 / 1.414; 
+            position: relative; 
+            overflow: hidden;
+            background-color: var(--color-white);
+            padding: 5px;
+        }
+        .file-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            display: block;
+        }
+        .file-card .detail-bar {
+            min-height: 40px; 
+            padding: 6px 8px; 
+            border-top: 3px solid var(--color-black); 
+            background: var(--color-white); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0;
+        }
+        .file-card .file-title-related {
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            flex-grow: 1; 
+            color: var(--color-black);
+        }
+        .file-card .stats-overlay {
+            position: absolute; top: 0; left: 0; padding: 5px 8px; font-size: 0.7rem; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0)); z-index: 5;
+        }
+        .file-card .price-badge-related {
+            padding: 2px 5px; border: 2px solid var(--color-black); font-weight: 900; font-size: 0.55rem; box-shadow: 1px 1px 0 var(--color-black); text-transform: uppercase; flex-shrink: 0;
         }
     </style>
 </head>
 
 <body>
-    <% // Helper function for formatting file size
+    <% 
+    // Helper function for formatting file size
     const formatBytes=(bytes, decimals=2)=> {
         if (!+bytes) return '0 Bytes';
         const k = 1024;
@@ -261,221 +343,195 @@
         const sizes=['Bytes', 'KB' , 'MB' , 'GB' , 'TB' ];
         const i=Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-    }; %>
-    
-    <% // Card HTML Helper Function (used for initial slider rendering) 
-    const renderFileCard = (doc) => {
-        // Use a slugify function that must be available in the EJS scope
-        const slugify = (text) => text ? text.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-') : 'file';
-        
-        const fileUrl = `/file/${doc.slug || slugify(doc.filename)}/${doc._id}`;
-        const priceBadgeText = doc.price > 0 ? `₹${doc.price}` : `FREE`;
-        const priceBadgeClass = doc.price > 0 ? `badge-paid` : `badge-free`;
+    }; 
+    %>
 
-        return `
-            <div>
-                <a href="${fileUrl}" class="file-card-wrapper" style="display: block;">
-                    <div class="file-card">
-                        <div class="card-img">
-                            <div class="stats-overlay">
-                                <span class="stats-item" title="Creator"><i class="fas fa-user me-1"></i> ${doc.user || 'Admin'}</span>
+    <main>
+        <div class="container-">
+            <div class="product-block">
+                <div class="row g-5">
+
+                    <div class="col-lg-8">
+                        <div class="row g-4">
+                            
+                            <div class="col-lg-5 col-xl-4">
+                                <div class="preview-image-wrapper" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                    <img 
+                                        id="mainPreviewImage"
+                                        src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>" 
+                                        alt="Preview of <%= file.filename %>" 
+                                        onerror="this.onerror=null;this.src='/images/File_Demo.svg';"
+                                    >
+                                </div>
+                                
+                                <div class="details-box p-3 mt-3 d-lg-none">
+                                    <h2 class="h6 fw-bold text-uppercase mb-2">File Specifications</h2>
+                                    <ul class="spec-list small">
+                                        <li>File Type: <span><i class="fas fa-file me-1"></i> <%= file.fileType || 'PDF' %></span></li>
+                                        <li>File Size: <span><i class="fas fa-box-open me-1"></i> <%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span></li>
+                                        <li>Added on: <span><%= new Date(file.createdAt).toLocaleDateString() %></span></li>
+                                    </ul>
+                                </div>
                             </div>
-                            <img 
-                                src="${doc.previewUrl || '/images/fileDemo.jpg'}" 
-                                alt="${doc.filename}" 
-                                loading="lazy"
-                            >
+
+                            <div class="col-lg-7 col-xl-8">
+                                <span class="category-tag"><%= file.category || 'Notes' %></span>
+                                
+                                <h1><%- file.filename || 'Untitled Document' %></h1>
+                                
+                                <div class="creator-info">
+                                    <img src="<%= sellerprofilepic || '/images/avatar.jpg' %>" alt="Creator" class="profile-pic"/>
+                                    <span class="small text-muted">by</span>
+                                    <a href="/profile/<%= file.user || 'admin' %>" class="fw-bold text-decoration-none text-dark">
+                                        <%= file.user || 'Vidyari Team' %>
+                                        <% if (ISVERIFIED) { %>
+                                <img style="width: 20px; height: 20px;" src="/images/verify.png" alt="Verified Badge"/>
+                            <% } %>
+                                    </a>
+                                </div>
+                                
+                                <div class="stats-detail d-flex align-items-center gap-4 py-2 border-top border-bottom border-dark my-3">
+                                    <span class="file-meta-item fw-bold" title="Rating">
+                                        <i class="fas fa-star text-warning me-1"></i> 4.5/5.0
+                                    </span>
+                                    <span class="text-muted">|</span>
+                                    <span class="file-meta-item fw-bold" title="Total Downloads">
+                                        <i class="fas fa-download me-1"></i>
+                                        <%= (file.downloadCount || 0).toLocaleString() %> Downloads
+                                    </span>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-3 mb-4">
+                                    <span class="LikesBtn-file file-meta-item"></span>
+                                </div>
+
+                                <div class="details-box p-3 d-none d-lg-block">
+                                    <h2 class="h6 fw-bold text-uppercase mb-2">File Specifications</h2>
+                                    <ul class="spec-list small">
+                                        <li>File Type: <span><i class="fas fa-file me-1"></i> <%= file.fileType || 'PDF' %></span></li>
+                                        <li>File Size: <span><i class="fas fa-box-open me-1"></i> <%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span></li>
+                                        <li>Added on: <span><%= new Date(file.createdAt).toLocaleDateString() %></span></li>
+                                    </ul>
+                                </div>
+                                
+                            </div>
                         </div>
-                        <div class="detail-bar">
-                            <span class="file-title-related" title="${doc.filename}">${doc.filename}</span>
-                            <span class="price-badge-related ${priceBadgeClass}">${priceBadgeText}</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        `;
-    }; %>
 
-    <main class="py-4">
-        <div class="container">
-            <div class="brutalist-container">
-                <div class="row align-items-center g-4 g-lg-5">
-
-                    <div class="col-lg-7">
-                        <% if (previewUrl) { %>
-                            <div class="pdf-preview-wrapper rounded-0">
-                                <img class="pdf-preview" src="<%= previewUrl %>" alt="PDF Preview of <%= file.filename %>">
-                            </div>
-                        <% } else { %>
-                            <div class="no-preview-placeholder rounded-0">No Preview Available</div>
-                        <% } %>
-                    </div>
-
-                    <div class="col-lg-5">
-                        <div class="d-flex flex-column">
-
-                            <div class="category-badge">
-                                <%= file.category %>
-                            </div>
-
-                            <h1 class="fw-bolder display-5"><%- file.filename || 'Untitled File' %></h1>
-
-                            <div class="stats-bar d-flex align-items-center gap-3">
-                                <span title="Rating"><i class="fas fa-star"></i> 4.5</span>
-                                <span>|</span>
-                                <span title="Total Downloads">
-                                    <i class="fas fa-download me-1"></i>
-                                    <%= (file.downloadCount || 0).toLocaleString() %>
-                                </span>
-                            </div>
-
-                            <% if (file.filedescription) { %>
-                                <div class="description-box small">
+                        <% if (file.filedescription) { %>
+                            <div class="details-box mt-4">
+                                <h2 class="h5 fw-bold text-uppercase">Product Description</h2>
+                                <div class="product-description-content">
                                     <%-file.filedescription %>
                                 </div>
-                            <% } %>
+                            </div>
+                        <% } %>
+                        
+                        <div class="mt-4">
+                            <%- include("reporttemplate") %>
+                        </div>
+                    </div> 
+
+                    <div class="col-lg-4">
+                        <div class="buy-action-sidebar">
                             
-                            <div class="row row-cols-2 g-3 detail-item-grid">
-                                <div class="col">
-                                    <div class="detail-item">
-                                        <span class="d-block small mb-1">File Type</span>
-                                        <span class="fw-semibold"><%= file.fileType || 'PDF' %></span>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="detail-item">
-                                        <span class="d-block small mb-1">File Size</span>
-                                        <span class="fw-semibold"><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="detail-item">
-                                        <span class="d-block small mb-1">Uploaded</span>
-                                        <span class="fw-semibold"><%= file.uploadedAt ? new Date(file.uploadedAt).toLocaleDateString() : 'N/A' %></span>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="detail-item">
-                                        <span class="d-block small mb-1">Creator</span>
-                                        <a href="/profile/<%= file.user || 'admin' %>" class="user-profile-link">
-                                            <img src="<%= sellerprofilepic || '/images/avatar.jpg' %>" alt="profile"/>
-                                            <span><%= file.user || 'Admin' %></span>
-                                        </a>
-                                    </div>
-                                </div>
+                            <div class="d-flex flex-column align-items-center justify-content-center py-2 mb-3">
+                                <span class="h5 fw-bold text-uppercase text-center">Price:</span>
+                                <% if (Number(file.price) === 0) { %>
+                                    <span class="price-large" style="color: var(--color-free);">FREE</span>
+                                <% } else { %>
+                                    <span class="price-large">₹<%= Number(file.price).toLocaleString('en-IN') %></span>
+                                <% } %>
                             </div>
-
-                            <div class="d-flex align-items-center justify-content-between actions-bar">
-                                <span class="LikesBtn-file"></span>
-                                <div class="price">₹<%= file.price %></div>
-                            </div>
-
+                            
+                            <hr style="border-top: 3px solid var(--color-black); margin: 1.5rem 0;">
+                            
                             <% if (Number(file.price) > 0) { %>
-                                <button id="rzp-button" class="brutalist-button w-100 d-flex align-items-center justify-content-center gap-2" type="button">
+                                <button id="rzp-button" class="btn-action w-100 d-flex align-items-center justify-content-center gap-2" type="button">
                                     <i class="fa-solid fa-cart-shopping"></i>
-                                    <span>Buy Now</span>
+                                    <span>Secure Checkout </span>
                                 </button>
                             <% } else { %>
-                                <a href="/download?file_id=<%=file._id%>" class="brutalist-button w-100 d-flex align-items-center justify-content-center gap-2" id="downloadBtn">
-                                   <i class="fa-solid fa-download"></i>
-                                   <span>Download Now</span>
+                                <a href="/download?file_id=<%=file._id%>" class="btn-action w-100 d-flex align-items-center justify-content-center gap-2" id="downloadBtn">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Instant Download</span>
                                 </a>
                             <% } %>
 
-                            <div class="trust-badges d-flex justify-content-around text-center small">
-                                <div><i class="fas fa-shield-alt d-block mb-1"></i>Secure Payment</div>
-                                <div><i class="fas fa-bolt d-block mb-1"></i>Instant Download</div>
-                                <div><i class="fas fa-thumbs-up d-block mb-1"></i>Trusted Quality</div>
-                            </div>
-
+                            <ul class="trust-badges-list small fw-bold mt-4 pt-3 border-top border-dark">
+                                <li><i class="fas fa-check-circle me-2" style="color: var(--color-paid);"></i>Instant Digital Access</li>
+                                <li><i class="fas fa-lock me-2" style="color: var(--color-paid);"></i>Secure Checkout Guaranteed</li>
+                                <li><i class="fas fa-shield-alt me-2" style="color: var(--color-paid);"></i>Seller Verified</li>
+                            </ul>
+                            
                         </div>
                     </div>
                 </div>
-                <div class="mt-5">
-                    <%- include("reporttemplate") %>
+            </div>
+            
+            <div class="product-block related-section">
+                <span class="related-header">More Like This</span>
+                
+                <div class="related-grid" id="relatedGrid"> 
+                    <p id="gridLoading" class="text-dark ps-2">Loading similar files...</p>
                 </div>
             </div>
             
-            <% 
-                const initialRelatedFiles = typeof relatedFilesData !== 'undefined' ? relatedFilesData : [];
-            %>
-            <div class="brutalist-container">
-                <div class="related-header">
-                    <span>Related Documents</span>
-                    <button class="view-all-btn" id="viewAllRelatedBtn">View All (<span id="relatedCount"><%= initialRelatedFiles.length %></span>)</button>
-                </div>
-                <div class="related-slider-wrapper">
-                    <div class="related-slider" id="relatedSlider">
-                        <% initialRelatedFiles.slice(0, 6).forEach(doc => { %>
-                            <%- renderFileCard(doc) %>
-                        <% }); %>
-                        <% if (initialRelatedFiles.length === 0) { %>
-                            <p id="sliderNoResults" class="text-dark">Loading related files...</p>
-                        <% } %>
-                    </div>
-                </div>
-            </div>
             <%- include("chat") %>
 
         </div>
     </main>
     
-    <div class="modal fade" id="relatedFilesModal" tabindex="-1" aria-labelledby="relatedFilesModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content modal-content-full">
-                <div class="modal-header modal-header-full">
-                    <h5 class="modal-title" id="relatedFilesModalLabel">All Related Documents</h5>
-                    <button type="button" class="btn-close modal-close-btn" data-bs-dismiss="modal" aria-label="Close">
-                        &times;
-                    </button>
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body modal-body-full">
-                    <div class="row related-grid modal-related-grid row-cols-2 row-cols-sm-4 row-cols-md-4 row-cols-lg-5" id="modalRelatedGrid">
-                        </div>
-                    <div id="modalLoading" class="text-center py-5" style="display: none;">
-                        <div class="spinner-border text-dark" role="status"></div>
-                        <p class="text-dark mt-2">Loading all related files...</p>
-                    </div>
-                    <p id="modalNoResults" class="text-dark text-center mt-4" style="display: none;">No other related documents found.</p>
+                <div class="modal-body">
+                    <img id="modalFullImage" src="" alt="Full preview of <%= file.filename %>">
                 </div>
             </div>
         </div>
     </div>
+    
     <%- include('footer') %>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
     <script>
-// JavaScript function to slugify text, must match the EJS helper's logic
+// JavaScript slugify function
 const slugifyJS = (text) => text ? text.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-') : 'file';
 
-// JavaScript function to render a file card (used for dynamic modal content)
+// Define single render function for all dynamic JS use, relying fully on CSS classes
 const renderFileCardJS = (doc) => {
-    const fileUrl = `/file/${doc.slug || slugifyJS(doc.filename)}/${doc._id}`;
+    const slugify = slugifyJS;
+    const fileUrl = `/file/${doc.slug || slugify(doc.filename)}/${doc._id}`;
     const priceBadgeText = doc.price > 0 ? `₹${doc.price}` : `FREE`;
     const priceBadgeClass = doc.price > 0 ? `badge-paid` : `badge-free`;
 
-    // The 'col' class is applied by the parent EJS row loop, 
-    // but the wrapper needs the padding/styling.
+    // Returns the raw card HTML, relying on defined CSS classes for all styling
     return `
-        <div class="col">
-            <a href="${fileUrl}" class="file-card-wrapper" style="display: block; padding: 5px;">
-                <div class="file-card">
-                    <div class="card-img">
-                        <div class="stats-overlay">
-                            <span class="stats-item" title="Creator"><i class="fas fa-user me-1"></i> ${doc.user || 'Admin'}</span>
-                        </div>
-                        <img 
-                            src="${doc.previewUrl || '/images/fileDemo.jpg'}" 
-                            alt="${doc.filename}" 
-                            loading="lazy"
-                        >
+        <a href="${fileUrl}" class="file-card-wrapper">
+            <div class="file-card">
+                <div class="card-img">
+                    <div class="stats-overlay">
+                        <span class="stats-item" title="Creator"><i class="fas fa-user me-1"></i> ${doc.user || 'Admin'}</span>
                     </div>
-                    <div class="detail-bar">
-                        <span class="file-title-related" title="${doc.filename}">${doc.filename}</span>
-                        <span class="price-badge-related ${priceBadgeClass}">${priceBadgeText}</span>
-                    </div>
+                <img 
+    src="${doc.previewUrl && typeof doc.previewUrl === 'string' && doc.previewUrl.trim() !== '' ? doc.previewUrl : '/images/File_Demo.svg'}" 
+    alt="${doc.filename}" 
+    loading="lazy"
+    onerror="this.onerror=null;this.src='/images/File_Demo.svg';"
+/>
+
+
                 </div>
-            </a>
-        </div>
+                <div class="detail-bar">
+                    <span class="file-title-related" title="${doc.filename}">${doc.filename}</span>
+                    <span class="price-badge-related ${priceBadgeClass}">${priceBadgeText}</span>
+                </div>
+            </div>
+        </a>
     `;
 };
 
@@ -483,15 +539,23 @@ const renderFileCardJS = (doc) => {
 document.addEventListener('DOMContentLoaded', function() {
     // --- Data and Constants ---
     const currentFileId = "<%= file._id %>";
-    const viewAllBtn = document.getElementById('viewAllRelatedBtn');
-    const relatedSlider = document.getElementById('relatedSlider');
-    const modalGridContainer = document.getElementById('modalRelatedGrid');
-    const modalLoading = document.getElementById('modalLoading');
-    const modalNoResults = document.getElementById('modalNoResults');
-    const relatedCountSpan = document.getElementById('relatedCount');
-    const relatedFilesModal = new bootstrap.Modal(document.getElementById('relatedFilesModal'));
+    const relatedGrid = document.getElementById('relatedGrid'); 
     
-    const sliderNoResults = document.getElementById('sliderNoResults');
+    // --- Image Modal Setup ---
+    const mainPreviewImage = document.getElementById('mainPreviewImage');
+    const modalFullImage = document.getElementById('modalFullImage');
+    const imageModalElement = document.getElementById('imageModal');
+
+    if (imageModalElement && mainPreviewImage) {
+        // Use Bootstrap's native event to set the image source when the modal is about to open
+        imageModalElement.addEventListener('show.bs.modal', function (event) {
+            // Get the source from the main preview image
+            const imageSrc = mainPreviewImage.src; 
+            if (modalFullImage) {
+                modalFullImage.src = imageSrc;
+            }
+        });
+    }
 
     // --- Liking Logic ---
     const likeBtnfile = document.querySelector(".LikesBtn-file");
@@ -501,9 +565,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function updateLikeButton() {
             if (allFiles[currentFileId] && allFiles[currentFileId].liked) {
-                likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up"></i> ${fileLikes}`;
+                likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up" style="color: var(--color-primary-card);"></i> ${fileLikes} Likes`;
             } else {
-                likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes}`;
+                likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes} Likes`;
             }
         }
         updateLikeButton();
@@ -532,15 +596,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // --- Core Fix: Fetch and Render Related Docs (for Slider and Modal) ---
-    const fetchRelatedFiles = async (isModalView = false) => {
-        if (isModalView) {
-            modalGridContainer.innerHTML = '';
-            modalNoResults.style.display = 'none';
-            modalLoading.style.display = 'block';
-        } else if (sliderNoResults) {
-            // Hide the initial EJS message when fetching starts
-            relatedSlider.innerHTML = ''; 
+    // --- Core: Fetch and Render Related Docs (GRID) ---
+    const fetchRelatedFiles = async () => { 
+        if (relatedGrid) {
+            relatedGrid.innerHTML = `<p id="gridLoading" class="text-dark ps-2">Loading similar files...</p>`;
         }
 
         try {
@@ -548,54 +607,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
             
             const relatedDocs = await response.json();
-
-            // 1. Update the Slider (regardless of view)
+            
+            // Render ALL related documents directly into the grid
             if (relatedDocs && relatedDocs.length > 0) {
-                const sliderCardsHTML = relatedDocs.slice(0, 6).map(doc => renderFileCardJS(doc)).join('');
-                relatedSlider.innerHTML = sliderCardsHTML;
-                relatedCountSpan.textContent = relatedDocs.length;
-                
-                // 2. Handle Modal View
-                if (isModalView) {
-                    modalLoading.style.display = 'none';
-                    const allCardsHTML = relatedDocs.map(doc => renderFileCardJS(doc)).join('');
-                    modalGridContainer.innerHTML = allCardsHTML;
-                }
+                const allCardsHTML = relatedDocs.map(doc => renderFileCardJS(doc)).join(''); 
+                if (relatedGrid) relatedGrid.innerHTML = allCardsHTML;
             } else {
-                relatedSlider.innerHTML = '<p class="text-dark ps-2">No related files found.</p>';
-                relatedCountSpan.textContent = 0;
-                
-                if (isModalView) {
-                    modalLoading.style.display = 'none';
-                    modalNoResults.style.display = 'block';
-                    modalGridContainer.innerHTML = '';
-                }
+                if (relatedGrid) relatedGrid.innerHTML = '<p class="text-dark ps-2">No related files found.</p>';
             }
             
-            if (isModalView) relatedFilesModal.show();
-
         } catch (error) {
             console.error("Error fetching related files:", error);
-            if (isModalView) {
-                modalLoading.style.display = 'none';
-                modalGridContainer.innerHTML = `<p class="text-danger text-center mt-4">Could not load related documents. ${error.message}</p>`;
-                relatedFilesModal.show();
-            } else {
-                relatedSlider.innerHTML = '<p class="text-danger ps-2">Error loading files.</p>';
-            }
+            if (relatedGrid) relatedGrid.innerHTML = '<p class="text-danger ps-2">Error loading files.</p>';
         }
     };
 
-    // --- Initial Load for Slider ---
-    fetchRelatedFiles(false);
-
-    // --- Event Listener for View All Button (FIXED) ---
-    if (viewAllBtn) {
-        viewAllBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            fetchRelatedFiles(true); // Fetch data and show modal
-        });
-    }
+    // --- Initial Load for Grid ---
+    fetchRelatedFiles();
 }); 
     </script>
 

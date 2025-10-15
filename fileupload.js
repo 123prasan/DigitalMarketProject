@@ -20,6 +20,7 @@ const authenticateJWT_user  = require('./routes/authentication/jwtAuth'); // Ass
 const requireAuth = require('./routes/authentication/reaquireAuth'); // Assuming path is correct
 const Categories=require("./models/categories")
 const router = express.Router();
+const Coupon=require("./models/couponschema.js");
 
 // --- Configuration ---
 const IMAGE_BUCKET = process.env.S3_IMAGE_BUCKET || 'vidyari2';
@@ -225,6 +226,20 @@ router.post('/api/create-file-record', authenticateJWT_user, requireAuth, async 
             couponPercentage: couponPercentage ? Number(couponPercentage) : null,
             imageType:imageType
         });
+        const coupon=await Coupon.findOne({code:couponCode})
+        if(coupon){
+            res.status(400).json({error:'Coupon already exists'})
+        }
+   if (couponPercentage > 0 && couponCode && couponCode.trim() !== '') {
+    await Coupon.create({
+        userId: req.user._id,
+        code: couponCode.trim(),
+        discountValue: Number(couponPercentage),
+        file: newFile._id,
+        expiry: req.body.couponExpiry ? new Date(req.body.couponExpiry) : null
+    });
+}
+
         const filecategory=Categories.findOne({name:category})
         if(!filecategory){
            await Categories.create({

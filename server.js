@@ -49,7 +49,7 @@ const Usernotifications = require("./models/userNotifications");
 const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 const Usertransaction = require("./models/userTransactions.js");
 const UserChats = require('./testings4.js'); // <-- IMPORT THE NEW ROUTER
-
+const Coupon=require("./models/couponschema.js");
 const WebSocket = require('ws');
 const UserMessage = require('./models/UserMessage.js');
 const userbal=require("./models/userBalance.js");
@@ -539,7 +539,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
       message: "Incomplete payment details",
     });
   }
-
+  
   // Verify Razorpay signature
   const body = razorpay_order_id + "|" + razorpay_payment_id;
   const expectedSignature = crypto
@@ -574,21 +574,28 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
 
     // Calculate commission + seller share
     const platformCut = totalprice * 0.3; // 30% commission
-    const sellerShare = totalprice - platformCut;
+const sellerShare = totalprice - platformCut;
 
-    // Save transaction (upsert to avoid duplicates)
-    await Usertransaction.findOneAndUpdate(
-      { transactionId: razorpay_payment_id },
-      {
-        userId: file.userId, // seller
-        ProductId: file._id,
-        totalAmount: sellerShare,
-        ProductName: file.filename,
-        purchaserId: req.user._id,
-        transactionId: razorpay_payment_id,
-      },
-      { upsert: true, new: true }
-    );
+let discount = 0;
+if (req.body.CouponData?.priceDetails?.discountedPrice) {
+    discount = file.price- req.body.CouponData.priceDetails.discountedPrice;
+}
+
+// Save transaction (upsert to avoid duplicates)
+await Usertransaction.findOneAndUpdate(
+  { transactionId: razorpay_payment_id },
+  {
+    userId: file.userId, // seller
+    ProductId: file._id,
+    totalAmount: sellerShare,
+    ProductName: file.filename,
+    purchaserId: req.user._id,
+    transactionId: razorpay_payment_id,
+    discount: discount
+  },
+  { upsert: true, new: true }
+);
+
    await userbal.findOneAndUpdate(
       { UserId: file.userId },
       {
@@ -632,19 +639,17 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     );
 
     // Save user purchase (unique per user + product)
-    await Userpurchases.findOneAndUpdate(
-      { userId: req.user._id, productId: file._id },
-      {
-        userId: req.user._id,
-        productId: file._id,
-        price: file.price,
-        totalPrice: totalprice,
-        productName: file.filename,
-        orderId: razorpay_order_id,
-        perchaseid: razorpay_payment_id,
-      },
-      { upsert: true, new: true }
-    );
+  await Userpurchases.create({
+    userId: req.user._id,
+    productId: file._id,
+    price: file.price,
+    totalPrice: totalprice,
+    productName: file.filename,
+    orderId: razorpay_order_id,
+    purchaseId: razorpay_payment_id,
+    quantity: 1, // or whatever quantity you have
+});
+
 
     // Save user download (unique per user + file)
     await UserDownloads.findOneAndUpdate(
@@ -1311,7 +1316,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
     if (!file) {
       return res.status(404).render("404", { message: "File not found" });
     }
-
+let ISVERIFIED=false;
     // Get seller profile picture
     let sellerprofilepic = "/images/avatar.jpg"; // default
     if (file.userId) {
@@ -1319,6 +1324,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       if (findUser?.profilePicUrl) {
         sellerprofilepic = findUser.profilePicUrl;
       }
+      ISVERIFIED=findUser.ISVERIFIED || false;
     }
 
     // Redirect if slug is incorrect
@@ -1335,9 +1341,9 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
     // Logged in user
     let user = null;
     if (req.user) {
-      user = await User.findById(req.user._id).select("profilePicUrl username email");
+      user = await User.findById(req.user._id);
     }
-
+   
     res.render("file-details", {
       file,
       sellerprofilepic,
@@ -1348,6 +1354,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       profileUrl: user?.profilePicUrl || null,
       username: user?.username || null,
       useremail: user?.email || null,
+     ISVERIFIED
     });
   } catch (error) {
     console.error("Error fetching file:", error);
@@ -1777,106 +1784,104 @@ app.get('/files', async (req, res) => {
 // Your Mongoose model
 
 app.get('/products/related', async (req, res) => {
-    const currentFileId = req.query.fileId;
-    
-    if (!currentFileId) {
-        return res.status(400).json({ message: 'Missing fileId parameter.' });
+  const currentFileId = req.query.fileId;
+
+  if (!currentFileId) {
+    return res.status(400).json({ message: 'Missing fileId parameter.' });
+  }
+
+  try {
+    // 1️⃣ Find the source file
+    const sourceFile = await File.findById(currentFileId);
+    if (!sourceFile) {
+      return res.status(404).json({ message: 'Source file not found.' });
     }
 
-    try {
-        // 1. Find the source file data
-        const sourceFile = await File.findById(currentFileId);
+    const sourceCategory = sourceFile.category;
+    const sourcePrice = sourceFile.price || 0;
 
-        if (!sourceFile) {
-            return res.status(404).json({ message: 'Source file not found.' });
-        }
+    // 2️⃣ Aggregate related documents
+    const relatedDocs = await File.aggregate([
+      {
+        $match: {
+          _id: { $ne: sourceFile._id },
+          category: { $ne: null },
+          price: { $ne: null },
+        },
+      },
+      {
+        $addFields: {
+          relevanceScore: {
+            $add: [
+              {
+                $cond: {
+                  if: { $eq: ["$category", sourceCategory] },
+                  then: 40,
+                  else: 0,
+                },
+              },
+              {
+                $multiply: [
+                  30,
+                  {
+                    $subtract: [
+                      1,
+                      {
+                        $min: [
+                          1,
+                          {
+                            $divide: [
+                              { $abs: { $subtract: ["$price", sourcePrice] } },
+                              { $max: [sourcePrice, 1] },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+      { $sort: { relevanceScore: -1, downloadCount: -1 } },
+      { $limit: 20 },
+      {
+        $project: {
+          _id: 1,
+          filename: 1,
+          filedescription: 1,
+          category: 1,
+          price: 1,
+          slug: 1,
+          user: 1,
+          filetype: 1,
+          imageType: 1, // ✅ Include existing imageType
+          relevanceScore: 1,
+        },
+      },
+    ]);
 
-        // Extract key criteria
-        const sourceCategory = sourceFile.category;
-        const sourcePrice = sourceFile.price || 0; // Use 0 if price is null/undefined
+    // 3️⃣ Add preview URLs (file.imageType already exists)
+    const filesWithPreview = await Promise.all(
+      relatedDocs.map(async (file) => ({
+        ...file,
+        previewUrl: await getValidFileUrl(file), // uses imageType if needed
+      }))
+    );
 
-        // Define a simple structure for the pipeline
-        const relatedDocs = await File.aggregate([
-            
-            // --- Stage 1: Initial Filtering (MUST be first since $text is removed) ---
-            {
-                $match: {
-                    _id: { $ne: sourceFile._id }, // Exclude the source file
-                    category: { $ne: null }, 
-                    price: { $ne: null }
-                }
-            },
+    // 4️⃣ Send response
+    res.json(filesWithPreview);
 
-            // --- Stage 2: Calculate Relevance Score (Max 70 points total) ---
-            {
-                $addFields: {
-                    relevanceScore: {
-                        $add: [
-                            // 1. Category Match (Weighted Highly - Max 40 points)
-                            {
-                                $cond: {
-                                    if: { $eq: ["$category", sourceCategory] },
-                                    then: 40,
-                                    else: 0
-                                }
-                            },
-
-                            // 2. Price Similarity (Weighted Moderately - Max 30 points)
-                            // Score decreases as the normalized price difference increases.
-                            {
-                                $multiply: [
-                                    30, // Max score for price similarity
-                                    {
-                                        $subtract: [
-                                            1, // Start at 100% similarity (1)
-                                            {
-                                                $min: [1, {
-                                                    $divide: [
-                                                        { $abs: { $subtract: ["$price", sourcePrice] } },
-                                                        // Ensure the denominator is never zero
-                                                        { $max: [sourcePrice, 1] } 
-                                                    ]
-                                                }]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            },
-            
-            // --- Stage 3: Sort and Limit ---
-            // Primary sort by the calculated score (highest relevance first)
-            { $sort: { relevanceScore: -1, downloadCount: -1 } }, 
-            
-            // Limit to a reasonable number of results (e.g., 20)
-            { $limit: 20 },
-
-            // --- Stage 4: Select Required Fields ---
-            {
-                $project: {
-                    _id: 1,
-                    filename: 1,
-                    filedescription: 1,
-                    category: 1,
-                    price: 1,
-                    previewUrl: 1,
-                    slug: 1,
-                    user: 1,
-                    relevanceScore: 1
-                }
-            }
-        ]);
-
-        res.json(relatedDocs);
-
-    } catch (error) {
-        console.error('Error fetching related documents:', error);
-        res.status(500).json({ message: 'Internal server error while fetching related documents.' });
-    }
+  } catch (error) {
+    console.error('Error fetching related documents:', error);
+    res.status(500).json({ message: 'Internal server error while fetching related documents.' });
+  }
 });
+;
+
+
 
 
 // The Most Advanced Suggestions Route
@@ -1925,7 +1930,7 @@ app.get('/suggestions', async (req, res) => {
     // Enrich with preview URLs
     const enriched = await Promise.all(
       suggestions.map(async file => {
-        const previewUrl = await getValidFileUrl(file, CF_DOMAIN);
+        const previewUrl = await getValidFileUrl(file);
         return { ...file, previewUrl };
       })
     );

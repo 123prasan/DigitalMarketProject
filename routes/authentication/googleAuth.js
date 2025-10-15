@@ -1200,10 +1200,13 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
     const files = await File.find({ userId: user._id });
     const numsOfDocs = files.length;
     const numOfCourses = 0; // For now only
+ const S3_BUCKET = 'vidyari2';
+  const REGION = 'ap-south-1';
 
+  const BASE_URL = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com`;
     const filesWithPreviews = files.map((file) => ({
       ...file.toObject(),
-      previewUrl: `${CF_DOMAIN}/files-previews/images/${file._id}.${file.imageType || "jpg"
+      previewUrl: `${BASE_URL}/files-previews/images/${file._id}.${file.imageType || "jpg"
         }`,
       pdfUrl: `${CF_DOMAIN}/${file.fileUrl}`,
     }));
