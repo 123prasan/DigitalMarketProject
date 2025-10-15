@@ -590,7 +590,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
       { upsert: true, new: true }
     );
    await userbal.findOneAndUpdate(
-      { userId: file.userId },
+      { UserId: file.userId },
       {
         $inc: {
           Balance: sellerShare,
