@@ -498,11 +498,16 @@ app.post("/create-order", async (req, res) => {
     }
     const amountInPaise = Math.round(price * 100);
     const options = {
-      amount: amountInPaise,
-      currency: "INR",
-      receipt: `receipt_${fileId}`,
-    };
-    const order = await razorpay.orders.create(options);
+  amount: amountInPaise,
+  currency: "INR",
+  receipt: `receipt_${fileId}`,
+  notes: {
+    filename: filename,
+    userId: userId
+  }
+};
+const order = await razorpay.orders.create(options);
+
     // console.log(order);
     res.json(order);
   } catch (error) {
