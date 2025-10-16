@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vidyari Notifications Demo</title>
+</head>
+<body>
+  <h2>Vidyari – Push Notification Demo</h2>
+  <button id="loginBtn">Enable Notifications</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-messaging.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCewKKaSGXDAiBPQRYqOtFJ_DV6A-OborA",
+      authDomain: "vidyari-notification.firebaseapp.com",
+      projectId: "vidyari-notification",
+      storageBucket: "vidyari-notification.firebasestorage.app",
+      messagingSenderId: "1061582963767",
+      appId: "1:1061582963767:web:f97da1a865022e6d172bb2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const messaging = getMessaging(app);
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        .then(reg => console.log('SW registered:', reg))
+        .catch(err => console.error('SW registration failed:', err));
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') return alert('Enable notifications first!');
+
+        const vapidKey = "BHsfuRpT67uCNIc_2p6h5cj0Ze6y09HsR0ZTZsvHaWDz9OjFLC6k2LlVWW7nWZuuBX90IAjwTMSFgQ5Mz2V_pt8";
+        const token = await getToken(messaging, { vapidKey });
+
+        if (!token) return alert('No token generated.');
+        console.log('✅ FCM Token:', token);
+
+        // Send token to backend
+        const res = await fetch('/register-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: 'demo-user', token })
+        });
+        const data = await res.json();
+        alert(data.message || 'Token saved!');
+      } catch (err) {
+        console.error(err);
+        alert('Something went wrong.');
+      }
+    });
+
+    // Foreground messages
+    onMessage(messaging, payload => {
+      console.log('💬 Foreground message:', payload);
+      alert(`${payload.notification?.title}\n${payload.notification?.body}`);
+    });
+  </script>
+</body>
+</html>

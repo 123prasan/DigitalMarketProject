@@ -1,32 +1,30 @@
-const mongoose = require("mongoose");
-const WithDraw = require("./models/userWithdrawels.js"); // replace with the actual path
+const axios = require("axios");
 
-// Connect to MongoDB
-mongoose.connect("mongodb+srv://prasannaprasanna35521:YyWbAq2FoOietc7B@cluster0.0ytfuyz.mongodb.net/documents?retryWrites=true&w=majority", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.error("MongoDB connection error:", err));
-
-// Create a new WithDraw document
-async function createWithDraw() {
+async function sendNotification({
+  userId,
+  title,
+  body,
+  image = "",
+  target_link = "/",
+  notification_type = "GENERAL",
+}) {
   try {
-    const newWithDraw = new WithDraw({
-      totalAmount: 2800,
-      userId: "68d65ce593f888f73f63413c",
-      status: "success",
-      transactionId: "112650986138"
+    const res = await axios.post("https:www.vidyari.com/send", {
+      userId,
+      title,
+      body,
+      image,
+      target_link,
+      notification_type,
     });
 
-    const savedDoc = await newWithDraw.save();
-    console.log("Document saved:", savedDoc);
+    console.log("✅ Notification sent:", res.data);
+    return res.data;
   } catch (err) {
-    console.error("Error creating document:", err);
-  } finally {
-    mongoose.connection.close();
+    console.error("❌ Error sending notification:", err.response?.data || err.message);
+    throw err;
   }
 }
 
-// Run the function
-createWithDraw();
+// ✅ Export the function
+module.exports = sendNotification;

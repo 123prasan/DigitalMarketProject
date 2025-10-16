@@ -504,7 +504,8 @@ router.get(
         isLoggedin: !!req.user,
         profileUrl: user?.profilePicUrl || null,
         username: user?.username || null,
-        useremail: user?.email || null, // This 'downloads' variable will be available in downloads.ejs
+        useremail: user?.email || null,
+         uId: user?._id || null, // This 'downloads' variable will be available in downloads.ejs
       });
     } catch (error) {
       console.error("Error fetching user downloads:", error);
@@ -866,6 +867,7 @@ router.get(
       username: user?.username || null,
       useremail: user?.email || null,
       hasPassword: hasPassword,
+       uId: user?._id || null,
     });
   }
 );
@@ -1085,6 +1087,7 @@ router.get(
         profileUrl: user?.profilePicUrl || null,
         username: user?.username || null,
         useremail: user?.email || null,
+         uId: user?._id || null,
       });
     } catch (error) {
       console.error(error);

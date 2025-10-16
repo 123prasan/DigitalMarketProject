@@ -51,11 +51,18 @@ const Usertransaction = require("./models/userTransactions.js");
 const UserChats = require('./testings4.js'); // <-- IMPORT THE NEW ROUTER
 const Coupon=require("./models/couponschema.js");
 const WebSocket = require('ws');
+const admin = require('firebase-admin');
 const UserMessage = require('./models/UserMessage.js');
 const userbal=require("./models/userBalance.js");
-
+const pushNotificationroute = require('./pushNotification.js');
+const serviceAccount = require('./serviceAccountKey.json');
+const sendNotification=require("./test.js")
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
 const app = express();
 app.use(cookieParser());
+
 app.use("/",UserChats);
  // Use cookie-parser middleware
 
@@ -342,6 +349,7 @@ app.use((req, res, next) => {
 // your normal routes
 
 app.use(fileroute);
+app.use( pushNotificationroute);
 app.post("/save-location", async (req, res) => {
   let ip = req.body.ip;
 
@@ -532,15 +540,13 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     totalprice,
   } = req.body;
 
-  // Validate required payment fields
   if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
     return res.status(400).json({
       success: false,
       message: "Incomplete payment details",
     });
   }
-  
-  // Verify Razorpay signature
+
   const body = razorpay_order_id + "|" + razorpay_payment_id;
   const expectedSignature = crypto
     .createHmac("sha256", process.env.RAZORPAY_SECRET)
@@ -554,147 +560,168 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
   }
 
   try {
-    // Fetch payment details from Razorpay
+    // Fetch Razorpay payment details
     let paymentDetails;
     try {
       paymentDetails = await razorpay.payments.fetch(razorpay_payment_id);
-      console.log("Payment details fetched:", paymentDetails);
     } catch (err) {
       console.error("Razorpay fetch failed:", err);
-      return res
-        .status(502)
-        .json({ success: false, message: "Payment gateway error" });
+      return res.status(502).json({
+        success: false,
+        message: "Payment gateway error",
+      });
     }
 
-    // Fetch file details
+    // Fetch file
     const file = await File.findById(fileId);
     if (!file) {
       return res.status(404).json({ success: false, message: "File not found" });
     }
 
-    // Calculate commission + seller share
-    const platformCut = totalprice * 0.3; // 30% commission
-const sellerShare = totalprice - platformCut;
+    const platformCut = totalprice * 0.3;
+    const sellerShare = totalprice - platformCut;
+    const discount =
+      req.body.CouponData?.priceDetails?.discountedPrice
+        ? file.price - req.body.CouponData.priceDetails.discountedPrice
+        : 0;
 
-let discount = 0;
-if (req.body.CouponData?.priceDetails?.discountedPrice) {
-    discount = file.price- req.body.CouponData.priceDetails.discountedPrice;
-}
-
-// Save transaction (upsert to avoid duplicates)
-await Usertransaction.findOneAndUpdate(
-  { transactionId: razorpay_payment_id },
-  {
-    userId: file.userId, // seller
-    ProductId: file._id,
-    totalAmount: sellerShare,
-    ProductName: file.filename,
-    purchaserId: req.user._id,
-    transactionId: razorpay_payment_id,
-    discount: discount
-  },
-  { upsert: true, new: true }
-);
-
-   await userbal.findOneAndUpdate(
-      { UserId: file.userId },
-      {
-        $inc: {
-          Balance: sellerShare,
-        },
-      },
-      { upsert: true, new: true }
-    );
-    // Update admin balance
-    await Adminbal.findOneAndUpdate(
-      {},
-      {
-        $inc: {
-          totalAmount: platformCut,  // platform earnings
-          cutOffbal: sellerShare,    // seller payout balance
-        },
-      },
-      { upsert: true, new: true }
-    );
-
-    // Save order (unique per orderId)
-    const orderData = {
-      orderId: razorpay_order_id,
-      transactionId: razorpay_payment_id,
-      customer:
-        paymentDetails.email || paymentDetails.contact || "Online Customer",
-      payment: paymentDetails.method,
-      total: totalprice,
-      productId: file._id,
-      productName: file.filename,
-      items: [{ name: file.filename, quantity: 1, price: file.price }],
-      status: "Successful",
-      dateTime: new Date(),
-    };
-
-    await Order.findOneAndUpdate(
-      { orderId: razorpay_order_id },
-      orderData,
-      { upsert: true, new: true }
-    );
-
-    // Save user purchase (unique per user + product)
-  await Userpurchases.create({
-    userId: req.user._id,
-    productId: file._id,
-    price: file.price,
-    totalPrice: totalprice,
-    productName: file.filename,
-    orderId: razorpay_order_id,
-    purchaseId: razorpay_payment_id,
-    quantity: 1, // or whatever quantity you have
-});
-
-
-    // Save user download (unique per user + file)
-    await UserDownloads.findOneAndUpdate(
-      { userId: req.user._id, fileId: file._id },
-      {
-        userId: req.user._id,
-        fileId: file._id,
-        filename: file.filename,
-        fileUrl: file.fileUrl,
-        fileType: path.extname(file.fileUrl).toLowerCase() || "pdf",
-      },
-      { upsert: true, setDefaultsOnInsert: true }
-    );
-
-    // Send notification
-    await Usernotifications.create({
-      userId: req.user._id,
-      type: "purchase",
-      message: `Your purchase of the file <strong>${file.filename}</strong> has been successful.`,
-      targetId: file._id,
-    });
-
-    // Generate temporary token for direct file access
     const token = jwt.sign(
-      {
-        fileId: fileId,
-        orderId: razorpay_order_id,
-        transactionId: razorpay_payment_id,
-      },
+      { fileId, orderId: razorpay_order_id, transactionId: razorpay_payment_id },
       process.env.JWT_SECRET_FILE_PURCHASE,
-      { expiresIn: "10m" } // extended to 10 minutes for safety
+      { expiresIn: "10m" }
     );
 
-    // Return download URL
+    const imageUrl = await getValidFileUrl(file);
+
+    // Parallel DB writes (independent)
+    await Promise.all([
+      // Transaction record
+      Usertransaction.findOneAndUpdate(
+        { transactionId: razorpay_payment_id },
+        {
+          userId: file.userId,
+          ProductId: file._id,
+          totalAmount: sellerShare,
+          ProductName: file.filename,
+          purchaserId: req.user._id,
+          transactionId: razorpay_payment_id,
+          discount,
+        },
+        { upsert: true, new: true }
+      ),
+
+      // Seller balance
+      userbal.findOneAndUpdate(
+        { UserId: file.userId },
+        { $inc: { Balance: sellerShare } },
+        { upsert: true, new: true }
+      ),
+
+      // Admin balance
+      Adminbal.findOneAndUpdate(
+        {},
+        { $inc: { totalAmount: platformCut, cutOffbal: sellerShare } },
+        { upsert: true, new: true }
+      ),
+
+      // Order record
+      Order.findOneAndUpdate(
+        { orderId: razorpay_order_id },
+        {
+          orderId: razorpay_order_id,
+          transactionId: razorpay_payment_id,
+          customer: paymentDetails.email || paymentDetails.contact || "Online Customer",
+          payment: paymentDetails.method,
+          total: totalprice,
+          productId: file._id,
+          productName: file.filename,
+          items: [{ name: file.filename, quantity: 1, price: file.price }],
+          status: "Successful",
+          dateTime: new Date(),
+        },
+        { upsert: true, new: true }
+      ),
+
+      // User purchase
+      Userpurchases.create({
+        userId: req.user._id,
+        productId: file._id,
+        price: file.price,
+        totalPrice: totalprice,
+        productName: file.filename,
+        orderId: razorpay_order_id,
+        purchaseId: razorpay_payment_id,
+        quantity: 1,
+      }),
+
+      // User download
+      UserDownloads.findOneAndUpdate(
+        { userId: req.user._id, fileId: file._id },
+        {
+          userId: req.user._id,
+          fileId: file._id,
+          filename: file.filename,
+          fileUrl: file.fileUrl,
+          fileType: path.extname(file.fileUrl).toLowerCase() || "pdf",
+        },
+        { upsert: true, setDefaultsOnInsert: true }
+      ),
+
+      // User notification
+      Usernotifications.create({
+        userId: req.user._id,
+        type: "purchase",
+        message: `Your purchase of the file <strong>${file.filename}</strong> has been successful.`,
+        targetId: file._id,
+      }),
+    ]);
+
+    // Fire-and-forget push notification
+(async () => {
+  const notifications = [
+    sendNotification({
+      userId: req.user._id,
+      title: "Your product Purchase is Successful",
+      body: `You can see your Files in the My Downloads section. Your Product: ${file.filename}`,
+      image: imageUrl,
+      target_link: "/downloads",
+      notification_type: "purchase",
+    }),
+    sendNotification({
+      userId: file.userId,
+      title: `Someone Bought Your Product ${file.filename}`,
+      body: `🤑 You Earned Amount of ₹ ${sellerShare}`,
+      image: imageUrl,
+      target_link: "/dashboard",
+      notification_type: "transaction",
+    }),
+  ];
+
+  const results = await Promise.allSettled(notifications);
+
+  results.forEach((result, index) => {
+    if (result.status === "rejected") {
+      const type = index === 0 ? "Purchase" : "Transaction";
+      console.error(`${type} notification failed:`, result.reason);
+    }
+  });
+})();
+
+
+    // Send response immediately
     return res.json({
       success: true,
       downloadUrl: `/viewfile/${file.slug}/${file._id}?token=${token}`,
     });
   } catch (err) {
     console.error("Error in /verify-payment:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Payment verification failed" });
+    return res.status(500).json({
+      success: false,
+      message: "Payment verification failed",
+    });
   }
 });
+
 
 // Home Page - Render files
 app.get("/", authenticateJWT_user, async (req, res) => {
@@ -734,6 +761,7 @@ app.get("/", authenticateJWT_user, async (req, res) => {
       profileUrl: user?.profilePicUrl || null,
       username: user?.username || null,
       useremail: user?.email || null,
+      uId: user?._id || null,
     });
   } catch (err) {
     console.error("DB fetch error:", err);
@@ -1354,7 +1382,8 @@ let ISVERIFIED=false;
       profileUrl: user?.profilePicUrl || null,
       username: user?.username || null,
       useremail: user?.email || null,
-     ISVERIFIED
+     ISVERIFIED,
+      uId: user?._id || null,
     });
   } catch (error) {
     console.error("Error fetching file:", error);
@@ -1533,6 +1562,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       },
       { upsert: true, new: true }
     );
+   
 
     // Get S3 object stream
     const s3Stream = s3
@@ -1671,6 +1701,7 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
       profileUrl: user?.profilePicUrl || null,
       username: user?.username || null,
       useremail: user?.email || null,
+       uId: user?._id || null,
     });
   } catch (err) {
     console.error("Page load error:", err);
@@ -2137,6 +2168,7 @@ app.get(
         profileUrl: user?.profilePicUrl || null,
         username: user?.username || null,
         useremail: user?.email || null,
+         uId: user?._id || null,
       });
     } catch (error) {
       console.error("Error fetching purchase history:", error);
