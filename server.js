@@ -2121,6 +2121,13 @@ function GenCheckOutPrice(price, options = {}) {
   total: 301.61
 }
 */
+
+app.get("/help/user/vidyari-guid",(req,res)=>{
+  res.render("help.ejs");
+})
+app.get("/help/user/dashboard",(req,res)=>{
+  res.render("dashboardhelp.ejs")
+})
 app.get(
   "/transactions",
   authenticateJWT_user,

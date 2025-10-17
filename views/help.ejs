@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <title>Vidyari Documentation: User Guide and AI Reference</title>
+    <meta name="description" content="Official technical documentation for the Vidyari digital content platform. Covers user operations, content management, payment flows, integrated chat functionality, and AI integration specifications.">
+    <meta name="keywords" content="Vidyari, documentation, user guide, content management, file upload, digital assets, chat feature, communication, API reference, AI assistance, platform features">
+    <meta name="author" content="Vidyari Technical Documentation">
+    <link rel="canonical" href="https://www.vidyari.com/guide/documentation">
+
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+
+    <meta property="og:title" content="Vidyari Documentation: User Guide and AI Reference">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://www.vidyari.com/guide/documentation">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <style>
+        /* Base Styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa; /* Light background */
+            color: #212529; /* Dark text */
+            font-size: 15px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        }
+        /* Typography - Focus on structure */
+        h1, h2, h3 {
+            color: #007bff; /* Primary Blue for emphasis */
+            font-weight: 600;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        h1 { 
+            font-size: 2.2em; 
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #111;
+        }
+        h2 { 
+            font-size: 1.6em; 
+            border-bottom: 1px solid #dee2e6;
+            margin-top: 35px;
+        }
+        h3 { 
+            font-size: 1.2em; 
+            color: #343a40;
+            margin-top: 20px;
+        }
+
+        /* Lists and Links */
+        ul, ol { 
+            margin: 10px 0 20px 25px; 
+            padding: 0;
+        }
+        li { 
+            margin-bottom: 8px; 
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Highlight Boxes (Notes/Important) */
+        .note, .tip {
+            background-color: #e9ecef; /* Light gray background */
+            border-left: 5px solid #007bff; /* Primary blue marker */
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 3px;
+            font-size: 0.95em;
+        }
+        .note strong, .tip strong {
+            color: #0056b3;
+        }
+        
+        /* Table of Contents (Navigation Panel) */
+        #table-of-contents {
+            border: 1px solid #ced4da;
+            padding: 15px;
+            margin-bottom: 30px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        #table-of-contents ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        #table-of-contents li a {
+            display: block;
+            padding: 4px 0;
+            font-size: 0.9em;
+            color: #495057;
+        }
+        #table-of-contents li a:hover {
+            color: #007bff;
+            background-color: #e9ecef;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <h1>Vidyari Documentation: User Guide and AI Reference</h1>
+        <p>This document provides a detailed overview of the **Vidyari** digital content platform, covering core user operations, content lifecycle management, payment procedures, and technical specifications for integrated AI assistance.</p>
+
+        <section id="table-of-contents">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">1. Platform Overview</a></li>
+                <li><a href="#user-guide">2. User Operations Guide</a>
+                    <ul>
+                        <li><a href="#account-management">2.1 Account and Security</a></li>
+                        <li><a href="#uploading-files">2.2 Content Submission</a></li>
+                        <li><a href="#browsing-downloading">2.3 Content Retrieval (Downloads)</a></li>
+                        <li><a href="#payments">2.4 Transaction Procedures (Purchases)</a></li>
+                        <li><a href="#chat-feature">2.5 Communication: Chat Feature</a></li>
+                    </ul>
+                </li>
+                <li><a href="#features">3. Platform Feature Matrix</a></li>
+                <li><a href="#faqs">4. Frequently Asked Questions (FAQ)</a></li>
+                <li><a href="#ai-assistance">5. AI Assistance and Integration</a></li>
+                <li><a href="#contact">6. Support and Contact Information</a></li>
+                <li><a href="#technical-info">7. Technical Specifications and API Reference</a></li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section id="introduction">
+            <h2>1. Platform Overview</h2>
+            <p>**Vidyari** is a **community-driven digital asset management platform** engineered for the secure distribution and retrieval of various digital resources across academic, professional, and creative domains. The platform supports monetization, resource verification, and advanced discoverability through AI integration.</p>
+
+            <h3>1.1 Supported Digital Assets</h3>
+            <ul>
+                <li>**Academic/Educational:** Research papers, university documents, syllabi, and video lectures.</li>
+                <li>**Professional/Software:** eBooks, technical guides, source code snippets, standalone applications, and software plugins.</li>
+                <li>**General Utilities:** Design templates, high-fidelity media files, and supplementary learning material.</li>
+            </ul>
+
+            <h3>1.2 Core Capabilities</h3>
+            <ul>
+                <li>**Content Management:** Multi-format file uploading and dashboard-based content lifecycle control.</li>
+                <li>**Monetization:** Configuration of paid assets utilizing secure payment gateways and **coupon code** functionality.</li>
+                <li>**User Experience:** Intuitive dashboards for tracking activity, earnings, and download history.</li>
+            <li>**Platform Administration:** Dedicated Admin Panel for comprehensive user, content, and payment monitoring.</li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section id="user-guide">
+            <h2>2. User Operations Guide</h2>
+
+            <h3 id="account-management">2.1 Account and Security Management</h3>
+            <ul>
+                <li>**Registration:** Accounts can be provisioned using **Email/Password** or via integrated **Google OAuth** for expedited access.</li>
+                <li>**Authentication:** Standardized login/logout procedures.</li>
+                <li>**Security:** **Password Reset** is facilitated via a secure, time-sensitive link delivered to the registered email address.</li>
+            </ul>
+
+            <h3 id="uploading-files">2.2 Content Submission Lifecycle</h3>
+            <p>The content submission process is structured into three mandatory stages to ensure comprehensive metadata capture and successful hosting.</p>
+            <ul>
+                <li>**Supported Formats:** PDF, DOCX, PPTX, EPUB, EXE, ZIP/RAR, MP4, JPEG, PNG, and other common formats.</li>
+                <li>**Capacity Limit:** Content files must not exceed **7GB** per individual upload instance.</li>
+                <li>**Submission Stages:**
+                    <ol>
+                        <li>**Configuration:** Select the asset file, define the **Title, Description, Category, Tags**, and set pricing parameters (if applicable).</li>
+                        <li>**Verification:** Review the content preview, confirm metadata accuracy, and configure auxiliary settings (e.g., licensing, visibility).</li>
+                        <li>**Deployment:** Execute the **Submit** action. The content is then queued for processing and immediate availability (or moderation).</li>
+                    </ol>
+                </li>
+            </ul>
+            <div class="tip">
+                **Metadata Requirement:** Accurate, detailed metadata (**Title, Tags, Category**) is critical for **Search Engine Optimization (SEO)** and **AI-driven discoverability**.
+            </div>
+
+            <h3 id="browsing-downloading">2.3 Content Retrieval (Downloads)</h3>
+            <p>This section outlines procedures for accessing and downloading content, distinguishing between free and paid assets.</p>
+            <ul>
+                <li>**Search Functionality:** The system supports advanced search queries utilizing keywords, content type, creator identity, and specific content **tags**.</li>
+                <li>**Content Organization:** Resources are hierarchically classified under major categories: Academic, eBooks, Software, Media, and Templates.</li>
+                <li>**Pre-acquisition Review:** A secure, embedded **Preview** function is provided for specific file types (e.g., PDF) prior to download or purchase commitment.</li>
+                <li>**Acquisition (Free):** The **Download** action initiates the file transfer for free assets. Users retain permanent access via their Download History in the Dashboard.</li>
+            </ul>
+
+            <h3 id="payments">2.4 Transaction Procedures (Purchases)</h3>
+            <p>This covers the acquisition process for monetized content, including payment methods and policy for successful purchase and asset access.</p>
+            <ul>
+                <li>**Accepted Methods:** Support for secure transactions via **UPI, major Credit/Debit Cards, Net Banking,** and digital wallet services.</li>
+                <li>**Transaction Flow (Purchase):**
+                    <ol>
+                        <li>Select the target asset and initiate **Buy Now**.</li>
+                        <li>Input or apply a valid **Coupon Code** (if available) to adjust the price.</li>
+                        <li>Complete payment via the designated secure gateway.</li>
+                        <li>Confirmation initiates immediate and permanent activation of the asset download link within the user dashboard's Purchase History.</li>
+                    </ol>
+                </li>
+                <li>**Refund Policy:** Requests are processed exclusively for failed payment transactions or confirmed unavailability of the acquired asset. Users must provide the **Transaction ID** for verification.</li>
+            </ul>
+
+            <h3 id="chat-feature">2.5 Communication: Chat Feature</h3>
+            <p>Vidyari includes an integrated messaging system to facilitate direct, contextual communication between users and content creators (or other users, depending on settings).</p>
+            <ul>
+                <li>**Access:** The chat interface is accessible from the user's Dashboard or directly via a dedicated icon on the Creator's public profile page or the content detail page.</li>
+                <li>**Purpose:** Primarily intended for pre-sales questions, technical clarification on content usage, or reporting minor content discrepancies directly to the source.</li>
+                <li>**Messaging Integrity:** All conversations are logged and subject to platform **Content and Behavior Policies**. Any attempt to facilitate transactions outside the official payment gateway is a violation and subject to disciplinary action.</li>
+            </ul>
+            <div class="note">
+                **Support Channel:** The in-app chat is strictly for peer-to-peer communication. For official technical support, account issues, or payment failures, users must utilize the dedicated **Contact Support** (Section 6) email channel.
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="features">
+            <h2>3. Platform Feature Matrix</h2>
+            <ul>
+                <li>**Monetization Suite:** Tools for creators to establish pricing, manage promotions, and generate custom discount coupons.</li>
+                <li>**Performance Dashboards:** Comprehensive user interfaces providing metrics on content performance (views, downloads, revenue) and personalized transaction history.</li>
+                <li>**Administrative Interface:** Centralized control panel for platform operators to manage user access, conduct content moderation, and generate usage/payment reports.</li>
+                <li>**Notification Service:** Automated system alerts for new content additions, critical platform announcements, and personalized transaction status updates.</li>
+                <li>**Content Integrity:** System designation for **Verified** content, indicating resources sourced from authenticated or peer-reviewed providers.</li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section id="faqs">
+            <h2>4. Frequently Asked Questions (FAQ)</h2>
+            <dl>
+                <dt><strong>Q:</strong> What is the policy regarding content ownership?</dt>
+                <dd><strong>A:</strong> Content creators retain full intellectual property rights to their submitted original material, subject to the Vidyari **Terms of Service**.</dd>
+                
+                <dt><strong>Q:</strong> What are the prerequisites for successful file upload?</dt>
+                <dd><strong>A:</strong> Files must be an explicitly **Supported File Type** and adhere to the maximum **7GB** size constraint. Uploads must not violate copyright or platform integrity policies.</dd>
+                
+                <dt><strong>Q:</strong> How do I apply a coupon code?</dt>
+                <dd><strong>A:</strong> Coupon codes are entered and validated on the final **Checkout/Payment** page prior to initiating the transaction.</dd>
+                
+                <dt><strong>Q:</strong> What is the procedure for a failed payment transaction?</dt>
+                <dd><strong>A:</strong> Users must verify the status in the Dashboard transaction history. If the asset remains unavailable, contact Support immediately, providing the specific **Transaction ID** for manual resolution or refund processing.</dd>
+            </dl>
+        </section>
+
+        <hr>
+
+        <section id="ai-assistance">
+            <h2>5. AI Assistance and Integration</h2>
+            <p>The platform utilizes an integrated **AI Assistant** system designed to streamline content discovery, user support, and operational guidance.</p>
+            <ul>
+                <li>**AI Functionality:**
+                    <ul>
+                        <li>**Semantic Search:** Facilitates complex natural language queries for content retrieval based on context and metadata.</li>
+                        <li>**Operational Guidance:** Provides automated, step-by-step instructions for standard user tasks (e.g., uploading, dashboard navigation).</li>
+                        <li>**Diagnostic Support:** Offers preliminary troubleshooting for common system faults (e.g., login failure, size constraint errors).</li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="note">
+                **Security Constraint:** The AI Assistant operates exclusively on public and documented platform data. It **does not** possess access to private account credentials, payment instruments, or sensitive user information. For private issues, use the dedicated **Support** channel.
+            </div>
+        </section>
+
+        <hr>
+
+        <section id="contact">
+            <h2>6. Support and Contact Information</h2>
+            <ul>
+                <li>**Technical Support Email:** <a href="mailto:vidyari.inc@gmail.com">vidyari.inc@gmail.com</a></li>
+                <li>**Service Level Objective (SLO):** Support aims to respond to all inquiries within **24 hours** of receipt.</li>
+                <li>**Required Information:** When submitting a ticket, include relevant account ID, transaction ID, and explicit error messages.</li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section id="technical-info">
+            <h2>7. Technical Specifications and API Reference</h2>
+            <ul>
+                <li>**Client Environment:** Optimized for responsiveness across Desktop, Tablet, and Mobile browser environments.</li>
+                <li>**Browser Compliance:** Compatibility verified for Chrome (v80+), Edge (v80+), Firefox (v75+), and Safari (v13+).</li>
+                <li>**Data Formats:** API interaction is primarily managed via **JSON** data structures. Uploaded content retains its original file format (PDF, EXE, MP4, etc.).</li>
+                <li>**Core API Endpoints (Reference):**
+                    <ul>
+                        <li>`/file/:slug/:fileId`: Retrieval of specific content metadata.</li>
+                        <li>`/verify-payment`: Endpoint for post-transaction status confirmation.</li>
+                    </ul>
+                </li>
+                <li>**Security Protocols:** All data transfers are encrypted via **TLS/SSL**. Payments are processed via **PCI-DSS compliant third-party gateways**.</li>
+            </ul>
+            <div class="tip">
+                **AI System Note:** AI service reliability is directly correlated with the quality and granularity of indexed content metadata. Maintain clean, structured data for optimal performance.
+            </div>
+        </section>
+
+    </div>
+</body>
+</html>
