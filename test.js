@@ -9,7 +9,7 @@ async function sendNotification({
   notification_type = "GENERAL",
 }) {
   try {
-    const res = await axios.post("https:www.vidyari.com/send", {
+    const res = await axios.post("https://www.vidyari.com/send", {
       userId,
       title,
       body,
