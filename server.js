@@ -1563,6 +1563,14 @@ const imageUrl=await getValidFileUrl(file);
       { upsert: true, new: true }
     );
    
+
+    // Get S3 object stream
+    const s3Stream = s3
+      .getObject({
+        Bucket: "vidyarimain",
+        Key: fileKey,
+      })
+      .createReadStream();
 (async () => {
   const notifications = [
     sendNotification({
@@ -1585,14 +1593,6 @@ const imageUrl=await getValidFileUrl(file);
     }
   });
 })();
-    // Get S3 object stream
-    const s3Stream = s3
-      .getObject({
-        Bucket: "vidyarimain",
-        Key: fileKey,
-      })
-      .createReadStream();
-
     // Set headers for direct download
     res.setHeader("Content-Disposition", `attachment; filename="${finalFilename}"`);
     res.setHeader("Content-Type", mime.lookup(extension) || "application/octet-stream");
