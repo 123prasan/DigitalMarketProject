@@ -111,7 +111,7 @@ router.post("/send", async (req, res) => {
         
         // Final response
         if (sentSuccessfully) {
-            res.json({ message: 'Notification sent successfully to at least one active device.' });
+            res.json({ message: `Notification sent successfully to at least one active device.${userId}` });
         } else {
             res.status(503).json({ 
                 message: "Failed to send notification to any registered device.",
