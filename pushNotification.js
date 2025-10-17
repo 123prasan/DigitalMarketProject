@@ -11,10 +11,10 @@ router.post("/register-token", async (req, res) => {
     if (!userId || !token) return res.status(400).json({ message: "Missing data" });
 
     try {
-        // Find and update if exists, otherwise create new. This prevents duplicates.
+        // Find by userId. If found, update the token. If not found, create a new document.
         await FcmToken.findOneAndUpdate(
-            { token }, // Find by token
-            { userId, token }, // Data to set
+            { userId }, // <-- CORRECTED: Find by userId
+            { userId, token }, // Data to set (will update 'token' if 'userId' is found)
             { upsert: true, new: true, setDefaultsOnInsert: true } // Options
         );
 
