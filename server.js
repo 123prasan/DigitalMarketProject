@@ -1548,7 +1548,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
 
     // Increment total download count in File document
     await File.findByIdAndUpdate(fileId, { $inc: { downloadCount: 1 } });
-
+const imageUrl=await getValidFileUrl(file);
     // Log per-user download and increment count
     await UserDownloads.findOneAndUpdate(
       { userId: req.user._id, fileId: file._id },
@@ -1563,7 +1563,28 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       { upsert: true, new: true }
     );
    
+(async () => {
+  const notifications = [
+    sendNotification({
+      userId: req.user._id,
+      title: `Downloading is Started ${file.filename}`,
+      body: `Please Check Your Notifications`,
+      image: imageUrl,
+      target_link: "/downloads",
+      notification_type: "Download",
+    })
+   
+  ];
 
+  const results = await Promise.allSettled(notifications);
+
+  results.forEach((result, index) => {
+    if (result.status === "rejected") {
+      const type = index === 0 ? "Purchase" : "Transaction";
+      console.error(`${type} notification failed:`, result.reason);
+    }
+  });
+})();
     // Get S3 object stream
     const s3Stream = s3
       .getObject({
