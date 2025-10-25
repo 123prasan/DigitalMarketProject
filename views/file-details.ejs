@@ -56,26 +56,19 @@
         }
         
         main {
-            /* padding: 0 !important;  */
+            /* Padding is now on the container */
         }
 
         .container-xl {
-            /* max-width: 1300px;  */
             width: 100%;
-            /* height: 100vh; */
-            /* margin: 0 auto; */
-            /* padding-top: 3rem;  */
-            /* padding-bottom: 3rem;  */
         }
         
         /* --- High-Contrast Block Styling --- */
         .product-block {
             background-color: var(--color-white);
             color: var(--color-black);
-            /* border: 6px solid var(--color-black); */
-            box-shadow: 15px 15px 0 var(--color-black); 
-            padding: 1.5rem; 
-            /* margin-bottom: 3rem; */
+            box-shadow: 10px 10px 0 var(--color-black); /* --- REFINED --- */
+            padding: 1rem; /* --- REFINED --- */
         }
 
         /* --- Typography --- */
@@ -162,16 +155,13 @@
             flex-grow: 1;
         }
         #imageModal img {
-            /* Key for no cut: object-fit: contain */
             object-fit: contain;
             max-height: 100%; /* Fill 100% of the modal body height */
             max-width: 100%;  /* Fill 100% of the modal body width */
             width: auto;      /* Maintain aspect ratio */
             height: auto;     /* Maintain aspect ratio */
             display: block;
-            
-            /* Animation for smooth zoom */
-            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother transition curve */ 
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
             transform: scale(0.85); /* Initial scale for distinct zoom-in effect */
         }
         #imageModal.show #modalFullImage {
@@ -186,8 +176,8 @@
         /* --- Creator Info --- */
         .creator-info { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
         .creator-info .profile-pic { 
-            width: 36px; 
-            height: 36px; 
+            width: 48px; /* --- REFINED --- */ 
+            height: 48px; /* --- REFINED --- */
             border-radius: 50%; 
             border: 3px solid var(--color-black); 
             object-fit: cover;
@@ -196,6 +186,15 @@
         .category-tag {
             display: inline-block; background-color: var(--color-primary-card); color: var(--color-black); padding: 0.2rem 0.6rem; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; border: 2px solid var(--color-black); box-shadow: 2px 2px 0 var(--color-black); margin-bottom: 0.5rem;
         }
+        
+        /* --- REFINED: Stats Detail Box --- */
+        .stats-detail {
+            background-color: #f8f8f8;
+            padding: 1rem 1.5rem;
+            border: 2px dashed var(--color-black);
+            border-radius: 4px;
+        }
+
         /* New styles for improved details layout */
         .spec-list {
             list-style: none;
@@ -214,13 +213,104 @@
             font-weight: 400;
             color: #333;
         }
+        
+        /* --- NEW: Like Button & Animation --- */
+        .like-button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            border: 3px solid var(--color-black);
+            box-shadow: 5px 5px 0 var(--color-black);
+            background: var(--color-white);
+            color: var(--color-black);
+            padding: 0.75rem 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            overflow: hidden; /* Hide overflowing particles */
+        }
+        .like-button:hover:not(.liked) {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 var(--color-black);
+            background: #f5f5f5;
+        }
+        .like-button:active:not(.liked) {
+            transform: translate(3px, 3px);
+            box-shadow: 2px 2px 0 var(--color-black);
+        }
+        .like-button .icon {
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+        .like-button .count {
+            font-size: 1rem;
+        }
+
+        /* Liked State */
+        .like-button.liked {
+            background: var(--color-paid);
+            color: var(--color-white);
+            border-color: var(--color-paid);
+            box-shadow: 5px 5px 0 #a1345c; /* Darker shade of --color-paid */
+        }
+        .like-button.liked:hover {
+            background: #d4447a; /* Lighter shade */
+        }
+        .like-button.liked .icon .fa-regular {
+            display: none; /* Hide outline */
+        }
+        .like-button .icon .fa-solid {
+            display: none; /* Hide solid by default */
+        }
+        .like-button.liked .icon .fa-solid {
+            display: inline-block; /* Show solid when liked */
+        }
+
+        /* Pop Animation */
+        .like-button.animating .icon {
+            animation: heart-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes heart-pop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+
+        /* Particle Burst Animation */
+        .like-button .particle-container {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none; /* Don't block clicks */
+        }
+        .like-button .particle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: var(--color-paid);
+            border-radius: 50%;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+        }
+        /* Only animate when .animating is on the parent button */
+        .like-button.animating .particle {
+            animation: particle-burst 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        @keyframes particle-burst {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.5) translate(var(--x), var(--y)); opacity: 0; }
+        }
+
 
         /* --- Buy Box (Sidebar) --- */
         .buy-action-sidebar {
             border: 4px solid var(--color-black);
             padding: 1.5rem;
             background-color: var(--color-sidebar); 
-            /* box-shadow: 10px 10px 0 var(--color-black); */
             position: sticky; 
             top: 20px;
         }
@@ -248,6 +338,29 @@
             box-shadow: 4px 4px 0 var(--color-black);
             background: var(--color-primary-card);
         }
+        
+        /* --- REFINED: Trust Badges --- */
+        .trust-badges-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .trust-badges-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .trust-badges-list li:last-child {
+            margin-bottom: 0;
+        }
+        .trust-badges-list .fa-check-circle,
+        .trust-badges-list .fa-lock,
+        .trust-badges-list .fa-shield-alt {
+            font-size: 1.1rem;
+            color: var(--color-paid);
+            flex-shrink: 0;
+        }
 
         /* --- Related Documents Styling - GRID --- */
         .related-header {
@@ -259,20 +372,16 @@
             margin-bottom: 1.5rem;
         }
         
-        /* Base setting for larger screens (usually 3+ columns) */
         .related-grid { 
             display: grid;
-            /* Responsive grid: minimum card width 180px for tablets/desktops */
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
             gap: 20px;
             padding: 5px 0; 
             margin-bottom: 20px; 
         }
 
-        /* MEDIA QUERY: Force 2 cards per row on narrow screens (e.g., phones < 576px) */
         @media (max-width: 575.98px) {
             .related-grid {
-                 /* Set min width lower and reduce gap to ensure 2 columns fit */
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
                 gap: 10px; 
             }
@@ -347,7 +456,7 @@
     %>
 
     <main>
-        <div class="container-">
+        <div class="containe">
             <div class="product-block">
                 <div class="row g-5">
 
@@ -385,12 +494,12 @@
                                     <a href="/profile/<%= file.user || 'admin' %>" class="fw-bold text-decoration-none text-dark">
                                         <%= file.user || 'Vidyari Team' %>
                                         <% if (ISVERIFIED) { %>
-                                <img style="width: 20px; height: 20px;" src="/images/verify.png" alt="Verified Badge"/>
-                            <% } %>
+                                            <img style="width: 20px; height: 20px;" src="/images/verify.png" alt="Verified Badge"/>
+                                        <% } %>
                                     </a>
                                 </div>
                                 
-                                <div class="stats-detail d-flex align-items-center gap-4 py-2 border-top border-bottom border-dark my-3">
+                                <div class="stats-detail d-flex align-items-center gap-4 py-2 my-3">
                                     <span class="file-meta-item fw-bold" title="Rating">
                                         <i class="fas fa-star text-warning me-1"></i> 4.5/5.0
                                     </span>
@@ -402,7 +511,8 @@
                                 </div>
 
                                 <div class="d-flex align-items-center gap-3 mb-4">
-                                    <span class="LikesBtn-file file-meta-item"></span>
+                                    <button class="like-button" id="likeButton" data-file-id="<%= file._id %>" data-likes="<%= file.likes %>">
+                                        </button>
                                 </div>
 
                                 <div class="details-box p-3 d-none d-lg-block">
@@ -458,9 +568,9 @@
                             <% } %>
 
                             <ul class="trust-badges-list small fw-bold mt-4 pt-3 border-top border-dark">
-                                <li><i class="fas fa-check-circle me-2" style="color: var(--color-paid);"></i>Instant Digital Access</li>
-                                <li><i class="fas fa-lock me-2" style="color: var(--color-paid);"></i>Secure Checkout Guaranteed</li>
-                                <li><i class="fas fa-shield-alt me-2" style="color: var(--color-paid);"></i>Seller Verified</li>
+                                <li><i class="fas fa-check-circle"></i>Instant Digital Access</li>
+                                <li><i class="fas fa-lock"></i>Secure Checkout Guaranteed</li>
+                                <li><i class="fas fa-shield-alt"></i>Seller Verified</li>
                             </ul>
                             
                         </div>
@@ -468,8 +578,7 @@
                 </div>
             </div>
             
-            <div class="product-block related-section">
-                <span class="related-header">More Like This</span>
+            <div class="product-block related-section mt-5"> <span class="related-header">More Like This</span>
                 
                 <div class="related-grid" id="relatedGrid"> 
                     <p id="gridLoading" class="text-dark ps-2">Loading similar files...</p>
@@ -557,34 +666,94 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Liking Logic ---
-    const likeBtnfile = document.querySelector(".LikesBtn-file");
-    if (likeBtnfile) {
-        let fileLikes = <%= file.likes %>;
+    // --- Liking Logic (New) ---
+    const likeButton = document.getElementById('likeButton');
+    
+    if (likeButton) {
+        const fileId = likeButton.dataset.fileId;
+        let likeCount = parseInt(likeButton.dataset.likes, 10);
         let allFiles = JSON.parse(localStorage.getItem("fileData")) || {};
+        let isLiked = (allFiles[fileId] && allFiles[fileId].liked) || false;
 
-        function updateLikeButton() {
-            if (allFiles[currentFileId] && allFiles[currentFileId].liked) {
-                likeBtnfile.innerHTML = `<i class="fa-solid fa-thumbs-up" style="color: var(--color-primary-card);"></i> ${fileLikes} Likes`;
+        const updateLikeButtonState = (isInitial = false) => {
+            if (isLiked) {
+                likeButton.classList.add('liked');
             } else {
-                likeBtnfile.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${fileLikes} Likes`;
+                likeButton.classList.remove('liked');
             }
-        }
-        updateLikeButton();
-        likeBtnfile.onclick = function () { 
-            if (allFiles[currentFileId] && allFiles[currentFileId].liked) {
-                fileLikes--;
-                allFiles[currentFileId].liked = false;
-                fetch(`/files/impression/${currentFileId}/dislike`).catch(err => console.error(err));
-            } else {
-                fileLikes++;
-                if (!allFiles[currentFileId]) allFiles[currentFileId] = {};
-                allFiles[currentFileId].liked = true;
-                fetch(`/files/impression/${currentFileId}/like`).catch(err => console.error(err));
+            
+            likeButton.innerHTML = `
+                <span class="icon">
+                    <i class="fa-regular fa-thumbs-up"></i>
+                    <i class="fa-solid fa-thumbs-up"></i>
+                </span>
+                <span class="count">${likeCount.toLocaleString()} ${likeCount === 1 ? 'Like' : 'Likes'}</span>
+            `;
+
+            // Trigger animation only on click, not on initial load
+            if (!isInitial && isLiked) { // Only animate when liking, not unliking
+                likeButton.classList.add('animating');
+                
+                // Add particle effects
+                const particleContainer = document.createElement('div');
+                particleContainer.classList.add('particle-container');
+                for (let i = 0; i < 7; i++) {
+                    const particle = document.createElement('span');
+                    particle.classList.add('particle');
+                    // Set random exit vectors
+                    particle.style.setProperty('--x', (Math.random() - 0.5) * 70 + 'px');
+                    particle.style.setProperty('--y', (Math.random() - 0.5) * 70 + 'px');
+                    particleContainer.appendChild(particle);
+                }
+                likeButton.appendChild(particleContainer);
+
+                // Clean up animation classes and particles
+                setTimeout(() => {
+                    likeButton.classList.remove('animating');
+                    if (likeButton.contains(particleContainer)) {
+                        likeButton.removeChild(particleContainer);
+                    }
+                }, 700); // Match animation duration
+            } else if (!isInitial && !isLiked) {
+                // If unliking, just remove class without particle animation
+                likeButton.classList.remove('animating');
             }
-            localStorage.setItem("fileData", JSON.stringify(allFiles));
-            updateLikeButton();
         };
+
+        // Initial render on page load
+        updateLikeButtonState(true);
+
+        // Click handler
+        likeButton.addEventListener('click', () => {
+            // Prevent spam-clicking
+            if (likeButton.classList.contains('animating')) {
+                return;
+            }
+
+            let endpoint = '';
+            if (isLiked) {
+                // Currently liked, so unlike
+                likeCount--;
+                isLiked = false;
+                endpoint = 'dislike';
+            } else {
+                // Currently not liked, so like
+                likeCount++;
+                isLiked = true;
+                endpoint = 'like';
+            }
+
+            // Update local storage
+            if (!allFiles[fileId]) allFiles[fileId] = {};
+            allFiles[fileId].liked = isLiked;
+            localStorage.setItem("fileData", JSON.stringify(allFiles));
+
+            // Update button UI and trigger animation
+            updateLikeButtonState(false);
+
+            // Send request to server
+            fetch(`/files/impression/${fileId}/${endpoint}`).catch(err => console.error("Like request failed:", err));
+        });
     }
     
     // --- Buy Button Logic ---

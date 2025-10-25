@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vidyari: Find Your Edge</title>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
-      crossorigin="anonymous"></script>
+     crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -54,7 +54,11 @@
     }
     
     /* --- HERO & MAIN WRAPPER --- */
-    .hero-section { padding: 4rem 2rem; text-align: center; background: var(--color-bg); border-bottom: 4px solid var(--color-black); box-shadow: 0 12px 0 var(--color-black); }
+    .hero-section { 
+        padding: 4rem 2rem; text-align: center; 
+        background: var(--color-bg); border-bottom: 4px solid var(--color-black); 
+        box-shadow: 0 8px 0 var(--color-black); 
+    }
     .hero-title { font-weight: 900; font-size: clamp(2.5rem, 5vw, 4rem); text-transform: uppercase; }
     .full-width-container { padding: 40px 0; }
     .brutalist-content-wrapper { border: 6px solid var(--color-black); }
@@ -73,19 +77,38 @@
     
     /* --- FILE CARD STYLES --- */
     .file-card-wrapper { transition: all 0.3s ease; height: 100%; padding: var(--card-spacing); }
-    .file-card-wrapper:hover { transform: translate(-8px, -8px); box-shadow: 10px 10px 0 var(--color-focus); z-index: 10; position: relative; }
+    .file-card-wrapper:hover { 
+        transform: translate(-4px, -4px); /* --- REFINED: Smaller translate --- */
+        box-shadow: 8px 8px 0 var(--color-focus); /* --- REFINED: Kept hover shadow strong --- */
+        z-index: 10; position: relative; 
+    }
+    /* --- REFINED: Note g-0 is removed in HTML, this rule is just for compatibility --- */
     .row.g-0 { --bs-gutter-x: 0; --bs-gutter-y: 0; }
     
     .file-card {
-        width: 100%; height: 100%; border: 3px solid var(--color-black); box-shadow: 8px 8px 0 var(--color-black);
+        width: 100%; height: 100%; 
+        border: 2px solid var(--color-black); 
+        box-shadow: 4px 4px 0 var(--color-black); /* --- REFINED: Smaller shadow for cleaner look --- */
         overflow: hidden; display: flex; flex-direction: column; background: var(--color-primary); 
     }
 
-    /* 90% Image Area */
-    .file-card .card-img { flex-grow: 1; min-height: 150px; background-color: #fff; overflow: hidden; padding: 5px; flex-shrink: 0; position: relative; }
+    /* Image Area */
+    .file-card .card-img { 
+        flex-grow: 1; /* --- REFINED: Allows image to fill available space --- */
+        min-height: 150px; /* --- REFINED: Keeps a minimum size --- */
+        background-color: #fff; 
+        overflow: hidden; padding: 0; 
+        flex-shrink: 0; position: relative; 
+        /* --- REFINED: Removed aspect-ratio to allow flex-grow --- */
+    }
     .file-card .card-img img { 
-        width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;
-        image-rendering: pixelated; image-rendering: -webkit-optimize-contrast; 
+        width: 100%; height: 100%; 
+        object-fit: contain; /* --- REFINED: Shows full image clearly --- */
+        transition: transform 0.3s ease;
+        /* --- REFINED: Removed pixelated rendering --- */
+    }
+    .file-card-wrapper:hover .card-img img {
+        transform: scale(1.05);
     }
     
     /* Hover Copy Icon */
@@ -95,16 +118,33 @@
         text-shadow: 0 0 5px rgba(0,0,0,0.8);
     }
     .file-card-wrapper:hover .copy-icon-hover { opacity: 1; transform: scale(1.1); }
+    
+    /* Detail Bar */
     .file-card .detail-bar {
-        min-height: 45px; padding: 8px 10px; border-top: 3px solid var(--color-black);
-        background: var(--color-detail-bar); display: flex; align-items: center; flex-shrink: 0; gap: 5px;
+        min-height: 65px; /* --- REFINED: Taller to allow 2 lines of text --- */
+        padding: 8px 10px; 
+        border-top: 2px solid var(--color-black); 
+        background: var(--color-detail-bar); display: flex; align-items: center; 
+        flex-shrink: 0; gap: 5px;
     }
-    .file-title-mobile { font-size: 0.9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; margin-right: 5px; color: var(--color-black); }
+    .file-title-mobile { 
+        font-size: 0.9rem; font-weight: 700; 
+        white-space: normal; /* --- REFINED: Allows text to wrap --- */
+        word-break: break-word; /* --- REFINED: Breaks long words --- */
+        line-height: 1.3; /* --- REFINED: Tighter line height --- */
+        flex-grow: 1; 
+        margin-right: 5px; 
+        color: var(--color-black);
+        /* --- REFINED: Removed overflow and text-ellipsis --- */
+    }
     .action-btn { display: inline-block; }
     .mobile-vertical-action { display: none; text-align: center; flex-shrink: 0; line-height: 1; cursor: pointer; text-decoration: none; color: var(--color-black); }
 
     @media (max-width: 767px) {
-        .file-card .detail-bar { justify-content: space-between; padding: 8px; min-height: 55px; }
+        .file-card .detail-bar { 
+            justify-content: space-between; padding: 8px; 
+            min-height: 70px; /* --- REFINED: Taller for mobile layout --- */
+        }
         .action-btn { display: none; }
         .mobile-vertical-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 5px 0; }
     }
@@ -152,10 +192,10 @@
     .skeleton-short { width: 50%; }
 
     .skeleton-card .card-img {
-        /* Apply skeleton effect to the image area */
         background-color: var(--skeleton-base) !important;
         position: relative;
         overflow: hidden;
+        aspect-ratio: 1 / 1; /* --- REFINED: Give skeleton a fixed shape --- */
     }
     .skeleton-card .card-img::before {
         content: '';
@@ -167,6 +207,7 @@
     }
     .skeleton-card .detail-bar {
         background-color: #fff;
+        min-height: 65px; /* --- REFINED: Match real card --- */
     }
     @keyframes wave-bg {
         100% { transform: translateX(100%); }
@@ -198,10 +239,43 @@
         padding: 0.5rem; background: transparent; 
     }
     .search-modal__close-btn { font-size: 2rem; font-weight: 700; background: none; border: none; cursor: pointer; }
-    .search-modal__body { padding: 1rem 2rem; overflow-y: auto; flex-grow: 1; }
-    .suggestion-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem; text-decoration: none; color: var(--color-black); border-radius: 8px; transition: background-color 0.2s ease; }
+    .search-modal__body { 
+        padding: 1rem; 
+        overflow-y: auto; flex-grow: 1; 
+    }
+    .suggestion-item { 
+        display: flex; align-items: center; 
+        gap: 0.75rem; 
+        padding: 0.5rem; 
+        text-decoration: none; color: var(--color-black); 
+        border-radius: 8px; transition: background-color 0.2s ease; 
+    }
     .suggestion-item:hover { background-color: #f0f0f0; }
     
+    .suggestion-thumb {
+        width: 40px; 
+        height: 40px; 
+        object-fit: cover;
+        border-radius: 4px;
+        border: 2px solid var(--color-black);
+        flex-shrink: 0; 
+    }
+    .suggestion-info {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; 
+    }
+    .suggestion-title {
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .suggestion-user {
+        font-size: 0.8rem;
+        color: #555;
+    }
+
     /* Filter Modal Animation/Styling */
     .filter-modal-overlay { 
         position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); 
@@ -242,7 +316,7 @@
               </div>
             </div>
             <button class="filter-btn filter-btn-sticky" id="openFilterModalBtn">
-                <i class="fas fa-filter me-2"></i><span>Filter & Sort</span>
+              <i class="fas fa-filter me-2"></i><span>Filter & Sort</span>
             </button>
           </div>
         </section>
@@ -253,7 +327,7 @@
                     <h2 id="grid-main-title" class="container-title">Explore Featured Docs 🚀</h2>
                     <p id="resultsCounter" class="mb-4" style="color: #000 !important; font-weight: 600;"></p>
                     
-                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-0" id="fileCards">
+                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="fileCards">
                         </div>
                     
                     <div id="loadingIndicator" class="text-center py-5 my-5" style="display: none;">
@@ -282,6 +356,7 @@
         </div>
         <div class="search-modal__body" id="modalSuggestions"></div>
     </div>
+    
     <div class="filter-modal-overlay" id="filterModal">
       <div class="filter-modal-content">
           <div class="filter-modal-header">
@@ -429,12 +504,12 @@
                                 
                                 <i class="fas fa-copy copy-icon-hover" data-url="${filePermalink}" title="Copy Link"></i>
                                 
-                              <img 
-                                src="${file.previewUrl || './images/File_Demo.svg'}" 
-                                alt="${file.filename}" 
-                                loading="lazy"
-                                onerror="this.onerror=null; this.src='./images/File_Demo.svg';"
-                              >
+                                <img 
+                                  src="${file.previewUrl || './images/File_Demo.svg'}" 
+                                  alt="${file.filename}" 
+                                  loading="lazy"
+                                  onerror="this.onerror=null; this.src='./images/File_Demo.svg';"
+                                >
                             </a>
                             
                             <div class="detail-bar">
@@ -538,9 +613,6 @@
                 }
                 
                 try {
-                    // Simulating delay for suggestions
-                    // await new Promise(resolve => setTimeout(resolve, 200));
-
                     const response = await fetch(`/suggestions?q=${encodeURIComponent(query)}`); 
                     if (!response.ok) throw new Error('Suggestion fetch failed');
                     const suggestions = await response.json();
@@ -550,7 +622,13 @@
                         modalSuggestions.innerHTML = suggestions.slice(0, 10).map(file => { 
                             const fileUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
                             const title = file.filename.replace(new RegExp(query, 'gi'), (match) => `<strong>${match}</strong>`); 
-                            return `<a href="${fileUrl}" class="suggestion-item"><img src="${file.previewUrl || './images/File_Demo.svg'}" class="suggestion-thumb" alt="${file.filename}"><div class="suggestion-info"><span class="suggestion-title">${title}</span><span class="suggestion-user">by ${file.user || 'Admin'}</span></div></a>`;
+                            return `<a href="${fileUrl}" class="suggestion-item">
+                                        <img src="${file.previewUrl || './images/File_Demo.svg'}" class="suggestion-thumb" alt="${file.filename}">
+                                        <div class="suggestion-info">
+                                            <span class="suggestion-title">${title}</span>
+                                            <span class="suggestion-user">by ${file.user || 'Admin'}</span>
+                                        </div>
+                                    </a>`;
                         }).join('');
                     } else {
                         modalSuggestions.innerHTML = '<p style="font-weight: 600; color: #777; text-align: center;">No suggestions found. Press Enter to search anyway.</p>';
@@ -566,7 +644,7 @@
                 fileCardsContainer.innerHTML = '';
                 renderSkeletonLoader();
                 noResultsBlock.style.display = 'none';
-                loadingIndicator.style.display = 'block';
+                loadingIndicator.style.display = 'block'; 
 
                 document.getElementById('grid-main-title').textContent = currentFilters.search ? `Results for "${currentFilters.search}"` : "Explore Featured Docs 🚀";
 
@@ -586,9 +664,6 @@
                 currentFilters.fileTypes.forEach(type => params.append('fileType', type));
 
                 try {
-                    // Simulate network delay for effect (remove in production)
-                    // await new Promise(resolve => setTimeout(resolve, 1000));
-
                     const response = await fetch(`/files?${params.toString()}`);
                     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                     const data = await response.json();
@@ -628,7 +703,9 @@
                     updatePaginationControls();
                     resultsCounter.textContent = `Showing ${data.files.length} of ${data.totalFiles} results`;
                     
-                    window.scrollTo({ top: fileCardsContainer.offsetTop - 150, behavior: 'smooth' });
+                    if (!isInitialLoad) {
+                        window.scrollTo({ top: fileCardsContainer.offsetTop - 150, behavior: 'smooth' });
+                    }
 
                 } catch (error) {
                     fileCardsContainer.innerHTML = '';
@@ -659,14 +736,13 @@
                 searchDebounceTimeout = setTimeout(updateSuggestions, 300);
             });
             
-            // NEW FIX: Close modal on Enter and trigger search
             modalSearchInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     currentFilters.search = modalSearchInput.value.trim();
                     document.querySelector('#searchTrigger .placeholder-text').textContent = currentFilters.search || 'Search Docs.';
                     currentPage = 1;
-                    closeAndResetSearch(); // Call the close function immediately
+                    closeAndResetSearch(); 
                     fetchAndRenderFiles();
                 }
             });
