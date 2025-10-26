@@ -1,0 +1,308 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Anton&display=swap" rel="stylesheet">
+<div class="brutalist-share-widget">
+    <button class="share-button" id="mainShareButton">
+        <i class="fas fa-share-alt"></i> Share
+    </button>
+    <div class="share-options" id="shareOptionsContainer">
+        <a href="#" id="shareFacebook" title="Share on Facebook"><i class="fab fa-facebook"></i></a>
+        <a href="#" id="shareTwitter" title="Share on Twitter"><i class="fab fa-twitter"></i></a>
+        <a href="#" id="shareWhatsapp" title="Share on WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <a href="#" id="shareEmail" title="Share via Email"><i class="fas fa-envelope"></i></a>
+        <button id="copyLinkButton" title="Copy Link"><i class="fas fa-link"></i></button>
+    </div>
+    <div id="copyFeedback">LINK COPIED!</div>
+</div>
+<style>
+    /* --- Styles scoped under .brutalist-share-widget --- */
+.brutalist-share-widget {
+    /* --- Brutalist Theme Variables --- */
+    --font-heading: 'Anton', 'Arial Black', sans-serif;
+    --font-body: 'Space Mono', monospace;
+    --color-bg: #f0f0f0; /* Light grey background */
+    --color-text: #000000; /* Black text */
+    --color-black: #000000;
+    --color-white: #ffffff;
+    --color-border: #000000; /* Primary border color */
+    --color-accent-1: #00ff00; /* Bright Green */
+    --color-accent-2: #ff00ff; /* Bright Pink */
+    --color-accent-3: #ff6600; /* Bright Orange */
+    --border-width: 3px;
+    --shadow-offset: 6px; /* Aggressive shadow */
+    --transition-speed: 0.1s ease-out; /* Snappy transitions */
+
+    /* Apply base font to the widget */
+    font-family: var(--font-body);
+    color: var(--color-text);
+    position: relative; /* Context for absolute positioning */
+    z-index: 1000; /* Ensure it's above other elements if needed */
+    padding-bottom: 50px; /* Space for copy feedback */
+    display: inline-block; /* Or block, depending on layout needs */
+}
+
+/* Ensure sharp corners within the widget */
+.brutalist-share-widget *,
+.brutalist-share-widget *::before,
+.brutalist-share-widget *::after {
+    box-sizing: border-box;
+    border-radius: 0 !important;
+}
+
+/* --- Main Share Button --- */
+.brutalist-share-widget .share-button {
+    background-color: var(--color-accent-1);
+    color: var(--color-black);
+    border: var(--border-width) solid var(--color-border);
+    padding: 12px 25px;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    cursor: grab;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: all var(--transition-speed);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-black);
+    line-height: 1; /* Ensure consistent height */
+}
+
+.brutalist-share-widget .share-button:hover {
+    transform: translate(2px, 2px);
+    box-shadow: calc(var(--shadow-offset) - 2px) calc(var(--shadow-offset) - 2px) 0 var(--color-black);
+    background-color: var(--color-accent-2);
+    color: var(--color-black);
+    cursor: grabbing;
+}
+
+.brutalist-share-widget .share-button:active {
+    transform: translate(var(--shadow-offset), var(--shadow-offset));
+    box-shadow: 0 0 0 var(--color-black);
+    background-color: var(--color-accent-3);
+}
+
+/* --- Share Options Panel --- */
+.brutalist-share-widget .share-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: absolute;
+    bottom: calc(100% + 15px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background-color: var(--color-white);
+    border: var(--border-width) solid var(--color-border);
+    box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-black);
+    padding: 15px;
+    gap: 15px;
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0s 0.3s;
+    min-width: 280px;
+}
+
+.brutalist-share-widget .share-options.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0s;
+}
+
+/* --- Individual Share Icons/Buttons --- */
+.brutalist-share-widget .share-options a,
+.brutalist-share-widget .share-options button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-bg);
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 1.6rem;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    box-shadow: 3px 3px 0 var(--color-black);
+    text-decoration: none;
+    padding: 0; /* Reset padding for button */
+    line-height: 1; /* Ensure icon alignment */
+}
+
+.brutalist-share-widget .share-options a:hover,
+.brutalist-share-widget .share-options button:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--color-black);
+    background-color: var(--color-accent-1);
+    color: var(--color-black);
+}
+
+.brutalist-share-widget .share-options a:active,
+.brutalist-share-widget .share-options button:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--color-black);
+    background-color: var(--color-accent-2);
+}
+
+/* --- Copy Feedback Message --- */
+.brutalist-share-widget #copyFeedback {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background-color: var(--color-black);
+    color: var(--color-accent-1);
+    padding: 8px 15px;
+    border: 2px solid var(--color-accent-1);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0s 0.3s;
+    pointer-events: none;
+    z-index: 1001;
+}
+.brutalist-share-widget #copyFeedback.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0s;
+}
+
+/* --- Responsive adjustments --- */
+@media (max-width: 400px) {
+    .brutalist-share-widget .share-options {
+        width: 90%;
+        min-width: unset;
+        left: 5%; /* Adjust for smaller screens */
+        transform: translateX(0) scale(0.8);
+    }
+    .brutalist-share-widget .share-options.active {
+        transform: translateX(0) scale(1);
+    }
+    /* Center button if container takes full width (optional, depends on parent) */
+    /* If the parent container forces the widget full width, center the button */
+    /* .brutalist-share-widget {
+         display: flex;
+         justify-content: center;
+         padding-bottom: 80px;
+    } */
+    .brutalist-share-widget #copyFeedback {
+        left: 0; right: 0; width: fit-content; margin: 0 auto;
+        transform: translateX(0) translateY(10px);
+    }
+     .brutalist-share-widget #copyFeedback.show {
+        transform: translateX(0) translateY(0);
+    }
+}
+</style>
+<script>
+    // --- Brutalist Share Widget Logic ---
+    // Wrap in a function to avoid global scope pollution and allow multiple widgets if needed
+    function initializeBrutalistShareWidget(widgetElement) {
+        if (!widgetElement) return; // Exit if the widget div wasn't found
+
+        const mainShareButton = widgetElement.querySelector('.share-button'); // Use class selector
+        const shareOptionsContainer = widgetElement.querySelector('.share-options');
+        const copyLinkButton = widgetElement.querySelector('#copyLinkButton'); // Can use ID if unique within widget
+        const copyFeedback = widgetElement.querySelector('#copyFeedback');
+
+        if (!mainShareButton || !shareOptionsContainer || !copyLinkButton || !copyFeedback) {
+            console.error("Could not find all necessary elements within the share widget:", widgetElement);
+            return; // Exit if essential parts are missing
+        }
+
+        // Toggle share options visibility
+        mainShareButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            shareOptionsContainer.classList.toggle('active');
+            if (!shareOptionsContainer.classList.contains('active')) {
+                copyFeedback.classList.remove('show');
+            }
+        });
+
+        // Close options if clicked outside the specific widget instance
+        document.addEventListener('click', (event) => {
+            if (!widgetElement.contains(event.target)) {
+                shareOptionsContainer.classList.remove('active');
+                copyFeedback.classList.remove('show');
+            }
+        });
+
+        // --- Share Link Setup ---
+        // Get URL and Title dynamically when needed (e.g., inside click handlers if content changes)
+        const getCurrentShareUrl = () => encodeURIComponent(window.location.href);
+        const getCurrentShareTitle = () => encodeURIComponent(document.title);
+
+        const fbLink = shareOptionsContainer.querySelector('#shareFacebook');
+        const twLink = shareOptionsContainer.querySelector('#shareTwitter');
+        const waLink = shareOptionsContainer.querySelector('#shareWhatsapp');
+        const emLink = shareOptionsContainer.querySelector('#shareEmail');
+
+        // Update links dynamically when options open (or keep static if URL/title don't change)
+        // Example of dynamic update:
+        // mainShareButton.addEventListener('click', () => {
+        //     const shareUrl = getCurrentShareUrl();
+        //     const shareTitle = getCurrentShareTitle();
+        //     if(fbLink) fbLink.href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+        //     // ... update other links ...
+        // });
+        // --- OR --- Static update on load:
+        const shareUrl = getCurrentShareUrl();
+        const shareTitle = getCurrentShareTitle();
+        if(fbLink) fbLink.href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+        if(twLink) twLink.href = `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`;
+        if(waLink) waLink.href = `https://api.whatsapp.com/send?text=${shareTitle}%20${shareUrl}`;
+        if(emLink) emLink.href = `mailto:?subject=${shareTitle}&body=${shareTitle}%0A${shareUrl}`;
+
+
+        // --- Copy Link Functionality ---
+        copyLinkButton.addEventListener('click', () => {
+            const urlToCopy = decodeURIComponent(getCurrentShareUrl()); // Get current URL to copy
+            navigator.clipboard.writeText(urlToCopy).then(() => {
+                copyFeedback.classList.add('show');
+                setTimeout(() => {
+                    copyFeedback.classList.remove('show');
+                }, 1800);
+                shareOptionsContainer.classList.remove('active');
+            }).catch(err => {
+                console.error('Failed to copy link: ', err);
+                alert('Failed to copy link.');
+            });
+        });
+
+        // Prevent options container from closing when clicking inside it
+        shareOptionsContainer.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        // Make share links open in a new tab & close panel
+        shareOptionsContainer.querySelectorAll('a').forEach(link => {
+            if (!link.href.startsWith('mailto:')) {
+                 link.target = '_blank';
+                 link.rel = 'noopener noreferrer';
+            }
+            link.addEventListener('click', () => {
+                setTimeout(() => {
+                     shareOptionsContainer.classList.remove('active');
+                     copyFeedback.classList.remove('show');
+                }, 100);
+            });
+        });
+
+    } // End of initializeBrutalistShareWidget function
+
+    // --- Initialize the widget ---
+    // Find the specific widget on the page and initialize it
+    const theShareWidget = document.querySelector('.brutalist-share-widget');
+    initializeBrutalistShareWidget(theShareWidget);
+
+    // If you might have multiple share widgets, you'd do:
+    // document.querySelectorAll('.brutalist-share-widget').forEach(widget => {
+    //     initializeBrutalistShareWidget(widget);
+    // });
+
+</script>

@@ -71,7 +71,7 @@ const initializeChat = (server) => {
 
                         // Run and wait for all notification attempts
                         const results = await Promise.allSettled(notifications);
-
+             
                         results.forEach((result) => {
                             if (result.status === "rejected") {
                                 // Log the failure but allow the message save/send to proceed

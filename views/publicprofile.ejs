@@ -568,8 +568,8 @@
                     <div class="doc-grid">
                         <% files.forEach((file) => { %>
                             <a href="/file/<%= file.slug %>/<%= file._id %>" class="doc-card-item">
-                                <img class="doc-thumbnail" src="<%= file.previewUrl %>" alt="Preview for <%= file.title || 'document' %>">
-                                <h3 class="doc-title"><%= file.title || 'Untitled Document' %></h3>
+                                <img class="doc-thumbnail" src="<%= file.previewUrl %>" alt="Preview for <%= file.filename || 'document' %>">
+                                <h3 class="doc-title"><%= file.filename || 'Untitled Document' %></h3>
                             </a>
                         <% }) %>
                     </div>
