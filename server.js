@@ -1835,95 +1835,158 @@ app.get('/files', async (req, res) => {
 
 // Your Mongoose model
 
-app.get('/products/related', async (req, res) => {
-  const currentFileId = req.query.fileId;
 
-  if (!currentFileId) {
+app.get('/products/related', async (req, res) => {
+  const { fileId } = req.query;
+  const MIN_RESULTS = 5;  // We want at least this many results
+  const MAX_RESULTS = 20; // We'll fetch up to this many
+
+  if (!fileId) {
     return res.status(400).json({ message: 'Missing fileId parameter.' });
   }
 
+  if (!mongoose.Types.ObjectId.isValid(fileId)) {
+    return res.status(400).json({ message: 'Invalid fileId format.' });
+  }
+
   try {
-    // 1️⃣ Find the source file
-    const sourceFile = await File.findById(currentFileId);
+    // --- 1️⃣ Find the source file ---
+    // Use .lean() for a fast, read-only object
+    const sourceFile = await File.findById(fileId).lean();
     if (!sourceFile) {
       return res.status(404).json({ message: 'Source file not found.' });
     }
 
+    // Define source properties for scoring
     const sourceCategory = sourceFile.category;
     const sourcePrice = sourceFile.price || 0;
+    const sourceUser = sourceFile.user;
+    // Use both filename and description for a richer text search
+    const searchTerms = `${sourceFile.filename} ${sourceFile.filedescription || ''}`;
 
-    // 2️⃣ Aggregate related documents
-    const relatedDocs = await File.aggregate([
+    // Helper function for the weighted scoring logic
+    const getScoringPipeline = (isTextSearch) => [
       {
-        $match: {
-          _id: { $ne: sourceFile._id },
-          category: { $ne: null },
-          price: { $ne: null },
-        },
+        $addFields: {
+          // A. TEXT SCORE (Weight: 50%) - ONLY for text search
+          textScore: isTextSearch ? { $meta: "textScore" } : 0,
+
+          // B. CATEGORY MATCH (Weight: 20%)
+          categoryMatch: {
+            $cond: { if: { $eq: ["$category", sourceCategory] }, then: 1, else: 0 }
+          },
+
+          // C. SAME USER (Weight: 10%)
+          userMatch: {
+            $cond: { if: { $eq: ["$user", sourceUser] }, then: 1, else: 0 }
+          },
+
+          // D. PRICE PROXIMITY (Weight: 15%) - Scaled 0 to 1
+          priceProximity: {
+            $subtract: [
+              1,
+              { $min: [
+                  1,
+                  { $divide: [
+                      { $abs: { $subtract: ["$price", sourcePrice] } },
+                      { $max: [sourcePrice, 10] } // Use 10 as a buffer to prevent tiny price diffs from scoring 0
+                  ]}
+              ]}
+            ]
+          },
+          
+          // E. POPULARITY (Weight: 5%) - Use log10 to normalize
+          normalizedPopularity: {
+            $log10: { $add: ["$downloadCount", 1] } // +1 to avoid log(0)
+          }
+        }
       },
       {
+        // Combine all factors into a final score
         $addFields: {
           relevanceScore: {
             $add: [
-              {
-                $cond: {
-                  if: { $eq: ["$category", sourceCategory] },
-                  then: 40,
-                  else: 0,
-                },
-              },
-              {
-                $multiply: [
-                  30,
-                  {
-                    $subtract: [
-                      1,
-                      {
-                        $min: [
-                          1,
-                          {
-                            $divide: [
-                              { $abs: { $subtract: ["$price", sourcePrice] } },
-                              { $max: [sourcePrice, 1] },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      },
-      { $sort: { relevanceScore: -1, downloadCount: -1 } },
-      { $limit: 20 },
-      {
-        $project: {
-          _id: 1,
-          filename: 1,
-          filedescription: 1,
-          category: 1,
-          price: 1,
-          slug: 1,
-          user: 1,
-          filetype: 1,
-          imageType: 1, // ✅ Include existing imageType
-          relevanceScore: 1,
-        },
-      },
-    ]);
+              { $multiply: ["$textScore", 50] }, // High weight for text
+              { $multiply: ["$categoryMatch", 20] },
+              { $multiply: ["$priceProximity", 15] },
+              { $multiply: ["$userMatch", 10] },
+              { $multiply: ["$normalizedPopularity", 5] } 
+            ]
+          }
+        }
+      }
+    ];
 
-    // 3️⃣ Add preview URLs (file.imageType already exists)
+    // --- 2️⃣ PRIMARY QUERY (Intelligent Text Search) ---
+    const textSearchPipeline = [
+      {
+        $match: {
+          _id: { $ne: sourceFile._id },
+          $text: { $search: searchTerms } // The "intelligent" part
+        }
+      },
+      ...getScoringPipeline(true), // Use scoring logic with textScore
+      { $sort: { relevanceScore: -1 } },
+      { $limit: MAX_RESULTS },
+    ];
+    
+    let relatedDocs = await File.aggregate(textSearchPipeline);
+
+    // --- 3️⃣ FALLBACK QUERY (If text search is weak) ---
+    // If we found few results, fill the list with category-based matches
+    if (relatedDocs.length < MIN_RESULTS) {
+      const remainingLimit = MAX_RESULTS - relatedDocs.length;
+      
+      // Get IDs of docs we already found, so we don't duplicate
+      const excludedIds = relatedDocs.map(doc => doc._id);
+      excludedIds.push(sourceFile._id);
+
+      const fallbackPipeline = [
+        {
+          $match: {
+            _id: { $nin: excludedIds }, // Exclude self and already-found docs
+            category: sourceCategory, // Broad match on category
+            price: { $ne: null }
+          }
+        },
+        ...getScoringPipeline(false), // Use scoring logic *without* textScore
+        { $sort: { relevanceScore: -1 } }, // Will sort by Price, User, Popularity
+        { $limit: remainingLimit }
+      ];
+
+      const fallbackDocs = await File.aggregate(fallbackPipeline);
+      // Combine the "smart" results with the "fallback" results
+      relatedDocs = [...relatedDocs, ...fallbackDocs];
+    }
+    
+    // --- 4️⃣ Add preview URLs (file.imageType already exists) ---
+    // This part is the same, but we need to project all necessary fields
+    
+    // We must manually add the $project stage *after* aggregation
+    // because .aggregate() doesn't support .lean() chaining
+    const finalDocs = await File.find({
+      _id: { $in: relatedDocs.map(d => d._id) }
+    }).lean();
+
+    // Create a map to re-apply the relevanceScore
+    const scoreMap = new Map(relatedDocs.map(doc => [doc._id.toString(), doc.relevanceScore]));
+
+    const filesWithData = finalDocs.map(file => ({
+      ...file,
+      relevanceScore: scoreMap.get(file._id.toString())
+    }));
+    
+    // Sort again, as .find() doesn't guarantee order
+    filesWithData.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
     const filesWithPreview = await Promise.all(
-      relatedDocs.map(async (file) => ({
+      filesWithData.map(async (file) => ({
         ...file,
-        previewUrl: await getValidFileUrl(file), // uses imageType if needed
+        previewUrl: await getValidFileUrl(file), 
       }))
     );
 
-    // 4️⃣ Send response
+    // --- 5️⃣ Send response ---
     res.json(filesWithPreview);
 
   } catch (error) {

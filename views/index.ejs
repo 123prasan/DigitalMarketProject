@@ -2,415 +2,487 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vidyari: Find Your Edge</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
-     crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
+    <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-<style>
-    /* 🎨 COLOR PALETTE & TYPOGRAPHY */
-    :root {
-        --font-main: 'Montserrat', sans-serif;
-        --color-bg: #f8f9fa;
-        --color-black: #000000;
-        --color-primary: #ff66a3;
-        --color-secondary: #4ade80; 
-        --color-accent: #ffd60a;   
-        --color-focus: #1ac2ff;    
-        --color-free: #30B45E;     
-        --color-paid: #E84C86;     
-        --color-detail-bar: #fff; 
-        --card-spacing: 0px;
-        --skeleton-base: #e0e0e0; /* Light gray for skeleton */
-        --skeleton-wave: rgba(255, 255, 255, 0.5); /* White highlight */
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <link rel="alternate icon" type="image/png" href="/images/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta property="og:title" content="Vidyari">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.vidyari.com/">
+    <meta property="og:image" content="https://www.vidyari.com/images/logo.svg">
+    <meta property="og:description" content="Vidyari - Study materials, courses, and resources for learners">
+    <meta property="og:site_name" content="Vidyari">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vidyari">
+    <meta name="twitter:description" content="Vidyari - Study materials, courses, and resources for learners">
+    <meta name="twitter:image" content="https://www.vidyari.com/images/logo.svg">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Vidyari",
+      "url": "https://www.vidyari.com",
+      "logo": "https://www.vidyari.com/images/logo.svg"
     }
-    body {
-        font-family: var(--font-main); 
-        background-color: var(--color-bg);
-        position: relative;
-        overflow-x: hidden;
-    }
-    body.search-modal-open, body.modal-is-open { overflow: hidden; }
+    </script>
 
-    /* --- BACKGROUND EFFECT --- */
-    .page-wrapper { position: relative; z-index: 1; }
-    body::before {
-        content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(135deg, rgba(255, 102, 163, 0.1), rgba(74, 222, 128, 0.1), rgba(255, 214, 10, 0.1), rgba(26, 194, 255, 0.1));
-        background-size: 400% 400%; animation: gradient-animation 25s ease infinite; z-index: -1; opacity: 0.9; 
-    }
-    @keyframes gradient-animation {
-        0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
-    }
-    .page-wrapper::after {
-        content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-        z-index: -1; pointer-events: none;
-    }
-    
-    /* --- HERO & MAIN WRAPPER --- */
-    .hero-section { 
-        padding: 4rem 2rem; text-align: center; 
-        background: var(--color-bg); border-bottom: 4px solid var(--color-black); 
-        box-shadow: 0 8px 0 var(--color-black); 
-    }
-    .hero-title { font-weight: 900; font-size: clamp(2.5rem, 5vw, 4rem); text-transform: uppercase; }
-    .full-width-container { padding: 40px 0; }
-    .brutalist-content-wrapper { border: 6px solid var(--color-black); }
-
-    /* --- SEARCH BAR STYLING --- */
-    .search-trigger { margin-top: 2rem; border: 3px solid var(--color-black); box-shadow: 6px 6px 0 var(--color-black); transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; background: #fff; padding: 1rem; cursor: pointer; text-align: left; }
-    .search-trigger:hover { transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--color-black); }
-    .search-trigger .search-icon { color: var(--color-black); font-size: 1.2rem; margin-right: 1rem; }
-    .search-trigger .placeholder-text { font-weight: 600; color: #777; }
-
-    /* --- FILTER BUTTON STYLING --- */
-    .filter-btn { margin-top: 1.5rem; border: 3px solid #000000; box-shadow: 3px 3px 0 #000000; font-weight: 700; background: var(--color-secondary); transition: all 0.3s ease; cursor: pointer; padding: 10px 20px; }
-    @media (max-width: 767px) {
-        .filter-btn-sticky { position: fixed; bottom: 20px; right: 20px; z-index: 1000; margin: 0; border-radius: 50px; padding: 15px 20px; box-shadow: 6px 6px 0 var(--color-black); font-size: 1.1rem; }
-    }
-    
-    /* --- FILE CARD STYLES --- */
-    .file-card-wrapper { transition: all 0.3s ease; height: 100%; padding: var(--card-spacing); }
-    .file-card-wrapper:hover { 
-        transform: translate(-4px, -4px); /* --- REFINED: Smaller translate --- */
-        box-shadow: 8px 8px 0 var(--color-focus); /* --- REFINED: Kept hover shadow strong --- */
-        z-index: 10; position: relative; 
-    }
-    /* --- REFINED: Note g-0 is removed in HTML, this rule is just for compatibility --- */
-    .row.g-0 { --bs-gutter-x: 0; --bs-gutter-y: 0; }
-    
-    .file-card {
-        width: 100%; height: 100%; 
-        border: 2px solid var(--color-black); 
-        box-shadow: 4px 4px 0 var(--color-black); /* --- REFINED: Smaller shadow for cleaner look --- */
-        overflow: hidden; display: flex; flex-direction: column; background: var(--color-primary); 
-    }
-
-    /* Image Area */
-    .file-card .card-img { 
-        flex-grow: 1; /* --- REFINED: Allows image to fill available space --- */
-        min-height: 150px; /* --- REFINED: Keeps a minimum size --- */
-        background-color: #fff; 
-        overflow: hidden; padding: 0; 
-        flex-shrink: 0; position: relative; 
-        /* --- REFINED: Removed aspect-ratio to allow flex-grow --- */
-    }
-    .file-card .card-img img { 
-        width: 100%; height: 100%; 
-        object-fit: contain; /* --- REFINED: Shows full image clearly --- */
-        transition: transform 0.3s ease;
-        /* --- REFINED: Removed pixelated rendering --- */
-    }
-    .file-card-wrapper:hover .card-img img {
-        transform: scale(1.05);
-    }
-    
-    /* Hover Copy Icon */
-    .copy-icon-hover {
-        position: absolute; bottom: 15px; right: 15px; color: var(--color-accent); font-size: 1.5rem;
-        padding: 5px; cursor: pointer; z-index: 10; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
-        text-shadow: 0 0 5px rgba(0,0,0,0.8);
-    }
-    .file-card-wrapper:hover .copy-icon-hover { opacity: 1; transform: scale(1.1); }
-    
-    /* Detail Bar */
-    .file-card .detail-bar {
-        min-height: 65px; /* --- REFINED: Taller to allow 2 lines of text --- */
-        padding: 8px 10px; 
-        border-top: 2px solid var(--color-black); 
-        background: var(--color-detail-bar); display: flex; align-items: center; 
-        flex-shrink: 0; gap: 5px;
-    }
-    .file-title-mobile { 
-        font-size: 0.9rem; font-weight: 700; 
-        white-space: normal; /* --- REFINED: Allows text to wrap --- */
-        word-break: break-word; /* --- REFINED: Breaks long words --- */
-        line-height: 1.3; /* --- REFINED: Tighter line height --- */
-        flex-grow: 1; 
-        margin-right: 5px; 
-        color: var(--color-black);
-        /* --- REFINED: Removed overflow and text-ellipsis --- */
-    }
-    .action-btn { display: inline-block; }
-    .mobile-vertical-action { display: none; text-align: center; flex-shrink: 0; line-height: 1; cursor: pointer; text-decoration: none; color: var(--color-black); }
-
-    @media (max-width: 767px) {
-        .file-card .detail-bar { 
-            justify-content: space-between; padding: 8px; 
-            min-height: 70px; /* --- REFINED: Taller for mobile layout --- */
+    <style>
+        :root {
+            --font-heading: 'Anton', 'Arial Black', sans-serif;
+            --font-body: 'Space Mono', monospace;
+            --color-bg: #ffffff;
+            --color-text: #000000;
+            --color-black: #000000;
+            --color-white: #ffffff;
+            --color-border: #000000;
+            --color-fieldset-bg: #f0f0f0;
+            --color-accent-1: #00cc00; /* Green */
+            --color-accent-2: #ff00ff; /* Pink */
+            --color-accent-3: #ff9900; /* Orange */
+            --border-width: 3px;
+            --border-style: var(--border-width) solid var(--color-border);
+            --transition-speed: 0.1s ease-out;
+            --shadow-offset: 5px;
+            --grid-gap: 1rem;
+            --skeleton-base: #e0e0e0;
+            --skeleton-wave: rgba(255, 255, 255, 0.6);
         }
-        .action-btn { display: none; }
-        .mobile-vertical-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 5px 0; }
-    }
-    
-    /* Standard Price Badge */
-    .price-badge { padding: 3px 6px; border: 2px solid var(--color-black); font-weight: 900; font-size: 0.6rem; box-shadow: 1px 1px 0 var(--color-black); text-transform: uppercase; }
-    .badge-free { background-color: var(--color-free); color: var(--color-bg); }
-    .badge-paid { background-color: var(--color-paid); color: var(--color-bg); }
-    .stats-overlay { position: absolute; top: 0; left: 0; right: 0; padding: 8px 10px; display: flex; justify-content: flex-start; font-size: 0.8rem; font-weight: 700; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0)); z-index: 5; }
-    .stats-item { display: flex; align-items: center; gap: 3px; }
-    .stats-item i { color: var(--color-accent); }
-    
-    /* --- PAGINATION --- */
-    .pagination-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; color: #000; border-top: 3px solid var(--color-black); padding-top: 20px; }
-    .pagination-btn { border: 3px solid #000; background: var(--color-black); color: #fff; padding: 8px 20px; font-size: 16px; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; }
-    .pagination-numbers { display: flex; gap: 5px; }
-    .page-number-btn { border: 2px solid var(--color-black); background: var(--color-bg); color: var(--color-black); padding: 4px 10px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; line-height: 1.5; }
-    .page-number-btn.active { background: var(--color-primary); color: white; border-color: var(--color-black); }
-    .page-number-btn:hover:not(.active) { background: var(--color-accent); }
-    @media (max-width: 767px) {
-        .pagination-controls { padding: 15px 5px; gap: 5px; }
-        .pagination-btn { padding: 5px 10px; font-size: 12px; }
-        .pagination-numbers { gap: 2px; }
-        .page-number-btn { padding: 3px 6px; font-size: 0.7rem; line-height: 1.2; }
-    }
 
-    /* ------------------------------------------- */
-    /* --- SKELETON LOADING STYLES (NEW) --- */
-    /* ------------------------------------------- */
-    @keyframes pulse-bg {
-        0% { background-color: var(--skeleton-base); }
-        50% { background-color: #f0f0f0; }
-        100% { background-color: var(--skeleton-base); }
-    }
-    .skeleton {
-        background-color: var(--skeleton-base);
-        animation: pulse-bg 1.5s infinite;
-        border-radius: 0; /* Keep the Brutalist sharp corners */
-    }
-    .skeleton-text {
-        height: 12px;
-        margin-bottom: 5px;
-        width: 80%;
-    }
-    .skeleton-short { width: 50%; }
+        /* --- Animations --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInUpStagger {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes blink-cursor { 50% { opacity: 0; } }
 
-    .skeleton-card .card-img {
-        background-color: var(--skeleton-base) !important;
-        position: relative;
-        overflow: hidden;
-        aspect-ratio: 1 / 1; /* --- REFINED: Give skeleton a fixed shape --- */
-    }
-    .skeleton-card .card-img::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(90deg, transparent, var(--skeleton-wave), transparent);
-        transform: translateX(-100%);
-        animation: wave-bg 1.5s infinite;
-    }
-    .skeleton-card .detail-bar {
-        background-color: #fff;
-        min-height: 65px; /* --- REFINED: Match real card --- */
-    }
-    @keyframes wave-bg {
-        100% { transform: translateX(100%); }
-    }
-    /* ------------------------------------------- */
+        /* --- Global Reset & Layout --- */
+        body {
+            font-family: var(--font-body); background-color: var(--color-bg); color: var(--color-text);
+            margin: 0; padding: 0; font-weight: 400; cursor: crosshair; overflow-x: hidden;
+            background-image:
+                linear-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.07) 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+        * { box-sizing: border-box; border-radius: 0 !important; }
+        h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 400; text-transform: uppercase; color: var(--color-text); margin: 0; padding: 0; }
+        a { color: var(--color-accent-2); transition: color var(--transition-speed); text-decoration: none; }
+        a:hover { color: var(--color-accent-1); text-decoration: underline; }
+
+        /* --- Page Container Grid --- */
+        .page-container { display: grid; grid-template-columns: 1fr; grid-template-areas: "main"; gap: var(--grid-gap); padding: var(--grid-gap); min-height: calc(100vh - 60px); }
+        @media (min-width: 992px) { .page-container { grid-template-columns: 320px 1fr; grid-template-areas: "sidebar main"; } }
+
+        /* --- Header --- */
+        .site-header { background-color: var(--color-bg); border-bottom: var(--border-width) solid var(--color-black); position: sticky; top: 0; z-index: 1020; padding: 0.75rem 1.5rem; }
+        .brand-name { font-family: var(--font-heading); font-size: 2rem; font-weight: 400; color: var(--color-black); line-height: 1; letter-spacing: -1px; text-shadow: 2px 2px 0 var(--color-accent-1); transition: text-shadow var(--transition-speed); display: inline-block; vertical-align: middle; }
+        .brand-name:hover { text-shadow: 4px 4px 0 var(--color-accent-2); }
+        .header-actions { gap: 0.75rem; }
+        .action-button { display: inline-flex; width: auto; align-items: center; justify-content: center; gap: 0.75rem; background: var(--color-accent-3); border: var(--border-width) solid var(--color-black); color: var(--color-black); font-family: var(--font-heading); padding: 8px 15px; font-size: 1rem; text-transform: uppercase; text-align: center; text-decoration: none; cursor: cell; transition: all var(--transition-speed); box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-black); }
+        .action-button:hover { transform: translate(2px, 2px); box-shadow: calc(var(--shadow-offset) - 2px) calc(var(--shadow-offset) - 2px) 0 var(--color-black); background: var(--color-bg); color: var(--color-accent-3); border-color: var(--color-accent-3); }
+        .action-button:active { transform: translate(var(--shadow-offset), var(--shadow-offset)); box-shadow: 0 0 0 var(--color-black); filter: brightness(1.1); } /* Enhanced Active State */
+        .action-button.icon-btn { width: 40px; height: 40px; padding: 0; font-size: 1.2rem; }
+        .header-icon-btn { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 2px solid var(--color-black); box-shadow: 3px 3px 0 var(--color-black); color: var(--color-black); cursor: pointer; transition: all var(--transition-speed); font-size: 1.1rem; }
+        .header-icon-btn:hover { background-color: var(--color-fieldset-bg); transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--color-black); }
+        .header-icon-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--color-black); background-color: var(--color-accent-1); }
+        .user-avatar { width: 40px; height: 40px; cursor: pointer; border: 2px solid var(--color-black); object-fit: cover; }
+
+        /* --- Main Content Area --- */
+        .main-content { grid-area: main; animation: fadeIn 0.5s 0.1s ease-out backwards; display: flex; flex-direction: column; }
+        .page-title { font-size: 2rem; color: var(--color-accent-2); border-bottom: 4px solid var(--color-accent-2); display: inline-block; margin-bottom: 1rem; }
+        #resultsCounter { font-family: var(--font-body); font-weight: 700; color: #555; margin-bottom: 1rem; font-size: 0.9rem; }
+
+        /* --- Integrated Search Bar --- */
+        .search-section { margin-bottom: 1.5rem; position: relative; }
+        .search-input-wrapper { display: flex; border: var(--border-style); box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-black); position: relative; transition: border-color var(--transition-speed), box-shadow var(--transition-speed); }
+        #inlineSearchInput { flex-grow: 1; border: none; outline: none; font-size: 1.1rem; font-family: var(--font-body); font-weight: 700; padding: 0.75rem 1rem; background: var(--color-white); color: var(--color-text); }
+        #inlineSearchInput::placeholder { color: #aaa; font-weight: 400; }
+        /* Focus State for Search Wrapper */
+        .search-input-wrapper:focus-within { border-color: var(--color-accent-2); box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-accent-2); }
+        /* Blinking Cursor Effect */
+        .search-input-wrapper::after { content: ''; display: block; width: var(--border-width); background-color: var(--color-accent-2); position: absolute; right: calc(40px + 1.2rem + 10px); /* Adjust based on button width/padding */ top: 25%; bottom: 25%; opacity: 0; animation: blink-cursor 1s step-end infinite; transition: opacity var(--transition-speed); }
+        .search-input-wrapper:focus-within::after { opacity: 1; }
+        #searchSubmitBtn { display: inline-flex; width: auto; align-items: center; justify-content: center; gap: 0.5rem; background: var(--color-accent-3); border: none; border-left: var(--border-style); color: var(--color-black); font-family: var(--font-heading); padding: 0 1.2rem; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: all var(--transition-speed); }
+        #searchSubmitBtn:hover { background: var(--color-black); color: var(--color-accent-3); }
+        /* Search Suggestions Dropdown */
+        #inlineSuggestions { display: none; position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: var(--color-bg); border: var(--border-style); box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-black); max-height: 300px; overflow-y: auto; z-index: 1000; padding: 0.5rem; /* Animation */ opacity: 0; transform: translateY(-10px); transition: opacity 0.2s ease-out, transform 0.2s ease-out; }
+        #inlineSuggestions.is-open { display: block; opacity: 1; transform: translateY(0); }
+        .suggestion-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; text-decoration: none; color: var(--color-black); transition: background-color 0.2s ease; border-bottom: 2px solid var(--color-fieldset-bg); cursor: pointer; }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background-color: var(--color-fieldset-bg); }
+        .suggestion-thumb { width: 35px; height: 35px; object-fit: cover; border: 2px solid var(--color-black); flex-shrink: 0; }
+        .suggestion-info { display: flex; flex-direction: column; overflow: hidden; }
+        .suggestion-title { font-family: var(--font-body); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.9rem; }
+        .suggestion-title strong { color: var(--color-accent-2); }
+        .suggestion-user { font-size: 0.75rem; color: #555; }
+
+        /* --- Filter Sidebar & Mobile Button --- */
+        .sidebar-filters { grid-area: sidebar; background: var(--color-bg); border-right: var(--border-width) solid var(--color-black); padding: 1.5rem; position: sticky; top: calc(60px + var(--grid-gap)); height: calc(100vh - 60px - 2 * var(--grid-gap)); overflow-y: auto; display: none; -ms-overflow-style: none; scrollbar-width: none; }
+        .sidebar-filters::-webkit-scrollbar { display: none; }
+        .filter-btn-mobile { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: auto; background: var(--color-accent-3); border: var(--border-width) solid var(--color-black); color: var(--color-black); font-family: var(--font-heading); padding: 8px 15px; font-size: 1rem; text-transform: uppercase; text-align: center; text-decoration: none; cursor: cell; transition: all var(--transition-speed); box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--color-black); }
+        .filter-btn-mobile .filter-count { background: var(--color-black); color: var(--color-white); font-family: var(--font-body); font-size: 0.8rem; font-weight: 700; padding: 0 5px; min-width: 20px; height: 20px; line-height: 18px; text-align: center; display: inline-block; }
+        .filter-btn-mobile:hover { transform: translate(2px, 2px); box-shadow: calc(var(--shadow-offset) - 2px) calc(var(--shadow-offset) - 2px) 0 var(--color-black); background: var(--color-bg); color: var(--color-accent-3); border-color: var(--color-accent-3); }
+        .filter-btn-mobile:active { transform: translate(var(--shadow-offset), var(--shadow-offset)); box-shadow: 0 0 0 var(--color-black); }
+        @media (min-width: 992px) { .sidebar-filters { display: block; } .filter-btn-mobile { display: none; } }
+        /* Filter Fieldset Styling */
+        .sidebar-filters fieldset, .filter-modal-body fieldset { border-color: var(--color-accent-1); margin-bottom: 1.5rem; background: var(--color-fieldset-bg); border: var(--border-style); padding: 1rem; transition: border-color 0.2s ease; }
+        .sidebar-filters fieldset.filter-active, .filter-modal-body fieldset.filter-active { border-color: var(--color-accent-2); /* Pink border if active */ border-width: 4px; }
+        .sidebar-filters legend, .filter-modal-body legend { color: var(--color-text); background: var(--color-fieldset-bg); font-family: var(--font-body); font-weight: 700; font-size: 0.9rem; padding: 0 0.5rem; margin-left: 0.5rem; text-transform: uppercase; transition: color 0.2s ease; }
+        .sidebar-filters fieldset.filter-active legend, .filter-modal-body fieldset.filter-active legend { color: var(--color-accent-2); }
+        .sidebar-filters .form-label, .filter-modal-body .form-label { font-family: var(--font-body); font-weight: 700; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--color-text); }
+        .sidebar-filters .form-select, .sidebar-filters .form-control, .filter-modal-body .form-select, .filter-modal-body .form-control { border: 2px solid var(--color-black) !important; box-shadow: none !important; background: var(--color-white); color: var(--color-black); font-family: var(--font-body); font-weight: 700; padding: 0.5rem 0.75rem; font-size: 0.9rem; }
+        .sidebar-filters .form-check-label, .filter-modal-body .form-check-label { font-family: var(--font-body); font-weight: 700; font-size: 0.9rem; }
+        /* Enhanced Checkbox Styling */
+        .sidebar-filters .form-check-input, .filter-modal-body .form-check-input { border: 2px solid var(--color-black) !important; box-shadow: none !important; margin-top: 0.2em; appearance: none; -webkit-appearance: none; width: 1.1em; height: 1.1em; position: relative; cursor: pointer; }
+        .sidebar-filters .form-check-input:checked, .filter-modal-body .form-check-input:checked { background-color: var(--color-accent-2); border-color: var(--color-black) !important; }
+        .sidebar-filters .form-check-input:checked::before, .filter-modal-body .form-check-input:checked::before { content: ''; display: block; width: 0.6em; height: 0.6em; background-color: var(--color-black); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .filter-group-range { display: flex; align-items: center; gap: 0.5rem; }
+        .sidebar-filters .action-button { width: 100%; margin-top: 0.5rem; }
+        #clearFiltersBtnSidebar, #clearFiltersBtnMobile { background-color: var(--color-fieldset-bg); color: var(--color-black); }
+        #clearFiltersBtnSidebar:hover, #clearFiltersBtnMobile:hover { background: #ccc; border-color: #ccc; color: var(--color-black); box-shadow: calc(var(--shadow-offset) - 2px) calc(var(--shadow-offset) - 2px) 0 var(--color-black); }
+        .filter-scrollable { max-height: 150px; overflow-y: auto; padding-right: 5px; }
+         /* Desktop Filter Count */
+         .sidebar-title-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 4px solid var(--color-accent-1); padding-bottom: 0.5rem; }
+         .sidebar-title { font-size: 1.8rem; color: var(--color-accent-1); margin: 0; padding: 0; border: none; }
+         #filterCountBadgeDesktop { /* Style similar to mobile badge */ background: var(--color-black); color: var(--color-white); font-family: var(--font-body); font-size: 0.9rem; font-weight: 700; padding: 2px 8px; display: inline-block; }
 
 
-    /* --- MODAL STYLES (Restored and Optimized) --- */
-    .chunky-btn { 
-        padding: 8px 15px; border: 3px solid var(--color-black); font-weight: 700; 
-        box-shadow: 3px 3px 0 var(--color-black); background: var(--color-accent); 
-        text-transform: uppercase; color: var(--color-black); transition: all 0.2s ease;
-    }
-    .chunky-btn#applyFiltersBtn { background: var(--color-secondary); }
-    .filter-group-range .form-control { border: 2px solid var(--color-black) !important; }
-    
-    /* Search Modal Animation/Styling */
-    .search-modal { 
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        background: var(--color-bg); z-index: 2000; display: flex; 
-        flex-direction: column; opacity: 0; visibility: hidden; 
-        transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; 
-    }
-    .search-modal.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
-    .search-modal__header { display: flex; align-items: center; padding: 1rem; border-bottom: 4px solid var(--color-black); flex-shrink: 0; }
-    .search-modal__input { 
-        flex-grow: 1; border: none; outline: none; 
-        font-size: clamp(1.2rem, 4vw, 2rem); font-weight: 700; 
-        padding: 0.5rem; background: transparent; 
-    }
-    .search-modal__close-btn { font-size: 2rem; font-weight: 700; background: none; border: none; cursor: pointer; }
-    .search-modal__body { 
-        padding: 1rem; 
-        overflow-y: auto; flex-grow: 1; 
-    }
-    .suggestion-item { 
-        display: flex; align-items: center; 
-        gap: 0.75rem; 
-        padding: 0.5rem; 
-        text-decoration: none; color: var(--color-black); 
-        border-radius: 8px; transition: background-color 0.2s ease; 
-    }
-    .suggestion-item:hover { background-color: #f0f0f0; }
-    
-    .suggestion-thumb {
-        width: 40px; 
-        height: 40px; 
-        object-fit: cover;
-        border-radius: 4px;
-        border: 2px solid var(--color-black);
-        flex-shrink: 0; 
-    }
-    .suggestion-info {
-        display: flex;
-        flex-direction: column;
-        overflow: hidden; 
-    }
-    .suggestion-title {
-        font-weight: 700;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .suggestion-user {
-        font-size: 0.8rem;
-        color: #555;
-    }
+        /* --- File Card Grid --- */
+        .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--grid-gap); margin-bottom: auto; }
+        .file-card { display: block; border: var(--border-style); text-decoration: none; color: var(--color-text); background: var(--color-bg); transition: all var(--transition-speed); position: relative; cursor: alias; height: 100%; display: flex; flex-direction: column; opacity: 0; /* Initial state for stagger */ }
+        .file-card.stagger-in { animation: slideInUpStagger 0.4s ease-out forwards; } /* Stagger animation */
+        .file-card:hover { transform: translate(3px, 3px); border-color: var(--color-accent-1); }
+        .card-image-container { display: block; width: 100%; aspect-ratio: 3 / 4; /* Book cover */ background-color: #eee; border-bottom: var(--border-style); padding: 5px; overflow: hidden; flex-shrink: 0; position: relative; } /* Added position relative */
+        .file-card:hover .card-image-container { border-bottom-color: var(--color-accent-1); }
+        .card-thumbnail { width: 100%; height: 100%; object-fit: cover; /* Fill container */ display: block; transition: transform 0.3s ease; }
+        .file-card:hover .card-thumbnail { transform: scale(1.03); }
+        /* Card Category Tag Overlay */
+        .card-category-tag { position: absolute; top: 0; left: 0; background: var(--color-accent-1); color: var(--color-black); font-family: var(--font-body); font-weight: 700; font-size: 0.7rem; padding: 2px 6px; border-right: var(--border-style); border-bottom: var(--border-style); z-index: 2; }
+        .file-card:hover .card-category-tag { background: var(--color-accent-1); border-color: var(--color-black); }
+        .card-info { padding: 0.6rem; background: var(--color-bg); flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 65px; }
+        .file-card:hover .card-info { background: var(--color-bg); }
+        .card-title { font-family: var(--font-body); font-weight: 700; font-size: 0.85rem; color: var(--color-text); text-transform: none; word-wrap: break-word; margin: 0 0 0.4rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; }
+        .file-card:hover .card-title { color: var(--color-text); }
+        .card-price { font-family: var(--font-body); font-weight: 700; font-size: 0.75rem; padding: 0.15rem 0.5rem; border: 2px solid var(--color-black); text-transform: uppercase; align-self: flex-start; }
+        .badge-free { background: var(--color-accent-1); color: var(--color-black); }
+        .badge-paid { background: var(--color-accent-2); color: var(--color-black); }
+        .file-card:hover .card-price { border-color: var(--color-black); }
 
-    /* Filter Modal Animation/Styling */
-    .filter-modal-overlay { 
-        position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); 
-        display: flex; align-items: center; justify-content: center; z-index: 3000; 
-        opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; 
-    }
-    .filter-modal-overlay.is-open { opacity: 1; visibility: visible; }
-    .filter-modal-content { 
-        background: var(--color-bg); border: 3px solid var(--color-black); 
-        box-shadow: 8px 8px 0 var(--color-black); width: 90%; max-width: 500px; 
-        transform: scale(0.95); transition: transform 0.3s ease; 
-    }
-    .filter-modal-overlay.is-open .filter-modal-content { transform: scale(1); }
-    .filter-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 3px solid var(--color-black); }
-    .filter-modal-title { font-weight: 900; text-transform: uppercase; font-size: 1.2rem; }
-    .filter-modal-close { font-size: 1.5rem; background: none; border: none; cursor: pointer; }
-    .filter-modal-body { padding: 1.5rem; max-height: 60vh; overflow-y: auto; }
-    .filter-modal-footer { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 1rem 1.5rem; border-top: 3px solid var(--color-black); }
-    
-    /* Filter Form Elements (Brutalist Look) */
-    .form-label { font-weight: 700; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 0.5rem; }
-    .form-select, .form-control { border: 2px solid var(--color-black) !important; box-shadow: none !important; border-radius: 0 !important; }
-    .form-check-input { border: 2px solid var(--color-black) !important; box-shadow: none !important; border-radius: 0 !important; }
-    .form-check-input:checked { background-color: var(--color-primary); border-color: var(--color-black) !important; }
-</style>
+        /* --- Skeleton Loading --- */
+         .skeleton-card .card-image-container { background-color: var(--skeleton-base) !important; border-bottom-color: var(--skeleton-base); position: relative; overflow: hidden; aspect-ratio: 3 / 4; }
+         .skeleton-card .card-image-container::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, var(--skeleton-wave), transparent); animation: wave-bg 1.5s infinite; }
+         .skeleton-card .card-info { background-color: var(--color-white); min-height: 65px; }
+         .skeleton-text { height: 10px; margin-bottom: 6px; width: 85%; background-color: var(--skeleton-base); animation: pulse-bg-light 1.5s infinite; }
+         .skeleton-price { height: 18px; width: 45px; background-color: var(--skeleton-base); animation: pulse-bg-light 1.5s infinite; }
+         /* ASCII Loader */
+         #loadingIndicator pre { font-family: var(--font-body); font-size: 1.5rem; color: var(--color-accent-1); animation: spin 1s linear infinite; display: inline-block; }
+
+
+        /* --- Pagination --- */
+        .pagination-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 2.5rem; color: var(--color-text); border-top: var(--border-width) solid var(--color-black); padding-top: 1.5rem; }
+        .pagination-btn { display: inline-flex; background: var(--color-accent-3); border: var(--border-width) solid var(--color-black); color: var(--color-black); font-family: var(--font-heading); padding: 8px 20px; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: all var(--transition-speed); box-shadow: 4px 4px 0 var(--color-black); }
+        .pagination-btn:hover { transform: translate(1px, 1px); box-shadow: 3px 3px 0 var(--color-black); background: var(--color-bg); color: var(--color-accent-3); border-color: var(--color-accent-3); }
+        .pagination-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--color-black); filter: brightness(1.1); }
+        .pagination-btn:disabled { background-color: #aaa; color: #555; border-color: #aaa; cursor: not-allowed; transform: none; box-shadow: none; }
+        .pagination-numbers { display: flex; gap: 5px; }
+        .page-number-btn { border: 2px solid var(--color-black); background: var(--color-bg); color: var(--color-black); padding: 4px 10px; font-size: 0.9rem; font-family: var(--font-body); font-weight: 700; cursor: pointer; transition: all var(--transition-speed); line-height: 1.5; }
+        .page-number-btn.active { background: var(--color-accent-2); color: var(--color-black); border-color: var(--color-black); }
+        .page-number-btn:hover:not(.active) { background: var(--color-fieldset-bg); }
+        .page-number-btn:active { transform: translate(2px, 2px); }
+        @media (max-width: 767px) { .pagination-controls { padding: 15px 5px; gap: 5px; } .pagination-btn { padding: 5px 10px; font-size: 0.8rem; box-shadow: 3px 3px 0 var(--color-black); } .pagination-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--color-black); } .pagination-numbers { gap: 2px; } .page-number-btn { padding: 3px 6px; font-size: 0.7rem; line-height: 1.2; } }
+
+        /* --- Modals --- */
+        /* Filter Modal */
+        .filter-modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 3000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+        .filter-modal-overlay.is-open { opacity: 1; visibility: visible; display: flex; }
+        .filter-modal-content { background: var(--color-bg); border: var(--border-style); box-shadow: 8px 8px 0 var(--color-black); width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s ease; color: var(--color-text); }
+        .filter-modal-overlay.is-open .filter-modal-content { transform: scale(1); }
+        .filter-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: var(--border-style); }
+        .filter-modal-title { font-family: var(--font-heading); font-weight: 400; text-transform: uppercase; font-size: 1.5rem; color: var(--color-accent-2); margin: 0; }
+        .filter-modal-close { font-size: 1.5rem; background: none; border: none; cursor: pointer; color: var(--color-text); font-weight: 700; }
+        .filter-modal-close:hover { color: var(--color-accent-2); }
+        .filter-modal-body { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
+        .filter-modal-footer { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 1rem 1.5rem; border-top: var(--border-style); }
+
+        /* Notification Modal */
+         .notification-modal-content { border: var(--border-style) !important; box-shadow: 8px 8px 0 var(--color-black) !important; border-radius: 0 !important; font-family: var(--font-body); background-color: var(--color-bg); overflow: hidden; color: var(--color-text); }
+         .modal-title-custom { font-family: var(--font-heading); font-size: 1.4rem; color: var(--color-accent-2); }
+         .notify-gif-wrapper { border-radius: 0; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; overflow: hidden; animation: pulse-border 1.5s infinite; margin: 0 auto 1rem auto; border: 2px solid var(--color-black); }
+         .animated-notification-gif { width: 100%; height: 100%; object-fit: cover; animation: slight-zoom 3s ease-in-out infinite alternate; }
+         .chunky-btn-animated { display: inline-flex; width: 100%; align-items: center; justify-content: center; gap: 0.75rem; background: var(--color-accent-1); border: var(--border-width) solid var(--color-black); color: var(--color-black); font-family: var(--font-heading); padding: 10px 20px; font-size: 1rem; text-transform: uppercase; text-align: center; text-decoration: none; cursor: pointer; transition: all var(--transition-speed); box-shadow: 4px 4px 0 var(--color-black); position: relative; overflow: hidden; }
+         .chunky-btn-animated:hover { transform: scale(1.02); box-shadow: 6px 6px 0 var(--color-black); }
+         .chunky-btn-animated::before { content: ''; position: absolute; top: 0; left: -75%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%); transform: skewX(-20deg); animation: shimmer 1.5s infinite; }
+         @keyframes shimmer { 0% { left: -75%; } 100% { left: 100%; } }
+         @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 255, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 255, 0); } }
+         @keyframes slight-zoom { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+         .notification-modal-content .btn-link { color: #777; font-family: var(--font-body); }
+
+         /* Bootstrap Modal Backdrop Fix */
+         .modal-backdrop { z-index: 1040 !important; }
+         .filter-modal-overlay { z-index: 1050 !important; }
+
+    </style>
 </head>
 <body>
     <div class="page-wrapper">
       <main>
-        <section class="hero-section">
-          <div class="container">
-            <h1 class="hero-title">Find Your Edge</h1>
-            <p class="lead fw-bold text-dark">The ultimate library of study documents, curated by students for students.</p>
-            <div class="search-wrapper mx-auto" style="max-width: 600px;">
-              <div class="search-trigger" id="searchTrigger">
-                <i class="fas fa-search search-icon"></i>
-                <span class="placeholder-text">Search Docs.</span>
-              </div>
-            </div>
-            <button class="filter-btn filter-btn-sticky" id="openFilterModalBtn">
-              <i class="fas fa-filter me-2"></i><span>Filter & Sort</span>
-            </button>
-          </div>
-        </section>
+        <div class="page-container">
 
-        <div class="full-width-container"> 
-            <div class="brutalist-content-wrapper">
-                <section>
-                    <h2 id="grid-main-title" class="container-title">Explore Featured Docs 🚀</h2>
-                    <p id="resultsCounter" class="mb-4" style="color: #000 !important; font-weight: 600;"></p>
-                    
-                    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="fileCards">
-                        </div>
-                    
-                    <div id="loadingIndicator" class="text-center py-5 my-5" style="display: none;">
-                        </div>
-                    <div id="noResultsBlock" class="text-center py-5 my-5" style="display: none;">
-                        <h4 class="mt-4 fw-bold" style="color:#000;">No Notes Found</h4>
-                        <p style="color:#333;">Try a different keyword or adjust your filters.</p>
+            <aside class="sidebar-filters d-none d-lg-block">
+                <div class="sidebar-title-wrapper">
+                    <h2 class="sidebar-title">Filters</h2>
+                    <span id="filterCountBadgeDesktop" style="display: none;">0</span>
+                </div>
+                <fieldset class="brutal-fieldset" id="fs-sort">
+                     <legend>// SORT BY</legend>
+                     <select class="form-select" id="sortBySidebar">
+                         <option value="popular">Popularity</option>
+                         <option value="newest">Newest</option>
+                         <option value="price-asc">Price: Low to High</option>
+                         <option value="price-desc">Price: High to Low</option>
+                     </select>
+                </fieldset>
+
+                <fieldset class="brutal-fieldset" id="fs-price">
+                    <legend>// PRICE</legend>
+                    <div class="filter-group-range mb-2">
+                      <input type="number" id="minPriceSidebar" class="form-control" placeholder="Min ₹" min="0">
+                      <span class="d-inline-block p-1 fw-bold">-</span>
+                      <input type="number" id="maxPriceSidebar" class="form-control" placeholder="Max ₹" min="0">
                     </div>
-                    
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="priceFilterSidebar" id="priceFreeOnlySidebar" value="free">
+                      <label class="form-check-label" for="priceFreeOnlySidebar">Show FREE only</label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="brutal-fieldset" id="fs-rating">
+                    <legend>// RATING</legend>
+                    <select class="form-select" id="minRatingSidebar">
+                        <option value="">Any Rating</option>
+                        <option value="4">4 Stars & Up</option>
+                        <option value="3">3 Stars & Up</option>
+                        <option value="2">2 Stars & Up</option>
+                    </select>
+                 </fieldset>
+
+                 <fieldset class="brutal-fieldset" id="fs-date">
+                     <legend>// UPLOAD DATE</legend>
+                     <select class="form-select" id="uploadDateSidebar">
+                         <option value="">Any Time</option>
+                         <option value="7">Last 7 Days</option>
+                         <option value="30">Last 30 Days</option>
+                         <option value="90">Last 90 Days</option>
+                     </select>
+                 </fieldset>
+
+                 <fieldset class="brutal-fieldset" id="fs-seller">
+                    <legend>// SELLER STATUS</legend>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="sellerStatusSidebar" id="verifiedOnlySidebar" value="verified">
+                      <label class="form-check-label" for="verifiedOnlySidebar">Verified Sellers Only</label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="brutal-fieldset" id="fs-category">
+                    <legend>// CATEGORY</legend>
+                    <div id="categoryFiltersSidebar" class="filter-scrollable">
+                        <p class="text-muted small">Loading categories...</p>
+                    </div>
+                </fieldset>
+
+                 <fieldset class="brutal-fieldset" id="fs-type">
+                    <legend>// FILE TYPE</legend>
+                    <div id="fileTypeFiltersSidebar" class="filter-scrollable">
+                         <p class="text-muted small">Loading types...</p>
+                    </div>
+                </fieldset>
+
+                <div class="mt-4 d-flex flex-column gap-2">
+                     <button type="button" class="action-button" id="applyFiltersBtnSidebar">Apply Filters</button>
+                     <button type="button" class="action-button" id="clearFiltersBtnSidebar">Clear All</button>
+                </div>
+            </aside>
+
+            <div class="main-content">
+                <section class="search-section">
+                    <div class="search-input-wrapper">
+                        <input type="search" id="inlineSearchInput" placeholder="Search Docs..." autocomplete="off">
+                        <button id="searchSubmitBtn" aria-label="Submit Search">
+                             <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                     <div id="inlineSuggestions">
+                        </div>
+                </section>
+
+                <section>
+                    <h1 class="page-title" id="grid-main-title">Explore Featured Docs 🚀</h1>
+                    <p id="resultsCounter" class="mb-4">Loading...</p>
+
+                    <button class="action-button filter-btn-mobile d-lg-none mb-3" id="openFilterModalBtnMobile">
+                        <i class="fas fa-filter"></i>
+                        <span>Filter</span>
+                        <span class="filter-count" id="filterCountBadgeMobile" style="display: none;">0</span>
+                    </button>
+
+                    <div class="file-grid" id="fileGrid">
+                        </div>
+
+                    <div id="loadingIndicator" class="text-center py-5 my-5" style="display: none;">
+                         <pre></pre>
+                    </div>
+                    <div id="noResultsBlock" class="text-center py-5 my-5" style="display: none;">
+                        <h4 class="mt-4" style="color: var(--color-black);">No Notes Found</h4>
+                        <p style="color:#555;">Try a different keyword or adjust your filters.</p>
+                    </div>
+
                     <div id="pagination-controls" class="pagination-controls" style="display: none;">
                         <button id="prevButton" class="pagination-btn">Previous</button>
-                        <div id="paginationNumbers" class="pagination-numbers">
-                            </div>
+                        <div id="paginationNumbers" class="pagination-numbers"></div>
                         <button id="nextButton" class="pagination-btn">Next</button>
                     </div>
                 </section>
             </div>
+
         </div>
       </main>
     </div>
 
-    <div class="search-modal" id="searchModal">
-        <div class="search-modal__header">
-            <input type="text" id="modalSearchInput" class="search-modal__input" placeholder="Search and press Enter..." autocomplete="off">
-            <button class="search-modal__close-btn" id="closeSearchModal">&times;</button>
-        </div>
-        <div class="search-modal__body" id="modalSuggestions"></div>
-    </div>
-    
     <div class="filter-modal-overlay" id="filterModal">
       <div class="filter-modal-content">
           <div class="filter-modal-header">
-            <h5 class="filter-modal-title" id="filterModalLabel">Filter & Sort</h5>
+            <h5 class="filter-modal-title">Filter & Sort</h5>
             <button type="button" class="filter-modal-close" id="closeFilterModalBtn">&times;</button>
           </div>
           <div class="filter-modal-body">
-            <div class="mb-4"><label for="sortBy" class="form-label">Sort by</label>
-                <select class="form-select" id="sortBy">
-                    <option value="popular">Popularity</option><option value="newest">Newest</option>
-                    <option value="price-asc">Price: Low to High</option><option value="price-desc">Price: High to Low</option>
-                </select>
-            </div>
-            <div class="mb-4"><label class="form-label">Price Range (₹)</label> 
-                <div class="filter-group-range">
-                    <input type="number" id="minPrice" class="form-control" placeholder="Min Price" min="0">
-                    <span class="d-inline-block p-2 fw-bold">-</span>
-                    <input type="number" id="maxPrice" class="form-control" placeholder="Max Price" min="0">
+             <fieldset class="brutal-fieldset" id="fs-sort-mobile">
+                 <legend>// SORT BY</legend>
+                 <select class="form-select" id="sortByMobile">
+                     <option value="popular">Popularity</option><option value="newest">Newest</option>
+                     <option value="price-asc">Price: Low to High</option><option value="price-desc">Price: High to Low</option>
+                 </select>
+            </fieldset>
+
+            <fieldset class="brutal-fieldset" id="fs-price-mobile">
+                <legend>// PRICE</legend>
+                <div class="filter-group-range mb-2">
+                  <input type="number" id="minPriceMobile" class="form-control" placeholder="Min ₹" min="0">
+                  <span class="d-inline-block p-1 fw-bold">-</span>
+                  <input type="number" id="maxPriceMobile" class="form-control" placeholder="Max ₹" min="0">
                 </div>
-                <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" name="priceFilter" id="priceFreeOnly" value="free">
-                    <label class="form-check-label" for="priceFreeOnly">Show FREE only (Overrides range)</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="priceFilterMobile" id="priceFreeOnlyMobile" value="free">
+                  <label class="form-check-label" for="priceFreeOnlyMobile">Show FREE only</label>
                 </div>
-            </div>
-            <div class="mb-4"><label class="form-label">Category</label><div id="categoryFilters"></div></div>
-            <div class="mb-4"><label class="form-label">File Type</label><div id="fileTypeFilters"></div></div>
+            </fieldset>
+
+            <fieldset class="brutal-fieldset" id="fs-rating-mobile">
+                <legend>// RATING</legend>
+                 <select class="form-select" id="minRatingMobile">
+                     <option value="">Any Rating</option>
+                     <option value="4">4 Stars & Up</option>
+                     <option value="3">3 Stars & Up</option>
+                     <option value="2">2 Stars & Up</option>
+                 </select>
+            </fieldset>
+
+             <fieldset class="brutal-fieldset" id="fs-date-mobile">
+                 <legend>// UPLOAD DATE</legend>
+                 <select class="form-select" id="uploadDateMobile">
+                     <option value="">Any Time</option>
+                     <option value="7">Last 7 Days</option>
+                     <option value="30">Last 30 Days</option>
+                     <option value="90">Last 90 Days</option>
+                 </select>
+            </fieldset>
+
+            <fieldset class="brutal-fieldset" id="fs-seller-mobile">
+                <legend>// SELLER STATUS</legend>
+                 <div class="form-check">
+                   <input class="form-check-input" type="checkbox" name="sellerStatusMobile" id="verifiedOnlyMobile" value="verified">
+                   <label class="form-check-label" for="verifiedOnlyMobile">Verified Sellers Only</label>
+                 </div>
+            </fieldset>
+
+
+            <fieldset class="brutal-fieldset" id="fs-category-mobile">
+                <legend>// CATEGORY</legend>
+                <div id="categoryFiltersMobile" class="filter-scrollable"><p class="text-muted small">Loading...</p></div>
+            </fieldset>
+
+            <fieldset class="brutal-fieldset" id="fs-type-mobile">
+                <legend>// FILE TYPE</legend>
+                <div id="fileTypeFiltersMobile" class="filter-scrollable"><p class="text-muted small">Loading...</p></div>
+            </fieldset>
+
           </div>
           <div class="filter-modal-footer">
-            <button type="button" class="chunky-btn" id="clearFiltersBtn">Clear</button>
-            <button type="button" class="chunky-btn" id="applyFiltersBtn">Apply</button>
+            <button type="button" class="action-button" id="clearFiltersBtnMobile">Clear</button>
+            <button type="button" class="action-button" id="applyFiltersBtnMobile">Apply</button>
           </div>
       </div>
     </div>
-    
+
+    <% if(isLoggedin) { %>
+    <div id="notifyModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content notification-modal-content">
+                 <div class="modal-header text-center justify-content-center p-4" style="border-bottom: none;">
+                    <div class="notify-gif-wrapper">
+                        <img src="/kiss.gif" alt="Excited notification" class="animated-notification-gif">
+                    </div>
+                </div>
+                <div class="modal-body text-center p-4 pt-2">
+                    <h5 class="modal-title-custom mb-3">Don't Miss a Beat! Get <span style="color: var(--color-accent-2);">Real-Time</span> Updates.</h5>
+                    <p class="mb-3" style="font-size: 0.95rem; color: #555;">
+                        Be the first to know about **new content**, **exclusive offers**, and **important news** – delivered instantly!
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center border-top-0 pt-0 pb-3">
+                    <button type="button" id="allowNotifications" class="chunky-btn-animated">
+                        Yes, Enable Notifications!
+                    </button>
+                    <button type="button" class="btn btn-sm btn-link" data-bs-dismiss="modal" style="font-size: 0.8rem; color: #777; text-decoration: none;">
+                        No thanks, maybe later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let allCategories = [], allFileTypes = [];
-            let currentPage = 1, filesPerPage = 32, totalPages = 1;
+            let currentPage = 1, filesPerPage = 50, totalPages = 1;
             let searchDebounceTimeout;
             let currentFilters = {
-                search: '', sort: 'popular', 
-                minPrice: null, maxPrice: null, isFree: false, 
-                categories: [], fileTypes: []
+                search: '', sort: 'popular', minPrice: null, maxPrice: null, isFree: false,
+                categories: [], fileTypes: [], minRating: '', uploadDate: '', verifiedOnly: false
             };
             let lastSuggestions = [];
+            let asciiLoaderInterval = null; // Interval timer for ASCII loader
 
-            // DOM Element References
-            const searchTrigger = document.getElementById('searchTrigger');
-            const searchModal = document.getElementById('searchModal');
-            const closeSearchModal = document.getElementById('closeSearchModal');
-            const modalSearchInput = document.getElementById('modalSearchInput');
-            const modalSuggestions = document.getElementById('modalSuggestions');
-            const fileCardsContainer = document.getElementById('fileCards');
+            // --- DOM Element References ---
+            const inlineSearchInput = document.getElementById('inlineSearchInput');
+            const searchSubmitBtn = document.getElementById('searchSubmitBtn');
+            const inlineSuggestionsContainer = document.getElementById('inlineSuggestions');
+            const fileCardsContainer = document.getElementById('fileGrid');
             const resultsCounter = document.getElementById('resultsCounter');
             const noResultsBlock = document.getElementById('noResultsBlock');
             const paginationControls = document.getElementById('pagination-controls');
@@ -418,163 +490,106 @@
             const nextButton = document.getElementById('nextButton');
             const paginationNumbersContainer = document.getElementById('paginationNumbers');
             const loadingIndicator = document.getElementById('loadingIndicator');
-            const filterModal = document.getElementById('filterModal');
+
+            // Filter Sidebar (Desktop)
+            const sidebarFilters = document.querySelector('.sidebar-filters'); // Reference to the sidebar itself
+            const filterCountBadgeDesktop = document.getElementById('filterCountBadgeDesktop'); // Desktop count
+            const sortBySidebar = document.getElementById('sortBySidebar');
+            const minPriceSidebar = document.getElementById('minPriceSidebar');
+            const maxPriceSidebar = document.getElementById('maxPriceSidebar');
+            const priceFreeOnlySidebar = document.getElementById('priceFreeOnlySidebar');
+            const minRatingSidebar = document.getElementById('minRatingSidebar');
+            const uploadDateSidebar = document.getElementById('uploadDateSidebar');
+            const verifiedOnlySidebar = document.getElementById('verifiedOnlySidebar');
+            const categoryFiltersSidebar = document.getElementById('categoryFiltersSidebar');
+            const fileTypeFiltersSidebar = document.getElementById('fileTypeFiltersSidebar');
+            const applyFiltersBtnSidebar = document.getElementById('applyFiltersBtnSidebar');
+            const clearFiltersBtnSidebar = document.getElementById('clearFiltersBtnSidebar');
+
+             // Filter Modal (Mobile)
+            const filterModalOverlay = document.getElementById('filterModal');
+            const openFilterModalBtnMobile = document.getElementById('openFilterModalBtnMobile');
+            const filterCountBadgeMobile = document.getElementById('filterCountBadgeMobile');
             const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
-            const applyFiltersBtn = document.getElementById('applyFiltersBtn');
-            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-            
-            const sortBy = document.getElementById('sortBy');
-            const minPriceInput = document.getElementById('minPrice');
-            const maxPriceInput = document.getElementById('maxPrice');
-            const priceFreeOnlyCheckbox = document.getElementById('priceFreeOnly');
-            
+            const applyFiltersBtnMobile = document.getElementById('applyFiltersBtnMobile');
+            const clearFiltersBtnMobile = document.getElementById('clearFiltersBtnMobile');
+            const sortByMobile = document.getElementById('sortByMobile');
+            const minPriceMobile = document.getElementById('minPriceMobile');
+            const maxPriceMobile = document.getElementById('maxPriceMobile');
+            const priceFreeOnlyMobile = document.getElementById('priceFreeOnlyMobile');
+            const minRatingMobile = document.getElementById('minRatingMobile');
+            const uploadDateMobile = document.getElementById('uploadDateMobile');
+            const verifiedOnlyMobile = document.getElementById('verifiedOnlyMobile');
+            const categoryFiltersMobile = document.getElementById('categoryFiltersMobile');
+            const fileTypeFiltersMobile = document.getElementById('fileTypeFiltersMobile');
+
             const slugifyJS = (text) => text ? text.toString().toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-') : 'file';
-            
-            // --- Helper Functions ---
-            
-            const copyFileLink = (url, element) => {
-                navigator.clipboard.writeText(window.location.origin + url).then(() => {
-                    const originalIconClass = element.className;
-                    element.classList.remove('fa-copy');
-                    element.classList.add('fa-check');
-                    element.style.color = 'var(--color-secondary)';
-                    
-                    setTimeout(() => {
-                        element.classList.remove('fa-check');
-                        element.classList.add('fa-copy');
-                        element.style.color = 'var(--color-accent)';
-                    }, 1500);
-                }).catch(err => {
-                    console.error('Could not copy text: ', err);
-                });
-            };
-            
-            // --- NEW: Skeleton Card HTML Function ---
-            const createSkeletonCardHTML = () => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'col';
-                wrapper.innerHTML = `
-                    <div class="file-card-wrapper">
-                        <div class="file-card skeleton-card">
-                            <div class="card-img skeleton">
-                                </div>
-                            <div class="detail-bar">
-                                <span class="file-title-mobile">
-                                    <div class="skeleton skeleton-text"></div>
-                                </span>
-                                <div class="action-group">
-                                    <span class="price-badge skeleton skeleton-short"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                return wrapper;
+
+            // --- ASCII Loader Functions ---
+            const startAsciiLoader = () => {
+                if (!loadingIndicator) return;
+                const loaderElement = loadingIndicator.querySelector('pre') || document.createElement('pre');
+                loadingIndicator.innerHTML = ''; // Clear previous content
+                loadingIndicator.appendChild(loaderElement);
+                loadingIndicator.style.display = 'block';
+                const frames = ['|', '/', '-', '\\'];
+                let frameIndex = 0;
+                loaderElement.textContent = frames[frameIndex];
+                clearInterval(asciiLoaderInterval); // Clear any existing interval
+                asciiLoaderInterval = setInterval(() => {
+                    frameIndex = (frameIndex + 1) % frames.length;
+                    loaderElement.textContent = frames[frameIndex];
+                }, 150); // Adjust speed as needed
             };
 
-            const renderSkeletonLoader = () => {
-                fileCardsContainer.innerHTML = '';
-                const numSkeletons = window.innerWidth >= 992 ? 8 : 6; // Show a reasonable number of placeholders
-                for (let i = 0; i < numSkeletons; i++) {
-                    fileCardsContainer.appendChild(createSkeletonCardHTML());
-                }
+            const stopAsciiLoader = () => {
+                 clearInterval(asciiLoaderInterval);
+                 if (loadingIndicator) loadingIndicator.style.display = 'none';
             };
-            // ------------------------------------------
+
 
             // --- File Card HTML Function ---
             const createFileCardHTML = (file) => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'col'; 
-                
-                const fileSlug = file.slug || slugifyJS(file.filename); 
-                const fileUrl = `/file/${fileSlug}/${file._id}`;
-                const filePermalink = fileUrl; 
+                 const wrapper = document.createElement('div'); // Grid item container
+                 const fileSlug = file.slug || slugifyJS(file.filename);
+                 const fileUrl = `/file/${fileSlug}/${file._id}`;
+                 const priceBadgeText = file.price > 0 ? `₹${file.price}` : `FREE`;
+                 const priceBadgeClass = file.price > 0 ? `badge-paid` : `badge-free`;
+                 const categoryTag = file.category || 'General'; // Get category or default
 
-                const priceText = file.price > 0 ? `BUY ₹${file.price}` : `FREE`; 
-                const priceBadgeText = file.price > 0 ? `₹${file.price}` : `FREE`;
-                const priceBadgeClass = file.price > 0 ? `badge-paid` : `badge-free`;
-                
-                wrapper.innerHTML = `
-                    <div class="file-card-wrapper">
-                        <div class="file-card">
-                            <a href="${fileUrl}" class="card-img" style="text-decoration: none;">
-                                <div class="stats-overlay">
-                                    <span class="stats-item" title="Creator"><i class="fas fa-user"></i> ${file.user || 'Admin'}</span>
-                                </div>
-                                
-                                <i class="fas fa-copy copy-icon-hover" data-url="${filePermalink}" title="Copy Link"></i>
-                                
-                                <img 
-                                  src="${file.previewUrl || './images/File_Demo.svg'}" 
-                                  alt="${file.filename}" 
+                 wrapper.innerHTML = `
+                     <a href="${fileUrl}" class="file-card">
+                         <div class="card-image-container">
+                              <span class="card-category-tag">${categoryTag}</span>
+                              <img
+                                  class="card-thumbnail"
+                                  src="${file.previewUrl || './images/File_Demo.svg'}"
+                                  alt="${file.filename}"
                                   loading="lazy"
                                   onerror="this.onerror=null; this.src='./images/File_Demo.svg';"
-                                >
-                            </a>
-                            
-                            <div class="detail-bar">
-                                <span class="file-title-mobile" title="${file.filename}">${file.filename}</span>
-                                
-                                <a href="${fileUrl}" class="action-btn" style="text-decoration:none;">${priceText}</a>
+                              >
+                         </div>
+                         <div class="card-info">
+                             <h3 class="card-title" title="${file.filename}">${file.filename}</h3>
+                             <span class="card-price ${priceBadgeClass}">${priceBadgeText}</span>
+                         </div>
+                     </a>
+                 `;
+                 return wrapper; // Return the outer div
+             };
 
-                                <a href="${fileUrl}" class="mobile-vertical-action">
-                                    <span class="price-badge ${priceBadgeClass}" style="margin-bottom: 2px;">${priceBadgeText}</span>
-                                    <span style="font-size:0.65rem; font-weight: 700;">GET/VIEW</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>`;
-
-                // Add event listener for the copy icon dynamically
-                const copyIcon = wrapper.querySelector('.copy-icon-hover');
-                if (copyIcon) {
-                    copyIcon.addEventListener('click', (e) => {
-                        e.preventDefault(); 
-                        e.stopPropagation(); 
-                        copyFileLink(copyIcon.dataset.url, copyIcon);
-                    });
-                }
-
-                return wrapper;
-            };
-
-            // --- Pagination Helper Function (Numbered Buttons) ---
+            // --- Pagination Helper Functions ---
             const updatePaginationControls = () => {
+                if (!paginationNumbersContainer || !paginationControls || !prevButton || !nextButton) return;
                 paginationNumbersContainer.innerHTML = '';
-                
                 if (totalPages > 1) {
-                    const maxButtons = window.innerWidth > 767 ? 5 : 3; 
+                    const maxButtons = window.innerWidth > 767 ? 5 : 3;
                     let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
                     let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-
-                    if (endPage - startPage + 1 < maxButtons) {
-                        startPage = Math.max(1, endPage - maxButtons + 1);
-                    }
-
-                    if (startPage > 1) {
-                        paginationNumbersContainer.appendChild(createPageButton(1));
-                        if (startPage > 2) {
-                            const dots = document.createElement('span');
-                            dots.textContent = '...';
-                            dots.className = 'px-1 fw-bold';
-                            paginationNumbersContainer.appendChild(dots);
-                        }
-                    }
-
-                    for (let i = startPage; i <= endPage; i++) {
-                        paginationNumbersContainer.appendChild(createPageButton(i));
-                    }
-
-                    if (endPage < totalPages) {
-                        if (endPage < totalPages - 1) {
-                            const dots = document.createElement('span');
-                            dots.textContent = '...';
-                            dots.className = 'px-1 fw-bold';
-                            paginationNumbersContainer.appendChild(dots);
-                        }
-                        paginationNumbersContainer.appendChild(createPageButton(totalPages));
-                    }
-                    
+                    if (endPage - startPage + 1 < maxButtons) startPage = Math.max(1, endPage - maxButtons + 1);
+                    if (startPage > 1) { paginationNumbersContainer.appendChild(createPageButton(1)); if (startPage > 2) paginationNumbersContainer.insertAdjacentHTML('beforeend', '<span class="px-1 fw-bold" style="color:var(--color-text);">...</span>'); }
+                    for (let i = startPage; i <= endPage; i++) paginationNumbersContainer.appendChild(createPageButton(i));
+                    if (endPage < totalPages) { if (endPage < totalPages - 1) paginationNumbersContainer.insertAdjacentHTML('beforeend', '<span class="px-1 fw-bold" style="color:var(--color-text);">...</span>'); paginationNumbersContainer.appendChild(createPageButton(totalPages)); }
                     paginationControls.style.display = 'flex';
                     prevButton.disabled = currentPage === 1;
                     nextButton.disabled = currentPage === totalPages;
@@ -584,236 +599,367 @@
             };
 
             const createPageButton = (pageNumber) => {
-                const btn = document.createElement('button');
-                btn.textContent = pageNumber;
-                btn.className = 'page-number-btn';
-                if (pageNumber === currentPage) {
-                    btn.classList.add('active');
-                }
-                btn.addEventListener('click', () => {
-                    if (pageNumber !== currentPage) {
-                        currentPage = pageNumber;
-                        fetchAndRenderFiles();
-                    }
-                });
+                const btn = document.createElement('button'); btn.textContent = pageNumber; btn.className = 'page-number-btn';
+                if (pageNumber === currentPage) btn.classList.add('active');
+                btn.addEventListener('click', () => { if (pageNumber !== currentPage) { currentPage = pageNumber; fetchAndRenderFiles(); } });
                 return btn;
             };
-            
-            // --- Search Suggestions Function ---
+
+            // --- Search Suggestions ---
             const updateSuggestions = async () => {
-                const query = modalSearchInput.value.trim();
-                currentFilters.search = query;
-                document.querySelector('#searchTrigger .placeholder-text').textContent = query || 'Search Docs.';
-                document.querySelector('#searchTrigger .placeholder-text').style.color = query ? 'var(--color-black)' : '#777';
+                 if (!inlineSearchInput || !inlineSuggestionsContainer) return;
+                 const query = inlineSearchInput.value.trim();
 
-                if (query.length < 2) {
-                    modalSuggestions.innerHTML = '<p style="font-weight: 600; color: #777; text-align: center;">Keep typing to see suggestions...</p>';
-                    lastSuggestions = [];
-                    return;
-                }
-                
-                try {
-                    const response = await fetch(`/suggestions?q=${encodeURIComponent(query)}`); 
-                    if (!response.ok) throw new Error('Suggestion fetch failed');
-                    const suggestions = await response.json();
-                    lastSuggestions = suggestions;
+                 if (query.length < 2) {
+                     inlineSuggestionsContainer.innerHTML = ''; inlineSuggestionsContainer.style.display = 'none'; inlineSuggestionsContainer.classList.remove('is-open'); lastSuggestions = []; return;
+                 }
 
-                    if (suggestions.length > 0) {
-                        modalSuggestions.innerHTML = suggestions.slice(0, 10).map(file => { 
-                            const fileUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
-                            const title = file.filename.replace(new RegExp(query, 'gi'), (match) => `<strong>${match}</strong>`); 
-                            return `<a href="${fileUrl}" class="suggestion-item">
-                                        <img src="${file.previewUrl || './images/File_Demo.svg'}" class="suggestion-thumb" alt="${file.filename}">
-                                        <div class="suggestion-info">
-                                            <span class="suggestion-title">${title}</span>
-                                            <span class="suggestion-user">by ${file.user || 'Admin'}</span>
-                                        </div>
-                                    </a>`;
-                        }).join('');
-                    } else {
-                        modalSuggestions.innerHTML = '<p style="font-weight: 600; color: #777; text-align: center;">No suggestions found. Press Enter to search anyway.</p>';
-                    }
-                } catch (error) {
-                    modalSuggestions.innerHTML = '<p style="font-weight: 600; color: var(--color-primary); text-align: center;">Could not fetch suggestions.</p>';
-                }
+                 try {
+                     const response = await fetch(`/suggestions?q=${encodeURIComponent(query)}`);
+                     if (!response.ok) throw new Error('Suggestion fetch failed');
+                     const suggestions = await response.json();
+                     lastSuggestions = suggestions;
+
+                     if (suggestions.length > 0) {
+                         inlineSuggestionsContainer.innerHTML = suggestions.slice(0, 5).map(file => {
+                             const fileUrl = `/file/${file.slug || slugifyJS(file.filename)}/${file._id}`;
+                             const title = file.filename.replace(new RegExp(query, 'gi'), (match) => `<strong>${match}</strong>`);
+                             return `<div class="suggestion-item" data-url="${fileUrl}" data-title="${file.filename}"> <img src="${file.previewUrl || './images/File_Demo.svg'}" class="suggestion-thumb" alt=""> <div class="suggestion-info"> <span class="suggestion-title">${title}</span> <span class="suggestion-user">by ${file.user || 'Admin'}</span> </div> </div>`;
+                         }).join('');
+                         inlineSuggestionsContainer.classList.add('is-open'); // Use class for animation
+                     } else {
+                         inlineSuggestionsContainer.innerHTML = '<p style="font-weight: 600; color: #777; text-align: center; padding: 0.5rem;">No suggestions found.</p>';
+                         inlineSuggestionsContainer.classList.add('is-open');
+                     }
+                 } catch (error) {
+                     console.error("Suggestion fetch error:", error);
+                     inlineSuggestionsContainer.innerHTML = '<p style="font-weight: 600; color: var(--color-accent-2); text-align: center; padding: 0.5rem;">Could not fetch suggestions.</p>';
+                     inlineSuggestionsContainer.classList.add('is-open');
+                 }
             };
-            
-            // --- Core Fetch and Render Function (Added Skeleton Loader Logic) ---
-            const fetchAndRenderFiles = async (isInitialLoad = false) => {
-                // 1. Show skeleton loader while fetching
-                fileCardsContainer.innerHTML = '';
-                renderSkeletonLoader();
-                noResultsBlock.style.display = 'none';
-                loadingIndicator.style.display = 'block'; 
 
-                document.getElementById('grid-main-title').textContent = currentFilters.search ? `Results for "${currentFilters.search}"` : "Explore Featured Docs 🚀";
+            // --- Core Fetch and Render ---
+             const fetchAndRenderFiles = async (isInitialLoad = false) => {
+                 //renderSkeletonLoader(); // Use ASCII loader instead
+                 startAsciiLoader();
+                 if(noResultsBlock) noResultsBlock.style.display = 'none'; // Hide no results initially
+                 if(paginationControls) paginationControls.style.display = 'none'; // Hide pagination
 
-                const params = new URLSearchParams({
-                    page: currentPage, limit: filesPerPage,
-                    search: currentFilters.search, sort: currentFilters.sort,
-                });
-                
-                if (currentFilters.isFree) {
-                    params.append('price', 'free');
-                } else {
-                    if (currentFilters.minPrice !== null) params.append('minPrice', currentFilters.minPrice);
-                    if (currentFilters.maxPrice !== null) params.append('maxPrice', currentFilters.maxPrice);
+                 const gridTitleEl = document.getElementById('grid-main-title');
+                 if(gridTitleEl) gridTitleEl.textContent = currentFilters.search ? `Results for "${currentFilters.search}"` : "Explore Featured Docs 🚀";
+
+                 const params = new URLSearchParams({ page: currentPage, limit: filesPerPage, search: currentFilters.search, sort: currentFilters.sort, minRating: currentFilters.minRating, dateRange: currentFilters.uploadDate, verified: currentFilters.verifiedOnly });
+                 if (currentFilters.isFree) { params.append('price', 'free'); } else { if (currentFilters.minPrice !== null) params.append('minPrice', currentFilters.minPrice); if (currentFilters.maxPrice !== null) params.append('maxPrice', currentFilters.maxPrice); }
+                 currentFilters.categories.forEach(cat => params.append('category', cat));
+                 currentFilters.fileTypes.forEach(type => params.append('fileType', type));
+
+                 try {
+                     const response = await fetch(`/files?${params.toString()}`);
+                     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                     const data = await response.json();
+
+                     stopAsciiLoader();
+                     if (!fileCardsContainer) return;
+                     fileCardsContainer.innerHTML = ''; // Clear ASCII loader/previous results
+
+
+                     if (isInitialLoad) {
+                         const populateFilters = (catContainer, typeContainer, cats, types) => {
+                             if (catContainer) { catContainer.innerHTML = cats.length > 0 ? cats.map(cat => `<div class="form-check"><input class="form-check-input category-checkbox" type="checkbox" value="${cat.toLowerCase()}" id="cat-${cat.toLowerCase().replace(/\s+/g, '-')}${catContainer === categoryFiltersMobile ? '-mobile' : ''}"><label class="form-check-label" for="cat-${cat.toLowerCase().replace(/\s+/g, '-')}${catContainer === categoryFiltersMobile ? '-mobile' : ''}">${cat}</label></div>`).join('') : '<p class="text-muted small">No categories.</p>'; }
+                             if (typeContainer) { typeContainer.innerHTML = types.length > 0 ? types.map(type => `<div class="form-check"><input class="form-check-input file-type-checkbox" type="checkbox" value="${type.toLowerCase()}" id="type-${type.toLowerCase()}${typeContainer === fileTypeFiltersMobile ? '-mobile' : ''}"><label class="form-check-label" for="type-${type.toLowerCase()}${typeContainer === fileTypeFiltersMobile ? '-mobile' : ''}">${type.toUpperCase()}</label></div>`).join('') : '<p class="text-muted small">No file types.</p>'; }
+                         };
+                         if (data.allCategories) allCategories = data.allCategories; else allCategories = [];
+                         if (data.allFileTypes) allFileTypes = data.allFileTypes; else allFileTypes = [];
+                         populateFilters(categoryFiltersSidebar, fileTypeFiltersSidebar, allCategories, allFileTypes);
+                         populateFilters(categoryFiltersMobile, fileTypeFiltersMobile, allCategories, allFileTypes);
+                     }
+
+                     if (!data.files || data.files.length === 0) {
+                         if(noResultsBlock) noResultsBlock.style.display = 'block';
+                         if(resultsCounter) resultsCounter.textContent = 'No results found.'; totalPages = 1;
+                         updatePaginationControls(); return;
+                     }
+
+                     // Apply stagger animation
+                     data.files.forEach((file, index) => {
+                        const cardWrapper = createFileCardHTML(file);
+                        const cardElement = cardWrapper.querySelector('.file-card'); // Get the card itself
+                        if (cardElement) {
+                             cardElement.style.animationDelay = `${index * 50}ms`; // Stagger delay
+                             cardElement.classList.add('stagger-in');
+                        }
+                        fileCardsContainer.appendChild(cardWrapper);
+                     });
+
+                     totalPages = data.totalPages || 1;
+                     updatePaginationControls();
+                     if(resultsCounter) resultsCounter.textContent = `Showing ${data.files.length} of ${data.totalFiles} results`;
+                     // Scroll handled by browser on navigation/pagination usually, can re-add if needed
+
+                 } catch (error) {
+                     stopAsciiLoader();
+                     if(fileCardsContainer) fileCardsContainer.innerHTML = '';
+                     if(noResultsBlock) { /* Error display */ }
+                     console.error('Fetch error:', error);
+                 }
+             };
+
+             // --- Filter Application Logic (Unified & Updated) ---
+             const applyFilters = (source = 'sidebar') => {
+                 const sortEl = source === 'sidebar' ? sortBySidebar : sortByMobile;
+                 const minEl = source === 'sidebar' ? minPriceSidebar : minPriceMobile;
+                 const maxEl = source === 'sidebar' ? maxPriceSidebar : maxPriceMobile;
+                 const freeEl = source === 'sidebar' ? priceFreeOnlySidebar : priceFreeOnlyMobile;
+                 const ratingEl = source === 'sidebar' ? minRatingSidebar : minRatingMobile;
+                 const dateEl = source === 'sidebar' ? uploadDateSidebar : uploadDateMobile;
+                 const verifiedEl = source === 'sidebar' ? verifiedOnlySidebar : verifiedOnlyMobile;
+                 const catSelector = source === 'sidebar' ? '#categoryFiltersSidebar .category-checkbox:checked' : '#categoryFiltersMobile .category-checkbox:checked';
+                 const typeSelector = source === 'sidebar' ? '#fileTypeFiltersSidebar .file-type-checkbox:checked' : '#fileTypeFiltersMobile .file-type-checkbox:checked';
+
+                 if(sortEl) currentFilters.sort = sortEl.value;
+                 if(freeEl) currentFilters.isFree = freeEl.checked;
+                 if (currentFilters.isFree) { currentFilters.minPrice = null; currentFilters.maxPrice = null; if(minEl) minEl.value = ''; if(maxEl) maxEl.value = ''; }
+                 else { const min = minEl ? parseFloat(minEl.value) : NaN; const max = maxEl ? parseFloat(maxEl.value) : NaN; currentFilters.minPrice = isNaN(min) ? null : min; currentFilters.maxPrice = isNaN(max) ? null : max; }
+                 if(ratingEl) currentFilters.minRating = ratingEl.value;
+                 if(dateEl) currentFilters.uploadDate = dateEl.value;
+                 if(verifiedEl) currentFilters.verifiedOnly = verifiedEl.checked;
+                 currentFilters.categories = Array.from(document.querySelectorAll(catSelector)).map(cb => cb.value);
+                 currentFilters.fileTypes = Array.from(document.querySelectorAll(typeSelector)).map(cb => cb.value);
+
+                 currentPage = 1;
+                 fetchAndRenderFiles();
+                 updateFilterVisualState(); // Update badges and fieldset styles
+                 if (source === 'mobile' && filterModalOverlay) { filterModalOverlay.classList.remove('is-open'); document.body.classList.remove('modal-is-open'); }
+                 syncFilterInputs();
+             };
+
+             const clearFilters = (source = 'sidebar') => {
+                 const sortEl = source === 'sidebar' ? sortBySidebar : sortByMobile;
+                 const minEl = source === 'sidebar' ? minPriceSidebar : minPriceMobile;
+                 const maxEl = source === 'sidebar' ? maxPriceSidebar : maxPriceMobile;
+                 const freeEl = source === 'sidebar' ? priceFreeOnlySidebar : priceFreeOnlyMobile;
+                 const ratingEl = source === 'sidebar' ? minRatingSidebar : minRatingMobile;
+                 const dateEl = source === 'sidebar' ? uploadDateSidebar : uploadDateMobile;
+                 const verifiedEl = source === 'sidebar' ? verifiedOnlySidebar : verifiedOnlyMobile;
+                 const catSelector = source === 'sidebar' ? '#categoryFiltersSidebar .category-checkbox' : '#categoryFiltersMobile .category-checkbox';
+                 const typeSelector = source === 'sidebar' ? '#fileTypeFiltersSidebar .file-type-checkbox' : '#fileTypeFiltersMobile .file-type-checkbox';
+
+                 if(sortEl) sortEl.value = 'popular'; if(minEl) minEl.value = ''; if(maxEl) maxEl.value = ''; if(freeEl) freeEl.checked = false;
+                 if(ratingEl) ratingEl.value = ''; if(dateEl) dateEl.value = ''; if(verifiedEl) verifiedEl.checked = false;
+                 document.querySelectorAll(catSelector).forEach(cb => cb.checked = false); document.querySelectorAll(typeSelector).forEach(cb => cb.checked = false);
+
+                 currentFilters = { search: currentFilters.search, sort: 'popular', minPrice: null, maxPrice: null, isFree: false, categories: [], fileTypes: [], minRating: '', uploadDate: '', verifiedOnly: false };
+                 currentPage = 1;
+                 fetchAndRenderFiles();
+                 updateFilterVisualState();
+                 if (source === 'mobile' && filterModalOverlay) { filterModalOverlay.classList.remove('is-open'); document.body.classList.remove('modal-is-open'); }
+                 syncFilterInputs();
+             };
+
+            // Updates filter count badges and fieldset active states
+            const updateFilterVisualState = () => {
+                 let count = 0;
+                 const checkFilter = (value, elementId) => {
+                     const fieldset = document.getElementById(elementId);
+                     if (value) {
+                         count++;
+                         if(fieldset) fieldset.classList.add('filter-active');
+                     } else {
+                         if(fieldset) fieldset.classList.remove('filter-active');
+                     }
+                 };
+                 const checkListFilter = (list, elementId) => {
+                      const fieldset = document.getElementById(elementId);
+                      if (list.length > 0) {
+                         count += list.length; // Count each item
+                         if(fieldset) fieldset.classList.add('filter-active');
+                     } else {
+                          if(fieldset) fieldset.classList.remove('filter-active');
+                     }
+                 };
+
+                 // Check each filter type
+                 checkFilter(currentFilters.sort !== 'popular', 'fs-sort'); // Sort counts if not default
+                 checkFilter(currentFilters.minPrice !== null || currentFilters.maxPrice !== null || currentFilters.isFree, 'fs-price');
+                 checkFilter(currentFilters.minRating !== '', 'fs-rating');
+                 checkFilter(currentFilters.uploadDate !== '', 'fs-date');
+                 checkFilter(currentFilters.verifiedOnly, 'fs-seller');
+                 checkListFilter(currentFilters.categories, 'fs-category');
+                 checkListFilter(currentFilters.fileTypes, 'fs-type');
+
+                // Update mobile badge
+                 if (filterCountBadgeMobile) {
+                    if (count > 0) { filterCountBadgeMobile.textContent = count; filterCountBadgeMobile.style.display = 'inline-block'; }
+                    else { filterCountBadgeMobile.style.display = 'none'; }
+                 }
+                 // Update desktop badge (if element exists)
+                if (filterCountBadgeDesktop) {
+                    if (count > 0) { filterCountBadgeDesktop.textContent = count; filterCountBadgeDesktop.style.display = 'inline-block'; }
+                    else { filterCountBadgeDesktop.style.display = 'none'; }
                 }
 
-                currentFilters.categories.forEach(cat => params.append('category', cat));
-                currentFilters.fileTypes.forEach(type => params.append('fileType', type));
+                 // Apply active class to mobile fieldsets as well
+                 checkFilter(currentFilters.sort !== 'popular', 'fs-sort-mobile');
+                 checkFilter(currentFilters.minPrice !== null || currentFilters.maxPrice !== null || currentFilters.isFree, 'fs-price-mobile');
+                 checkFilter(currentFilters.minRating !== '', 'fs-rating-mobile');
+                 checkFilter(currentFilters.uploadDate !== '', 'fs-date-mobile');
+                 checkFilter(currentFilters.verifiedOnly, 'fs-seller-mobile');
+                 checkListFilter(currentFilters.categories, 'fs-category-mobile');
+                 checkListFilter(currentFilters.fileTypes, 'fs-type-mobile');
+            };
 
-                try {
-                    const response = await fetch(`/files?${params.toString()}`);
-                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-                    const data = await response.json();
-                    
-                    // 2. Clear skeleton and show actual results
-                    fileCardsContainer.innerHTML = ''; 
-                    loadingIndicator.style.display = 'none';
+            const syncFilterInputs = () => {
+                 if (sortBySidebar) sortBySidebar.value = currentFilters.sort;
+                 if (minPriceSidebar) minPriceSidebar.value = currentFilters.minPrice ?? '';
+                 if (maxPriceSidebar) maxPriceSidebar.value = currentFilters.maxPrice ?? '';
+                 if (priceFreeOnlySidebar) priceFreeOnlySidebar.checked = currentFilters.isFree;
+                 if (minRatingSidebar) minRatingSidebar.value = currentFilters.minRating;
+                 if (uploadDateSidebar) uploadDateSidebar.value = currentFilters.uploadDate;
+                 if (verifiedOnlySidebar) verifiedOnlySidebar.checked = currentFilters.verifiedOnly;
+                 document.querySelectorAll('#categoryFiltersSidebar .category-checkbox').forEach(cb => cb.checked = currentFilters.categories.includes(cb.value));
+                 document.querySelectorAll('#fileTypeFiltersSidebar .file-type-checkbox').forEach(cb => cb.checked = currentFilters.fileTypes.includes(cb.value));
 
-                    if (isInitialLoad) {
-                        if (data.allCategories) {
-                            allCategories = data.allCategories;
-                            const categoryContainer = document.getElementById('categoryFilters');
-                            if(categoryContainer) {
-                                categoryContainer.innerHTML = allCategories.map(cat => `<div class="form-check"><input class="form-check-input category-checkbox" type="checkbox" value="${cat.toLowerCase()}" id="cat-${cat.toLowerCase().replace(/\s+/g, '-')}"><label class="form-check-label" for="cat-${cat.toLowerCase().replace(/\s+/g, '-')}">${cat}</label></div>`).join('');
-                            }
-                        }
-                        if (data.allFileTypes) {
-                            allFileTypes = data.allFileTypes;
-                            const fileTypeContainer = document.getElementById('fileTypeFilters');
-                            if(fileTypeContainer) {
-                                fileTypeContainer.innerHTML = allFileTypes.map(type => `<div class="form-check"><input class="form-check-input file-type-checkbox" type="checkbox" value="${type.toLowerCase()}" id="type-${type.toLowerCase()}"><label class="form-check-label" for="type-${type.toLowerCase()}">${type.toUpperCase()}</label></div>`).join('');
-                            }
-                        }
-                    }
-
-                    if (!data.files || data.files.length === 0) {
-                        noResultsBlock.style.display = 'block';
-                        resultsCounter.textContent = 'No results found.';
-                        totalPages = 1;
-                        updatePaginationControls();
-                        return;
-                    }
-
-                    data.files.forEach(file => fileCardsContainer.appendChild(createFileCardHTML(file)));
-                    
-                    totalPages = data.totalPages || 1;
-                    updatePaginationControls();
-                    resultsCounter.textContent = `Showing ${data.files.length} of ${data.totalFiles} results`;
-                    
-                    if (!isInitialLoad) {
-                        window.scrollTo({ top: fileCardsContainer.offsetTop - 150, behavior: 'smooth' });
-                    }
-
-                } catch (error) {
-                    fileCardsContainer.innerHTML = '';
-                    loadingIndicator.style.display = 'none';
-                    noResultsBlock.style.display = 'block';
-                    noResultsBlock.querySelector('h4').textContent = 'Error Loading Files';
-                    noResultsBlock.querySelector('p').textContent = 'Could not connect to the server or API error.';
-                    console.error('Fetch error:', error);
-                }
+                 if (sortByMobile) sortByMobile.value = currentFilters.sort;
+                 if (minPriceMobile) minPriceMobile.value = currentFilters.minPrice ?? '';
+                 if (maxPriceMobile) maxPriceMobile.value = currentFilters.maxPrice ?? '';
+                 if (priceFreeOnlyMobile) priceFreeOnlyMobile.checked = currentFilters.isFree;
+                 if (minRatingMobile) minRatingMobile.value = currentFilters.minRating;
+                 if (uploadDateMobile) uploadDateMobile.value = currentFilters.uploadDate;
+                 if (verifiedOnlyMobile) verifiedOnlyMobile.checked = currentFilters.verifiedOnly;
+                 document.querySelectorAll('#categoryFiltersMobile .category-checkbox').forEach(cb => cb.checked = currentFilters.categories.includes(cb.value));
+                 document.querySelectorAll('#fileTypeFiltersMobile .file-type-checkbox').forEach(cb => cb.checked = currentFilters.fileTypes.includes(cb.value));
             };
 
             // --- Event Listeners ---
-            searchTrigger.addEventListener('click', () => {
-                document.getElementById('modalSuggestions').innerHTML = ''; 
-                modalSearchInput.value = currentFilters.search;
-                searchModal.classList.add('is-open');
-                document.body.classList.add('modal-is-open');
-                modalSearchInput.focus();
-                if (modalSearchInput.value) updateSuggestions();
-            });
-            closeSearchModal.addEventListener('click', () => {
-                searchModal.classList.remove('is-open');
-                document.body.classList.remove('modal-is-open');
-            });
-            
-            modalSearchInput.addEventListener('input', () => {
-                clearTimeout(searchDebounceTimeout);
-                searchDebounceTimeout = setTimeout(updateSuggestions, 300);
-            });
-            
-            modalSearchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    currentFilters.search = modalSearchInput.value.trim();
-                    document.querySelector('#searchTrigger .placeholder-text').textContent = currentFilters.search || 'Search Docs.';
-                    currentPage = 1;
-                    closeAndResetSearch(); 
-                    fetchAndRenderFiles();
-                }
-            });
-            
-            const closeAndResetSearch = () => {
-                searchModal.classList.remove('is-open');
-                document.body.classList.remove('modal-is-open');
-            };
-            
-            document.getElementById('openFilterModalBtn').addEventListener('click', () => {
-                minPriceInput.value = currentFilters.minPrice;
-                maxPriceInput.value = currentFilters.maxPrice;
-                priceFreeOnlyCheckbox.checked = currentFilters.isFree;
-                sortBy.value = currentFilters.sort;
+            if (inlineSearchInput) {
+                inlineSearchInput.addEventListener('input', () => { clearTimeout(searchDebounceTimeout); searchDebounceTimeout = setTimeout(updateSuggestions, 300); });
+                inlineSearchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); currentFilters.search = inlineSearchInput.value.trim(); currentPage = 1; if(inlineSuggestionsContainer) inlineSuggestionsContainer.classList.remove('is-open'); fetchAndRenderFiles(); } });
+                document.addEventListener('click', (e) => { if (inlineSuggestionsContainer && !inlineSearchInput.contains(e.target) && !inlineSuggestionsContainer.contains(e.target)) { inlineSuggestionsContainer.classList.remove('is-open'); } });
+            }
+            if (searchSubmitBtn) { searchSubmitBtn.addEventListener('click', (e) => { e.preventDefault(); currentFilters.search = inlineSearchInput ? inlineSearchInput.value.trim() : ''; currentPage = 1; if(inlineSuggestionsContainer) inlineSuggestionsContainer.classList.remove('is-open'); fetchAndRenderFiles(); }); }
+             if(inlineSuggestionsContainer) { inlineSuggestionsContainer.addEventListener('click', (e) => { const suggestionItem = e.target.closest('.suggestion-item'); if (suggestionItem) { e.preventDefault(); const url = suggestionItem.dataset.url; window.location.href = url; } }); } // Navigate directly on suggestion click
+             if(openFilterModalBtnMobile) openFilterModalBtnMobile.addEventListener('click', () => { syncFilterInputs(); if(filterModalOverlay) filterModalOverlay.classList.add('is-open'); document.body.classList.add('modal-is-open'); });
+             if(closeFilterModalBtn) closeFilterModalBtn.addEventListener('click', () => { if(filterModalOverlay) filterModalOverlay.classList.remove('is-open'); document.body.classList.remove('modal-is-open'); });
+             if(applyFiltersBtnSidebar) applyFiltersBtnSidebar.addEventListener('click', () => applyFilters('sidebar'));
+             if(clearFiltersBtnSidebar) clearFiltersBtnSidebar.addEventListener('click', () => clearFilters('sidebar'));
+             if(applyFiltersBtnMobile) applyFiltersBtnMobile.addEventListener('click', () => applyFilters('mobile'));
+             if(clearFiltersBtnMobile) clearFiltersBtnMobile.addEventListener('click', () => clearFilters('mobile'));
+             if(filterModalOverlay) filterModalOverlay.addEventListener('click', (e) => { if (e.target === filterModalOverlay) { filterModalOverlay.classList.remove('is-open'); document.body.classList.remove('modal-is-open'); }});
+            if(prevButton) prevButton.addEventListener('click', () => { if (currentPage > 1) { currentPage--; fetchAndRenderFiles(); } });
+            if(nextButton) nextButton.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; fetchAndRenderFiles(); } });
 
-                document.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = currentFilters.categories.includes(cb.value));
-                document.querySelectorAll('.file-type-checkbox').forEach(cb => cb.checked = currentFilters.fileTypes.includes(cb.value));
-
-                filterModal.classList.add('is-open');
-                document.body.classList.add('modal-is-open');
-            });
-            closeFilterModalBtn.addEventListener('click', () => {
-                filterModal.classList.remove('is-open');
-                document.body.classList.remove('modal-is-open');
-            });
-            
-            applyFiltersBtn.addEventListener('click', () => {
-                currentFilters.sort = sortBy.value;
-                
-                currentFilters.isFree = priceFreeOnlyCheckbox.checked;
-                if (currentFilters.isFree) {
-                    currentFilters.minPrice = null;
-                    currentFilters.maxPrice = null;
-                } else {
-                    const min = parseFloat(minPriceInput.value);
-                    const max = parseFloat(maxPriceInput.value);
-                    currentFilters.minPrice = isNaN(min) ? null : min;
-                    currentFilters.maxPrice = isNaN(max) ? null : max;
-                }
-
-                currentFilters.categories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
-                currentFilters.fileTypes = Array.from(document.querySelectorAll('.file-type-checkbox:checked')).map(cb => cb.value);
-                
-                currentPage = 1;
-                fetchAndRenderFiles();
-                closeFilterModalBtn.click();
-            });
-
-            clearFiltersBtn.addEventListener('click', () => {
-                sortBy.value = 'popular'; minPriceInput.value = ''; maxPriceInput.value = '';
-                priceFreeOnlyCheckbox.checked = false; 
-                document.querySelectorAll('.category-checkbox:checked').forEach(cb => cb.checked = false);
-                document.querySelectorAll('.file-type-checkbox:checked').forEach(cb => cb.checked = false);
-                currentFilters = {
-                    search: '', sort: 'popular', minPrice: null, maxPrice: null, isFree: false, categories: [], fileTypes: []
-                };
-                currentPage = 1;
-                document.querySelector('#searchTrigger .placeholder-text').textContent = 'Search Docs.';
-                fetchAndRenderFiles();
-                closeFilterModalBtn.click();
-            });
-            
-            // Pagination Event Listeners
-            prevButton.addEventListener('click', () => { if (currentPage > 1) { currentPage--; fetchAndRenderFiles(); } });
-            nextButton.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; fetchAndRenderFiles(); } });
-            
-            // Initial load (render skeleton first)
-            renderSkeletonLoader();
+            // Initial load
             fetchAndRenderFiles(true);
+            updateFilterVisualState(); // Initial visual state check
         });
     </script>
+
+    <% if(isLoggedin) { %>
+     <div id="notifyModal" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content notification-modal-content">
+                 <div class="modal-header text-center justify-content-center p-4" style="border-bottom: none;">
+                    <div class="notify-gif-wrapper">
+                        <img src="/kiss.gif" alt="Excited notification" class="animated-notification-gif">
+                    </div>
+                </div>
+                <div class="modal-body text-center p-4 pt-2">
+                    <h5 class="modal-title-custom mb-3">Don't Miss a Beat! Get <span style="color: var(--color-accent-2);">Real-Time</span> Updates.</h5>
+                    <p class="mb-3" style="font-size: 0.95rem; color: #555;">
+                        Be the first to know about **new content**, **exclusive offers**, and **important news** – delivered instantly!
+                    </p>
+                </div>
+                <div class="modal-footer justify-content-center border-top-0 pt-0 pb-3">
+                    <button type="button" id="allowNotifications" class="chunky-btn-animated">
+                        Yes, Enable Notifications!
+                    </button>
+                    <button type="button" class="btn btn-sm btn-link" data-bs-dismiss="modal" style="font-size: 0.8rem; color: #777; text-decoration: none;">
+                        No thanks, maybe later
+                    </button>
+                </div>
+            </div>
+        </div>
+     </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-messaging.js";
+
+        console.log('Firebase script module started.');
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyCewKKaSGXDAiBPQRYqOtFJ_DV6A-OborA",
+          authDomain: "vidyari-notification.firebaseapp.com",
+          projectId: "vidyari-notification",
+          storageBucket: "vidyari-notification.appspot.com",
+          messagingSenderId: "1061582963767",
+          appId: "1:1061582963767:web:f97da1a865022e6d172bb2"
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig); console.log('Firebase App initialized.');
+            const messaging = getMessaging(app); console.log('Firebase Messaging initialized.');
+
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                .then(reg => console.log('SW registered:', reg))
+                .catch(err => console.error('SW registration failed:', err));
+            } else { console.warn('Service workers not supported.'); }
+
+            const modalElement = document.getElementById('notifyModal');
+            const allowBtn = document.getElementById('allowNotifications');
+            let notifyModal;
+
+            if (modalElement && allowBtn) {
+                 notifyModal = new bootstrap.Modal(modalElement, {backdrop: 'static', keyboard: false});
+                 console.log('Bootstrap Modal instance created.');
+
+                 console.log('Current Notification permission:', Notification.permission);
+                 if (Notification.permission === 'default') {
+                    console.log('Showing notification modal.');
+                    try { notifyModal.show(); } catch(modalShowError) { console.error("Error showing Bootstrap modal:", modalShowError); }
+                 } else if (Notification.permission === 'denied') { console.warn('Notification permission denied.'); }
+                 else { console.log('Notification permission already granted.'); }
+
+                 allowBtn.addEventListener('click', async () => {
+                  console.log('Allow button clicked.');
+                  const hideModal = () => { if (notifyModal) { try { notifyModal.hide(); } catch (hideError) { console.error("Error hiding modal:", hideError); }}};
+                  try {
+                    console.log('Requesting notification permission...');
+                    const permission = await Notification.requestPermission(); console.log('Permission result:', permission);
+                    if (permission !== 'granted') { console.log('Permission not granted.'); hideModal(); return; }
+
+                    console.log('Permission granted. Getting FCM token...');
+                    const vapidKey = "BHsfuRpT67uCNIc_2p6h5cj0Ze6y09HsR0ZTZsvHaWDz9OjFLC6k2LlVWW7nWZuuBX90IAjwTMSFgQ5Mz2V_pt8";
+                    const token = await getToken(messaging, { vapidKey });
+
+                    if (!token) { console.error('No FCM token received.'); throw new Error('No token generated.'); }
+                    console.log('FCM Token received:', token);
+                    console.log('Registering token with server...');
+
+                    const response = await fetch('/register-token', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ userId: '<%=uId%>', token })
+                    });
+                     if (!response.ok) { const errorBody = await response.text(); console.error('Failed to register token:', response.status, errorBody); throw new Error(`Server registration failed: ${response.status}`); }
+                     console.log('Token registered successfully.');
+                     hideModal();
+                  } catch (err) { console.error('Error during notification setup:', err); alert(`Could not enable notifications. Error: ${err.message}`); hideModal(); }
+                 });
+                 console.log('Event listener attached.');
+            } else {
+                 if (!modalElement) console.error('#notifyModal not found!');
+                 if (!allowBtn) console.error('#allowNotifications not found!');
+            }
+
+            onMessage(messaging, payload => {
+              console.log('💬 Foreground message received:', payload);
+              if (payload.notification) { alert(`Notification: ${payload.notification.title}\n${payload.notification.body}`); }
+            });
+
+        } catch (initError) { console.error('FATAL: Firebase init error:', initError); alert('Error setting up notifications.'); }
+    <% } %>
+    </script>
+
 </body>
 </html>
 <%-include("footer")%>

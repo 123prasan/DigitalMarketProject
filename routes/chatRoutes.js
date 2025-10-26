@@ -6,7 +6,7 @@ const UserMessage = require('../models/UserMessage'); // Ensure path is correct
 // const { requireAuth } = require('../middleware/auth'); // Assuming your auth middleware is here
 const authenticateJWT_user=require('../routes/authentication/jwtAuth.js');
 const requireAuth=require('../routes/authentication/reaquireAuth.js');
-
+const sendNotification=require("../test.js")
 // --- WebSocket Setup ---
 
 // This map will store WebSocket connections, mapping userId to the WebSocket object.
@@ -14,70 +14,108 @@ const clients = new Map();
 
 // --- WebSocket Initialization Function ---
 // This function will be called from your main server.js file
+// NOTE: 'clients', 'UserMessage', 'sendNotification', and 'imageUrl'
+// are assumed to be defined/imported in the scope where initializeChat is called.
+// For example:
+// const clients = new Map();
+// const UserMessage = require('./models/UserMessage');
+// const sendNotification = require('./utils/sendNotification');
+// const imageUrl = 'default_image_url';
+
 const initializeChat = (server) => {
+    // 1. WebSocket Server Initialization
     const wss = new WebSocket.Server({ server });
-    console.log("user websocket1")
-wss.on('connection', (ws, req) => {
-    let userId;
-    console.log("✅ WebSocket client connected:", req.socket.remoteAddress);
+    console.log("WebSocket server initialized."); // More descriptive log
 
-    ws.on('message', async (msg) => {
-        const data = JSON.parse(msg);
+    wss.on('connection', (ws, req) => {
+        let userId;
+        // NOTE: req.socket.remoteAddress might be null/incorrect in proxy environments (e.g., behind Nginx/Load Balancer)
+        console.log("✅ WebSocket client connected:", req.socket.remoteAddress || 'Unknown Address');
 
-        switch (data.type) {
-            case 'register':
-                userId = data.userId;
-                clients.set(userId, ws);
-                console.log(`User ${userId} connected to chat.`);
-                break;
+        // 2. Message Handler
+        ws.on('message', async (msg) => { // IMPORTANT: 'message' handler is now async
+            const data = JSON.parse(msg);
 
-case 'private_message':
-    const { recipientId, text } = data;
-    const recipientSocket = clients.get(recipientId);
-    const conversationId = [userId, recipientId].sort().join('--');
+            switch (data.type) {
+                case 'register':
+                    userId = data.userId;
+                    clients.set(userId, ws);
+                    console.log(`User ${userId} connected to chat.`);
+                    break;
 
-    const UserMessageToSave = new UserMessage({
-        conversationId,
-        senderId: userId,
-        recipientId,
-        text,
+                case 'private_message':
+                    const { recipientId, text } = data;
+                    const recipientSocket = clients.get(recipientId);
+                    // Standard way to create a consistent conversation ID
+                    const conversationId = [userId, recipientId].sort().join('--');
+
+                    const UserMessageToSave = new UserMessage({
+                        conversationId,
+                        senderId: userId,
+                        recipientId,
+                        text,
+                    });
+
+                    try {
+                        // --- CRITICAL FIX: AWAITING ASYNCHRONOUS NOTIFICATIONS ---
+                        const notifications = [
+                            sendNotification({
+                                userId: recipientId,
+                                title: `Message from ${userId}`, // Added sender to title
+                                body: `${text}`,
+                                image: imageUrl,
+                                target_link: `/user/chat/${userId}`, // Link to sender's chat
+                                notification_type: "Message",
+                            })
+                        ];
+
+                        // Run and wait for all notification attempts
+                        const results = await Promise.allSettled(notifications);
+
+                        results.forEach((result) => {
+                            if (result.status === "rejected") {
+                                // Log the failure but allow the message save/send to proceed
+                                console.error(`⚠️ Notification failed:`, result.reason);
+                            }
+                        });
+                        // --------------------------------------------------------
+
+                        // Save message to database
+                        await UserMessageToSave.save();
+
+                        // Send message to recipient if they are currently connected
+                        if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
+                            recipientSocket.send(JSON.stringify({
+                                type: 'private_message',
+                                senderId: userId,
+                                text,
+                            }));
+                        }
+                    } catch (error) {
+                        console.error("❌ Error saving/sending chat message:", error);
+                    }
+                    break;
+
+                case 'typing':
+                    const recipientSocket2 = clients.get(data.recipientId);
+                    if (recipientSocket2 && recipientSocket2.readyState === WebSocket.OPEN) {
+                        recipientSocket2.send(JSON.stringify({
+                            type: 'typing',
+                            senderId: userId
+                        }));
+                    }
+                    break;
+            }
+        });
+
+        // 3. Close Handler
+        ws.on('close', () => {
+            if (userId) {
+                clients.delete(userId);
+                console.log(`User ${userId} disconnected from chat.`);
+            }
+        });
     });
-
-    try {
-        await UserMessageToSave.save();
-        if (recipientSocket && recipientSocket.readyState === WebSocket.OPEN) {
-            recipientSocket.send(JSON.stringify({
-                type: 'private_message',
-                senderId: userId,
-                text,
-            }));
-        }
-    } catch (error) {
-        console.error("Error saving/sending chat message:", error);
-    }
-    break;
-
-
-            case 'typing':
-                const recipientSocket2 = clients.get(data.recipientId);
-                if (recipientSocket2 && recipientSocket2.readyState === WebSocket.OPEN) {
-                    recipientSocket2.send(JSON.stringify({
-                        type: 'typing',
-                        senderId: userId
-                    }));
-                }
-                break;
-        }
-    });
-
-    ws.on('close', () => {
-        if (userId) {
-            clients.delete(userId);
-            console.log(`User ${userId} disconnected from chat.`);
-        }
-    });
-});
-
 };
 
 // --- HTTP Routes ---

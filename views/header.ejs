@@ -943,60 +943,163 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-messaging.js";
 
+    console.log('Firebase script module started.'); // Log 1
+
+    // IMPORTANT: Consider moving sensitive keys to environment variables in production
     const firebaseConfig = {
       apiKey: "AIzaSyCewKKaSGXDAiBPQRYqOtFJ_DV6A-OborA",
       authDomain: "vidyari-notification.firebaseapp.com",
       projectId: "vidyari-notification",
-      storageBucket: "vidyari-notification.firebasestorage.app",
+      storageBucket: "vidyari-notification.appspot.com", // Double-check this in your Firebase console
       messagingSenderId: "1061582963767",
       appId: "1:1061582963767:web:f97da1a865022e6d172bb2"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const messaging = getMessaging(app);
+    try {
+        // --- Initialize Firebase ---
+        const app = initializeApp(firebaseConfig);
+        console.log('Firebase App initialized.'); // Log 2
+        const messaging = getMessaging(app);
+        console.log('Firebase Messaging initialized.'); // Log 3
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/firebase-messaging-sw.js')
-        .then(reg => console.log('SW registered:'))
-        .catch(err => console.error('SW registration failed:'));
-    }
-
-    const modalElement = document.getElementById('notifyModal');
-    const notifyModal = new bootstrap.Modal(modalElement, {backdrop: 'static', keyboard: false});
-    const allowBtn = document.getElementById('allowNotifications');
-    
-    if (Notification.permission === 'default') {
-      notifyModal.show();
-    } 
-
-    allowBtn.addEventListener('click', async () => {
-      try {
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-           notifyModal.hide();
-           return;
+        // --- Register Service Worker ---
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/firebase-messaging-sw.js')
+            .then(reg => console.log('SW registered:', reg)) // Log 4
+            .catch(err => console.error('SW registration failed:', err));
+        } else {
+            console.warn('Service workers not supported in this browser.');
         }
 
-        const vapidKey = "BHsfuRpT67uCNIc_2p6h5cj0Ze6y09HsR0ZTZsvHaWDz9OjFLC6k2LlVWW7nWZuuBX90IAjwTMSFgQ5Mz2V_pt8";
-        const token = await getToken(messaging, { vapidKey });
-        if (!token) throw new Error('No token generated.');
+        // --- Get DOM Elements ---
+        const modalElement = document.getElementById('notifyModal');
+        const allowBtn = document.getElementById('allowNotifications');
+        let notifyModal; // Declare here to be accessible in the listener
 
-        await fetch('/register-token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: '<%=uId%>', token }) 
+        // --- Check if Elements Exist ---
+        if (!modalElement) {
+            console.error('Modal element #notifyModal not found!');
+            return; // Stop execution if modal is missing
+        }
+        if (!allowBtn) {
+            console.error('Allow button #allowNotifications not found!');
+            return; // Stop execution if button is missing
+        }
+
+        console.log('Modal and Button elements found.'); // Log 5
+
+        // --- Initialize Bootstrap Modal ---
+        try {
+            notifyModal = new bootstrap.Modal(modalElement, {backdrop: 'static', keyboard: false});
+            console.log('Bootstrap Modal instance created.'); // Log 6
+        } catch (bootstrapError) {
+             console.error('Error initializing Bootstrap modal:', bootstrapError);
+             return; // Stop if Bootstrap fails
+        }
+
+
+        // --- Check Initial Permission & Show Modal ---
+        console.log('Current Notification permission:', Notification.permission); // Log 7
+        if (Notification.permission === 'default') {
+          console.log('Showing notification modal.'); // Log 8
+          // Use try-catch for modal show in case Bootstrap isn't fully ready (unlikely with DOMContentLoaded)
+          try {
+              notifyModal.show();
+          } catch(modalShowError) {
+              console.error("Error showing Bootstrap modal:", modalShowError);
+          }
+        } else if (Notification.permission === 'denied') {
+            console.warn('Notification permission was previously denied by the user.');
+            // No modal needed, maybe inform user how to re-enable in browser settings if desired
+        } else {
+             console.log('Notification permission is already granted.');
+             // No modal needed, could attempt to get/register token if not already done
+        }
+
+
+        // --- Attach Event Listener to Button ---
+        allowBtn.addEventListener('click', async () => {
+          console.log('Allow button clicked.'); // Log 9: Check if listener fires
+          // Ensure modal instance exists before trying to hide
+          const hideModal = () => {
+              if (notifyModal) {
+                  try {
+                      notifyModal.hide();
+                  } catch (hideError) {
+                      console.error("Error hiding modal:", hideError);
+                  }
+              }
+          };
+
+          try {
+            console.log('Requesting notification permission...'); // Log 10
+            const permission = await Notification.requestPermission();
+            console.log('Permission result:', permission); // Log 11
+
+            if (permission !== 'granted') {
+               console.log('Permission not granted.'); // Log 12
+               hideModal(); // Hide modal if permission denied
+               // Optionally show a message explaining why notifications won't work
+               return;
+            }
+
+            console.log('Permission granted. Getting FCM token...'); // Log 13
+            // IMPORTANT: Replace with your actual VAPID key from Firebase Project Settings > Cloud Messaging > Web config
+            const vapidKey = "BHsfuRpT67uCNIc_2p6h5cj0Ze6y09HsR0ZTZsvHaWDz9OjFLC6k2LlVWW7nWZuuBX90IAjwTMSFgQ5Mz2V_pt8";
+            const token = await getToken(messaging, { vapidKey });
+
+            if (!token) {
+                console.error('No FCM token received. Ensure SW is registered and VAPID key is correct.'); // Log 14
+                throw new Error('No token generated.');
+            }
+
+            console.log('FCM Token received:', token); // Log 15
+            console.log('Registering token with server...'); // Log 16
+
+            // --- Send Token to Your Server ---
+            const response = await fetch('/register-token', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              // Ensure uId is correctly passed from your server-side template
+              body: JSON.stringify({ userId: '<%=uId%>', token })
+            });
+
+             if (!response.ok) {
+                 const errorBody = await response.text(); // Get potential error details from server
+                 console.error('Failed to register token on server:', response.status, errorBody); // Log 17
+                 throw new Error(`Server registration failed: ${response.status}`);
+             }
+
+             console.log('Token registered successfully on server.'); // Log 18
+             hideModal(); // Hide modal on success
+
+          } catch (err) {
+            console.error('Error during notification setup:', err); // Log 19
+            // Optionally show a user-friendly error message
+            alert(`Could not enable notifications. Please ensure you are using HTTPS and check browser console for details. Error: ${err.message}`);
+             hideModal(); // Hide modal on error
+          }
         });
 
-        notifyModal.hide();
-      } catch (err) {
-        notifyModal.hide();
-      }
-    });
+        console.log('Event listener attached to allow button.'); // Log 20
 
-    onMessage(messaging, payload => {
-      console.log('💬 Foreground message:', payload);
-    });
+        // --- Handle Foreground Messages ---
+        onMessage(messaging, payload => {
+          console.log('💬 Foreground message received:', payload);
+          // You MUST show a notification here manually for foreground messages.
+          // Example: Display a custom in-app notification banner/toast
+          // Or, use the Notification API if appropriate (check document focus)
+          if (payload.notification) {
+              // Example: Basic alert, replace with better UI
+               alert(`Notification: ${payload.notification.title}\n${payload.notification.body}`);
+          }
+        });
 
+    } catch (initError) {
+        console.error('FATAL: Error initializing Firebase or core script:', initError);
+        // Optionally inform the user that notifications cannot be set up
+        alert('There was an error setting up notifications. Please try refreshing the page.');
+    }
 <% } %>
 </script>
 

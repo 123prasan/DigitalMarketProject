@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,376 +8,639 @@
     <meta name="description" content="View <%= userData.fullname || userData.username %>'s profile on Vidyari. Access shared docs, courses, followers, and explore their content.">
     <meta name="author" content="Vidyari">
     <link rel="canonical" href="https://vidyari.com/profile/<%= userData.username %>">
-    
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="<%= userData.fullname || userData.username %> on Vidyari">
+    <meta property="og:description" content="<%- userData.bio || 'View ' + (userData.fullname || userData.username) + '\'s profile on Vidyari.' %>">
+    <meta property="og:url" content="https://vidyari.com/profile/<%= userData.username %>">
+    <meta property="og:image" content="<%= userData.profilePicUrl %>">
+    <meta property="og:type" content="profile">
+    <meta property="og:site_name" content="Vidyari">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= userData.fullname || userData.username %> on Vidyari">
+    <meta name="twitter:description" content="<%- userData.bio || 'View ' + (userData.fullname || userData.username) + '\'s profile on Vidyari.' %>">
+    <meta name="twitter:image" content="<%= userData.profilePicUrl %>">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "<%= userData.fullname || userData.username %>",
+      "alternateName": "<%= userData.username %>",
+      "url": "https://vidyari.com/profile/<%= userData.username %>",
+      "image": "<%= userData.profilePicUrl %>",
+      "description": "<%- JSON.stringify(userData.bio || 'Digital explorer navigating the vast realms of code and creativity.').slice(1, -1) %>",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://vidyari.com/profile/<%= userData.username %>"
+      }
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <meta name="robots" content="index, follow">
-
     <style>
-        /* From Uiverse.io by vinodjangid07 */ 
-.chatBtn {
-  width: 55px;
-  height: 55px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: none;
-  background-color: #FFE53B;
-  background-image: linear-gradient(147deg, #FFE53B, #FF2525,#FFE53B);
-  cursor: pointer;
-  padding-top: 3px;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.164);
-  position: relative;
-  background-size: 300%;
-  background-position: left;
-  transition-duration: 1s;
-}
-
-.tooltip {
-  position: absolute;
-  top: -40px;
-  opacity: 0;
-  background-color: rgb(255, 180, 82);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition-duration: .5s;
-  pointer-events: none;
-  letter-spacing: 0.5px;
-}
-
-.chatBtn:hover .tooltip {
-  opacity: 1;
-  transition-duration: .5s;
-}
-
-.chatBtn:hover {
-  background-position: right;
-  transition-duration: 1s;
-}
-        .profile-page-wrapper {
-            --font-main: 'Montserrat', sans-serif;
-            --color-bg: #fff;
+        :root {
+            --font-heading: 'Anton', 'Arial Black', sans-serif;
+            --font-body: 'Space Mono', monospace;
+            --color-bg: #111111;
+            --color-text: #ffffff;
             --color-black: #000000;
-            --color-primary: #ff66a3; /* Pink */
-            --color-secondary: #4ade80; /* Green */
-            --color-accent: #ffd60a;   /* Yellow */
-            --color-focus: #1ac2ff;   /* Blue */
-            --transition: 0.2s ease;
+            --color-border: #ffffff;
+            /* Multi-Color Palette */
+            --color-accent-1: #00ff00; /* Electric Green - Primary UI */
+            --color-accent-2: #ff00ff; /* Hot Pink - Headings & Glitch */
+            --color-accent-3: #ff9900; /* Orange - Actions */
+            --border-width: 4px;
+            --border-style: var(--border-width) solid var(--color-border);
+            --transition-speed: 0.15s ease-out;
         }
 
-        .profile-page-wrapper {
-            font-family: var(--font-main);
-            background-color: var(--color-primary);
-            color: var(--color-black);
-            /* padding: 2rem; */
-            /* min-height: 100vh; */
+        /* --- Animations (Blink, Load, Glitch) --- */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
-        .profile-card {
-            background: var(--color-bg);
-            border: 4px solid var(--color-black);
-            box-shadow: 12px 12px 0 var(--color-black);
-            padding: 2.5rem;
-            /* max-width: 900px; */
-            margin: 0 auto;
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
         }
         
-        .profile-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        @media (min-width: 768px) { 
-            .profile-header { 
-                flex-direction: row; 
-                text-align: left; 
-                align-items: flex-start;
-            } 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        .profile-avatar { 
-            width: 120px; height: 120px; 
-            object-fit: cover; border-radius: 50%; 
-            border: 4px solid var(--color-black);
-            box-shadow: 6px 6px 0 var(--color-black);
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
         }
-        .profile-info { width: 100%; }
-        
-        .profile-main-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+
+        /* --- Global Reset & Layout --- */
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            font-weight: 400;
+            cursor: crosshair;
+            overflow-x: hidden;
             
-            width: 100%;
-            gap: 1rem;
+            /* "Blueprint" Grid Background */
+            background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.07) 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            border-radius: 0 !important;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .brutal-profile-wrapper {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            min-height: 100vh;
+            transition: grid-template-columns 0.4s ease-out;
+        }
+        
+        @media (max-width: 768px) {
+            .brutal-profile-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        body.sidebar-collapsed .brutal-profile-wrapper {
+             grid-template-columns: 0 1fr;
+        }
+        body.sidebar-collapsed .brutal-sidebar {
+            transform: translateX(-100%);
+            padding: 1.5rem 0;
+            overflow: hidden;
+        }
+        /* MODIFICATION: Removed the transform: rotate(180deg) */
+        body.sidebar-collapsed .sidebar-toggle {
+            left: 10px;
+            border-color: var(--color-accent-2);
+        }
+
+        /* --- Sidebar (Column 1) --- */
+        .brutal-sidebar {
+            padding: 1.5rem;
+            border-right: var(--border-width) solid var(--color-accent-1);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            overflow-y: auto;
+            animation: slideInLeft 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 0.4s ease-out, padding 0.4s ease-out;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .brutal-sidebar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .brutal-sidebar {
+                position: relative;
+                height: auto;
+                border-right: none;
+                border-bottom: var(--border-width) solid var(--color-accent-1);
+            }
+        }
+        
+        .sidebar-avatar {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: var(--border-width) solid var(--color-accent-1);
+            display: block;
             margin-bottom: 1.5rem;
+            image-rendering: pixelated;
+            transition: all var(--transition-speed);
         }
-        @media (min-width: 768px) { 
-            .profile-main-info { 
-                flex-direction: row; 
-                justify-content: space-between; 
-                align-items: center; 
-            } 
+        .sidebar-avatar:hover {
+            filter: grayscale(1) contrast(300%);
+            transform: scale(1.05);
         }
-
-        .profile-name-block {
-             display: flex; 
-             align-items: center; 
-             gap: 1rem;
-        }
-
-        .profile-name { 
-            font-size: clamp(2rem, 5vw, 3rem); 
-            font-weight: 900;
-            color: var(--color-black);
-            text-transform: uppercase;
-            margin: 0; 
+        
+        .sidebar-name {
+            font-size: 3rem;
             line-height: 1;
+            color: var(--color-accent-1);
+            margin: 0 0 1.5rem 0;
+            word-wrap: break-word;
+            position: relative;
+            cursor: default;
         }
         
-        .profile-username { 
-            font-size: 1.1rem; 
-            color: #555; 
-            font-weight: 700;
-            margin-top: 0.25rem;
+        .sidebar-name::before,
+        .sidebar-name::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: var(--color-bg);
+            overflow: hidden;
+            clip-path: inset(50% 0 50% 0);
+            opacity: 0;
         }
-        
-        .profile-bio { 
-            margin-top: 1.5rem; 
-            color: var(--color-black); 
-            line-height: 1.6; 
-            font-size: 1rem;
-            font-weight: 500;
+        .sidebar-name::before {
+            color: var(--color-accent-2); /* Pink glitch */
+            animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+        }
+        .sidebar-name:hover::before,
+        .sidebar-name:hover::after {
+            opacity: 1;
         }
 
-        .chunky-btn {
-            border: 3px solid var(--color-black);
-            box-shadow: 4px 4px 0 var(--color-black);
+        /* Brutal <fieldset> structure */
+        .brutal-fieldset {
+            border: var(--border-width) solid var(--color-accent-1); /* Green border */
+            margin: 2rem 0 0 0;
+            padding: 1.5rem 1rem;
+        }
+        .brutal-fieldset legend {
+            font-family: var(--font-body);
             font-weight: 700;
-            transition: all var(--transition);
-            cursor: pointer;
-            padding: 10px 20px;
-            background-color: var(--color-secondary);
+            font-size: 1rem;
+            color: var(--color-text); /* Clean white legend */
+            background: var(--color-bg);
+            padding: 0 0.5rem;
+            margin-left: 1rem;
+            text-transform: uppercase;
+        }
+
+        .sidebar-marquee-container {
+            background: var(--color-accent-3); /* Orange marquee */
             color: var(--color-black);
-            text-decoration: none;
-            display: inline-block;
-            font-size: 1rem;
-            text-transform: uppercase;
+            border: 2px solid var(--color-black);
+            overflow: hidden;
         }
-        .chunky-btn:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 var(--color-black);
-            background-color: var(--color-focus);
-        }
-        .chunky-btn.following {
-             background: var(--color-black);
-             color: #fff;
-        }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .stat-card {
-            background: var(--color-accent);
-            border: 4px solid #000;
-            box-shadow: 6px 6px 0 #000;
-            padding: 1rem;
-            text-align: center;
-        }
-        .stat-card .stat-number {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #000;
-            display: block;
-        }
-        .stat-card .stat-label {
-            font-size: 0.9rem;
-            color: #000;
-            text-transform: uppercase;
+        .sidebar-marquee-container marquee {
+            font-family: var(--font-body);
             font-weight: 700;
-        }
-        
-        .content-tabs { margin-top: 2.5rem; border-bottom: 4px solid #000; }
-        .tabs-nav { display: flex; gap: 0.5rem; margin-bottom: -4px; }
-        .tab-button {
-            font-size: 1.25rem;
-            font-weight: 900;
-            background: var(--color-bg);
-            border: 3px solid #000;
-            border-bottom: none;
-            color: #000;
-            padding: 0.5rem 1.5rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.2s ease;
-            box-shadow: 4px -4px 0 #000;
-        }
-        .tab-button:hover { background: #ccc; }
-        .tab-button.is-active { 
-            background: #000; 
-            color: #fff; 
-            box-shadow: 0 0 0 #000;
-            transform: translateY(4px);
+            padding: 5px 0;
+            font-size: 1rem;
+            display: block;
         }
 
-        .content-main { margin-top: 2rem; }
-        .content-section { display: none; }
-        .content-section.is-active { display: block; }
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
+        .sidebar-actions {
+            margin: 0;
+            padding: 0;
+        }
+
+        .action-button {
+            display: block;
+            width: 100%;
+            background: var(--color-accent-3); /* Orange button */
+            border: var(--border-width) solid var(--color-black);
+            color: var(--color-black);
+            font-family: var(--font-heading);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            text-align: center;
+            text-decoration: none;
+            cursor: cell;
+            transition: all var(--transition-speed);
+        }
+        .action-button:last-child {
+            margin-bottom: 0;
+        }
+        .action-button:hover {
+            transform: translate(4px, 4px);
+            box-shadow: -4px -4px 0 var(--color-accent-3);
+            background: var(--color-bg);
+            color: var(--color-accent-3);
+            border-color: var(--color-accent-3);
+        }
+        .action-button:active {
+            transform: translate(0, 0);
+            box-shadow: none;
+        }
+        .action-button.following {
+            background: var(--color-black);
+            color: var(--color-text);
+            border-color: var(--color-border);
+        }
+        .action-button.following:hover {
+            background: var(--color-text);
+            color: var(--color-black);
+            box-shadow: -4px -4px 0 var(--color-text);
         }
         
-        .content-card {
-            display: block;
-            text-decoration: none;
+        .stats-list { list-style: none; padding: 0; margin: 0; }
+        .stats-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.75rem;
+            border-bottom: 2px dashed #444;
+            padding-bottom: 0.75rem;
+        }
+        .stats-list li:last-child {
+            margin-bottom: 0;
+        }
+        .stats-list li strong {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-accent-1);
+            line-height: 1;
+            transition: all var(--transition-speed);
+        }
+        .stats-list li span {
+            font-family: var(--font-body);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #aaa;
+        }
+        .stats-list li:hover strong {
+            color: var(--color-accent-2); /* Pink hover */
+            transform: scale(1.1) rotate(-3deg);
+            display: inline-block;
+        }
+        
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .info-list li {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px dashed #444;
+        }
+        .info-list li:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: 0;
+        }
+        .info-list li span {
+            color: #aaa;
+            font-weight: 700;
+            margin-right: 1rem;
+        }
+        .info-list li strong {
+            color: var(--color-text);
+            font-weight: 700;
+            word-break: break-all;
+        }
+        
+        .sidebar-toggle {
+            position: absolute;
+            bottom: 1rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
             background: var(--color-bg);
-            border: 3px solid #000;
-            box-shadow: 8px 8px 0 #000;
-            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid var(--color-border);
+            color: var(--color-border);
+            font-family: var(--font-body);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease-out;
         }
-        .content-card:hover {
-            transform: translate(-5px, -5px);
-            box-shadow: 13px 13px 0 #000;
+        .sidebar-toggle:hover {
+            background: var(--color-accent-2);
+            color: var(--color-black);
+            border-color: var(--color-accent-2);
         }
-        .content-card-thumbnail {
+        @media (max-width: 768px) {
+            .sidebar-toggle { display: none; }
+        }
+
+        /* --- Main Content (Column 2) --- */
+        .brutal-content {
+            padding: 2.5rem;
+            animation: fadeIn 0.5s 0.1s ease-out backwards;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        @media (max-width: 768px) {
+            .brutal-content { height: auto; padding: 1.5rem; }
+        }
+
+        .content-section { margin-bottom: 3rem; }
+        
+        .content-heading {
+            font-size: 3rem;
+            color: var(--color-accent-2); /* Pink heading */
+            border-bottom: 8px solid var(--color-accent-2); /* Pink border */
+            display: inline-block;
+            margin: 0 0 2rem 0;
+        }
+        .content-heading::after {
+            content: '_';
+            animation: blink 1s infinite;
+            margin-left: 0.25ch;
+            color: var(--color-accent-2);
+        }
+        @media (min-width: 768px) {
+            .content-heading { font-size: 4rem; }
+        }
+        
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .doc-card-item {
+            display: block;
+            border: var(--border-style);
+            text-decoration: none;
+            color: var(--color-text);
+            background: var(--color-bg);
+            transition: all var(--transition-speed);
+            position: relative;
+            cursor: alias;
+        }
+        
+        .doc-card-item:hover {
+            transform: translate(8px, 8px);
+            box-shadow: -8px -8px 0 var(--color-accent-1); /* Green shadow */
+            background: var(--color-accent-1); /* Green background */
+            color: var(--color-black);
+            border-color: var(--color-black);
+        }
+
+        .doc-thumbnail {
             width: 100%;
+            height: auto;
             aspect-ratio: 16 / 10;
             object-fit: cover;
+            border-bottom: var(--border-style);
             display: block;
         }
-
-        .empty-state {
-            text-align: center;
-            padding: 4rem 1rem;
-            border: 4px dashed #000;
+        
+        .doc-card-item:hover .doc-thumbnail {
+            border-bottom-color: var(--color-black);
         }
-        .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: #000; }
-        .empty-state h3 { font-size: 1.5rem; margin-top: 1rem; color: #000; text-transform: uppercase; font-weight: 900; }
+
+        .doc-title {
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: none;
+            word-wrap: break-word;
+            margin: 0;
+            padding: 1rem;
+        }
+
+        /* --- Empty State --- */
+        .empty-state {
+            border: var(--border-width) dashed var(--color-accent-2); /* Pink border */
+            padding: 3rem 1.5rem;
+            text-align: center;
+        }
+        
+        .empty-state pre {
+            font-family: var(--font-body);
+            color: var(--color-accent-2); /* Pink ASCII */
+            font-size: 1.25rem;
+            text-align: center;
+            margin: 0 0 1.5rem 0;
+            line-height: 1.2;
+        }
+
+        .empty-state h3 {
+            font-size: 1.75rem;
+            margin: 0;
+            color: var(--color-text);
+        }
+
     </style>
 </head>
 
 <body>
-<div class="profile-page-wrapper">
-    <div class="profile-card">
-        <header class="profile-header">
-            <div class="profile-avatar-container">
-                <img class="profile-avatar" src="<%= userData.profilePicUrl %>" alt="Profile Picture">
-            </div>
-            <div class="profile-info">
-                <div class="profile-main-info">
-                    <div class="profile-name-block">
-                         
-                            <span title="Verified User" style="display: flex; align-items: center; gap: 0.5rem;">
-                                                        <h1 class="profile-name"><%= userData.fullname || userData.username %></h1>
-<% if (userData.ISVERIFIED) { %>
-                                <img style="width: 40px; height: 40px;" src="/images/verify.png" alt="Verified Badge"/>
-                            <% } %>
-                            </span>
-                         
-                    </div>
-                    <!-- From Uiverse.io by vinodjangid07 --> 
-
-                    <div style="display: flex; align-items: center; gap: 1rem">
-                                         <button class="chunky-btn" id="followBtn" data-user-id="<%= userData._id %>"></button>
-
-                        <button class="chatBtn" onclick="window.location.href='/user/chat/<%=userData._id%>'">
- <svg height="1.6em" fill="white" xml:space="preserve" viewBox="0 0 1000 1000" y="0px" x="0px" version="1.1">
-<path d="M881.1,720.5H434.7L173.3,941V720.5h-54.4C58.8,720.5,10,671.1,10,610.2v-441C10,108.4,58.8,59,118.9,59h762.2C941.2,59,990,108.4,990,169.3v441C990,671.1,941.2,720.5,881.1,720.5L881.1,720.5z M935.6,169.3c0-30.4-24.4-55.2-54.5-55.2H118.9c-30.1,0-54.5,24.7-54.5,55.2v441c0,30.4,24.4,55.1,54.5,55.1h54.4h54.4v110.3l163.3-110.2H500h381.1c30.1,0,54.5-24.7,54.5-55.1V169.3L935.6,169.3z M717.8,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.5,24.7,54.5,55.2C772.2,420.2,747.8,444.8,717.8,444.8L717.8,444.8z M500,444.8c-30.1,0-54.4-24.7-54.4-55.1c0-30.4,24.3-55.2,54.4-55.2c30.1,0,54.4,24.7,54.4,55.2C554.4,420.2,530.1,444.8,500,444.8L500,444.8z M282.2,444.8c-30.1,0-54.5-24.7-54.5-55.1c0-30.4,24.4-55.2,54.5-55.2c30.1,0,54.4,24.7,54.4,55.2C336.7,420.2,312.3,444.8,282.2,444.8L282.2,444.8z"></path>
-</svg>
-<span  class="tooltip">Chat</span>
-</button>
-                    </div>
+    <div class="brutal-profile-wrapper">
+        
+        <aside class="brutal-sidebar">
+            <img class="sidebar-avatar" src="<%= userData.profilePicUrl %>" alt="<%= userData.fullname || userData.username %>'s profile picture">
+            
+            <h1 class="sidebar-name" data-text="<%= userData.fullname || userData.username %>">
+                <%= userData.fullname || userData.username %>
+                <% if (userData.ISVERIFIED) { %>
+                    <span title="Verified User" style="color: var(--color-accent-1); display: inline-block; margin-left: 0.5rem; image-rendering: pixelated;">
+                        <img style="width: 28px; height: 28px; vertical-align: middle;" src="/images/verify.png" alt="Verified Badge"/>
+                    </span>
+                <% } %>
+            </h1>
+            
+            <fieldset class="brutal-fieldset">
+                <legend>// ACTIONS</legend>
+                <div class="sidebar-actions">
+                    <button class="action-button" id="followBtn" data-user-id="<%= userData._id %>">
+                        </button>
+                    <a href="/user/chat/<%=userData._id%>" class="action-button">
+                        Chat
+                    </a>
                 </div>
+            </fieldset>
+            
+            <fieldset class="brutal-fieldset">
+                <legend>// STATUS</legend>
+                <div class="sidebar-marquee-container">
+                    <marquee scrollamount="4">
+                        <%= (userData.bio || 'Digital explorer navigating the vast realms of code and creativity.').replace(/\r?\n|\r/g, " // ") %>
+                    </marquee>
+                </div>
+            </fieldset>
+
+            <fieldset class="brutal-fieldset">
+                <legend>// STATS</legend>
+                <ul class="stats-list">
+                    <li>
+                        <strong><%= numsOfDocs %></strong>
+                        <span>Docs</span>
+                    </li>
+                    <li>
+                        <strong><%= numOfCourses %></strong>
+                        <span>Courses</span>
+                    </li>
+                    <li>
+                        <strong><%= userData.followers.length || 0 %></strong>
+                        <span>Followers</span>
+                    </li>
+                    <li>
+                        <strong><%= userData.following.length || 0 %></strong>
+                        <span>Following</span>
+                    </li>
+                </ul>
+            </fieldset>
+            
+            <fieldset class="brutal-fieldset">
+                <legend>// USER INFO</legend>
+                <ul class="info-list">
+                    <li>
+                        <span>USERNAME:</span>
+                        <strong>@<%= userData.username %></strong>
+                    </li>
+                    <li>
+                        <span>STATUS:</span>
+                        <strong style="color: var(--color-accent-1);">ONLINE</strong>
+                    </li>
+                    <% if (userData.createdAt) { %>
+                    <li>
+                        <span>JOINED:</span>
+                        <strong><%= new Date(userData.createdAt).toLocaleDateString('en-CA') %></strong>
+                    </li>
+                    <% } %>
+                    <li>
+                        <span>ACCESS:</span>
+                        <strong>PUBLIC_READ</strong>
+                    </li>
+                </ul>
+            </fieldset>
+
+            <button class="sidebar-toggle" id="toggleBtn" title="Hide Sidebar">&lt;&lt;</button>
+
+        </aside>
+
+        <main class="brutal-content">
+            
+            <section class="content-section" id="docs-section">
+                <h2 class="content-heading">Docs</h2>
                 
-                 <p class="profile-username">@<%= userData.username %></p>
-
-                <div class="profile-stats">
-                    <div class="stat-card">
-                        <span class="stat-number"><%= numsOfDocs %></span>
-                        <span class="stat-label">Docs</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number"><%= numOfCourses %></span>
-                        <span class="stat-label">Courses</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number"><%= userData.followers.length || 0 %></span>
-                        <span class="stat-label">Followers</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-number"><%= userData.following.length || 0 %></span>
-                        <span class="stat-label">Following</span>
-                    </div>
-                </div>
-
-                <p class="profile-bio"><%= userData.bio || 'Digital explorer navigating the vast realms of code and creativity.' %></p>
-            </div>
-        </header>
-
-        <div class="content-tabs">
-            <nav class="tabs-nav" aria-label="Tabs">
-                <button class="tab-button is-active" data-tab="docs-section">Docs</button>
-                <button class="tab-button" data-tab="courses-section">Courses</button>
-            </nav>
-        </div>
-
-        <main class="content-main">
-            <div id="docs-section" class="content-section is-active">
                 <% if (files && files.length > 0) { %>
-                    <div class="content-grid">
+                    <div class="doc-grid">
                         <% files.forEach((file) => { %>
-                            <a href="/file/<%= file.slug %>/<%= file._id %>" class="content-card">
-                                <img class="content-card-thumbnail" src="<%= file.previewUrl %>" alt="Document thumbnail">
+                            <a href="/file/<%= file.slug %>/<%= file._id %>" class="doc-card-item">
+                                <img class="doc-thumbnail" src="<%= file.previewUrl %>" alt="Preview for <%= file.title || 'document' %>">
+                                <h3 class="doc-title"><%= file.title || 'Untitled Document' %></h3>
                             </a>
                         <% }) %>
                     </div>
                 <% } else { %>
                     <div class="empty-state">
-                        <i class="fa-solid fa-file-circle-xmark"></i>
+<pre>
+    .--.
+   |----|
+   |====|
+   |----|
+   |====|
+   |----|
+   '----'
+</pre>
                         <h3>No Docs Found</h3>
                     </div>
                 <% } %>
-            </div>
-
-            <div id="courses-section" class="content-section">
+            </section>
+            
+            <section class="content-section" id="courses-section">
+                <h2 class="content-heading">Courses</h2>
+                
                 <div class="empty-state">
-                   <i class="fa-solid fa-book-open-reader"></i>
+<pre>
+     / / /
+    / / /
+   / / /
+  / / /_________
+ ( ( (         /
+  \ \ \       /
+   \ \ \     /
+    \ \ \   /
+     \ \ \ /
+      \ \ /
+       \ /
+</pre>
                    <h3>No courses found</h3>
                 </div>
-            </div>
+            </section>
+
         </main>
     </div>
-</div>    
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const tabs = document.querySelectorAll('.tab-button');
-            const contentSections = document.querySelectorAll('.content-section');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('is-active'));
-                    contentSections.forEach(s => s.classList.remove('is-active'));
-                    tab.classList.add('is-active');
-                    document.getElementById(tab.dataset.tab).classList.add('is-active');
-                });
-            });
+            
+            // --- Glitch Effect JS ---
+            const nameEl = document.querySelector('.sidebar-name');
+            if (nameEl) {
+                nameEl.setAttribute('data-text', nameEl.textContent.trim());
+            }
 
+            // --- Sidebar Toggle JS (MODIFIED) ---
+            const toggleBtn = document.getElementById('toggleBtn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    // Toggle the class on the body
+                    document.body.classList.toggle('sidebar-collapsed');
+
+                    // NEW: Check the state and update the button
+                    if (document.body.classList.contains('sidebar-collapsed')) {
+                        toggleBtn.textContent = '>>';
+                        toggleBtn.title = 'Show Sidebar';
+                    } else {
+                        toggleBtn.textContent = '<<';
+                        toggleBtn.title = 'Hide Sidebar';
+                    }
+                });
+            }
+
+            // --- Follow Button Logic ---
             const followBtn = document.getElementById('followBtn');
             let isFollowed = <%= isFollowed %>; 
             const userIdToFollow = followBtn.dataset.userId;
