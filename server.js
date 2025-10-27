@@ -2283,7 +2283,7 @@ app.get('/suggestions', async (req, res) => {
     // Enrich with preview URLs
     const enriched = await Promise.all(
       suggestions.map(async file => {
-        const previewUrl = await getValidFileUrl(file);
+        const previewUrl = "./images/File_Demo.svg";
         return { ...file, previewUrl };
       })
     );
