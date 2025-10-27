@@ -1295,51 +1295,80 @@ app.get("/notifications", async (req, res) => {
  * @param {string} CLOUDFRONT_DOMAIN - Your CloudFront domain (e.g. dxxxx.cloudfront.net)
  * @param {Array<string>} validTypes - Allowed file extensions
  */
- async function getValidFileUrl(
+ // Global file preview cache (10 min TTL)
+const previewfileUrlCache = new NodeCache({
+  stdTTL: 600,
+  checkperiod: 180,
+  useClones: false,
+});
+
+// Reusable axios instance (connection pooling)
+const previewhttp = axios.create({
+  timeout: 1500,
+  validateStatus: s => s < 500,
+  decompress: true,
+});
+
+async function getValidFileUrl(
   file,
-  CLOUDFRONT_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net", // 👈 replace with your CloudFront domain
+  CLOUDFRONT_DOMAIN = "previewfiles.vidyari.com",
   validTypes = ["jpg", "jpeg", "png", "webp"]
 ) {
-  // 1️⃣ Check local cache first
-  if (fileUrlCache.has(file._id)) {
-    return fileUrlCache.get(file._id);
-  }
+  
+  try {
+    const cacheKey = String(file._id);
 
-  // Base URL (CloudFront domain instead of S3)
-  const BASE_URL = `https://${CLOUDFRONT_DOMAIN}/files-previews/images`;
+    // ✅ Step 1: Return from memory cache instantly if available
+    const cached = previewfileUrlCache.get(cacheKey);
+    if (cached) return cached;
 
-  // 2️⃣ If file.imageType is already known, use it directly
-  if (file.imageType) {
-    const url = `${BASE_URL}/${file._id}.${file.imageType}`;
-    fileUrlCache.set(file._id, url);
-    return url;
-  }
+    const BASE_URL = `https://${CLOUDFRONT_DOMAIN}/files-previews/images`;
 
-  // 3️⃣ Check CloudFront cache for available types (minimal checks)
-  for (const ext of validTypes) {
-    const url = `${BASE_URL}/${file._id}.${ext}`;
-    try {
-      const res = await axios.head(url, {
-        timeout: 1500,
-        validateStatus: (s) => s < 500,
-      });
-      if (res.status === 200) {
-        // Found valid image — update DB & cache
-        file.imageType = ext;
-        await file.save().catch(() => {});
-        fileUrlCache.set(file._id, url);
-        return url;
-      }
-    } catch {
-      // Ignore 403/404 — CloudFront will respond quickly without hitting S3
-      continue;
+    // ✅ Step 2: Use known type directly if present
+    if (file.imageType && validTypes.includes(file.imageType)) {
+      const url = `${BASE_URL}/${file._id}.${file.imageType}`;
+      previewfileUrlCache.set(cacheKey, url);
+      return url;
     }
-  }
 
-  // 4️⃣ Default fallback (cached by CloudFront too)
-  const fallbackUrl = `${BASE_URL}/${file._id}.jpg`;
-  fileUrlCache.set(file._id, fallbackUrl);
-  return fallbackUrl;
+    // ✅ Step 3: Try all formats in parallel (fastest response wins)
+    const urls = validTypes.map(ext => `${BASE_URL}/${file._id}.${ext}`);
+    let foundUrl = null;
+
+    await Promise.any(
+      urls.map(async (url, i) => {
+        try {
+          const res = await previewhttp.head(url);
+          if (res.status === 200 && !foundUrl) {
+            foundUrl = url;
+            file.imageType = validTypes[i];
+          }
+        } catch {
+          /* ignore */
+        }
+      })
+    ).catch(() => {}); // ignore Promise.any rejection
+
+    // ✅ Step 4: If found, cache + async DB update (non-blocking)
+    if (foundUrl) {
+      previewfileUrlCache.set(cacheKey, foundUrl);
+      process.nextTick(() => {
+        File.updateOne(
+          { _id: file._id },
+          { $set: { imageType: file.imageType } }
+        ).catch(() => {});
+      });
+      return foundUrl;
+    }
+
+    // ✅ Step 5: Fallback (CloudFront caches this anyway)
+    const fallbackUrl = `${BASE_URL}/${file._id}.jpg`;
+   previewfileUrlCache.set(cacheKey, fallbackUrl);
+    return fallbackUrl;
+  } catch (err) {
+    console.error("getValidFileUrl error:", err.message);
+    return `https://${CLOUDFRONT_DOMAIN}/files-previews/images/${file._id}.jpg`;
+  }
 }
 
 
@@ -1532,74 +1561,98 @@ const s3 = new AWS.S3({
 });
 
 
-// const s3 = new AWS.S3({ region: "ap-south-1" });
-const CLOUDFRONT_DOMAIN = "mainfile.vidyari.com";
-const BUCKET = "vidyarimain";
+const { getSignedUrl } = require("@aws-sdk/cloudfront-signer");
 
-// 🧠 Smart in-memory cache for URLs
-const urlCache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // 1 hr cache
+// ⚙️ Config
+const CLOUDFRONT_DOMAIN = "mainfile.vidyari.com";
+const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID;
+const PRIVATE_KEY_PATH = path.join(__dirname, "private_keys", "cloudfront-private-key.pem");
+const PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
+
+// 🧠 Smart cache
+// ===========================================================
+// 🚀 Ultra-Optimized Download Route with Smart Adaptive Cache
+// ===========================================================
+
+const urlCache = new NodeCache({
+  stdTTL: 600,          // default 10 min cache
+  checkperiod: 120,     // check expired keys every 2 min
+  useClones: false,     // avoids unnecessary deep clones
+  deleteOnExpire: true, // clean memory
+});
 
 app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
   try {
     const fileId = req.query.file_id;
-
-    // ✅ Validate fileId
     if (!fileId || fileId.length !== 24) return res.render("file-not-found");
 
-    // ✅ Get file metadata
     const file = await File.findById(fileId).lean();
     if (!file) return res.render("file-not-found");
 
-    // ✅ Verify user purchase for paid files
+    // 🛡️ Validate purchase (if paid file)
     if (file.price > 0) {
-      const purchase = await Userpurchases.findOne({
+      const purchased = await Userpurchases.exists({
         userId: req.user._id,
         productId: fileId,
       });
-      if (!purchase) return res.render("404");
+      if (!purchased) return res.render("404");
     }
 
-    const extension = path.extname(file.fileUrl).toLowerCase() || ".pdf";
-    const baseName = path.basename(file.filename, path.extname(file.filename));
-    const finalFilename = `${baseName}${extension}`;
+    // 🎯 Generate cache key
+    const extension = path.extname(file.fileUrl)?.toLowerCase() || ".pdf";
     const fileKey = `main-files/${file.fileUrl}`;
+    const cacheKey = `CF_URL_${fileKey}`;
 
-    // 🧠 Try to get cached CDN URL
-    let cfUrl = urlCache.get(fileKey);
+    // 🧠 Try fetching from cache
+    let signedUrl = urlCache.get(cacheKey);
 
-    if (!cfUrl) {
-      // 🔹 Intelligent URL formation (no signed URL)
-      cfUrl = `https://${CLOUDFRONT_DOMAIN}/${fileKey}`;
-
-      // 🔹 Optional: HEAD check once via CDN to verify existence
-      try {
-        const head = await axios.head(cfUrl, { timeout: 2000 });
-        if (head.status === 200) {
-          urlCache.set(fileKey, cfUrl);
-        } else {
-          console.warn(`File missing at CDN: ${cfUrl}`);
-        }
-      } catch {
-        console.warn(`Skipping HEAD check for ${cfUrl}`);
+    // ⚡️ Extend TTL for popular files
+    if (signedUrl && urlCache.has(cacheKey)) {
+      const ttlRemaining = urlCache.getTtl(cacheKey) - Date.now();
+      if (ttlRemaining < 3 * 60 * 1000) { // less than 3 minutes left
+        urlCache.ttl(cacheKey, 15 * 60); // extend TTL by 15 minutes
+        console.log(`⏱ Extended TTL for popular file: ${file.filename}`);
       }
     }
 
-    // ⚙️ Asynchronously update analytics & logs
+    // 🏗️ Create new signed URL if cache miss
+    if (!signedUrl) {
+      const unsignedUrl = `https://${CLOUDFRONT_DOMAIN}/${fileKey}`;
+      try {
+        signedUrl = getSignedUrl({
+          url: unsignedUrl,
+          keyPairId: CLOUDFRONT_KEY_PAIR_ID,
+          privateKey: PRIVATE_KEY,
+          dateLessThan: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        urlCache.set(cacheKey, signedUrl);
+        console.log(`✅ Cached new signed URL for ${file.filename}`);
+      } catch (signErr) {
+        console.error("❌ CloudFront signing error:", signErr);
+        return res.status(500).render("500");
+      }
+    }
+
+    // ⚙️ Async database updates (fire & forget)
+    Promise.allSettled([
+      File.updateOne({ _id: fileId }, { $inc: { downloadCount: 1 } }),
+      UserDownloads.updateOne(
+        { userId: req.user._id, fileId },
+        {
+          $setOnInsert: {
+            filename: file.filename,
+            fileUrl: file.fileUrl,
+            fileType: extension,
+          },
+          $inc: { downloadCount: 1 },
+        },
+        { upsert: true }
+      ),
+    ]).catch(err => console.error("DB update error:", err));
+
+    // 🔔 Background user notification
     (async () => {
       try {
-        await File.updateOne({ _id: fileId }, { $inc: { downloadCount: 1 } });
-        await UserDownloads.updateOne(
-          { userId: req.user._id, fileId },
-          {
-            $setOnInsert: {
-              filename: file.filename,
-              fileUrl: file.fileUrl,
-              fileType: extension,
-            },
-            $inc: { downloadCount: 1 },
-          },
-          { upsert: true }
-        );
         const imageUrl = await getValidFileUrl(file);
         await sendNotification({
           userId: req.user._id,
@@ -1610,16 +1663,21 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
           notification_type: "Download",
         });
       } catch (err) {
-        console.error("Async tracking error:", err.message);
+        console.error("Notification error:", err.message);
       }
     })();
 
-    // 🚀 Redirect to CloudFront (edge cache handles speed + compression)
-    res.setHeader("Content-Disposition", `attachment; filename="${finalFilename}"`);
-    return res.redirect(302, cfUrl);
+    // 🧠 Optional analytics (background job)
+    process.nextTick(() => {
+      console.log(`📊 Downloaded: ${file.filename} by ${req.user._id}`);
+    });
+
+    // 🚀 Redirect user to CloudFront edge URL
+    return res.redirect(signedUrl);
+
   } catch (error) {
-    console.error("Error in /download route:", error);
-    res.status(500).render("500");
+    console.error("💥 Error in /download route:", error);
+    return res.status(500).render("500");
   }
 });
 
@@ -1636,60 +1694,60 @@ dotenv.config();
 // import axios from "axios";
 
 // Optional in-memory cache to avoid repeated checks
-const fileUrlCache = new Map();
+// const fileUrlCache = new Map();
 
-/**
- * Get the valid image URL served via CloudFront (optimized for cost and speed)
- * @param {Object} file - File object from your DB
- * @param {string} CLOUDFRONT_DOMAIN - Your CloudFront domain (e.g. dxxxx.cloudfront.net)
- * @param {Array<string>} validTypes - Allowed file extensions
- */
- async function getValidFileUrl(
-  file,
-  CLOUDFRONT_DOMAIN = "d3tonh6o5ach9f.cloudfront.net", // 👈 replace with your CloudFront domain
-  validTypes = ["jpg", "jpeg", "png", "webp"]
-) {
-  // 1️⃣ Check local cache first
-  if (fileUrlCache.has(file._id)) {
-    return fileUrlCache.get(file._id);
-  }
+// /**
+//  * Get the valid image URL served via CloudFront (optimized for cost and speed)
+//  * @param {Object} file - File object from your DB
+//  * @param {string} CLOUDFRONT_DOMAIN - Your CloudFront domain (e.g. dxxxx.cloudfront.net)
+//  * @param {Array<string>} validTypes - Allowed file extensions
+//  */
+//  async function getValidFileUrl(
+//   file,
+//   CLOUDFRONT_DOMAIN = "previewfiles.vidyari.com", // 👈 replace with your CloudFront domain
+//   validTypes = ["jpg", "jpeg", "png", "webp"]
+// ) {
+//   // 1️⃣ Check local cache first
+//   if (fileUrlCache.has(file._id)) {
+//     return fileUrlCache.get(file._id);
+//   }
 
-  // Base URL (CloudFront domain instead of S3)
-  const BASE_URL = `https://${CLOUDFRONT_DOMAIN}/files-previews/images`;
+//   // Base URL (CloudFront domain instead of S3)
+//   const BASE_URL = `https://${CLOUDFRONT_DOMAIN}/files-previews/images`;
 
-  // 2️⃣ If file.imageType is already known, use it directly
-  if (file.imageType) {
-    const url = `${BASE_URL}/${file._id}.${file.imageType}`;
-    fileUrlCache.set(file._id, url);
-    return url;
-  }
+//   // 2️⃣ If file.imageType is already known, use it directly
+//   if (file.imageType) {
+//     const url = `${BASE_URL}/${file._id}.${file.imageType}`;
+//     fileUrlCache.set(file._id, url);
+//     return url;
+//   }
 
-  // 3️⃣ Check CloudFront cache for available types (minimal checks)
-  for (const ext of validTypes) {
-    const url = `${BASE_URL}/${file._id}.${ext}`;
-    try {
-      const res = await axios.head(url, {
-        timeout: 1500,
-        validateStatus: (s) => s < 500,
-      });
-      if (res.status === 200) {
-        // Found valid image — update DB & cache
-        file.imageType = ext;
-        await file.save().catch(() => {});
-        fileUrlCache.set(file._id, url);
-        return url;
-      }
-    } catch {
-      // Ignore 403/404 — CloudFront will respond quickly without hitting S3
-      continue;
-    }
-  }
+//   // 3️⃣ Check CloudFront cache for available types (minimal checks)
+//   for (const ext of validTypes) {
+//     const url = `${BASE_URL}/${file._id}.${ext}`;
+//     try {
+//       const res = await axios.head(url, {
+//         timeout: 1500,
+//         validateStatus: (s) => s < 500,
+//       });
+//       if (res.status === 200) {
+//         // Found valid image — update DB & cache
+//         file.imageType = ext;
+//         await file.save().catch(() => {});
+//         fileUrlCache.set(file._id, url);
+//         return url;
+//       }
+//     } catch {
+//       // Ignore 403/404 — CloudFront will respond quickly without hitting S3
+//       continue;
+//     }
+//   }
 
-  // 4️⃣ Default fallback (cached by CloudFront too)
-  const fallbackUrl = `${BASE_URL}/${file._id}.jpg`;
-  fileUrlCache.set(file._id, fallbackUrl);
-  return fallbackUrl;
-}
+//   // 4️⃣ Default fallback (cached by CloudFront too)
+//   const fallbackUrl = `${BASE_URL}/${file._id}.jpg`;
+//   fileUrlCache.set(file._id, fallbackUrl);
+//   return fallbackUrl;
+// }
 
 
 
