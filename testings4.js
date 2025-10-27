@@ -91,79 +91,134 @@ router.get('/user/chat/:userId', authenticateJWT_user, requireAuth, async (req, 
     }
 });;
 
+const NodeCache = require("node-cache");
+const conversationCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // 10 min TTL
+const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
+// const CLOUDFRONT_PROFILE_URL = "https://previewfiles.vidyari.com/profiles"; // add this if you have profile images
 
-// --- API ROUTES ---
-
-// API to get all active conversations for a user
+// ==========================================================
+// ⚡ Optimized Conversations Route with Advanced Caching
+// ==========================================================
 router.get('/api/conversations', authenticateJWT_user, requireAuth, async (req, res) => {
-    try {
-        const myUserId = new mongoose.Types.ObjectId(req.query.myId);
-        
-        const conversations = await UserMessage.aggregate([
-            { 
-                $match: { 
-                    // 1. Match messages involving the current user (myUserId)
-                    $or: [
-                        { senderId: myUserId }, 
-                        { recipientId: myUserId }
-                    ],
-                    // 2. CRITICAL FIX: Exclude self-chats where senderId equals recipientId
-                    $expr: {
-                        $ne: ["$senderId", "$recipientId"] 
-                    }
-                } 
-            },
-            { $sort: { createdAt: -1 } },
-            { $group: { _id: "$conversationId", lastMessage: { $first: "$$ROOT" } } },
-            { $addFields: { "partnerId": { $cond: { if: { $eq: ["$lastMessage.senderId", myUserId] }, then: "$lastMessage.recipientId", else: "$lastMessage.senderId" } } } },
-            
-            // 💡 ADDED FOR UNREAD COUNT: Calculate unread count for each conversation
-            {
-                $lookup: {
-                    from: "usermessages",
-                    let: { convoId: "$conversationId", userId: myUserId },
-                    pipeline: [
-                        { 
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        { $eq: ["$conversationId", "$$convoId"] },
-                                        { $eq: ["$recipientId", "$$userId"] }, // Sent to me
-                                        { $in: ["$status", ["sent", "delivered"]] } // Unread status
-                                    ]
-                                }
-                            }
-                        },
-                        { $count: "unreadCount" }
-                    ],
-                    as: "unreadMessages"
-                }
-            },
-            
-            { $lookup: { from: "users", localField: "partnerId", foreignField: "_id", as: "partnerDetails" } },
-            { 
-                $project: { 
-                    _id: 0, 
-                    conversationId: "$_id", 
-                    lastMessage: {
-                        // Project all existing fields from lastMessage
-                        $mergeObjects: ["$lastMessage", {
-                            // Embed the unread count into the lastMessage object for client consumption
-                            unreadCount: { $arrayElemAt: ["$unreadMessages.unreadCount", 0] } 
-                        }]
-                    },
-                    partner: { $arrayElemAt: ["$partnerDetails", 0] } 
-                } 
-            },
-            { $sort: { "lastMessage.createdAt": -1 } }
-        ]);
-        
-        res.json(conversations);
-    } catch (error) {
-        console.error("Error fetching conversations:", error);
-        res.status(500).json([]);
+  try {
+    const myUserId = new mongoose.Types.ObjectId(req.query.myId);
+    const cacheKey = `conversations:${myUserId}`;
+
+    // 🧠 STEP 1 — Try Cache First
+    const cachedData = conversationCache.get(cacheKey);
+    if (cachedData) {
+      // Extend TTL if it's popular (less than 3 min remaining)
+      const ttl = conversationCache.getTtl(cacheKey) - Date.now();
+      if (ttl < 3 * 60 * 1000) {
+        conversationCache.ttl(cacheKey, 15 * 60); // extend by 15 min
+      }
+      return res.json(cachedData);
     }
+
+    // 🧩 STEP 2 — DB Query (if not cached)
+    const conversations = await UserMessage.aggregate([
+      {
+        $match: {
+          $or: [
+            { senderId: myUserId },
+            { recipientId: myUserId }
+          ],
+          $expr: { $ne: ["$senderId", "$recipientId"] }
+        }
+      },
+      { $sort: { createdAt: -1 } },
+      { $group: { _id: "$conversationId", lastMessage: { $first: "$$ROOT" } } },
+      {
+        $addFields: {
+          partnerId: {
+            $cond: {
+              if: { $eq: ["$lastMessage.senderId", myUserId] },
+              then: "$lastMessage.recipientId",
+              else: "$lastMessage.senderId"
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "partnerId",
+          foreignField: "_id",
+          as: "partnerDetails"
+        }
+      },
+      {
+        $addFields: {
+          partner: { $arrayElemAt: ["$partnerDetails", 0] }
+        }
+      },
+      // 🚫 Filter out deleted or missing users
+      {
+        $match: {
+          partner: { $ne: null },
+          "partner.deleted": { $ne: true }
+        }
+      },
+      {
+        $lookup: {
+          from: "usermessages",
+          let: { convoId: "$_id", userId: myUserId },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$conversationId", "$$convoId"] },
+                    { $eq: ["$recipientId", "$$userId"] },
+                    { $in: ["$status", ["sent", "delivered"]] }
+                  ]
+                }
+              }
+            },
+            { $count: "unreadCount" }
+          ],
+          as: "unreadMessages"
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          conversationId: "$_id",
+          lastMessage: {
+            $mergeObjects: [
+              "$lastMessage",
+              { unreadCount: { $arrayElemAt: ["$unreadMessages.unreadCount", 0] } }
+            ]
+          },
+          partner: 1
+        }
+      },
+      { $sort: { "lastMessage.createdAt": -1 } }
+    ]);
+
+    // 🧩 STEP 3 — Transform partner URLs (CloudFront Optimization)
+    const updatedConversations = conversations.map(conv => {
+      if (conv.partner && conv.partner.avatar) {
+        conv.partner.avatar = `${CLOUDFRONT_AVATAR_URL}/${conv.partner.avatar}`;
+      }
+      if (conv.partner && conv.partner.profileUrl) {
+        conv.partner.profileUrl = `${CLOUDFRONT_PROFILE_URL}/${conv.partner.profileUrl}`;
+      }
+      return conv;
+    });
+
+    // 🧠 STEP 4 — Cache Results for 10 min
+    if (updatedConversations.length > 0) {
+      conversationCache.set(cacheKey, updatedConversations, 10 * 60); // 10 min cache
+    }
+
+    res.json(updatedConversations);
+  } catch (error) {
+    console.error("🚨 Error fetching conversations:", error);
+    res.status(500).json([]);
+  }
 });
+
 
 // API to search for new users to chat with
 router.get('/api/users/search', authenticateJWT_user, requireAuth, async (req, res) => {

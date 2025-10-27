@@ -1373,65 +1373,118 @@ async function getValidFileUrl(
 
 
 
+// import NodeCache from "node-cache";
+const userCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // 10 min cache
+// const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
+
+
+// ======================================================
+// ✅ Advanced Optimized File Details Route
+// ======================================================
 app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
   try {
-    // Validate ID length
+    // 🧩 Validate Mongo ID format
     if (req.params.id.length !== 24) {
       return res.render("file-not-found");
     }
 
+    // 📄 Fetch file
     const file = await File.findById(req.params.id);
     if (!file) {
       return res.status(404).render("404", { message: "File not found" });
     }
-let ISVERIFIED=false;
-    // Get seller profile picture
-    let sellerprofilepic = "/images/avatar.jpg"; // default
-    if (file.userId) {
-      const findUser = await User.findById(file.userId);
-      if (findUser?.profilePicUrl) {
-        sellerprofilepic = findUser.profilePicUrl;
-      }
-      ISVERIFIED=findUser.ISVERIFIED || false;
-    }
 
-    // Redirect if slug is incorrect
+    // 🔄 Redirect to canonical slug
     if (file.slug !== req.params.slug) {
       return res.redirect(301, `/file/${file.slug}/${file._id}`);
     }
 
-    // Build URLs (CloudFront) with valid preview URL
-    const previewUrl = await getValidFileUrl(file);
-    const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
+    // 👤 Seller info (cached)
+    let sellerprofilepic = "/images/avatar.jpg";
+    let ISVERIFIED = false;
 
-    console.log("Preview URL:", previewUrl);
+    if (file.userId) {
+      const sellerCacheKey = `seller_${file.userId}`;
+      let seller = userCache.get(sellerCacheKey);
 
-    // Logged in user
-    let user = null;
-    if (req.user) {
-      user = await User.findById(req.user._id);
+      if (!seller) {
+        seller = await User.findById(file.userId).select("profilePicUrl ISVERIFIED").lean();
+        if (seller) userCache.set(sellerCacheKey, seller);
+      }
+
+      if (seller?.profilePicUrl) {
+        // Convert S3 → CloudFront
+        if (seller.profilePicUrl.includes("s3.")) {
+          const fileName = seller.profilePicUrl.split("/").pop();
+          sellerprofilepic = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+        } else {
+          sellerprofilepic = seller.profilePicUrl;
+        }
+      }
+
+      ISVERIFIED = seller?.ISVERIFIED || false;
     }
-   
+
+    // 📄 Get file preview and download URLs
+    const previewUrl = await getValidFileUrl(file);
+    const pdfUrl = `https://previewfiles.vidyari.com/${file.fileUrl}`;
+
+    // 👥 Logged-in viewer info (cached)
+    let user = null;
+    let profileUrl = "/images/avatar.jpg";
+
+    if (req.user) {
+      const viewerCacheKey = `user_${req.user._id}`;
+      user = userCache.get(viewerCacheKey);
+
+      if (!user) {
+        user = await User.findById(req.user._id)
+          .select("profilePicUrl username email")
+          .lean();
+
+        if (user) userCache.set(viewerCacheKey, user);
+      }
+
+      // Convert S3 → CloudFront
+      if (user?.profilePicUrl?.includes("s3.")) {
+        const fileName = user.profilePicUrl.split("/").pop();
+        profileUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+      } else if (user?.profilePicUrl) {
+        profileUrl = user.profilePicUrl;
+      }
+    }
+
+    // 🧠 Extend cache for active users
+    const extendTTL = (key) => {
+      const ttl = userCache.getTtl(key);
+      if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
+        userCache.ttl(key, 15 * 60);
+      }
+    };
+    if (req.user) extendTTL(`user_${req.user._id}`);
+    if (file.userId) extendTTL(`seller_${file.userId}`);
+
+    // 🎨 Render final optimized view
     res.render("file-details", {
       file,
       sellerprofilepic,
+      ISVERIFIED,
       razorpayKey: process.env.RAZORPAY_KEY_ID,
       previewUrl,
       pdfUrl,
       isLoggedin: !!req.user,
-      profileUrl: user?.profilePicUrl || null,
+      profileUrl,
       username: user?.username || null,
       useremail: user?.email || null,
-     ISVERIFIED,
       uId: user?._id || null,
     });
   } catch (error) {
-    console.error("Error fetching file:", error);
+    console.error("⚠️ Error fetching file:", error);
     res.status(500).send("Server error");
   }
 });
-;
-;
+
+
 
 // Delete File - NOW PROTECTED BY JWT
 // const AWS = require("aws-sdk");
@@ -1792,31 +1845,81 @@ dotenv.config();
 
 // This route now ONLY sends the page template.
 // This is your existing page-loading route. It is correct and does not need changes.
+// import NodeCache from "node-cache";
+const pageCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache for 10 min
+
+const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
+
+// ==========================================
+// ⚡ Optimized & Cached Documents Route
+// ==========================================
 app.get("/documents", authenticateJWT_user, async (req, res) => {
   try {
-    // We still get categories for the filter modal.
-    const categories = await getcategories();
-
-    let user = null;
-    if (req.user) {
-      user = await User.findById(req.user._id).select("profilePicUrl username email");
+    // 🧠 Step 1: Try cached categories
+    let categories = pageCache.get("categories");
+    if (!categories) {
+      categories = await getcategories();
+      pageCache.set("categories", categories);
     }
 
-    // Render the page WITHOUT the 'files' data.
-    // The JavaScript on this page will fetch the files from /api/files.
+    // 🧠 Step 2: Try cached user profile (keyed by userId)
+    let user = null;
+    let profileUrl = null;
+
+    if (req.user) {
+      const cacheKey = `user_${req.user._id}`;
+      const cachedUser = pageCache.get(cacheKey);
+
+      if (cachedUser) {
+        user = cachedUser;
+        profileUrl = cachedUser.profilePicUrl;
+      } else {
+        // Fetch minimal data for rendering
+        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+        if (user) {
+          // Convert to CloudFront if S3-based
+          if (user.profilePicUrl?.includes("s3.")) {
+            try {
+              const fileName = user.profilePicUrl.split("/").pop();
+              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+            } catch (err) {
+              console.warn("⚠️ Profile URL conversion failed:", err.message);
+            }
+          }
+
+          // Cache for future requests
+          pageCache.set(cacheKey, user);
+          profileUrl = user.profilePicUrl;
+        }
+      }
+    }
+
+    // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
+    if (req.user) {
+      const cacheKey = `user_${req.user._id}`;
+      const ttl = pageCache.getTtl(cacheKey);
+      if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
+        pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
+      }
+    }
+
+    // ✅ Step 4: Render final page
     res.render("index", {
       categories,
       isLoggedin: !!req.user,
-      profileUrl: user?.profilePicUrl || null,
+      profileUrl,
       username: user?.username || null,
       useremail: user?.email || null,
-       uId: user?._id || null,
+      uId: user?._id?.toString() || null,
     });
   } catch (err) {
-    console.error("Page load error:", err);
+    console.error("❌ Error loading /documents:", err);
     res.status(500).send("Failed to load page");
   }
 });
+
+
+
 
 
 // *** THIS IS THE CORRECTED AND UPDATED API ROUTE ***

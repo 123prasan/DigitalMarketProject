@@ -1048,53 +1048,71 @@ router.post("/update/user-password", authenticateJWT_user, async (req, res) => {
   }
 });
 
-router.get(
-  "/user-notifications",
-  authenticateJWT_user,
-  reaquireAuth,
-  async (req, res) => {
-    try {
-      // Fetch notifications for the logged-in user, sorted by most recent
-      const notifications = await Notification.find({ userId: req.user._id })
-        .sort({ createdAt: -1 })
-        .limit(20); // Limit to recent 20 for performance
+const NodeCache=require("node-cache");
+const userCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // 10 min TTL
+const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
 
-      // Count only the unread notifications
-      const unreadCount = await Notification.countDocuments({
-        userId: req.user._id,
-        isRead: false,
-      });
+// ======================================================
+// ✅ Optimized Notifications Route
+// ======================================================
+router.get("/user-notifications", authenticateJWT_user, reaquireAuth, async (req, res) => {
+  try {
+    const userId = req.user._id;
 
-      // Example of creating a dynamic message with a link
-      // You would do this when you create the notification
-      // let message = `<strong>@eleanor_mac</strong> commented on your post <strong>"Abstract Art Vol. 3"</strong>`;
-      let user = null;
+    // 🧠 Use cache for user info
+    const cacheKey = `user_${userId}`;
+    let user = userCache.get(cacheKey);
 
-      if (req.user) {
-        const userId = req.user._id;
-        // Fetch only the necessary fields
-        user = await User.findById(userId).select(
-          "profilePicUrl username email"
-        );
-        if (user) {
-          console.log("User profile pic URL:", user.profilePicUrl);
-        }
-      }
-      res.render("notifications", {
-        isLoggedin: !!req.user,
-        notifications: notifications,
-        unreadCount: unreadCount,
-        profileUrl: user?.profilePicUrl || null,
-        username: user?.username || null,
-        useremail: user?.email || null,
-         uId: user?._id || null,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Server Error");
+    if (!user) {
+      user = await User.findById(userId)
+        .select("profilePicUrl username email")
+        .lean();
+
+      if (user) userCache.set(cacheKey, user);
     }
+
+    // 👤 Process profile URL for CloudFront
+    let profileUrl = "/images/avatar.jpg";
+    if (user?.profilePicUrl) {
+      if (user.profilePicUrl.includes("s3.")) {
+        const fileName = user.profilePicUrl.split("/").pop();
+        profileUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+      } else {
+        profileUrl = user.profilePicUrl;
+      }
+    }
+
+    // 🔔 Fetch notifications efficiently
+    const [notifications, unreadCount] = await Promise.all([
+      Notification.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .lean(),
+      Notification.countDocuments({ userId, isRead: false }),
+    ]);
+
+    // ⏱️ Extend cache if nearing expiration
+    const ttl = userCache.getTtl(cacheKey);
+    if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
+      userCache.ttl(cacheKey, 15 * 60); // extend another 15 mins
+    }
+
+    // 🎨 Render notifications page
+    res.render("notifications", {
+      isLoggedin: true,
+      notifications,
+      unreadCount,
+      profileUrl,
+      username: user?.username || null,
+      useremail: user?.email || null,
+      uId: user?._id || null,
+    });
+  } catch (error) {
+    console.error("⚠️ Notifications fetch error:", error);
+    res.status(500).send("Server Error");
   }
-);
+});
+
 
 // Add this to your backend routes file (e.g., routes/updateRoutes.js)
 
