@@ -31,7 +31,7 @@ const bcrypt = require("bcrypt");
 const mime = require("mime-types");
 const axios = require("axios");
 const http=require('http');
-
+const NodeCache = require("node-cache");
 // const logVisitorMiddleware = require("./middlewares/ipmiddleware");
 const categories = require("./models/categories"); // Assuming categories.js exports a Mongoose model
 const { createClient } = require("@supabase/supabase-js");
@@ -1531,19 +1531,26 @@ const s3 = new AWS.S3({
   region: process.env.AWS_REGION || "ap-south-1",
 });
 
-// Route
+
+// const s3 = new AWS.S3({ region: "ap-south-1" });
+const CLOUDFRONT_DOMAIN = "mainfile.vidyari.com";
+const BUCKET = "vidyarimain";
+
+// 🧠 Smart in-memory cache for URLs
+const urlCache = new NodeCache({ stdTTL: 3600, checkperiod: 600 }); // 1 hr cache
+
 app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
   try {
     const fileId = req.query.file_id;
 
-    // Validate fileId
+    // ✅ Validate fileId
     if (!fileId || fileId.length !== 24) return res.render("file-not-found");
 
-    // Find file
-    const file = await File.findById(fileId);
+    // ✅ Get file metadata
+    const file = await File.findById(fileId).lean();
     if (!file) return res.render("file-not-found");
 
-    // Purchase check for paid files
+    // ✅ Verify user purchase for paid files
     if (file.price > 0) {
       const purchase = await Userpurchases.findOne({
         userId: req.user._id,
@@ -1557,68 +1564,64 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
     const finalFilename = `${baseName}${extension}`;
     const fileKey = `main-files/${file.fileUrl}`;
 
-    // Increment total download count in File document
-    await File.findByIdAndUpdate(fileId, { $inc: { downloadCount: 1 } });
-const imageUrl=await getValidFileUrl(file);
-    // Log per-user download and increment count
-    await UserDownloads.findOneAndUpdate(
-      { userId: req.user._id, fileId: file._id },
-      {
-        $setOnInsert: {
-          filename: file.filename,
-          fileUrl: file.fileUrl,
-          fileType: extension,
-        },
-        $inc: { downloadCount: 1 },
-      },
-      { upsert: true, new: true }
-    );
-   
+    // 🧠 Try to get cached CDN URL
+    let cfUrl = urlCache.get(fileKey);
 
-    // Get S3 object stream
-    const s3Stream = s3
-      .getObject({
-        Bucket: "vidyarimain",
-        Key: fileKey,
-      })
-      .createReadStream();
-(async () => {
-  const notifications = [
-    sendNotification({
-      userId: req.user._id,
-      title: `Downloading is Started ${file.filename}`,
-      body: `Please Check Your Notifications`,
-      image: imageUrl,
-      target_link: "/downloads",
-      notification_type: "Download",
-    })
-   
-  ];
+    if (!cfUrl) {
+      // 🔹 Intelligent URL formation (no signed URL)
+      cfUrl = `https://${CLOUDFRONT_DOMAIN}/${fileKey}`;
 
-  const results = await Promise.allSettled(notifications);
-
-  results.forEach((result, index) => {
-    if (result.status === "rejected") {
-      const type = index === 0 ? "Purchase" : "Transaction";
-      console.error(`${type} notification failed:`, result.reason);
+      // 🔹 Optional: HEAD check once via CDN to verify existence
+      try {
+        const head = await axios.head(cfUrl, { timeout: 2000 });
+        if (head.status === 200) {
+          urlCache.set(fileKey, cfUrl);
+        } else {
+          console.warn(`File missing at CDN: ${cfUrl}`);
+        }
+      } catch {
+        console.warn(`Skipping HEAD check for ${cfUrl}`);
+      }
     }
-  });
-})();
-    // Set headers for direct download
-    res.setHeader("Content-Disposition", `attachment; filename="${finalFilename}"`);
-    res.setHeader("Content-Type", mime.lookup(extension) || "application/octet-stream");
 
-    // Pipe S3 stream to response
-    s3Stream.pipe(res).on("error", (err) => {
-      console.error("S3 stream error:", err);
-      res.status(500).render("500");
-    });
+    // ⚙️ Asynchronously update analytics & logs
+    (async () => {
+      try {
+        await File.updateOne({ _id: fileId }, { $inc: { downloadCount: 1 } });
+        await UserDownloads.updateOne(
+          { userId: req.user._id, fileId },
+          {
+            $setOnInsert: {
+              filename: file.filename,
+              fileUrl: file.fileUrl,
+              fileType: extension,
+            },
+            $inc: { downloadCount: 1 },
+          },
+          { upsert: true }
+        );
+        const imageUrl = await getValidFileUrl(file);
+        await sendNotification({
+          userId: req.user._id,
+          title: `Download started: ${file.filename}`,
+          body: "Your download has begun successfully!",
+          image: imageUrl,
+          target_link: "/downloads",
+          notification_type: "Download",
+        });
+      } catch (err) {
+        console.error("Async tracking error:", err.message);
+      }
+    })();
+
+    // 🚀 Redirect to CloudFront (edge cache handles speed + compression)
+    res.setHeader("Content-Disposition", `attachment; filename="${finalFilename}"`);
+    return res.redirect(302, cfUrl);
   } catch (error) {
     console.error("Error in /download route:", error);
     res.status(500).render("500");
   }
 });
-;
 
 const dotenv = require("dotenv");
 const usernotifications = require("./models/userNotifications.js");
