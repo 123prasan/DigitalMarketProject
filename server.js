@@ -2027,50 +2027,50 @@ app.get('/files', async (req, res) => {
 
 //course routes
 
-app.get('/courses', async (req, res) => {
+// app.get('/courses', async (req, res) => {
     
-    try {
-        if (req.query.search !== undefined) {
+//     try {
+//         if (req.query.search !== undefined) {
             
-            // --- API SEARCH (Returns JSON) ---
-            console.log(`Search query received: "${req.query.search}"`);
-            const searchQuery = req.query.search;
+//             // --- API SEARCH (Returns JSON) ---
+//             console.log(`Search query received: "${req.query.search}"`);
+//             const searchQuery = req.query.search;
 
-            const query = {
-                published: true, // Only search published courses
-                $or: [
-                    { title: { $regex: searchQuery, $options: 'i' } },
-                    { description: { $regex: searchQuery, $options: 'i' } },
-                    { tags: { $regex: searchQuery, $options: 'i' } }
-                ]
-            };
+//             const query = {
+//                 published: true, // Only search published courses
+//                 $or: [
+//                     { title: { $regex: searchQuery, $options: 'i' } },
+//                     { description: { $regex: searchQuery, $options: 'i' } },
+//                     { tags: { $regex: searchQuery, $options: 'i' } }
+//                 ]
+//             };
 
-            const filteredCourses = await Course.find(query)
-                // vvv UPDATED THIS LINE vvv
-                .populate('userId', 'fullName profilePicUrl username') 
-                .sort({ createdAt: -1 });
+//             const filteredCourses = await Course.find(query)
+//                 // vvv UPDATED THIS LINE vvv
+//                 .populate('userId', 'fullName profilePicUrl username') 
+//                 .sort({ createdAt: -1 });
             
-            res.json(filteredCourses);
+//             res.json(filteredCourses);
 
-        } else {
+//         } else {
             
-            // --- INITIAL PAGE LOAD (Renders EJS) ---
-            console.log('Initial page load. Fetching from DB and rendering EJS.');
+//             // --- INITIAL PAGE LOAD (Renders EJS) ---
+//             console.log('Initial page load. Fetching from DB and rendering EJS.');
 
-            // vvv UPDATED THIS LINE vvv
-            const allCourses = await Course.find({}) 
-                // vvv AND UPDATED THIS LINE vvv
-                .populate('userId', 'fullName profilePicUrl username')
-                .sort({ createdAt: -1 });
+//             // vvv UPDATED THIS LINE vvv
+//             const allCourses = await Course.find({}) 
+//                 // vvv AND UPDATED THIS LINE vvv
+//                 .populate('userId', 'fullName profilePicUrl username')
+//                 .sort({ createdAt: -1 });
             
-            // vvv UPDATED THIS LINE vvv
-            res.render('courses', { courses: allCourses }); // Changed 'courses' to 'index'
-        }
-    } catch (error) {
-        console.error('Error fetching courses:', error);
-        res.status(500).send('SERVER_ERROR. Check console.');
-    }
-});
+//             // vvv UPDATED THIS LINE vvv
+//             res.render('courses', { courses: allCourses }); // Changed 'courses' to 'index'
+//         }
+//     } catch (error) {
+//         console.error('Error fetching courses:', error);
+//         res.status(500).send('SERVER_ERROR. Check console.');
+//     }
+// });
 
 
 
