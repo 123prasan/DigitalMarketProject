@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Course Section</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+
+    <style>
+        /* Basic Styles */
+        body {
+            
+        }
+
+        /* Variables (can be kept for consistency if needed) */
+        :root {
+            --primary-blue: #1A73E8;
+            --light-blue: #E8F0FE;
+            --text-dark: #202124;
+            --text-light: #5F6368;
+            --border-light: #DADCE0;
+            --border-dashed: #E5E9EC;
+            --hover-bg: #F8F9FA;
+            --success-green: #34A853;
+            --error-red: #EA4335;
+            --warning-orange: #FBBC04;
+            --section-bg: #F0F4F8; /* Background for sections */
+            --card-bg: #FFFFFF;
+            --shadow-light: 0 2px 6px rgba(0, 0, 0, 0.06);
+            --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-deep: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tag Input Styles */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #60A5FA; /* Light blue (Tailwind blue-400) */
+            color: #1f2937; /* Dark gray text (Tailwind gray-800) */
+            padding: 4px 12px;
+            border-radius: 9999px; /* pill shape */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500;
+            line-height: 1.25rem;
+            animation: fadeIn 0.2s ease-out;
+            margin: 2px;
+        }
+
+        .remove-tag {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .remove-tag:hover {
+            color: #f87171; /* A light red for hover (Tailwind red-400) */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Steps Styles */
+        .progress-step-active {
+            background-color: #60A5FA; /* Light blue */
+            color: white;
+        }
+        .progress-step-complete {
+            background-color: #34D399; /* A nice green */
+            color: white;
+        }
+        .progress-line-active {
+            background-color: #60A5FA; /* Light blue */
+        }
+
+        /* Video Preview Styles */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.75rem; /* rounded-xl */
+        }
+        .video-container iframe,
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Module/Resource Styles */
+        .editable-input {
+            width: 100%;
+            padding: 0.25rem 0.5rem;
+            border: 1px solid #444;
+            background-color: #333;
+            color: white;
+        }
+        .editable-container {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        /* Upload Progress Styles */
+        .circular-progress-container {
+            position: relative;
+            width: 24px;
+            height: 24px;
+        }
+        .circular-progress-container svg {
+            transform: rotate(-90deg);
+        }
+        .circular-progress-container .track {
+            stroke: #444; /* Darker track */
+        }
+        .circular-progress-container .progress {
+            stroke: #60A5FA; /* Light blue */
+            stroke-width: 4;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100; /* Start with a full circle and animate it */
+            transition: stroke-dashoffset 0.3s linear;
+            stroke-linecap: round; /* Rounded ends */
+        }
+
+        /* Animated Success Icon */
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #38bdf8; /* Sky Blue */
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke: #fff; /* White checkmark */
+            stroke-width: 3;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            margin: 20px auto;
+        }
+
+        /* Basic Modal Styles */
+        #modal-backdrop {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+        #modal-backdrop.opacity-100 {
+            opacity: 1;
+        }
+        #modal-backdrop > div { /* The dialog */
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <div id="create-course-section" class="content-section max-w-4xl mx-auto">
+        <div class="bg-[#333333] p-4 sm:p-6 rounded-xl shadow-lg mb-6">
+            <div class="flex flex-col sm:flex-row justify-around items-center">
+                <div class="flex flex-col items-center">
+                    <div
+                        class="progress-step-1 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-sky-400 text-white font-bold text-lg">
+                        1</div>
+                    <span class="mt-2 text-sm text-center text-gray-300 font-medium">Course Details</span>
+                </div>
+                <div class="progress-line-1 flex-1 h-0.5 bg-gray-700 my-4 sm:my-0 sm:mx-4 w-1/2 sm:w-auto">
+                </div>
+                <div class="flex flex-col items-center">
+                    <div
+                        class="progress-step-2 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-700 text-gray-400 font-bold text-lg">
+                        2</div>
+                    <span class="mt-2 text-sm text-center text-gray-400">Curriculum</span>
+                </div>
+                <div class="progress-line-2 flex-1 h-0.5 bg-gray-700 my-4 sm:my-0 sm:mx-4 w-1/2 sm:w-auto">
+                </div>
+                <div class="flex flex-col items-center">
+                    <div
+                        class="progress-step-3 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-700 text-gray-400 font-bold text-lg">
+                        3</div>
+                    <span class="mt-2 text-sm text-center text-gray-400">Tags & Submit</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#333333] p-4 sm:p-6 rounded-xl shadow-lg">
+            <form id="multi-step-form" class="space-y-6">
+
+                <div id="step-1" class="form-step">
+                    <h2 class="text-xl sm:text-2xl font-bold text-white mb-6">Course Details</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="course-title"
+                                class="block text-sm font-medium text-gray-300 mb-1">Course Title <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" id="course-title" name="course-title"
+                                class="w-full bg-gray-800 border-gray-600 text-white rounded-md shadow-sm p-2 focus:ring-sky-400 focus:border-sky-400"
+                                placeholder="Enter course title" required maxlength="80">
+                            <p id="course-title-error" class="text-red-400 text-sm mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label for="course-description"
+                                class="block text-sm font-medium text-gray-300 mb-1">Course Description
+                                <span class="text-red-500">*</span></label>
+                            <textarea id="course-description" name="course-description" rows="4"
+                                class="w-full bg-gray-800 border-gray-600 text-white rounded-md shadow-sm p-2 focus:ring-sky-400 focus:border-sky-400"
+                                placeholder="Describe the course content" required
+                                maxlength="500"></textarea>
+                            <p id="course-description-error" class="text-red-400 text-sm mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label for="course-price"
+                                class="block text-sm font-medium text-gray-300 mb-1">Price (in ₹) <span
+                                    class="text-red-500">*</span></label>
+                            <input type="number" id="course-price" name="course-price"
+                                class="w-full bg-gray-800 border-gray-600 text-white rounded-md shadow-sm p-2 focus:ring-sky-400 focus:border-sky-400"
+                                placeholder="e.g., 499" required min="300" max="1000000">
+                            <p id="course-price-error" class="text-red-400 text-sm mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label for="course-category"
+                                class="block text-sm font-medium text-gray-300 mb-1">Category <span
+                                    class="text-red-500">*</span></label>
+                            <input type="text" id="course-category" name="course-category"
+                                class="w-full bg-gray-800 border-gray-600 text-white rounded-md shadow-sm p-2 focus:ring-sky-400 focus:border-sky-400"
+                                placeholder="e.g., Web Development" required>
+                            <p id="course-category-error" class="text-red-400 text-sm mt-1 hidden"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Introductory Video
+                                <span class="text-red-500">*</span></label>
+
+                            <div class="flex items-center space-x-6 mb-4">
+                                <label for="video-option-url"
+                                    class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" id="video-option-url" name="video-option"
+                                        value="url"
+                                        class="bg-gray-700 border-gray-500 text-sky-500 focus:ring-sky-500"
+                                        checked>
+                                    <span class="text-gray-300">YouTube URL</span>
+                                </label>
+                                <label for="video-option-file"
+                                    class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="radio" id="video-option-file" name="video-option"
+                                        value="file"
+                                        class="bg-gray-700 border-gray-500 text-sky-500 focus:ring-sky-500">
+                                    <span class="text-gray-300">Upload File</span>
+                                </label>
+                            </div>
+
+                            <div id="video-url-container">
+                                <label for="intro-video-url"
+                                    class="block text-xs font-medium text-gray-400 mb-1">Paste YouTube Video URL</label>
+                                <input type="url" id="intro-video-url" name="intro-video-url"
+                                    class="w-full bg-gray-800 border-gray-600 text-white rounded-md shadow-sm p-2 focus:ring-sky-400 focus:border-sky-400"
+                                    placeholder="e.g., https://www.youtube.com/watch?v=...">
+                                <p id="intro-video-url-error" class="text-red-400 text-sm mt-1 hidden"></p>
+
+                                <div id="intro-video-preview-iframe" class="video-container mt-4 hidden">
+                                    <iframe id="video-iframe" src="" frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                                </div>
+                            </div>
+
+                            <div id="video-file-container" class="hidden">
+                                <label for="intro-video-file"
+                                    class="block text-xs font-medium text-gray-400 mb-1">Upload Video
+                                    File</label>
+                                <input type="file" id="intro-video-file" name="intro-video-file"
+                                    accept="video/*"
+                                    class="w-full border-gray-600 rounded-md shadow-sm p-2 text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-100 file:text-sky-700 hover:file:bg-sky-200">
+                                <p id="intro-video-file-error" class="text-red-400 text-sm mt-1 hidden"></p> <div id="intro-video-preview-upload" class="video-container mt-4 hidden">
+                                    <video class="w-full rounded-lg" controls></video>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="course-image-file"
+                                class="block text-sm font-medium text-gray-300 mb-1">Course Image <span class="text-red-500">*</span></label>
+                            <input type="file" id="course-image-file" name="course-image-file"
+                                accept="image/*"
+                                class="w-full border-gray-600 rounded-md shadow-sm p-2 text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-100 file:text-sky-700 hover:file:bg-sky-200">
+                            <p id="course-image-file-error" class="text-red-400 text-sm mt-1 hidden"></p>
+                            <img id="course-image-preview" src="#" alt="Course image preview"
+                                class="mt-4 w-full h-auto max-h-60 object-contain rounded-md hidden">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-2" class="form-step hidden">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+                        <h2 class="text-xl sm:text-2xl font-bold text-white">Course Curriculum <span
+                                class="text-red-500">*</span></h2>
+                        <button type="button" id="add-module-btn"
+                            class="w-full sm:w-auto bg-sky-400 hover:bg-sky-500 text-white font-semibold py-2 px-4 rounded-full shadow-md transition-all duration-200 flex items-center justify-center space-x-2">
+                            <i class="fas fa-plus text-sm"></i>
+                            <span>Add Module</span>
+                        </button>
+                    </div>
+
+                    <div id="modules-container" class="space-y-6">
+                        <div
+                            class="module-item p-4 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="editable-container">
+                                    <h3 class="module-title font-bold text-md sm:text-lg text-white">Module
+                                        1 : Introduction</h3>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button type="button"
+                                        class="edit-module-btn text-sky-400 hover:text-sky-300 focus:outline-none"><i
+                                            class="fas fa-edit"></i></button>
+                                    <button type="button"
+                                        class="delete-module-btn text-red-500 hover:text-red-400 focus:outline-none"><i
+                                            class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center flex-wrap gap-2">
+                                    <span class="text-sm text-gray-400">Lesson Resources</span>
+                                    <button type="button"
+                                        class="add-resource-btn bg-sky-200 text-sky-800 font-semibold py-1 px-3 rounded-full hover:bg-sky-300 transition-colors duration-200 text-sm">
+                                        + Add Resource
+                                    </button>
+                                </div>
+                                <div class="resources-container space-y-2">
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-3" class="form-step hidden">
+                    <div
+                        class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+                        <h2 class="text-xl sm:text-2xl font-bold text-white">Tags <span
+                                class="text-red-500">*</span> <span class="text-sm text-gray-400 font-normal">(Add at least 2)</span></h2>
+                    </div>
+                    <div id="tags-container"
+                        class="bg-gray-800 border border-gray-600 text-white rounded-md shadow-sm p-2 flex items-center flex-wrap gap-2 focus-within:ring-2 focus-within:ring-sky-400 focus-within:border-sky-400 min-h-[50px]">
+                         <input type="text" id="tag-input"
+                            class="bg-transparent flex-1 focus:outline-none placeholder-gray-500 min-w-[180px] h-8 p-1"
+                            placeholder="Add a tag and press Enter...">
+                    </div>
+                    <p id="tags-error" class="text-red-400 text-sm mt-1 hidden">Please add at least two tags.</p>
+
+
+                    <div id="upload-progress-container" class="mt-8 p-4 bg-gray-800 rounded-xl hidden">
+                        <h3 class="text-lg font-bold text-white mb-4">Upload Progress</h3>
+                        <div id="upload-list" class="space-y-4 max-h-60 overflow-y-auto pr-2">
+                            </div>
+                        <div id="overall-progress-container"
+                            class="flex items-center justify-between mt-4 border-t pt-4 border-gray-700">
+                            <span class="text-sm font-medium text-gray-400">Overall Progress</span>
+                            <div class="flex items-center space-x-3">
+                                <div class="circular-progress-container">
+                                    <svg viewBox="0 0 36 36" class="w-6 h-6">
+                                        <path class="track"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke-width="4" />
+                                        <path id="overall-progress-bar" class="progress"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke-width="4" />
+                                    </svg>
+                                </div>
+                                <span id="overall-progress-text"
+                                    class="text-sky-400 font-semibold text-sm">0%</span>
+                            </div>
+                        </div>
+                        <div id="upload-status-message"
+                            class="text-center text-sm font-medium text-green-400 mt-4 hidden">
+                            Upload complete! Course created.
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-between mt-8">
+            <button type="button" id="prev-btn"
+                class="px-4 py-2 sm:px-6 sm:py-2 border border-gray-600 rounded-md text-white font-medium hover:bg-gray-700 transition-colors duration-200 hidden">
+                <i class="fas fa-chevron-left mr-2"></i> Previous
+            </button>
+            <button type="button" id="next-btn"
+                class="ml-auto px-4 py-2 sm:px-6 sm:py-2 bg-sky-500 text-white rounded-md font-medium shadow-md hover:bg-sky-600 transition-colors duration-200">
+                Next <i class="fas fa-chevron-right ml-2"></i>
+            </button>
+            <button type="button" id="submit-btn"
+                class="px-4 py-2 sm:px-6 sm:py-2 bg-green-500 text-white rounded-md font-medium shadow-md hover:bg-green-600 transition-colors duration-200 flex items-center justify-center space-x-2 hidden">
+                <i class="fas fa-save"></i> <span>Save Course</span>
+            </button>
+        </div>
+
+    </div>
+
+    <div id="modal-backdrop"
+        class="fixed flex inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[100]">
+        <div
+            class="bg-[#242424] border border-gray-700 p-6 sm:p-8 rounded-lg shadow-2xl max-w-sm w-full transform scale-95 opacity-0">
+            <h3 id="modal-title" class="text-xl font-bold mb-4 text-white"></h3>
+            <div id="modal-icon" class="hidden">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                </svg>
+            </div>
+            <p id="modal-body" class="text-gray-300 mb-6"></p>
+            <div class="flex justify-end space-x-2">
+                <button id="modal-cancel-btn"
+                    class="px-4 py-2 border border-gray-600 rounded-md text-gray-300 hover:bg-gray-700 hidden">Cancel</button>
+                <button id="modal-close-btn"
+                    class="px-4 py-2 bg-sky-500 text-white rounded-md hover:bg-sky-600">OK</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const tagsContainer = document.getElementById('tags-container');
+    const tagInput = document.getElementById('tag-input');
+
+    if (tagsContainer && tagInput) {
+        tagInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+
+                const MAX_TAG_COUNT = 200;
+                const MAX_TAG_LENGTH = 25;
+
+                const currentTags = tagsContainer.querySelectorAll('.tag');
+                if (currentTags.length >= MAX_TAG_COUNT) {
+                    showModal('Tag Limit Reached', `You can add a maximum of ${MAX_TAG_COUNT} tags.`);
+                    return;
+                }
+
+                const tagText = tagInput.value.trim().replace(/,/g, ''); // Remove commas
+
+                if (tagText.length > 0) {
+                    if (tagText.length > MAX_TAG_LENGTH) {
+                        showModal('Tag Too Long', `A single tag cannot be longer than ${MAX_TAG_LENGTH} characters.`);
+                        return;
+                    }
+
+                    // Check for duplicates
+                    let isDuplicate = false;
+                    currentTags.forEach(tagEl => {
+                        if (tagEl.querySelector('span:first-child').textContent.toLowerCase() === tagText.toLowerCase()) {
+                            isDuplicate = true;
+                        }
+                    });
+
+                    if (isDuplicate) {
+                        showModal('Duplicate Tag', `The tag "${tagText}" has already been added.`);
+                        tagInput.value = ''; // Clear input even if duplicate
+                        return;
+                    }
+
+                    const tag = document.createElement('div');
+                    tag.className = 'tag';
+
+                    const tagTextSpan = document.createElement('span');
+                    tagTextSpan.textContent = tagText;
+
+                    const removeBtn = document.createElement('span');
+                    removeBtn.className = 'remove-tag';
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.title = 'Remove tag';
+
+                    tag.appendChild(tagTextSpan);
+                    tag.appendChild(removeBtn);
+
+                    tagsContainer.insertBefore(tag, tagInput);
+
+                    tagInput.value = '';
+                    validateTags(); // Validate after adding
+                } else {
+                    // Clear input even if empty after Enter/Comma
+                    tagInput.value = '';
+                }
+            }
+        });
+
+        tagsContainer.addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-tag')) {
+                e.target.parentElement.remove();
+                validateTags(); // Validate after removing
+            } else if (e.target === tagsContainer || e.target === tagInput) {
+                 // Allow clicking container or input to focus input
+                 tagInput.focus();
+            }
+        });
+
+        // Ensure clicking the container focuses the input
+        tagsContainer.addEventListener('click', () => tagInput.focus());
+    }
+
+
+    // -- Modal Logic with Animations --
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalDialog = modalBackdrop.querySelector('div'); // Get the dialog div
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    const modalIcon = document.getElementById('modal-icon');
+    let confirmCallback = null;
+
+    const showModal = (title, message, isConfirmation = false, isSuccess = false, onConfirm = () => {}) => {
+        modalTitle.textContent = title;
+        modalBody.textContent = message;
+        modalBody.classList.remove('hidden'); // Ensure body is visible
+
+        // Reset styles first
+        modalDialog.classList.remove('bg-green-900');
+        modalDialog.classList.add('bg-[#242424]');
+        modalIcon.classList.add('hidden');
+        modalCloseBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'bg-red-600', 'hover:bg-red-700');
+        modalCloseBtn.classList.add('bg-sky-500', 'hover:bg-sky-600');
+
+
+        if (isSuccess) {
+            modalDialog.classList.remove('bg-[#242424]');
+            modalDialog.classList.add('bg-green-900'); // Use a success background
+            modalIcon.classList.remove('hidden');
+            modalCloseBtn.classList.remove('bg-sky-500', 'hover:bg-sky-600');
+            modalCloseBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+        } else if (isConfirmation) {
+            // Standard background for confirmation, potentially make it slightly different if needed
+        } else { // Error or informational modal
+             modalDialog.classList.remove('bg-[#242424]');
+             modalDialog.classList.add('bg-red-900'); // Use an error background
+             modalIcon.classList.add('hidden'); // No icon for errors usually, or add an error icon
+             modalCloseBtn.classList.remove('bg-sky-500', 'hover:bg-sky-600');
+             modalCloseBtn.classList.add('bg-red-600', 'hover:bg-red-700');
+        }
+
+
+        if (isConfirmation) {
+            confirmCallback = onConfirm;
+            modalCancelBtn.classList.remove('hidden');
+            modalCloseBtn.textContent = "Confirm";
+        } else {
+            confirmCallback = null;
+            modalCancelBtn.classList.add('hidden');
+            modalCloseBtn.textContent = "OK";
+        }
+
+        modalBackdrop.classList.remove('hidden');
+        // Trigger transition
+        setTimeout(() => {
+            modalBackdrop.classList.add('opacity-100');
+            modalDialog.classList.remove('scale-95', 'opacity-0');
+            modalDialog.classList.add('scale-100', 'opacity-100');
+        }, 10); // Small delay to allow CSS to catch up
+    };
+
+    const hideModal = () => {
+        modalBackdrop.classList.remove('opacity-100');
+        modalDialog.classList.remove('scale-100', 'opacity-100');
+        modalDialog.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modalBackdrop.classList.add('hidden');
+            confirmCallback = null; // Clear callback
+            // Reset modal styles potentially needed here if backgrounds change
+            modalDialog.classList.remove('bg-green-900', 'bg-red-900');
+            modalDialog.classList.add('bg-[#242424]');
+            modalIcon.classList.add('hidden');
+        }, 300); // Match CSS transition duration
+    };
+
+    modalCloseBtn.addEventListener('click', () => {
+        if (confirmCallback) {
+            confirmCallback(); // Execute confirmation action
+            hideModal();
+        } else {
+            hideModal(); // Just close informational modal
+        }
+    });
+    modalCancelBtn.addEventListener('click', hideModal); // Cancel always just closes
+
+
+    // -- Multi-step Form Logic --
+    let currentStep = 1;
+    const formSteps = document.querySelectorAll('.form-step');
+    const nextBtn = document.getElementById('next-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const submitBtn = document.getElementById('submit-btn');
+
+    const updateStep = (step) => {
+        formSteps.forEach((s, index) => {
+             s.classList.toggle('hidden', index + 1 !== step);
+        });
+        updateProgress(step);
+
+        prevBtn.classList.toggle('hidden', step === 1);
+        nextBtn.classList.toggle('hidden', step === formSteps.length);
+        submitBtn.classList.toggle('hidden', step !== formSteps.length);
+        currentStep = step; // Update global currentStep
+    };
+
+    const updateProgress = (step) => {
+        const steps = document.querySelectorAll('[class*="progress-step-"]');
+        const lines = document.querySelectorAll('[class*="progress-line-"]');
+
+        steps.forEach((s, index) => {
+            const stepNum = index + 1;
+            s.classList.remove('progress-step-active', 'progress-step-complete', 'bg-sky-400', 'text-white', 'bg-green-500');
+            s.classList.add('bg-gray-700', 'text-gray-400');
+
+            if (stepNum < step) {
+                s.classList.remove('bg-gray-700', 'text-gray-400');
+                s.classList.add('bg-green-500', 'text-white', 'progress-step-complete');
+            } else if (stepNum === step) {
+                s.classList.remove('bg-gray-700', 'text-gray-400');
+                s.classList.add('bg-sky-400', 'text-white', 'progress-step-active');
+            }
+        });
+
+        lines.forEach((l, index) => {
+            const lineNum = index + 1;
+            l.classList.remove('progress-line-active', 'bg-sky-400', 'bg-green-500'); // Also remove green
+            l.classList.add('bg-gray-700');
+            if (lineNum < step) {
+                 l.classList.remove('bg-gray-700');
+                 l.classList.add('bg-green-500'); // Use green for completed lines
+            } else if (lineNum === step -1) {
+                // Optionally keep the line leading *to* the active step blue
+                 l.classList.remove('bg-gray-700');
+                 l.classList.add('bg-sky-400'); // Or keep it green as well
+            }
+        });
+    };
+
+    nextBtn.addEventListener('click', () => {
+        // Validate current step before proceeding
+        let isValid = true;
+        if (currentStep === 1) {
+            isValid = validateStep1();
+        } else if (currentStep === 2) {
+            isValid = validateStep2();
+        } // No validation needed *before* showing step 3
+
+        if (isValid && currentStep < formSteps.length) {
+            updateStep(currentStep + 1);
+        } else if (!isValid) {
+            showModal('Validation Error', 'Please correct the errors before proceeding.');
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 1) {
+            updateStep(currentStep - 1);
+        }
+    });
+
+    // Initial setup
+    updateStep(currentStep);
+
+
+    // -- Dynamic Form Logic (Curriculum) --
+    const modulesContainer = document.getElementById('modules-container');
+    const addModuleBtn = document.getElementById('add-module-btn');
+    let moduleCount = 1;
+    let resourceCount = 0;
+
+    const createModuleElement = (count) => {
+        return `
+        <div class="module-item p-4 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+                <div class="editable-container">
+                    <h3 class="module-title font-bold text-md sm:text-lg text-white">Module ${count}</h3>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button type="button" class="edit-module-btn text-sky-400 hover:text-sky-300 focus:outline-none"><i class="fas fa-edit"></i></button>
+                    <button type="button" class="delete-module-btn text-red-500 hover:text-red-400 focus:outline-none"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center flex-wrap gap-2">
+                    <span class="text-sm text-gray-400">Lesson Resources</span>
+                    <button type="button" class="add-resource-btn bg-sky-200 text-sky-800 font-semibold py-1 px-3 rounded-full hover:bg-sky-300 transition-colors duration-200 text-sm">
+                        + Add Resource
+                    </button>
+                </div>
+                <div class="resources-container space-y-2"></div>
+            </div>
+        </div>`;
+    };
+
+    const createResourceElement = (id) => {
+         return `
+        <div class="resource-item bg-gray-900 border border-gray-700 rounded-lg overflow-hidden" data-resource-id="${id}">
+            <div class="flex justify-between items-center p-4 cursor-pointer" data-accordion-toggle>
+                <div class="flex items-center space-x-3 flex-grow min-w-0"> <i class="fas fa-grip-vertical text-gray-500 hidden sm:block cursor-grab resource-handle"></i>
+                    <div class="editable-container flex-grow min-w-0"> <h4 class="resource-title font-medium text-white text-sm sm:text-base truncate">New Resource ${id}</h4>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 flex-shrink-0">
+                    <span class="edit-resource-btn text-sky-400 hover:text-sky-300 cursor-pointer"><i class="fas fa-edit"></i></span>
+                    <span class="delete-resource-btn text-red-500 hover:text-red-400 cursor-pointer"><i class="fas fa-trash-alt"></i></span>
+                    <i class="fas fa-chevron-down text-gray-400 transform transition-transform duration-200"></i>
+                </div>
+            </div>
+            <div class="resource-details p-4 pt-0 hidden space-y-4">
+                <div class="flex justify-around mb-4 p-1 bg-gray-700 rounded-xl">
+                    <button type="button" class="resource-type-btn flex items-center justify-center gap-2 p-3 w-1/2 rounded-xl transition-all duration-300 bg-sky-500 text-white shadow-lg" data-type="video">
+                        <i class="fas fa-video w-5 h-5"></i><span class="font-semibold text-sm sm:text-base">Video</span>
+                    </button>
+                    <button type="button" class="resource-type-btn flex items-center justify-center gap-2 p-3 w-1/2 rounded-xl transition-all duration-300 text-gray-300 hover:bg-gray-600" data-type="document">
+                        <i class="fas fa-file-alt w-5 h-5"></i><span class="font-semibold text-sm sm:text-base">Document</span>
+                    </button>
+                </div>
+                <div class="dynamic-input-container space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Resource Content</label>
+                        <div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-700 mb-2">
+                            <i class="fas fa-upload text-sky-400 w-5 h-5"></i>
+                            <button type="button" class="flex-1 text-left text-gray-400 font-medium truncate upload-btn" data-type="video" data-resource-id="${id}">Upload Video File</button>
+                            <input type="file" id="video-file-input-${id}" class="hidden file-input" accept="video/*" data-resource-id="${id}" data-type="video">
+                        </div>
+                        <div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-700">
+                            <i class="fas fa-link text-green-400 w-5 h-5"></i>
+                            <input type="text" placeholder="Paste URL (e.g., YouTube, Vimeo)" class="resource-url-input flex-1 bg-transparent focus:outline-none placeholder-gray-500 text-white font-medium">
+                        </div>
+                        <p class="resource-file-error text-red-400 text-sm mt-1 hidden"></p> </div>
+                </div>
+            </div>
+        </div>`;
+    };
+
+    if (addModuleBtn) {
+        addModuleBtn.addEventListener('click', () => {
+            moduleCount++;
+            const newModule = createModuleElement(moduleCount);
+            if (modulesContainer) {
+                 modulesContainer.insertAdjacentHTML('beforeend', newModule);
+                 validateStep2(); // Re-validate after adding
+            }
+        });
+    }
+
+    // Use event delegation for dynamically added elements
+    document.addEventListener('click', (e) => {
+         // --- Add Resource ---
+        const addResourceBtn = e.target.closest('.add-resource-btn');
+        if (addResourceBtn) {
+            const moduleElement = addResourceBtn.closest('.module-item');
+            resourceCount++;
+            const resourcesContainer = moduleElement.querySelector('.resources-container');
+            const newResource = createResourceElement(resourceCount);
+            if (resourcesContainer) {
+                 resourcesContainer.insertAdjacentHTML('beforeend', newResource);
+                 validateStep2(); // Re-validate after adding
+            }
+        }
+        // --- Delete Module ---
+        else if (e.target.closest('.delete-module-btn')) {
+            // Prevent deleting the last module
+            if (modulesContainer.querySelectorAll('.module-item').length <= 1) {
+                showModal('Cannot Delete', 'You must have at least one module.');
+                return;
+            }
+            showModal('Confirm Deletion', 'Are you sure you want to delete this module and all its resources?', true, false, () => {
+                 e.target.closest('.module-item')?.remove();
+                 // Renumber remaining modules (optional but good practice)
+                 modulesContainer.querySelectorAll('.module-item .module-title').forEach((title, index) => {
+                     // Keep existing custom names, only update the number prefix if it exists
+                     const currentText = title.textContent;
+                     title.textContent = currentText.replace(/^Module \d+\s*(:)?\s*/, `Module ${index + 1} : `);
+                 });
+                 moduleCount = modulesContainer.querySelectorAll('.module-item').length; // Recalculate count
+                 validateStep2(); // Re-validate
+            });
+        }
+        // --- Delete Resource ---
+        else if (e.target.closest('.delete-resource-btn')) {
+             const resourceItem = e.target.closest('.resource-item');
+             if (resourceItem) {
+                 showModal('Confirm Deletion', 'Are you sure you want to delete this resource?', true, false, () => {
+                     resourceItem.remove();
+                     validateStep2(); // Re-validate
+                 });
+             }
+        }
+         // --- Toggle Resource Details (Accordion) ---
+        else if (e.target.closest('[data-accordion-toggle]')) {
+             const toggle = e.target.closest('[data-accordion-toggle]');
+             const parent = toggle.closest('.resource-item');
+             const details = parent.querySelector('.resource-details');
+             const chevron = toggle.querySelector('.fa-chevron-down');
+             details.classList.toggle('hidden');
+             chevron.classList.toggle('rotate-180');
+        }
+         // --- Switch Resource Type (Video/Document) ---
+        else if (e.target.closest('.resource-type-btn')) {
+             handleResourceTypeSwitch(e.target.closest('.resource-type-btn'));
+        }
+         // --- Trigger File Input ---
+        else if (e.target.closest('.upload-btn')) {
+             triggerFileInput(e.target.closest('.upload-btn'));
+        }
+        // --- Handle Edit/Save Module Title ---
+         else if (e.target.closest('.edit-module-btn')) {
+            const moduleItem = e.target.closest('.module-item');
+            const moduleTitle = moduleItem?.querySelector('.module-title');
+            if (moduleItem && moduleTitle && !moduleItem.querySelector('.editable-container input')) {
+                createEditInput(moduleTitle);
+            }
+        }
+        // --- Handle Edit/Save Resource Title ---
+        else if (e.target.closest('.edit-resource-btn')) {
+             const resourceItem = e.target.closest('.resource-item');
+             const resourceTitle = resourceItem?.querySelector('.resource-title');
+             if (resourceItem && resourceTitle && !resourceItem.querySelector('.editable-container input')) {
+                 createEditInput(resourceTitle);
+             }
+        }
+    });
+
+    // Handle file input changes
+    document.addEventListener('change', (e) => {
+        const fileInput = e.target.closest('.file-input');
+        if (fileInput) {
+            handleFileInputChange(fileInput);
+            validateStep2(); // Validate after file selection change
+        }
+         // Handle main Course Image change for validation
+        if (e.target.id === 'course-image-file') {
+             validateImageFile();
+        }
+        // Handle Intro Video file change for validation
+        if (e.target.id === 'intro-video-file') {
+             validateIntroVideo();
+        }
+    });
+
+     // Handle Intro Video URL input for validation
+     const introVideoUrlInput = document.getElementById('intro-video-url');
+     if (introVideoUrlInput) {
+         introVideoUrlInput.addEventListener('input', validateIntroVideo);
+     }
+
+
+    // Function to handle switching resource type
+    const handleResourceTypeSwitch = (button) => {
+        const resourceItem = button.closest('.resource-item');
+        const dynamicInputContainer = resourceItem.querySelector('.dynamic-input-container');
+        const resourceType = button.dataset.type;
+        const resourceId = resourceItem.dataset.resourceId;
+
+        // Update button styles
+        const allButtons = resourceItem.querySelectorAll('.resource-type-btn');
+        allButtons.forEach(btn => {
+            btn.classList.remove('bg-sky-500', 'text-white', 'shadow-lg');
+            btn.classList.add('text-gray-300', 'hover:bg-gray-600');
+        });
+        button.classList.remove('text-gray-300', 'hover:bg-gray-600');
+        button.classList.add('bg-sky-500', 'text-white', 'shadow-lg');
+
+        // Update the dynamic input area
+        if (dynamicInputContainer) {
+            let inputHTML = '';
+            if (resourceType === 'video') {
+                inputHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Resource Content</label>
+                    <div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-700 mb-2">
+                        <i class="fas fa-upload text-sky-400 w-5 h-5"></i>
+                        <button type="button" class="flex-1 text-left text-gray-400 font-medium truncate upload-btn" data-type="video" data-resource-id="${resourceId}">Upload Video File</button>
+                        <input type="file" id="video-file-input-${resourceId}" class="hidden file-input" accept="video/*" data-resource-id="${resourceId}" data-type="video">
+                    </div>
+                    <div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-700">
+                        <i class="fas fa-link text-green-400 w-5 h-5"></i>
+                        <input type="text" placeholder="Paste URL (e.g., YouTube, Vimeo)" class="resource-url-input flex-1 bg-transparent focus:outline-none placeholder-gray-500 text-white font-medium">
+                    </div>
+                    <p class="resource-file-error text-red-400 text-sm mt-1 hidden"></p>
+                </div>`;
+            } else if (resourceType === 'document') {
+                inputHTML = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Resource Content</label>
+                    <div class="flex items-center gap-4 bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-700">
+                        <i class="fas fa-upload text-purple-400 w-5 h-5"></i>
+                        <button type="button" class="flex-1 text-left text-gray-400 font-medium truncate upload-btn" data-type="document" data-resource-id="${resourceId}">Upload Document File</button>
+                        <input type="file" id="document-file-input-${resourceId}" class="hidden file-input" accept=".pdf,.doc,.docx,.txt,.ppt,.pptx,.xls,.xlsx" data-resource-id="${resourceId}" data-type="document">
+                    </div>
+                     <p class="resource-file-error text-red-400 text-sm mt-1 hidden"></p>
+                </div>`;
+            }
+            dynamicInputContainer.innerHTML = inputHTML;
+            validateStep2(); // Re-validate after type switch
+        }
+    };
+
+    // Function to trigger file input click
+    const triggerFileInput = (uploadBtn) => {
+        const resourceId = uploadBtn.dataset.resourceId;
+        const inputType = uploadBtn.dataset.type;
+        const hiddenInput = document.querySelector(`#${inputType}-file-input-${resourceId}`);
+        if (hiddenInput) {
+            hiddenInput.click();
+        }
+    };
+
+    // Function to handle file input change
+    const handleFileInputChange = (fileInput) => {
+        if (fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            const resourceId = fileInput.dataset.resourceId;
+            const inputType = fileInput.dataset.type;
+            const uploadBtn = document.querySelector(`.upload-btn[data-resource-id="${resourceId}"][data-type="${inputType}"]`);
+            if (uploadBtn) {
+                uploadBtn.textContent = fileName;
+                uploadBtn.classList.remove('text-gray-400');
+                uploadBtn.classList.add('text-sky-400'); // Indicate file selected
+            }
+            // Clear URL if a file is selected for the same resource
+             const resourceItem = fileInput.closest('.resource-item');
+             const urlInput = resourceItem.querySelector('.resource-url-input');
+             if(urlInput) urlInput.value = '';
+
+        } else {
+             // If files are cleared, reset the button text
+             const resourceId = fileInput.dataset.resourceId;
+             const inputType = fileInput.dataset.type;
+             const uploadBtn = document.querySelector(`.upload-btn[data-resource-id="${resourceId}"][data-type="${inputType}"]`);
+             if (uploadBtn) {
+                 uploadBtn.textContent = `Upload ${inputType.charAt(0).toUpperCase() + inputType.slice(1)} File`;
+                 uploadBtn.classList.add('text-gray-400');
+                 uploadBtn.classList.remove('text-sky-400');
+             }
+        }
+    };
+
+
+    // -- Inline Editing Functionality --
+    function createEditInput(textElement, onSave) {
+        const originalText = textElement.textContent.trim();
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'inline-edit-input bg-gray-700 text-white border border-gray-600 rounded-md p-1 w-full focus:ring-sky-400 focus:border-sky-400 text-sm sm:text-base'; // Added text size classes
+        input.value = originalText;
+
+        // Replace element with input
+        textElement.style.display = 'none'; // Hide original
+        textElement.parentNode.insertBefore(input, textElement.nextSibling); // Insert input after
+        input.focus();
+        input.select();
+
+        const saveChanges = () => {
+            const newText = input.value.trim();
+            textElement.textContent = newText === '' ? originalText : newText; // Revert if empty
+            input.remove(); // Remove input
+            textElement.style.display = ''; // Show original again
+            if (onSave) onSave(newText);
+            // Remove event listeners to prevent memory leaks
+             input.removeEventListener('blur', saveChanges);
+             input.removeEventListener('keydown', handleKeydown);
+        };
+
+        const handleKeydown = (e) => {
+             if (e.key === 'Enter') {
+                 saveChanges();
+             } else if (e.key === 'Escape') {
+                 input.value = originalText; // Revert
+                 saveChanges();
+             }
+         };
+
+        input.addEventListener('blur', saveChanges);
+        input.addEventListener('keydown', handleKeydown);
+    }
+
+
+    // -- Video Type Selection UI --
+    const videoOptionUrl = document.getElementById('video-option-url');
+    const videoOptionFile = document.getElementById('video-option-file');
+    const videoUrlContainer = document.getElementById('video-url-container');
+    const videoFileContainer = document.getElementById('video-file-container');
+    // const introVideoUrlInput = document.getElementById('intro-video-url');
+    const introVideoFileInput = document.getElementById('intro-video-file');
+
+    const handleVideoOptionChange = () => {
+        const isUrlSelected = videoOptionUrl.checked;
+        videoUrlContainer.classList.toggle('hidden', !isUrlSelected);
+        videoFileContainer.classList.toggle('hidden', isUrlSelected);
+
+        if (isUrlSelected) {
+            introVideoFileInput.value = ''; // Clear file if URL is selected
+            document.getElementById('intro-video-preview-upload').classList.add('hidden'); // Hide file preview
+        } else {
+            introVideoUrlInput.value = ''; // Clear URL if file is selected
+            document.getElementById('intro-video-preview-iframe').classList.add('hidden'); // Hide URL preview
+            document.getElementById('video-iframe').src = ''; // Clear iframe src
+        }
+         validateIntroVideo(); // Validate after switching
+    };
+
+    if (videoOptionUrl && videoOptionFile) {
+        videoOptionUrl.addEventListener('change', handleVideoOptionChange);
+        videoOptionFile.addEventListener('change', handleVideoOptionChange);
+        handleVideoOptionChange(); // Initial setup
+    }
+
+    // -- Video/Image Preview Logic --
+    const introVideoIframePreview = document.getElementById('intro-video-preview-iframe');
+    if (introVideoUrlInput && introVideoIframePreview) {
+        introVideoUrlInput.addEventListener('input', () => {
+            const url = introVideoUrlInput.value.trim();
+            const videoIframe = document.getElementById('video-iframe');
+            const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i;
+            const match = url.match(youtubeRegex);
+            if (match && match[1]) {
+                videoIframe.src = `https://www.youtube.com/embed/${match[1]}`;
+                introVideoIframePreview.classList.remove('hidden');
+                validateIntroVideo(); // Re-validate on input
+            } else {
+                introVideoIframePreview.classList.add('hidden');
+                 if(url !== '') validateIntroVideo(); // Show error if input is not empty but invalid
+                 else displayError('intro-video-url', ''); // Clear error if input is empty
+            }
+        });
+    }
+
+    const introVideoUploadPreview = document.getElementById('intro-video-preview-upload');
+    if (introVideoFileInput && introVideoUploadPreview) {
+        introVideoFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const videoPlayer = introVideoUploadPreview.querySelector('video');
+            if (file && file.type.startsWith('video/')) {
+                const objectUrl = URL.createObjectURL(file);
+                videoPlayer.src = objectUrl;
+                // Optional: Clean up the object URL when the video element is removed or replaced
+                 videoPlayer.onloadedmetadata = () => { URL.revokeObjectURL(objectUrl); }; // Revoke after loading metadata
+                introVideoUploadPreview.classList.remove('hidden');
+                validateIntroVideo(); // Validate after selecting file
+            } else {
+                introVideoUploadPreview.classList.add('hidden');
+                videoPlayer.src = '';
+                if(file) { // If a file was selected but wasn't a video
+                     introVideoFileInput.value = ''; // Clear the invalid selection
+                     showModal("Invalid File", "Please select a valid video file.");
+                     validateIntroVideo(); // Re-validate
+                }
+            }
+        });
+    }
+
+    const courseImageFileInput = document.getElementById('course-image-file');
+    const courseImagePreview = document.getElementById('course-image-preview');
+    if (courseImageFileInput && courseImagePreview) {
+        courseImageFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    courseImagePreview.src = e.target.result;
+                    courseImagePreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+                validateImageFile(); // Validate on change
+            } else {
+                courseImagePreview.src = '#';
+                courseImagePreview.classList.add('hidden');
+                if (file) { // If a file was selected but wasn't an image
+                     courseImageFileInput.value = ''; // Clear invalid selection
+                     showModal("Invalid File", "Please select a valid image file (e.g., JPG, PNG, GIF).");
+                     validateImageFile(); // Re-validate
+                }
+            }
+        });
+    }
+
+    // Add input event listeners for real-time validation feedback
+     document.getElementById('course-title')?.addEventListener('input', validateTitle);
+     document.getElementById('course-description')?.addEventListener('input', validateDescription);
+     document.getElementById('course-price')?.addEventListener('input', validatePrice);
+     document.getElementById('course-category')?.addEventListener('input', validateCategory);
+     // Video/Image validation is handled by their change/input events already.
+
+
+    // -- Upload Progress UI Functions --
+    const uploadProgressContainer = document.getElementById('upload-progress-container');
+    const uploadList = document.getElementById('upload-list');
+    const overallProgressBar = document.getElementById('overall-progress-bar');
+    const overallProgressText = document.getElementById('overall-progress-text');
+    const uploadStatusMessage = document.getElementById('upload-status-message');
+
+    const createUploadItem = (fileName) => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center space-x-3 p-3 bg-gray-900 rounded-lg shadow-sm';
+        item.innerHTML = `
+            <div class="upload-icon-container w-6 h-6 flex-shrink-0">
+                 <div class="circular-progress-container w-full h-full">
+                     <svg viewBox="0 0 36 36" class="w-full h-full">
+                         <path class="track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="4"/>
+                         <path class="progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="4"/>
+                     </svg>
+                 </div>
+            </div>
+            <span class="text-sm font-medium text-gray-300 truncate flex-1">${fileName}</span>
+            <span class="progress-percentage text-xs font-semibold text-sky-400 w-10 text-right">0%</span>
+        `;
+        if (uploadList) uploadList.appendChild(item);
+        return item;
+    };
+
+    const updateItemProgress = (item, percentage) => {
+        const progressCircle = item.querySelector('.progress');
+        const progressText = item.querySelector('.progress-percentage');
+        const iconContainer = item.querySelector('.upload-icon-container');
+        const circumference = 100; // Corresponds to stroke-dasharray
+        const offset = circumference - (percentage / 100) * circumference;
+
+        if (progressCircle) progressCircle.style.strokeDashoffset = offset;
+        if (progressText) progressText.textContent = `${percentage}%`;
+
+        if (percentage >= 100) {
+            if (progressCircle) progressCircle.style.stroke = 'var(--success-green, #34D399)'; // Use variable or fallback
+            if (progressText) {
+                progressText.textContent = 'Done';
+                progressText.classList.remove('text-sky-400');
+                progressText.classList.add('text-green-400');
+            }
+             // Replace spinner with checkmark
+             if (iconContainer && !iconContainer.querySelector('.fa-check-circle')) {
+                 iconContainer.innerHTML = '<i class="fas fa-check-circle text-green-400 text-xl"></i>';
+             }
+        }
+    };
+
+    const updateOverallProgress = (totalPercentage) => {
+        const circumference = 100;
+        const offset = circumference - (totalPercentage / 100) * circumference;
+        const roundedPercentage = Math.round(totalPercentage);
+
+        if (overallProgressBar) overallProgressBar.style.strokeDashoffset = offset;
+        if (overallProgressText) overallProgressText.textContent = `${roundedPercentage}%`;
+
+        if (roundedPercentage >= 100) {
+            if (overallProgressBar) overallProgressBar.style.stroke = 'var(--success-green, #34D399)';
+            if (uploadStatusMessage) uploadStatusMessage.classList.remove('hidden');
+        } else {
+             // Ensure progress bar color is blue if not complete
+             if (overallProgressBar) overallProgressBar.style.stroke = '#60A5FA';
+             if (uploadStatusMessage) uploadStatusMessage.classList.add('hidden'); // Hide completion message if not 100%
+        }
+    };
+
+
+    // -- Form Reset Function --
+    const resetForm = () => {
+        document.getElementById('multi-step-form').reset();
+
+        // Reset Modules to initial state
+        const initialModuleHTML = createModuleElement(1); // Assuming the first module always exists
+        if (modulesContainer) modulesContainer.innerHTML = initialModuleHTML;
+        moduleCount = 1;
+        resourceCount = 0; // Reset resource counter as well
+
+        // Reset Tags
+        if (tagsContainer) {
+            tagsContainer.querySelectorAll('.tag').forEach(tagEl => tagEl.remove());
+            if (tagInput) tagInput.value = '';
+        }
+
+        // Reset Previews and File Inputs
+        handleVideoOptionChange(); // Resets video section based on default radio
+        if (courseImagePreview) {
+            courseImagePreview.src = '#';
+            courseImagePreview.classList.add('hidden');
+        }
+        // File input values are reset by form.reset()
+
+        // Reset Upload Progress UI
+        if (uploadProgressContainer) uploadProgressContainer.classList.add('hidden');
+        if (uploadList) uploadList.innerHTML = '';
+        if (uploadStatusMessage) uploadStatusMessage.classList.add('hidden');
+        updateOverallProgress(0); // Reset overall progress bar visually
+
+        // Reset validation errors
+         clearAllErrors();
+
+        // Reset to Step 1
+        updateStep(1);
+    };
+
+    // --- Form Validation Functions ---
+
+    function displayError(elementOrId, message) {
+        let inputElement = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
+        let errorElement = typeof elementOrId === 'string' ? document.getElementById(elementOrId + '-error') : inputElement?.parentElement?.querySelector('.text-red-400'); // Try finding adjacent error p
+
+         // Special case for radio button group (video options)
+        if (inputElement?.type === 'radio' && inputElement.name === 'video-option') {
+            // Find the common error message element for the group
+            errorElement = document.getElementById('intro-video-url-error') || document.getElementById('intro-video-file-error'); // Use either error element for the group
+            // Apply error styles to the container or labels if needed
+             const container = inputElement.closest('.video-type-container'); // Hypothetical container
+             if(container) container.classList.toggle('has-error', !!message);
+        }
+
+        if (!errorElement) {
+             console.warn("Could not find error element for", elementOrId);
+             return; // No error element found
+         }
+
+        if (message) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            if (inputElement && inputElement.type !== 'radio' && inputElement.type !== 'checkbox') { // Don't style radios directly
+                 inputElement.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                 inputElement.classList.remove('border-gray-600', 'focus:border-sky-400', 'focus:ring-sky-400');
+            }
+        } else {
+            errorElement.classList.add('hidden');
+             if (inputElement && inputElement.type !== 'radio' && inputElement.type !== 'checkbox') {
+                 inputElement.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                 inputElement.classList.add('border-gray-600', 'focus:border-sky-400', 'focus:ring-sky-400');
+             }
+        }
+    }
+     function clearAllErrors() {
+         document.querySelectorAll('.text-red-400').forEach(el => el.classList.add('hidden'));
+         document.querySelectorAll('input, textarea').forEach(el => {
+             el.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+             el.classList.add('border-gray-600', 'focus:border-sky-400', 'focus:ring-sky-400');
+         });
+         // Clear tag specific error
+          displayError(document.getElementById('tags-container'), '');
+          // Clear curriculum specific error (if you add one)
+          // displayError(modulesContainer, '');
+     }
+
+    function validateTitle() {
+        const input = document.getElementById('course-title');
+        const value = input.value.trim();
+        if (value.length < 5) return displayError(input, 'Title must be at least 5 characters.'), false;
+        if (value.length > 80) return displayError(input, 'Title cannot exceed 80 characters.'), false;
+        return displayError(input, ''), true;
+    }
+
+    function validateDescription() {
+        const input = document.getElementById('course-description');
+        const value = input.value.trim();
+        if (value.length < 20) return displayError(input, 'Description must be at least 20 characters.'), false;
+        if (value.length > 500) return displayError(input, 'Description cannot exceed 500 characters.'), false;
+        return displayError(input, ''), true;
+    }
+
+    function validatePrice() {
+        const input = document.getElementById('course-price');
+        const valueStr = input.value.trim();
+        if (valueStr === '') return displayError(input, 'Price is required.'), false;
+        const value = parseFloat(valueStr);
+        if (isNaN(value)) return displayError(input, 'Please enter a valid number.'), false;
+        if (value < 300) return displayError(input, 'Price must be at least ₹300.'), false;
+        if (value > 1000000) return displayError(input, 'Price cannot exceed ₹1,000,000.'), false;
+        return displayError(input, ''), true;
+    }
+
+    function validateCategory() {
+        const input = document.getElementById('course-category');
+        const value = input.value.trim();
+        if (value.length < 3) return displayError(input, 'Category must be at least 3 characters.'), false;
+         if (value.length > 50) return displayError(input, 'Category cannot exceed 50 characters.'), false;
+        return displayError(input, ''), true;
+    }
+
+     function validateIntroVideo() {
+        const isUrlOption = document.getElementById('video-option-url').checked;
+        const urlInput = document.getElementById('intro-video-url');
+        const fileInput = document.getElementById('intro-video-file');
+        const urlValue = urlInput.value.trim();
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+
+        // Use the file input's error element ID as the common target for messages
+        const errorElementId = 'intro-video-file';
+
+        if (isUrlOption) {
+            if (urlValue === '') return displayError(errorElementId, 'YouTube URL is required.'), false;
+            if (!youtubeRegex.test(urlValue)) return displayError(errorElementId, 'Please enter a valid YouTube URL.'), false;
+        } else { // File option is selected
+             if (fileInput.files.length === 0) return displayError(errorElementId, 'Video file is required.'), false;
+             // Basic file type check (already handled in preview, but good backup)
+             const file = fileInput.files[0];
+             if (file && !file.type.startsWith('video/')) return displayError(errorElementId, 'Please select a valid video file.'), false;
+        }
+
+        // If validation passed for the selected option, clear the error
+        return displayError(errorElementId, ''), true;
+    }
+
+     function validateImageFile() {
+        const imageInput = document.getElementById('course-image-file');
+        if (imageInput.files.length === 0) return displayError(imageInput, 'Course image is required.'), false;
+        const file = imageInput.files[0];
+        if (file && !file.type.startsWith('image/')) return displayError(imageInput, 'Please select a valid image file.'), false;
+        return displayError(imageInput, ''), true;
+    }
+
+     function validateStep1() {
+         // Run all validations for step 1
+         const isTitleValid = validateTitle();
+         const isDescriptionValid = validateDescription();
+         const isPriceValid = validatePrice();
+         const isCategoryValid = validateCategory();
+         const isVideoValid = validateIntroVideo();
+         const isImageValid = validateImageFile();
+         return isTitleValid && isDescriptionValid && isPriceValid && isCategoryValid && isVideoValid && isImageValid;
+     }
+
+     function validateStep2() {
+          let isValid = true;
+          const modules = modulesContainer.querySelectorAll('.module-item');
+
+          if (modules.length === 0) {
+              // Display error near the add module button or section title
+              showModal('Curriculum Error', 'Please add at least one module.');
+              isValid = false;
+          } else {
+               modules.forEach((moduleEl, mIndex) => {
+                   const resources = moduleEl.querySelectorAll('.resource-item');
+                   if (resources.length === 0) {
+                        // Highlight the module or show a message? For now, just flag as invalid.
+                        // You could add an error message display within the module div.
+                        console.warn(`Module ${mIndex + 1} has no resources.`);
+                        // Decide if this is an error - let's allow empty modules for now.
+                        // isValid = false;
+                   } else {
+                        resources.forEach((resourceEl, rIndex) => {
+                            const fileInput = resourceEl.querySelector('.file-input');
+                            const urlInput = resourceEl.querySelector('.resource-url-input');
+                            const errorEl = resourceEl.querySelector('.resource-file-error');
+                            let hasContent = false;
+
+                            if (fileInput && fileInput.files.length > 0) {
+                                hasContent = true;
+                            } else if (urlInput && urlInput.value.trim() !== '') {
+                                // Basic URL validation (optional, can be more strict)
+                                try {
+                                    new URL(urlInput.value.trim());
+                                    hasContent = true;
+                                } catch (_) {
+                                    displayError(errorEl, 'Invalid URL format.');
+                                    isValid = false;
+                                }
+                            }
+
+                             if (!hasContent) {
+                                 displayError(errorEl, 'Please provide a file or a URL.');
+                                 isValid = false;
+                             } else if (errorEl){ // Clear error if content is present
+                                  displayError(errorEl, '');
+                             }
+                        });
+                   }
+               });
+          }
+           return isValid;
+      }
+
+      function validateTags() {
+           const tags = tagsContainer.querySelectorAll('.tag');
+           if (tags.length < 2) return displayError(tagsContainer.parentElement.querySelector('#tags-error'), 'Please add at least two tags.'), false; // Find the specific error p
+           return displayError(tagsContainer.parentElement.querySelector('#tags-error'), ''), true; // Clear the error
+      }
+
+
+     function validateFormOnSubmit() {
+         // Re-validate all steps just before submission
+         const isStep1Valid = validateStep1();
+         const isStep2Valid = validateStep2();
+         const areTagsValid = validateTags();
+
+         if (!isStep1Valid) {
+             updateStep(1); // Go back to step 1 if invalid
+             showModal('Validation Error', 'Please correct the errors in the Course Details section.');
+             return false;
+         }
+         if (!isStep2Valid) {
+             updateStep(2); // Go back to step 2 if invalid
+             showModal('Validation Error', 'Please ensure all modules have resources with valid content (file or URL).');
+             return false;
+         }
+         if (!areTagsValid) {
+             // Already on step 3, just show message
+             showModal('Validation Error', 'Please add at least two tags for the course.');
+             return false;
+         }
+
+         return true; // All steps are valid
+     }
+
+
+    // -- Upload Orchestration --
+    async function getPresignedUrl(file) {
+        // // --- MOCK IMPLEMENTATION ---
+        // console.log(`MOCK: Requesting pre-signed URL for ${file.name}`);
+        // await new Promise(res => setTimeout(res, 300)); // Simulate network delay
+        // const mockSignedUrl = `https://mock-s3-upload.com/${Date.now()}-${file.name}?signature=mock`;
+        // const mockFinalUrl = `https://my-cdn.com/courses/${Date.now()}-${file.name}`;
+        // console.log(`MOCK: Received URL: ${mockFinalUrl}`);
+        // return { signedUrl: mockSignedUrl, finalUrl: mockFinalUrl };
+        // // --- END MOCK ---
+
+     
+        const backendUrl = '/api/courses/generate-presigned-url'; // Your backend endpoint
+        try {
+            const response = await fetch(backendUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fileName: file.name, fileType: file.type })
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to get pre-signed URL.');
+            }
+            return await response.json(); // Expected { signedUrl, finalUrl }
+        } catch (error) {
+            console.error("Error getting pre-signed URL:", error);
+            throw error; // Re-throw to be caught by orchestrator
+        }
+         // --- END REAL ---
+    }
+
+    function uploadFileToS3(signedUrl, file, onProgress) {
+        //  // --- MOCK IMPLEMENTATION ---
+        //  return new Promise((resolve) => {
+        //      console.log(`MOCK: Uploading ${file.name} to ${signedUrl.split('?')[0]}...`);
+        //      let progress = 0;
+        //      const interval = setInterval(() => {
+        //          progress += Math.floor(Math.random() * 15) + 10;
+        //          if (progress >= 100) {
+        //              progress = 100;
+        //              clearInterval(interval);
+        //              onProgress(progress);
+        //              console.log(`MOCK: Upload complete for ${file.name}`);
+        //              resolve();
+        //          } else {
+        //              onProgress(progress);
+        //          }
+        //      }, 250);
+        //  });
+        //  // --- END MOCK ---
+
+        // --- REAL IMPLEMENTATION (using XMLHttpRequest for progress) ---
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('PUT', signedUrl, true);
+            xhr.setRequestHeader('Content-Type', file.type);
+
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                    onProgress(percentComplete);
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    onProgress(100); // Ensure it hits 100%
+                    resolve();
+                } else {
+                    reject(new Error(`S3 Upload failed: ${xhr.status} ${xhr.statusText}`));
+                }
+            };
+            xhr.onerror = () => reject(new Error('Network error during S3 upload.'));
+            xhr.send(file);
+        });
+        // --- END REAL ---
+    }
+
+
+    async function uploadOrchestrator(courseData) {
+        if (!uploadProgressContainer || !uploadList || !overallProgressBar || !overallProgressText) return;
+
+        uploadProgressContainer.classList.remove('hidden');
+        uploadList.innerHTML = ''; // Clear previous items
+        updateOverallProgress(0); // Reset progress bar
+
+         submitBtn.disabled = true; // Disable submit button during upload
+         submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> <span>Uploading...</span>`;
+
+
+        try {
+            // 1. Identify files
+            const filesToUpload = [];
+            const uploadProgressMap = new Map(); // fileInfo -> progress (0-100)
+
+            if (courseData.courseImage) {
+                 const fileInfo = { type: 'thumbnail', file: courseData.courseImage };
+                 filesToUpload.push(fileInfo);
+                 uploadProgressMap.set(fileInfo, 0);
+            }
+            if (courseData.introVideoFile) {
+                const fileInfo = { type: 'introVideo', file: courseData.introVideoFile };
+                filesToUpload.push(fileInfo);
+                 uploadProgressMap.set(fileInfo, 0);
+            }
+            courseData.modules.forEach((module, mIndex) => {
+                module.resources.forEach((resource, rIndex) => {
+                    if (resource.file) {
+                         const fileInfo = { type: 'resource', file: resource.file, moduleIndex: mIndex, resourceIndex: rIndex };
+                         filesToUpload.push(fileInfo);
+                         uploadProgressMap.set(fileInfo, 0);
+                    }
+                });
+            });
+
+             // Calculate total size for more accurate overall progress (optional but better UX)
+            const totalSize = filesToUpload.reduce((sum, fi) => sum + fi.file.size, 0);
+            let totalUploaded = 0;
+
+            const updateTotalProgress = () => {
+                 totalUploaded = Array.from(uploadProgressMap.entries()).reduce((sum, [fi, progress]) => {
+                     return sum + (fi.file.size * (progress / 100));
+                 }, 0);
+                 const overallPercent = totalSize > 0 ? Math.round((totalUploaded / totalSize) * 100) : (filesToUpload.length > 0 ? 0 : 100);
+                 updateOverallProgress(overallPercent);
+             };
+
+
+            // 2. Create UI and tasks
+            const uploadTasks = filesToUpload.map(fileInfo => {
+                const progressItem = createUploadItem(fileInfo.file.name);
+                const onProgress = (percentage) => {
+                     updateItemProgress(progressItem, percentage);
+                     uploadProgressMap.set(fileInfo, percentage); // Update progress map
+                     updateTotalProgress(); // Recalculate overall progress
+                 };
+
+                return async () => {
+                    try {
+                         const { signedUrl, finalUrl } = await getPresignedUrl(fileInfo.file);
+                         await uploadFileToS3(signedUrl, fileInfo.file, onProgress);
+                         return { ...fileInfo, finalUrl }; // Return success with final URL
+                    } catch(uploadError) {
+                         console.error(`Error uploading ${fileInfo.file.name}:`, uploadError);
+                         // Update UI for this specific item to show error
+                         progressItem.querySelector('.progress-percentage').textContent = 'Error';
+                         progressItem.querySelector('.progress-percentage').classList.remove('text-sky-400', 'text-green-400');
+                         progressItem.querySelector('.progress-percentage').classList.add('text-red-400');
+                          const iconContainer = progressItem.querySelector('.upload-icon-container');
+                          if(iconContainer) iconContainer.innerHTML = '<i class="fas fa-exclamation-circle text-red-400 text-xl"></i>';
+                         throw uploadError; // Propagate error to Promise.all
+                    }
+                };
+            });
+
+            // 3. Execute uploads (can be parallel)
+            const uploadedFileResults = await Promise.all(uploadTasks.map(task => task()));
+
+             // If we reach here, all individual uploads were successful (or Promise.all would have rejected)
+             updateOverallProgress(100); // Ensure it visually hits 100%
+
+
+            // 4. Update courseData with final URLs
+            const finalCoursePayload = JSON.parse(JSON.stringify(courseData)); // Deep clone
+            uploadedFileResults.forEach(result => {
+                if (result.type === 'thumbnail') {
+                    finalCoursePayload.thumbnailUrl = result.finalUrl;
+                } else if (result.type === 'introVideo') {
+                    finalCoursePayload.introVideoUrl = result.finalUrl; // Overwrite if file was uploaded
+                } else if (result.type === 'resource') {
+                    finalCoursePayload.modules[result.moduleIndex].resources[result.resourceIndex].fileUrl = result.finalUrl;
+                     finalCoursePayload.modules[result.moduleIndex].resources[result.resourceIndex].url = null; // Clear URL if file was uploaded
+                }
+            });
+
+            // Clean up file objects before sending to backend
+             delete finalCoursePayload.courseImage;
+             delete finalCoursePayload.introVideoFile;
+             finalCoursePayload.modules.forEach(m => m.resources.forEach(r => delete r.file));
+
+            // 5. Send final metadata to backend
+            console.log("Final payload to backend:", finalCoursePayload);
+
+            //  // --- MOCK BACKEND CALL ---
+            //  console.log("MOCK: Sending final metadata to backend...");
+            //  await new Promise(res => setTimeout(res, 1000)); // Simulate network delay
+            //  console.log("MOCK: Backend responded with success.");
+            //  const mockBackendResponse = { success: true, courseId: 'crs_12345', message: 'Course created successfully!' };
+            //  // --- END MOCK ---
+
+              // --- REAL BACKEND CALL ---
+             const finalBackendUrl = '/api/courses/create-course'; // Your backend endpoint
+             const finalResponse = await fetch(finalBackendUrl, {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify(finalCoursePayload)
+             });
+
+             if (!finalResponse.ok) {
+                 const error = await finalResponse.json();
+                 throw new Error(error.message || 'Failed to save course data on the server.');
+             }
+             const backendResponse = await finalResponse.json();
+             console.log("Backend response:", backendResponse);
+              // --- END REAL ---
+
+            // Success!
+            showModal("Success!", "Course created successfully!", false, true);
+            resetForm(); // Reset form after successful submission
+
+
+        } catch (error) {
+            console.error("Course creation failed:", error);
+            showModal("Upload Failed", `An error occurred during the upload or saving process: ${error.message}`);
+             // Don't hide the progress container on error, so user can see what failed
+        } finally {
+             // Re-enable submit button regardless of success/failure
+             submitBtn.disabled = false;
+              submitBtn.innerHTML = `<i class="fas fa-save"></i> <span>Save Course</span>`;
+        }
+    }
+
+
+    // Submit Button Listener
+    if (submitBtn) {
+        submitBtn.addEventListener('click', async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+             if (!validateFormOnSubmit()) {
+                 return; // Stop if validation fails
+             }
+
+            // If validation passes, gather data and start upload
+            const courseData = {
+                title: document.getElementById('course-title').value.trim(),
+                description: document.getElementById('course-description').value.trim(),
+                price: parseFloat(document.getElementById('course-price').value) || 0,
+                category: document.getElementById('course-category').value.trim(),
+                introVideoOption: document.querySelector('input[name="video-option"]:checked').value,
+                introVideoUrl: document.getElementById('intro-video-url').value.trim() || null,
+                introVideoFile: document.getElementById('intro-video-file').files[0] || null,
+                courseImage: document.getElementById('course-image-file').files[0] || null,
+                modules: [],
+                tags: []
+            };
+
+            // Gather Modules and Resources
+            document.querySelectorAll('.module-item').forEach((moduleEl, moduleIndex) => {
+                const module = {
+                    title: moduleEl.querySelector('.module-title').textContent.trim(),
+                    order: moduleIndex + 1,
+                    resources: []
+                };
+                moduleEl.querySelectorAll('.resource-item').forEach((resourceEl, resourceIndex) => {
+                     const resourceTypeBtn = resourceEl.querySelector('.resource-type-btn.bg-sky-500');
+                     const resourceType = resourceTypeBtn ? resourceTypeBtn.dataset.type : 'video'; // Default?
+                    const resource = {
+                        title: resourceEl.querySelector('.resource-title').textContent.trim(),
+                        type: resourceType.charAt(0).toUpperCase() + resourceType.slice(1), // Video or Document
+                        url: resourceEl.querySelector('.resource-url-input')?.value.trim() || null,
+                        file: resourceEl.querySelector('.file-input')?.files[0] || null,
+                        order: resourceIndex + 1
+                    };
+                    // Ensure only one of url or file is primarily considered based on type/input
+                     if(resource.file && resource.url) { // Prioritize file if both somehow exist
+                          resource.url = null;
+                     }
+                    module.resources.push(resource);
+                });
+                courseData.modules.push(module);
+            });
+
+            // Gather Tags
+            document.querySelectorAll('#tags-container .tag').forEach(tagEl => {
+                courseData.tags.push(tagEl.querySelector('span:first-child').textContent.trim());
+            });
+
+             // Adjust introVideoUrl based on selection
+             if (courseData.introVideoOption === 'file') {
+                 courseData.introVideoUrl = null;
+             } else {
+                 courseData.introVideoFile = null;
+             }
+             delete courseData.introVideoOption; // Remove temporary field
+
+
+            console.log("Data collected, starting upload orchestrator:", courseData);
+            await uploadOrchestrator(courseData);
+        });
+    }
+
+}); // End DOMContentLoaded
+</script>
+
+</body>
+</html>

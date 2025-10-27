@@ -57,6 +57,7 @@ const userbal=require("./models/userBalance.js");
 const pushNotificationroute = require('./pushNotification.js');
 const serviceAccount = require('./serviceAccountKey.json');
 const sendNotification=require("./test.js")
+const Course=require("./models/course.js")
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
@@ -1283,54 +1284,64 @@ app.get("/notifications", async (req, res) => {
 
 // const axios = require("axios");
 
-const VALID_IMAGE_TYPES = ["jpg", "jpeg", "png", "webp", "gif"];
+// import axios from "axios";
 
-// const axios = require('axios');
+// Optional in-memory cache to avoid repeated checks
+// const fileUrlCache = new Map();
 
-// const VALID_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp'];
-
-async function getValidFileUrl(file, REGION = 'ap-south-1', validTypes = VALID_IMAGE_TYPES) {
-  const triedExtensions = new Set();
-
-  // 👇 Replace CF domain with your actual S3 bucket URL
-  const S3_BUCKET = 'vidyari2';
-  const BASE_URL = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com`;
-
-  // 1️⃣ Try the file.imageType first
-  if (file.imageType) {
-    const url = `${BASE_URL}/files-previews/images/${file._id}.${file.imageType}`;
-    triedExtensions.add(file.imageType);
-    try {
-      const res = await axios.head(url);
-      if (res.status === 200) return url;
-    } catch (err) {
-      // Ignore 403/404 errors (not found)
-    }
+/**
+ * Get the valid image URL served via CloudFront (optimized for cost and speed)
+ * @param {Object} file - File object from your DB
+ * @param {string} CLOUDFRONT_DOMAIN - Your CloudFront domain (e.g. dxxxx.cloudfront.net)
+ * @param {Array<string>} validTypes - Allowed file extensions
+ */
+ async function getValidFileUrl(
+  file,
+  CLOUDFRONT_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net", // 👈 replace with your CloudFront domain
+  validTypes = ["jpg", "jpeg", "png", "webp"]
+) {
+  // 1️⃣ Check local cache first
+  if (fileUrlCache.has(file._id)) {
+    return fileUrlCache.get(file._id);
   }
 
-  // 2️⃣ Try other possible extensions
+  // Base URL (CloudFront domain instead of S3)
+  const BASE_URL = `https://${CLOUDFRONT_DOMAIN}/files-previews/images`;
+
+  // 2️⃣ If file.imageType is already known, use it directly
+  if (file.imageType) {
+    const url = `${BASE_URL}/${file._id}.${file.imageType}`;
+    fileUrlCache.set(file._id, url);
+    return url;
+  }
+
+  // 3️⃣ Check CloudFront cache for available types (minimal checks)
   for (const ext of validTypes) {
-    if (triedExtensions.has(ext)) continue;
-    const url = `${BASE_URL}/files-previews/images/${file._id}.${ext}`;
+    const url = `${BASE_URL}/${file._id}.${ext}`;
     try {
-      const res = await axios.head(url);
+      const res = await axios.head(url, {
+        timeout: 1500,
+        validateStatus: (s) => s < 500,
+      });
       if (res.status === 200) {
-        // ✅ Found valid image — update DB if needed
-        if (file.imageType !== ext) {
-          file.imageType = ext;
-          await file.save();
-        }
+        // Found valid image — update DB & cache
+        file.imageType = ext;
+        await file.save().catch(() => {});
+        fileUrlCache.set(file._id, url);
         return url;
       }
-    } catch (err) {
-      if (err.response && (err.response.status === 403 || err.response.status === 404)) continue;
-      console.error("Unexpected error checking file:", err.message);
+    } catch {
+      // Ignore 403/404 — CloudFront will respond quickly without hitting S3
+      continue;
     }
   }
 
-  // 3️⃣ Fallback (default to .jpg)
-  return `${BASE_URL}/files-previews/images/${file._id}.jpg`;
+  // 4️⃣ Default fallback (cached by CloudFront too)
+  const fallbackUrl = `${BASE_URL}/${file._id}.jpg`;
+  fileUrlCache.set(file._id, fallbackUrl);
+  return fallbackUrl;
 }
+
 
 
 app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
@@ -1619,48 +1630,64 @@ dotenv.config();
 
 // const VALID_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp'];
 
-async function getValidFileUrl(file, REGION = 'ap-south-1', validTypes = VALID_IMAGE_TYPES) {
-  const triedExtensions = new Set();
+// import axios from "axios";
 
-  // 👇 Replace CF domain with your actual S3 bucket URL
-  const S3_BUCKET = 'vidyari2';
-  const BASE_URL = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com`;
+// Optional in-memory cache to avoid repeated checks
+const fileUrlCache = new Map();
 
-  // 1️⃣ Try the file.imageType first
-  if (file.imageType) {
-    const url = `${BASE_URL}/files-previews/images/${file._id}.${file.imageType}`;
-    triedExtensions.add(file.imageType);
-    try {
-      const res = await axios.head(url);
-      if (res.status === 200) return url;
-    } catch (err) {
-      // Ignore 403/404 errors (not found)
-    }
+/**
+ * Get the valid image URL served via CloudFront (optimized for cost and speed)
+ * @param {Object} file - File object from your DB
+ * @param {string} CLOUDFRONT_DOMAIN - Your CloudFront domain (e.g. dxxxx.cloudfront.net)
+ * @param {Array<string>} validTypes - Allowed file extensions
+ */
+ async function getValidFileUrl(
+  file,
+  CLOUDFRONT_DOMAIN = "d3tonh6o5ach9f.cloudfront.net", // 👈 replace with your CloudFront domain
+  validTypes = ["jpg", "jpeg", "png", "webp"]
+) {
+  // 1️⃣ Check local cache first
+  if (fileUrlCache.has(file._id)) {
+    return fileUrlCache.get(file._id);
   }
 
-  // 2️⃣ Try other possible extensions
+  // Base URL (CloudFront domain instead of S3)
+  const BASE_URL = `https://${CLOUDFRONT_DOMAIN}/files-previews/images`;
+
+  // 2️⃣ If file.imageType is already known, use it directly
+  if (file.imageType) {
+    const url = `${BASE_URL}/${file._id}.${file.imageType}`;
+    fileUrlCache.set(file._id, url);
+    return url;
+  }
+
+  // 3️⃣ Check CloudFront cache for available types (minimal checks)
   for (const ext of validTypes) {
-    if (triedExtensions.has(ext)) continue;
-    const url = `${BASE_URL}/files-previews/images/${file._id}.${ext}`;
+    const url = `${BASE_URL}/${file._id}.${ext}`;
     try {
-      const res = await axios.head(url);
+      const res = await axios.head(url, {
+        timeout: 1500,
+        validateStatus: (s) => s < 500,
+      });
       if (res.status === 200) {
-        // ✅ Found valid image — update DB if needed
-        if (file.imageType !== ext) {
-          file.imageType = ext;
-          await file.save();
-        }
+        // Found valid image — update DB & cache
+        file.imageType = ext;
+        await file.save().catch(() => {});
+        fileUrlCache.set(file._id, url);
         return url;
       }
-    } catch (err) {
-      if (err.response && (err.response.status === 403 || err.response.status === 404)) continue;
-      console.error("Unexpected error checking file:", err.message);
+    } catch {
+      // Ignore 403/404 — CloudFront will respond quickly without hitting S3
+      continue;
     }
   }
 
-  // 3️⃣ Fallback (default to .jpg)
-  return `${BASE_URL}/files-previews/images/${file._id}.jpg`;
+  // 4️⃣ Default fallback (cached by CloudFront too)
+  const fallbackUrl = `${BASE_URL}/${file._id}.jpg`;
+  fileUrlCache.set(file._id, fallbackUrl);
+  return fallbackUrl;
 }
+
 
 
 // app.get("/documents", authenticateJWT_user, async (req, res) => {
@@ -1834,6 +1861,54 @@ app.get('/files', async (req, res) => {
 // 2. The File model has fields: _id, filename, filedescription, category, price, user.
 
 // Your Mongoose model
+
+//course routes
+
+app.get('/courses', async (req, res) => {
+    
+    try {
+        if (req.query.search !== undefined) {
+            
+            // --- API SEARCH (Returns JSON) ---
+            console.log(`Search query received: "${req.query.search}"`);
+            const searchQuery = req.query.search;
+
+            const query = {
+                published: true, // Only search published courses
+                $or: [
+                    { title: { $regex: searchQuery, $options: 'i' } },
+                    { description: { $regex: searchQuery, $options: 'i' } },
+                    { tags: { $regex: searchQuery, $options: 'i' } }
+                ]
+            };
+
+            const filteredCourses = await Course.find(query)
+                // vvv UPDATED THIS LINE vvv
+                .populate('userId', 'fullName profilePicUrl username') 
+                .sort({ createdAt: -1 });
+            
+            res.json(filteredCourses);
+
+        } else {
+            
+            // --- INITIAL PAGE LOAD (Renders EJS) ---
+            console.log('Initial page load. Fetching from DB and rendering EJS.');
+
+            // vvv UPDATED THIS LINE vvv
+            const allCourses = await Course.find({}) 
+                // vvv AND UPDATED THIS LINE vvv
+                .populate('userId', 'fullName profilePicUrl username')
+                .sort({ createdAt: -1 });
+            
+            // vvv UPDATED THIS LINE vvv
+            res.render('courses', { courses: allCourses }); // Changed 'courses' to 'index'
+        }
+    } catch (error) {
+        console.error('Error fetching courses:', error);
+        res.status(500).send('SERVER_ERROR. Check console.');
+    }
+});
+
 
 
 app.get('/products/related', async (req, res) => {

@@ -25,7 +25,9 @@ router.post(
   authenticateJWT_user,
   generatePresignedUrl
 );
-
+router.get("/coursecreation",(req,res)=>{
+  res.render("gencourse.ejs");
+})
 // Route to create the course after files are uploaded
 router.post("/create-course", authenticateJWT_user, createCourse);
 // In /routes/courseRoutes.js
