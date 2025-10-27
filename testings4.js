@@ -94,11 +94,7 @@ router.get('/user/chat/:userId', authenticateJWT_user, requireAuth, async (req, 
 const NodeCache = require("node-cache");
 const conversationCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // 10 min TTL
 const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
-// const CLOUDFRONT_PROFILE_URL = "https://previewfiles.vidyari.com/profiles"; // add this if you have profile images
 
-// ==========================================================
-// ⚡ Optimized Conversations Route with Advanced Caching
-// ==========================================================
 router.get('/api/conversations', authenticateJWT_user, requireAuth, async (req, res) => {
   try {
     const myUserId = new mongoose.Types.ObjectId(req.query.myId);

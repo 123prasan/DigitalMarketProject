@@ -1613,8 +1613,10 @@ const s3 = new AWS.S3({
   region: process.env.AWS_REGION || "ap-south-1",
 });
 
-
 const { getSignedUrl } = require("@aws-sdk/cloudfront-signer");
+// const fs = require("fs");
+// const path = require("path");
+// const NodeCache = require("node-cache");
 
 // ⚙️ Config
 const CLOUDFRONT_DOMAIN = "mainfile.vidyari.com";
@@ -1622,16 +1624,12 @@ const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID;
 const PRIVATE_KEY_PATH = path.join(__dirname, "private_keys", "cloudfront-private-key.pem");
 const PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
 
-// 🧠 Smart cache
-// ===========================================================
-// 🚀 Ultra-Optimized Download Route with Smart Adaptive Cache
-// ===========================================================
-
+// ⚡ Advanced cache
 const urlCache = new NodeCache({
-  stdTTL: 600,          // default 10 min cache
-  checkperiod: 120,     // check expired keys every 2 min
-  useClones: false,     // avoids unnecessary deep clones
-  deleteOnExpire: true, // clean memory
+  stdTTL: 600,          // 10 minutes
+  checkperiod: 120,
+  useClones: false,
+  deleteOnExpire: true,
 });
 
 app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
@@ -1642,7 +1640,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
     const file = await File.findById(fileId).lean();
     if (!file) return res.render("file-not-found");
 
-    // 🛡️ Validate purchase (if paid file)
+    // 🛡️ Validate purchase
     if (file.price > 0) {
       const purchased = await Userpurchases.exists({
         userId: req.user._id,
@@ -1651,26 +1649,27 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       if (!purchased) return res.render("404");
     }
 
-    // 🎯 Generate cache key
-    const extension = path.extname(file.fileUrl)?.toLowerCase() || ".pdf";
-    const fileKey = `main-files/${file.fileUrl}`;
-    const cacheKey = `CF_URL_${fileKey}`;
+    // 🧩 Normalize & encode filename to avoid AccessDenied
+    const cleanFileName = decodeURIComponent(file.fileUrl)
+      .replace(/\s+/g, " ") // normalize spaces
+      .trim();
+    const encodedFileKey = encodeURIComponent(`main-files/${cleanFileName}`).replace(/%2F/g, "/");
 
-    // 🧠 Try fetching from cache
+    const cacheKey = `CF_URL_${encodedFileKey}`;
     let signedUrl = urlCache.get(cacheKey);
 
-    // ⚡️ Extend TTL for popular files
+    // ⚡ Extend TTL for hot files
     if (signedUrl && urlCache.has(cacheKey)) {
       const ttlRemaining = urlCache.getTtl(cacheKey) - Date.now();
-      if (ttlRemaining < 3 * 60 * 1000) { // less than 3 minutes left
-        urlCache.ttl(cacheKey, 15 * 60); // extend TTL by 15 minutes
+      if (ttlRemaining < 3 * 60 * 1000) {
+        urlCache.ttl(cacheKey, 15 * 60);
         console.log(`⏱ Extended TTL for popular file: ${file.filename}`);
       }
     }
 
-    // 🏗️ Create new signed URL if cache miss
+    // 🧠 Generate signed URL if not cached
     if (!signedUrl) {
-      const unsignedUrl = `https://${CLOUDFRONT_DOMAIN}/${fileKey}`;
+      const unsignedUrl = `https://${CLOUDFRONT_DOMAIN}/${encodedFileKey}`;
       try {
         signedUrl = getSignedUrl({
           url: unsignedUrl,
@@ -1686,7 +1685,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       }
     }
 
-    // ⚙️ Async database updates (fire & forget)
+    // 🧱 Background async DB updates
     Promise.allSettled([
       File.updateOne({ _id: fileId }, { $inc: { downloadCount: 1 } }),
       UserDownloads.updateOne(
@@ -1695,7 +1694,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
           $setOnInsert: {
             filename: file.filename,
             fileUrl: file.fileUrl,
-            fileType: extension,
+            fileType: path.extname(file.fileUrl)?.toLowerCase() || ".pdf",
           },
           $inc: { downloadCount: 1 },
         },
@@ -1703,7 +1702,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       ),
     ]).catch(err => console.error("DB update error:", err));
 
-    // 🔔 Background user notification
+    // 🔔 Background notification
     (async () => {
       try {
         const imageUrl = await getValidFileUrl(file);
@@ -1720,12 +1719,12 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       }
     })();
 
-    // 🧠 Optional analytics (background job)
+    // ⚡ Lightweight analytics logging
     process.nextTick(() => {
       console.log(`📊 Downloaded: ${file.filename} by ${req.user._id}`);
     });
 
-    // 🚀 Redirect user to CloudFront edge URL
+    // ✅ Redirect to CloudFront (fastest edge delivery)
     return res.redirect(signedUrl);
 
   } catch (error) {
