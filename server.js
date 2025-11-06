@@ -2431,18 +2431,7 @@ function GenCheckOutPrice(price, options = {}) {
   };
 }
 
-/* Output example:
-{
-  originalPrice: 350,
-  discountedPrice: 280,
-  discountPercent: 20,
-  serviceFee: 5.6,
-  gstTax: 1.01,
-  luxuryTax: 0,
-  shippingFee: 15,
-  total: 301.61
-}
-*/
+
 
 app.get("/help/user/vidyari-guid",(req,res)=>{
   res.render("help.ejs");
