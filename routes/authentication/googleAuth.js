@@ -351,7 +351,7 @@ const userTransactions = await UserTransactions.find({
       userId:req.user._id
     });
    
-   const Ubalance=await userbal.findOne({
+   let Ubalance=await userbal.findOne({
     UserId:req.user._id
    });
    if(Ubalance==null){
