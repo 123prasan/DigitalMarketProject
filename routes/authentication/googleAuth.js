@@ -354,6 +354,15 @@ const userTransactions = await UserTransactions.find({
    const Ubalance=await userbal.findOne({
     UserId:req.user._id
    });
+   if(Ubalance==null){
+       await userbal.create({
+        UserId:req.user._id,
+        Balance:0
+       })
+       Ubalance=await userbal.findOne({
+        UserId:req.user._id
+       });
+   }
   //  console.log(userwithreq)
   //  console.log(Ubalance.Balance)
     res.render("createcourse", {
