@@ -30,7 +30,7 @@ const dayjs = require("dayjs");
 const bcrypt = require("bcrypt");
 const mime = require("mime-types");
 const axios = require("axios");
-const http=require('http');
+const http = require('http');
 const NodeCache = require("node-cache");
 // const logVisitorMiddleware = require("./middlewares/ipmiddleware");
 const categories = require("./models/categories"); // Assuming categories.js exports a Mongoose model
@@ -49,23 +49,23 @@ const Usernotifications = require("./models/userNotifications");
 const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 const Usertransaction = require("./models/userTransactions.js");
 const UserChats = require('./testings4.js'); // <-- IMPORT THE NEW ROUTER
-const Coupon=require("./models/couponschema.js");
+const Coupon = require("./models/couponschema.js");
 const WebSocket = require('ws');
 const admin = require('firebase-admin');
 const UserMessage = require('./models/UserMessage.js');
-const userbal=require("./models/userBalance.js");
+const userbal = require("./models/userBalance.js");
 const pushNotificationroute = require('./pushNotification.js');
 const serviceAccount = require('./serviceAccountKey.json');
-const sendNotification=require("./test.js")
-const Course=require("./models/course.js")
+const sendNotification = require("./test.js")
+const Course = require("./models/course.js")
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount)
 });
 const app = express();
 app.use(cookieParser());
 
-app.use("/",UserChats);
- // Use cookie-parser middleware
+app.use("/", UserChats);
+// Use cookie-parser middleware
 
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
@@ -74,13 +74,13 @@ const clients = new Map();
 
 /**
 
- * Sends a JSON payload to a specific user if they are online.
+ * Sends a JSON payload to a specific user if they are online.
 
- * @param {string} userId - The ID of the user to notify.
+ * @param {string} userId - The ID of the user to notify.
 
- * @param {object} payload - The JSON object to send.
+ * @param {object} payload - The JSON object to send.
 
- */
+ */
 
 // --- In your Node.js Server file ---
 
@@ -94,23 +94,23 @@ const clients = new Map();
 
 function notifyUser(userId, payload) {
 
-  // CRITICAL FIX: Always convert the userId to a string before looking it up in the Map.
+  // CRITICAL FIX: Always convert the userId to a string before looking it up in the Map.
 
-  const userSocket = clients.get(String(userId));
-
-
-
-  // Optional: Add a log to see if the user was found
-
-  console.log(`Attempting to notify user ${String(userId)}. Online: ${!!userSocket}`);
+  const userSocket = clients.get(String(userId));
 
 
 
-  if (userSocket && userSocket.readyState === WebSocket.OPEN) {
+  // Optional: Add a log to see if the user was found
 
-    userSocket.send(JSON.stringify(payload));
+  console.log(`Attempting to notify user ${String(userId)}. Online: ${!!userSocket}`);
 
-  }
+
+
+  if (userSocket && userSocket.readyState === WebSocket.OPEN) {
+
+    userSocket.send(JSON.stringify(payload));
+
+  }
 
 }
 
@@ -128,194 +128,194 @@ function notifyUser(userId, payload) {
 
 
 wss.on('connection', (ws) => {
-    let userId; // This will store the ID for this specific connection
+  let userId; // This will store the ID for this specific connection
 
-    const broadcastStatus = (targetUserId, isOnline) => {
-        const statusPayload = JSON.stringify({
-            type: 'user_status_update',
-            userId: targetUserId,
-            isOnline: isOnline
-        });
-        // Inform all connected clients of the status change
-        clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(statusPayload);
-            }
-        });
-        console.log(`[Status] Broadcast: User ${targetUserId} is ${isOnline ? 'Online' : 'Offline'}`);
-    };
-
-    ws.on('message', async (message) => {
-        try {
-            const data = JSON.parse(message);
-
-            if (data.type !== 'register' && !userId) {
-                return console.error("Message received from unregistered client.");
-            }
-
-            switch (data.type) {
-                case 'register':
-                    userId = String(data.userId);
-                    clients.set(userId, ws);
-                    console.log(`[Connect] User ${userId} connected.`);
-
-                    // Broadcast that this new user is online to everyone
-                    broadcastStatus(userId, true);
-
-                    // Check the status of the person this user is talking to and send it back ONLY to them.
-                    const recipientId = String(data.recipientId);
-                    if (clients.has(recipientId)) {
-                        const statusPayload = {
-                            type: 'user_status_update',
-                            userId: recipientId,
-                            isOnline: true
-                        };
-                        // Send the recipient's status back to the newly registered user
-                        ws.send(JSON.stringify(statusPayload));
-                    }
-                    break;
-
-                case 'private_message':
-                case 'reply_message':
-                case 'product_message': {
-                    const { id, recipientId, text, repliedTo, productInfo, createdAt } = data;
-                    const conversationId = [userId, recipientId].sort().join('--');
-                    const isProduct = data.type === 'product_message';
-                    
-                    // 1. Get sender profile for chat list update
-                    const senderProfile = await User.findById(userId).select('username profilePicUrl isVerified');
-
-                    // 2. Create and save the message
-                    const messageDoc = new UserMessage({
-                        id,
-                        conversationId,
-                        senderId: userId,
-                        recipientId,
-                        text: isProduct ? `Shared product: ${productInfo.name}` : text,
-                        repliedTo: repliedTo || null,
-                        productInfo: productInfo || null,
-                        createdAt,
-                        // Determine status based on recipient's connection
-                        status: clients.has(String(recipientId)) ? 'delivered' : 'sent', 
-                    });
-                    await messageDoc.save();
-
-                    // 3. Prepare payload for the RECIPIENT
-                    // This payload needs the sender's details for the recipient's chat list to update
-                    const fullMessagePayload = { 
-                        ...messageDoc.toObject(), 
-                        type: data.type,
-                        partner: {
-                            _id: userId,
-                            username: senderProfile.username,
-                            profilePicUrl: senderProfile.profilePicUrl,
-                            isVerified: senderProfile.isVerified
-                        }
-                    };
-                    notifyUser(recipientId, fullMessagePayload);
-
-                    // 4. Notify the SENDER of delivery status if client is connected
-                    if (messageDoc.status === 'delivered') {
-                        notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
-                    }
-                    console.log(`[Message] User ${userId} sent a message to ${recipientId} (${data.type})`);
-                    break;
-                }
-
-                case 'mark_as_read': {
-                    // This action comes from the CHAT PAGE when the user opens the conversation
-                    const { partnerId } = data; 
-
-                    // 1. Update all UNREAD incoming messages from the partner to 'read'
-                    const result = await UserMessage.updateMany(
-                        {
-                            senderId: partnerId, // Messages SENT by the partner
-                            recipientId: userId, // Messages RECEIVED by the current user
-                            status: { $in: ['sent', 'delivered'] } 
-                        },
-                        { $set: { status: 'read' } }
-                    );
-
-                    console.log(`[Read All] User ${userId} marked ${result.modifiedCount} messages from ${partnerId} as read.`);
-
-                    // 2. Notify the chat list client to remove the badge.
-                    // This is essential for real-time badge clearance across devices/tabs.
-                    const badgeClearPayload = {
-                        type: 'unread_count_clear',
-                        partnerId: partnerId // Client uses this to identify which chat to clear
-                    };
-                    notifyUser(userId, badgeClearPayload); 
-                    
-                    break;
-                }
-
-                case 'message_read': {
-                    // This action comes from the CHAT PAGE when the user SCROLLS to see the message
-                    const { messageId, senderId } = data; 
-                    console.log(`[Read Status] Message: ${messageId}. Notifying sender: ${senderId}`);
-
-                    await UserMessage.updateOne(
-                        { id: messageId, status: { $ne: 'read' } },
-                        { $set: { status: 'read' } }
-                    );
-
-                    const readPayload = { type: 'message_status_update', messageId, status: 'read' };
-                    notifyUser(senderId, readPayload);
-                    break;
-                }
-
-                case 'delete_message': {
-                    const { messageId, recipientId } = data;
-
-                    await UserMessage.updateOne(
-                        { id: messageId, senderId: userId },
-                        { $set: { isDeleted: true, text: "" } }
-                    );
-
-                    const deletePayload = { type: 'message_deleted', messageId };
-                    notifyUser(userId, deletePayload);
-                    notifyUser(recipientId, deletePayload);
-                    console.log(`[Delete] User ${userId} deleted message ${messageId}`);
-                    break;
-                }
-
-                case 'edit_message': {
-                    const { messageId, newText, recipientId } = data;
-
-                    await UserMessage.updateOne(
-                        { id: messageId, senderId: userId },
-                        { $set: { text: newText, isEdited: true } }
-                    );
-
-                    const editPayload = { type: 'message_edited', messageId, newText };
-                    notifyUser(userId, editPayload);
-                    notifyUser(recipientId, editPayload);
-                    console.log(`[Edit] User ${userId} edited message ${messageId}`);
-                    break;
-                }
-
-                case 'typing': {
-                    // Forward the typing status to the recipient without saving to DB
-                    notifyUser(data.recipientId, {
-                        type: 'typing_status',
-                        senderId: userId,
-                        isTyping: data.isTyping
-                    });
-                    break;
-                }
-            }
-        } catch (err) {
-            console.error("❌ Failed to process message:", err);
-        }
+  const broadcastStatus = (targetUserId, isOnline) => {
+    const statusPayload = JSON.stringify({
+      type: 'user_status_update',
+      userId: targetUserId,
+      isOnline: isOnline
     });
-
-    ws.on('close', () => {
-        if (userId) {
-            clients.delete(String(userId));
-            console.log(`[Disconnect] User ${String(userId)} disconnected.`);
-            broadcastStatus(userId, false);
-        }
+    // Inform all connected clients of the status change
+    clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(statusPayload);
+      }
     });
+    console.log(`[Status] Broadcast: User ${targetUserId} is ${isOnline ? 'Online' : 'Offline'}`);
+  };
+
+  ws.on('message', async (message) => {
+    try {
+      const data = JSON.parse(message);
+
+      if (data.type !== 'register' && !userId) {
+        return console.error("Message received from unregistered client.");
+      }
+
+      switch (data.type) {
+        case 'register':
+          userId = String(data.userId);
+          clients.set(userId, ws);
+          console.log(`[Connect] User ${userId} connected.`);
+
+          // Broadcast that this new user is online to everyone
+          broadcastStatus(userId, true);
+
+          // Check the status of the person this user is talking to and send it back ONLY to them.
+          const recipientId = String(data.recipientId);
+          if (clients.has(recipientId)) {
+            const statusPayload = {
+              type: 'user_status_update',
+              userId: recipientId,
+              isOnline: true
+            };
+            // Send the recipient's status back to the newly registered user
+            ws.send(JSON.stringify(statusPayload));
+          }
+          break;
+
+        case 'private_message':
+        case 'reply_message':
+        case 'product_message': {
+          const { id, recipientId, text, repliedTo, productInfo, createdAt } = data;
+          const conversationId = [userId, recipientId].sort().join('--');
+          const isProduct = data.type === 'product_message';
+
+          // 1. Get sender profile for chat list update
+          const senderProfile = await User.findById(userId).select('username profilePicUrl isVerified');
+
+          // 2. Create and save the message
+          const messageDoc = new UserMessage({
+            id,
+            conversationId,
+            senderId: userId,
+            recipientId,
+            text: isProduct ? `Shared product: ${productInfo.name}` : text,
+            repliedTo: repliedTo || null,
+            productInfo: productInfo || null,
+            createdAt,
+            // Determine status based on recipient's connection
+            status: clients.has(String(recipientId)) ? 'delivered' : 'sent',
+          });
+          await messageDoc.save();
+
+          // 3. Prepare payload for the RECIPIENT
+          // This payload needs the sender's details for the recipient's chat list to update
+          const fullMessagePayload = {
+            ...messageDoc.toObject(),
+            type: data.type,
+            partner: {
+              _id: userId,
+              username: senderProfile.username,
+              profilePicUrl: senderProfile.profilePicUrl,
+              isVerified: senderProfile.isVerified
+            }
+          };
+          notifyUser(recipientId, fullMessagePayload);
+
+          // 4. Notify the SENDER of delivery status if client is connected
+          if (messageDoc.status === 'delivered') {
+            notifyUser(userId, { type: 'message_status_update', messageId: id, status: 'delivered' });
+          }
+          console.log(`[Message] User ${userId} sent a message to ${recipientId} (${data.type})`);
+          break;
+        }
+
+        case 'mark_as_read': {
+          // This action comes from the CHAT PAGE when the user opens the conversation
+          const { partnerId } = data;
+
+          // 1. Update all UNREAD incoming messages from the partner to 'read'
+          const result = await UserMessage.updateMany(
+            {
+              senderId: partnerId, // Messages SENT by the partner
+              recipientId: userId, // Messages RECEIVED by the current user
+              status: { $in: ['sent', 'delivered'] }
+            },
+            { $set: { status: 'read' } }
+          );
+
+          console.log(`[Read All] User ${userId} marked ${result.modifiedCount} messages from ${partnerId} as read.`);
+
+          // 2. Notify the chat list client to remove the badge.
+          // This is essential for real-time badge clearance across devices/tabs.
+          const badgeClearPayload = {
+            type: 'unread_count_clear',
+            partnerId: partnerId // Client uses this to identify which chat to clear
+          };
+          notifyUser(userId, badgeClearPayload);
+
+          break;
+        }
+
+        case 'message_read': {
+          // This action comes from the CHAT PAGE when the user SCROLLS to see the message
+          const { messageId, senderId } = data;
+          console.log(`[Read Status] Message: ${messageId}. Notifying sender: ${senderId}`);
+
+          await UserMessage.updateOne(
+            { id: messageId, status: { $ne: 'read' } },
+            { $set: { status: 'read' } }
+          );
+
+          const readPayload = { type: 'message_status_update', messageId, status: 'read' };
+          notifyUser(senderId, readPayload);
+          break;
+        }
+
+        case 'delete_message': {
+          const { messageId, recipientId } = data;
+
+          await UserMessage.updateOne(
+            { id: messageId, senderId: userId },
+            { $set: { isDeleted: true, text: "" } }
+          );
+
+          const deletePayload = { type: 'message_deleted', messageId };
+          notifyUser(userId, deletePayload);
+          notifyUser(recipientId, deletePayload);
+          console.log(`[Delete] User ${userId} deleted message ${messageId}`);
+          break;
+        }
+
+        case 'edit_message': {
+          const { messageId, newText, recipientId } = data;
+
+          await UserMessage.updateOne(
+            { id: messageId, senderId: userId },
+            { $set: { text: newText, isEdited: true } }
+          );
+
+          const editPayload = { type: 'message_edited', messageId, newText };
+          notifyUser(userId, editPayload);
+          notifyUser(recipientId, editPayload);
+          console.log(`[Edit] User ${userId} edited message ${messageId}`);
+          break;
+        }
+
+        case 'typing': {
+          // Forward the typing status to the recipient without saving to DB
+          notifyUser(data.recipientId, {
+            type: 'typing_status',
+            senderId: userId,
+            isTyping: data.isTyping
+          });
+          break;
+        }
+      }
+    } catch (err) {
+      console.error("❌ Failed to process message:", err);
+    }
+  });
+
+  ws.on('close', () => {
+    if (userId) {
+      clients.delete(String(userId));
+      console.log(`[Disconnect] User ${String(userId)} disconnected.`);
+      broadcastStatus(userId, false);
+    }
+  });
 });
 // --- Middleware Setup ---
 // Make sure you have your standard middleware here
@@ -350,7 +350,7 @@ app.use((req, res, next) => {
 // your normal routes
 
 app.use(fileroute);
-app.use( pushNotificationroute);
+app.use(pushNotificationroute);
 app.post("/save-location", async (req, res) => {
   let ip = req.body.ip;
 
@@ -468,7 +468,7 @@ const ADMIN_USER = {
 };
 
 // --- Routes ---
-app.get("/files/impression/:id/:impression",authenticateJWT_user,requireAuth, async (req, res) => {
+app.get("/files/impression/:id/:impression", authenticateJWT_user, requireAuth, async (req, res) => {
   try {
     const { id, impression } = req.params;
     const update = {};
@@ -678,35 +678,35 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     ]);
 
     // Fire-and-forget push notification
-(async () => {
-  const notifications = [
-    sendNotification({
-      userId: req.user._id,
-      title: "Your product Purchase is Successful",
-      body: `You can see your Files in the My Downloads section. Your Product: ${file.filename}`,
-      image: imageUrl,
-      target_link: "/downloads",
-      notification_type: "purchase",
-    }),
-    sendNotification({
-      userId: file.userId,
-      title: `Someone Bought Your Product ${file.filename}`,
-      body: `🤑 You Earned Amount of ₹ ${sellerShare}`,
-      image: imageUrl,
-      target_link: "/dashboard",
-      notification_type: "transaction",
-    }),
-  ];
+    (async () => {
+      const notifications = [
+        sendNotification({
+          userId: req.user._id,
+          title: "Your product Purchase is Successful",
+          body: `You can see your Files in the My Downloads section. Your Product: ${file.filename}`,
+          image: imageUrl,
+          target_link: "/downloads",
+          notification_type: "purchase",
+        }),
+        sendNotification({
+          userId: file.userId,
+          title: `Someone Bought Your Product ${file.filename}`,
+          body: `🤑 You Earned Amount of ₹ ${sellerShare}`,
+          image: imageUrl,
+          target_link: "/dashboard",
+          notification_type: "transaction",
+        }),
+      ];
 
-  const results = await Promise.allSettled(notifications);
+      const results = await Promise.allSettled(notifications);
 
-  results.forEach((result, index) => {
-    if (result.status === "rejected") {
-      const type = index === 0 ? "Purchase" : "Transaction";
-      console.error(`${type} notification failed:`, result.reason);
-    }
-  });
-})();
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          const type = index === 0 ? "Purchase" : "Transaction";
+          console.error(`${type} notification failed:`, result.reason);
+        }
+      });
+    })();
 
 
     // Send response immediately
@@ -1295,7 +1295,7 @@ app.get("/notifications", async (req, res) => {
  * @param {string} CLOUDFRONT_DOMAIN - Your CloudFront domain (e.g. dxxxx.cloudfront.net)
  * @param {Array<string>} validTypes - Allowed file extensions
  */
- // Global file preview cache (10 min TTL)
+// Global file preview cache (10 min TTL)
 const previewfileUrlCache = new NodeCache({
   stdTTL: 600,
   checkperiod: 180,
@@ -1314,7 +1314,7 @@ async function getValidFileUrl(
   CLOUDFRONT_DOMAIN = "previewfiles.vidyari.com",
   validTypes = ["jpg", "jpeg", "png", "webp"]
 ) {
-  
+
   try {
     const cacheKey = String(file._id);
 
@@ -1347,7 +1347,7 @@ async function getValidFileUrl(
           /* ignore */
         }
       })
-    ).catch(() => {}); // ignore Promise.any rejection
+    ).catch(() => { }); // ignore Promise.any rejection
 
     // ✅ Step 4: If found, cache + async DB update (non-blocking)
     if (foundUrl) {
@@ -1356,14 +1356,14 @@ async function getValidFileUrl(
         File.updateOne(
           { _id: file._id },
           { $set: { imageType: file.imageType } }
-        ).catch(() => {});
+        ).catch(() => { });
       });
       return foundUrl;
     }
 
     // ✅ Step 5: Fallback (CloudFront caches this anyway)
     const fallbackUrl = `${BASE_URL}/${file._id}.jpg`;
-   previewfileUrlCache.set(cacheKey, fallbackUrl);
+    previewfileUrlCache.set(cacheKey, fallbackUrl);
     return fallbackUrl;
   } catch (err) {
     console.error("getValidFileUrl error:", err.message);
@@ -1923,101 +1923,101 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
 
 // *** THIS IS THE CORRECTED AND UPDATED API ROUTE ***
 app.get('/files', async (req, res) => {
-    try {
-        // --- 1. PARSE & VALIDATE QUERY PARAMETERS ---
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 12;
-        const skip = (page - 1) * limit;
+  try {
+    // --- 1. PARSE & VALIDATE QUERY PARAMETERS ---
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
 
-        const search = req.query.search || '';
-        const sort = req.query.sort || 'popular';
-        const priceFilter = req.query.price || 'all';
-        
-        let categories = req.query.category || [];
-        if (typeof categories === 'string') categories = [categories];
-        
-        let fileTypes = req.query.fileType || [];
-        if (typeof fileTypes === 'string') fileTypes = [fileTypes];
+    const search = req.query.search || '';
+    const sort = req.query.sort || 'popular';
+    const priceFilter = req.query.price || 'all';
 
-        // --- 2. BUILD ADVANCED DATABASE QUERY ---
-        const queryConditions = [];
+    let categories = req.query.category || [];
+    if (typeof categories === 'string') categories = [categories];
 
-        if (search) {
-            queryConditions.push({
-                $or: [
-                    { filename: { $regex: search, $options: 'i' } },
-                    { filedescription: { $regex: search, $options: 'i' } },
-                    { user: { $regex: search, $options: 'i' } }
-                ]
-            });
-        }
+    let fileTypes = req.query.fileType || [];
+    if (typeof fileTypes === 'string') fileTypes = [fileTypes];
 
-        if (priceFilter === 'free') queryConditions.push({ price: 0 });
-        else if (priceFilter === 'paid') queryConditions.push({ price: { $gt: 0 } });
-        
-        if (categories.length > 0) {
-            const categoryRegex = categories.map(c => new RegExp(`^${c}$`, 'i'));
-            queryConditions.push({ category: { $in: categoryRegex } });
-        }
+    // --- 2. BUILD ADVANCED DATABASE QUERY ---
+    const queryConditions = [];
 
-        if (fileTypes.length > 0) {
-            const fileTypeRegex = fileTypes.map(t => new RegExp(`^${t}$`, 'i'));
-            queryConditions.push({ fileType: { $in: fileTypeRegex } });
-        }
-        
-        const query = queryConditions.length > 0 ? { $and: queryConditions } : {};
-        
-        // --- 3. BUILD SORT OPTIONS ---
-        let sortOptions = {};
-        switch (sort) {
-            case 'newest': sortOptions = { createdAt: -1 }; break;
-            case 'price-asc': sortOptions = { price: 1 }; break;
-            case 'price-desc': sortOptions = { price: -1 }; break;
-            case 'popular': default: sortOptions = { downloadCount: -1 }; break;
-        }
-
-        // --- 4. EXECUTE ALL QUERIES IN PARALLEL ---
-        // This is more efficient. We now fetch everything at once.
-        const [
-            filesFromDB, 
-            totalFiles,
-            categoryResults,
-            fileTypeResults
-        ] = await Promise.all([
-            File.find(query).sort(sortOptions).skip(skip).limit(limit).lean(),
-            File.countDocuments(query),
-            // This query now runs every time to ensure filters are always populated
-            File.aggregate([
-                { $match: { category: { $ne: null, $ne: "" } } },
-                { $group: { _id: { $toLower: "$category" }, originalCase: { $first: "$category" } } },
-                { $project: { _id: 0, category: "$originalCase" } }
-            ]),
-            File.distinct('fileType')
-        ]);
-        
-        // --- 5. PROCESS PREVIEW URLS ---
-        const filesWithPreviews = await Promise.all(
-            filesFromDB.map(async (file) => {
-                const previewUrl = await getValidFileUrl(file);
-                return { ...file, previewUrl };
-            })
-        );
-        
-        // --- 6. SEND FINAL JSON RESPONSE ---
-        res.status(200).json({
-            files: filesWithPreviews,
-            totalFiles,
-            totalPages: Math.ceil(totalFiles / limit),
-            currentPage: page,
-            // This data is now included in EVERY response, fixing the bug
-            allCategories: categoryResults.map(c => c.category).sort(), 
-            allFileTypes: fileTypeResults.filter(t => t),
-        });
-
-    } catch (error) {
-        console.error('API Error in /api/files:', error);
-        res.status(500).json({ message: "Server error while fetching files." });
+    if (search) {
+      queryConditions.push({
+        $or: [
+          { filename: { $regex: search, $options: 'i' } },
+          { filedescription: { $regex: search, $options: 'i' } },
+          { user: { $regex: search, $options: 'i' } }
+        ]
+      });
     }
+
+    if (priceFilter === 'free') queryConditions.push({ price: 0 });
+    else if (priceFilter === 'paid') queryConditions.push({ price: { $gt: 0 } });
+
+    if (categories.length > 0) {
+      const categoryRegex = categories.map(c => new RegExp(`^${c}$`, 'i'));
+      queryConditions.push({ category: { $in: categoryRegex } });
+    }
+
+    if (fileTypes.length > 0) {
+      const fileTypeRegex = fileTypes.map(t => new RegExp(`^${t}$`, 'i'));
+      queryConditions.push({ fileType: { $in: fileTypeRegex } });
+    }
+
+    const query = queryConditions.length > 0 ? { $and: queryConditions } : {};
+
+    // --- 3. BUILD SORT OPTIONS ---
+    let sortOptions = {};
+    switch (sort) {
+      case 'newest': sortOptions = { createdAt: -1 }; break;
+      case 'price-asc': sortOptions = { price: 1 }; break;
+      case 'price-desc': sortOptions = { price: -1 }; break;
+      case 'popular': default: sortOptions = { downloadCount: -1 }; break;
+    }
+
+    // --- 4. EXECUTE ALL QUERIES IN PARALLEL ---
+    // This is more efficient. We now fetch everything at once.
+    const [
+      filesFromDB,
+      totalFiles,
+      categoryResults,
+      fileTypeResults
+    ] = await Promise.all([
+      File.find(query).sort(sortOptions).skip(skip).limit(limit).lean(),
+      File.countDocuments(query),
+      // This query now runs every time to ensure filters are always populated
+      File.aggregate([
+        { $match: { category: { $ne: null, $ne: "" } } },
+        { $group: { _id: { $toLower: "$category" }, originalCase: { $first: "$category" } } },
+        { $project: { _id: 0, category: "$originalCase" } }
+      ]),
+      File.distinct('fileType')
+    ]);
+
+    // --- 5. PROCESS PREVIEW URLS ---
+    const filesWithPreviews = await Promise.all(
+      filesFromDB.map(async (file) => {
+        const previewUrl = await getValidFileUrl(file);
+        return { ...file, previewUrl };
+      })
+    );
+
+    // --- 6. SEND FINAL JSON RESPONSE ---
+    res.status(200).json({
+      files: filesWithPreviews,
+      totalFiles,
+      totalPages: Math.ceil(totalFiles / limit),
+      currentPage: page,
+      // This data is now included in EVERY response, fixing the bug
+      allCategories: categoryResults.map(c => c.category).sort(),
+      allFileTypes: fileTypeResults.filter(t => t),
+    });
+
+  } catch (error) {
+    console.error('API Error in /api/files:', error);
+    res.status(500).json({ message: "Server error while fetching files." });
+  }
 });
 // ASSUMPTIONS:
 // 1. You are using Mongoose/MongoDB.
@@ -2028,10 +2028,10 @@ app.get('/files', async (req, res) => {
 //course routes
 
 // app.get('/courses', async (req, res) => {
-    
+
 //     try {
 //         if (req.query.search !== undefined) {
-            
+
 //             // --- API SEARCH (Returns JSON) ---
 //             console.log(`Search query received: "${req.query.search}"`);
 //             const searchQuery = req.query.search;
@@ -2049,11 +2049,11 @@ app.get('/files', async (req, res) => {
 //                 // vvv UPDATED THIS LINE vvv
 //                 .populate('userId', 'fullName profilePicUrl username') 
 //                 .sort({ createdAt: -1 });
-            
+
 //             res.json(filteredCourses);
 
 //         } else {
-            
+
 //             // --- INITIAL PAGE LOAD (Renders EJS) ---
 //             console.log('Initial page load. Fetching from DB and rendering EJS.');
 
@@ -2062,7 +2062,7 @@ app.get('/files', async (req, res) => {
 //                 // vvv AND UPDATED THIS LINE vvv
 //                 .populate('userId', 'fullName profilePicUrl username')
 //                 .sort({ createdAt: -1 });
-            
+
 //             // vvv UPDATED THIS LINE vvv
 //             res.render('courses', { courses: allCourses }); // Changed 'courses' to 'index'
 //         }
@@ -2123,16 +2123,20 @@ app.get('/products/related', async (req, res) => {
           priceProximity: {
             $subtract: [
               1,
-              { $min: [
+              {
+                $min: [
                   1,
-                  { $divide: [
+                  {
+                    $divide: [
                       { $abs: { $subtract: ["$price", sourcePrice] } },
                       { $max: [sourcePrice, 10] } // Use 10 as a buffer to prevent tiny price diffs from scoring 0
-                  ]}
-              ]}
+                    ]
+                  }
+                ]
+              }
             ]
           },
-          
+
           // E. POPULARITY (Weight: 5%) - Use log10 to normalize
           normalizedPopularity: {
             $log10: { $add: ["$downloadCount", 1] } // +1 to avoid log(0)
@@ -2148,7 +2152,7 @@ app.get('/products/related', async (req, res) => {
               { $multiply: ["$categoryMatch", 20] },
               { $multiply: ["$priceProximity", 15] },
               { $multiply: ["$userMatch", 10] },
-              { $multiply: ["$normalizedPopularity", 5] } 
+              { $multiply: ["$normalizedPopularity", 5] }
             ]
           }
         }
@@ -2167,14 +2171,14 @@ app.get('/products/related', async (req, res) => {
       { $sort: { relevanceScore: -1 } },
       { $limit: MAX_RESULTS },
     ];
-    
+
     let relatedDocs = await File.aggregate(textSearchPipeline);
 
     // --- 3️⃣ FALLBACK QUERY (If text search is weak) ---
     // If we found few results, fill the list with category-based matches
     if (relatedDocs.length < MIN_RESULTS) {
       const remainingLimit = MAX_RESULTS - relatedDocs.length;
-      
+
       // Get IDs of docs we already found, so we don't duplicate
       const excludedIds = relatedDocs.map(doc => doc._id);
       excludedIds.push(sourceFile._id);
@@ -2196,10 +2200,10 @@ app.get('/products/related', async (req, res) => {
       // Combine the "smart" results with the "fallback" results
       relatedDocs = [...relatedDocs, ...fallbackDocs];
     }
-    
+
     // --- 4️⃣ Add preview URLs (file.imageType already exists) ---
     // This part is the same, but we need to project all necessary fields
-    
+
     // We must manually add the $project stage *after* aggregation
     // because .aggregate() doesn't support .lean() chaining
     const finalDocs = await File.find({
@@ -2213,14 +2217,14 @@ app.get('/products/related', async (req, res) => {
       ...file,
       relevanceScore: scoreMap.get(file._id.toString())
     }));
-    
+
     // Sort again, as .find() doesn't guarantee order
     filesWithData.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
     const filesWithPreview = await Promise.all(
       filesWithData.map(async (file) => ({
         ...file,
-        previewUrl: await getValidFileUrl(file), 
+        previewUrl: await getValidFileUrl(file),
       }))
     );
 
@@ -2287,7 +2291,7 @@ app.get('/suggestions', async (req, res) => {
         return { ...file, previewUrl };
       })
     );
- console.log("suggestions fetched")
+    console.log("suggestions fetched")
     res.json(enriched);
   } catch (err) {
     console.error("Suggestion API Error:", err);
@@ -2433,10 +2437,10 @@ function GenCheckOutPrice(price, options = {}) {
 
 
 
-app.get("/help/user/vidyari-guid",(req,res)=>{
+app.get("/help/user/vidyari-guid", (req, res) => {
   res.render("help.ejs");
 })
-app.get("/help/user/dashboard",(req,res)=>{
+app.get("/help/user/dashboard", (req, res) => {
   res.render("dashboardhelp.ejs")
 })
 app.get(
@@ -2486,7 +2490,7 @@ app.get(
         profileUrl: user?.profilePicUrl || null,
         username: user?.username || null,
         useremail: user?.email || null,
-         uId: user?._id || null,
+        uId: user?._id || null,
       });
     } catch (error) {
       console.error("Error fetching purchase history:", error);
