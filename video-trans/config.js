@@ -9,8 +9,8 @@ module.exports = {
   maxMessages: 5,       // Number of messages to receive per poll
 
   // S3 configuration
-  inputBucket: "vidyari2",              // Bucket where raw videos are uploaded
-  outputBucket: "post-upload-pending",  // Bucket where transcoded HLS outputs are stored
+  inputBucket: "vidyari3",              // Bucket where raw videos are uploaded
+  outputBucket: "post-upload-pending2",  // Bucket where transcoded HLS outputs are stored
 
   // MediaConvert configuration
   mediaconvertEndpoint: "https://mediaconvert.ap-south-1.amazonaws.com",

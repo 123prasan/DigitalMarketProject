@@ -23,8 +23,8 @@ const router = express.Router();
 const Coupon=require("./models/couponschema.js");
 
 // --- Configuration ---
-const IMAGE_BUCKET = process.env.S3_IMAGE_BUCKET || 'vidyari2';
-const MAIN_FILE_BUCKET = process.env.S3_MAIN_FILE_BUCKET || 'vidyarimain';
+const IMAGE_BUCKET = process.env.S3_IMAGE_BUCKET || 'vidyari3';
+const MAIN_FILE_BUCKET = process.env.S3_MAIN_FILE_BUCKET || 'vidyarimain2';
 const REGION = process.env.AWS_REGION || 'ap-south-1';
 const URL_EXPIRATION_SECONDS = 21600;
 

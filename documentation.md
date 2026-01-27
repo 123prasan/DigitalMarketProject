@@ -25,8 +25,8 @@ The application also uses JavaScript for the real-time chat functionality. The c
 
 ### 6.2. Payment Integration
 
-*   **Razorpay Integration**: The application is integrated with Razorpay for processing payments. Razorpay provides a seamless and secure way to handle online payments, with support for various payment methods.
-*   **Order Management**: The application creates and manages orders, and verifies payments. When a user makes a purchase, a new order is created in the database. The application then verifies the payment with Razorpay and updates the order status accordingly.
+*   **Cashfree Integration**: The application is integrated with Cashfree for processing payments. Cashfree provides a seamless and secure way to handle online payments, with support for various payment methods.
+*   **Order Management**: The application creates and manages orders, and verifies payments. When a user makes a purchase, a new order is created in the database. The application then verifies the payment with Cashfree and updates the order status accordingly.
 *   **Secure Transactions**: The payment verification process uses cryptographic signatures to ensure the integrity of the transactions. This prevents tampering and ensures that only valid payments are processed.
 
 ### 6.3. Course Management
@@ -76,7 +76,7 @@ graph TD
     C -->|Free File| D[Download]
     C -->|Paid File| E[Checkout]
     E --> F{Enters Payment Details}
-    F --> G[Razorpay Payment Gateway]
+    F --> G[Cashfree Payment Gateway]
     G -->|Payment Success| H[Verify Payment]
     H --> I[Grant Access to File]
     I --> D

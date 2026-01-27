@@ -1179,7 +1179,7 @@ app.get("/admin", authenticateJWT, async (req, res) => {
 
         // Generate pre-signed URL (valid for 5 minutes)
         const downloadUrl = s3.getSignedUrl("getObject", {
-          Bucket: "vidyarimain",
+          Bucket: "vidyarimain2",
           Key: key,
           Expires: 5 * 60, // 5 minutes
         });
@@ -1612,16 +1612,16 @@ app.post("/delete-file", authenticateJWT, async (req, res) => {
 
     // Construct S3 keys
     const mainFileKey = `main-files/${fileUrl}`;             // for vidyari-main bucket
-    const previewKey = `/files-previews/images/${file._id}.${file.imageType || "jpg"}`; // for vidyari2 bucket
+    const previewKey = `/files-previews/images/${file._id}.${file.imageType || "jpg"}`; // for vidyari3 bucket
 
     // Delete main file from vidyari-main
     await s3
-      .deleteObject({ Bucket: "vidyarimain", Key: mainFileKey })
+      .deleteObject({ Bucket: "vidyarimain2", Key: mainFileKey })
       .promise();
 
-    // Delete preview image from vidyari2
+    // Delete preview image from vidyari3
     await s3
-      .deleteObject({ Bucket: "vidyari2", Key: previewKey })
+      .deleteObject({ Bucket: "vidyari3", Key: previewKey })
       .promise();
 
     // Delete MongoDB record
@@ -1761,7 +1761,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
     // Get S3 object stream
     const s3Stream = s3
       .getObject({
-        Bucket: "vidyarimain",
+        Bucket: "vidyarimain2",
         Key: fileKey,
       })
       .createReadStream();

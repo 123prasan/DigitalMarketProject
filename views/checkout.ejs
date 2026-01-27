@@ -518,7 +518,7 @@
     </div>
 </div>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 <script>
 const fileId = "<%=file._id%>";
 const originalPricePerItem = <%=priceDetails.originalPrice%>; 
@@ -724,7 +724,7 @@ applyBtn.addEventListener('click', async ()=>{
 });
 
 const buyButton=document.querySelector('.cta-button');
-// Razorpay Integration
+// Cashfree Integration
 if (buyButton) {
     buyButton.onclick = function (e) {
         e.preventDefault();
@@ -744,22 +744,23 @@ if (buyButton) {
         })
         .then(res => res.json())
         .then(order => {
-            var options = {
-                key: "<%= razorpayKey %>",
-                amount: order.amount,
-                currency: order.currency,
-                name: "Vidyari",
-                description: "<%= file.filename %> (x" + currentQuantity + ")",
-                order_id: order.id,
-                
-                handler: function (response) {
+            const cashfree = new Cashfree();
+            cashfree.checkout({
+                paymentSessionId: order.order_token,
+                redirectTarget: "_modal",
+            }).then((result) => {
+                if (result.error) {
+                    alert(result.error.message || "Payment failed");
+                    buyButton.innerHTML = `<i class="fas fa-arrow-right"></i> Pay ₹${currentPriceDetails.total.toFixed(2)}`;
+                    buyButton.disabled = false;
+                } else if (result.paymentDetails) {
+                    // Payment successful
                     fetch('/verify-payment', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                          razorpay_order_id: response.razorpay_order_id,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          razorpay_signature: response.razorpay_signature,
+                          order_id: result.paymentDetails.orderId,
+                          payment_id: result.paymentDetails.paymentId,
                           fileId: "<%= file._id %>",
                           totalprice: currentPriceDetails.total,
                           filename:"<%=file.filename%>",
@@ -777,16 +778,13 @@ if (buyButton) {
                             buyButton.disabled = false;
                         }
                     });
-                },
-                modal: {
-                    ondismiss: function () {
-                         buyButton.innerHTML = `<i class="fas fa-arrow-right"></i> Pay ₹${currentPriceDetails.total.toFixed(2)}`;
-                         buyButton.disabled = false;
-                    }
                 }
-            };
-            var rzp1 = new Razorpay(options);
-            rzp1.open();
+            }).catch((error) => {
+                console.error("Cashfree checkout error:", error);
+                alert("Payment initialization failed. Please try again.");
+                buyButton.innerHTML = `<i class="fas fa-arrow-right"></i> Pay ₹${currentPriceDetails.total.toFixed(2)}`;
+                buyButton.disabled = false;
+            });
         }).catch(err => {
             console.error("Error creating order", err);
             alert("Could not initiate payment. Please try again.");

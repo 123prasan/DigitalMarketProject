@@ -54,7 +54,7 @@ async function cleanupAbandonedCourses(gracePeriodHours = 3) {
     if (keysToDelete.length > 0) {
       try {
         await courseS3.send(new DeleteObjectsCommand({
-          Bucket: "vidyari2",
+          Bucket: "vidyari3",
           Delete: { Objects: keysToDelete }
         }));
         console.log(`Deleted course files for course: ${course._id}`);
@@ -69,7 +69,7 @@ async function cleanupAbandonedCourses(gracePeriodHours = 3) {
       const hlsKeys = course.hlsFileKeys.map(f => ({ Key: f }));
       try {
         await hlsS3.send(new DeleteObjectsCommand({
-          Bucket: "post-upload-pending",
+          Bucket: "post-upload-pending2",
           Delete: { Objects: hlsKeys }
         }));
         console.log(`Deleted HLS files for course: ${course._id}`);

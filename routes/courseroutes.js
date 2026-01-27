@@ -47,7 +47,7 @@ router.post(
 router.post("/create-course", authenticateJWT_user, createCourse);
 
 // router.get('/:courseId', authenticateJWT_user, getCourseById);
-const s3BucketName = "post-upload-pending";
+const s3BucketName = "post-upload-pending2";
 const cloudfrontDomain = "d1iz17ohzrj8rc.cloudfront.net";
 
 router.get("/:courseId", authenticateJWT_user, async (req, res) => {
@@ -87,7 +87,7 @@ router.get("/:courseId", authenticateJWT_user, async (req, res) => {
                 console.log("this is file")
               async function getPresignedPDF(fileKey) {
                 const command = new GetObjectCommand({
-                  Bucket: "vidyari2",
+                  Bucket: "vidyari3",
                   Key: fileKey,
                 });
                 return await getSignedUrl(s3, command, { expiresIn: 3600 }); // 1 hour

@@ -86,7 +86,7 @@
 
 // const SUPABASE_BUCKET = "files"; // your Supabase bucket name
 // const SUPABASE_FOLDER = "previews"; // only migrate from this folder
-// const S3_BUCKET = "vidyari2"; // your target S3 bucket
+// const S3_BUCKET = "vidyari3"; // your target S3 bucket
 // const S3_FOLDER = "files-previews/images"; // target folder in S3
 
 // async function migrateFiles() {

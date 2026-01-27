@@ -1,15 +1,15 @@
 /**
  * The code is a Node.js application that uses Express to create a server for handling file uploads,
- * user authentication, order processing with Razorpay, MongoDB database interactions, and various
+ * user authentication, order processing with Cashfree, MongoDB database interactions, and various
  * routes for managing files, admin dashboard, notifications, and error handling.
  * @returns The code provided is a Node.js application using Express framework. It includes routes for
  * handling file uploads, user authentication, file management, order processing, notifications, and
  * admin functionalities. The application interacts with MongoDB for data storage and Supabase for file
- * storage. It also integrates with Razorpay for payment processing.
+ * storage. It also integrates with Cashfree for payment processing.
  */
 
 const express = require("express");
-const Razorpay = require("razorpay");
+const { Cashfree } = require("cashfree-pg");
 const crypto = require("crypto");
 const path = require("path");
 const Order = require("./models/Order");
@@ -426,11 +426,10 @@ function slugify(text) {
 
 // This must match the collection name in your database
 
-// Razorpay instance from env variables
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_SECRET,
-});
+// Cashfree configuration
+Cashfree.XClientId = process.env.CASHFREE_APP_ID;
+Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
+Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 
 // Supabase client setup
 const supabase = createClient(
@@ -495,7 +494,7 @@ app.get("/files/impression/:id/:impression", authenticateJWT_user, requireAuth, 
 app.get("/dashboard", (req, res) => {
   res.render("createcourse");
 });
-// Razorpay Order Creation - No auth needed (public)
+// Cashfree Order Creation - No auth needed (public)
 app.post("/create-order", async (req, res) => {
   try {
     const { fileId, filename, price } = req.body;
@@ -505,15 +504,31 @@ app.post("/create-order", async (req, res) => {
         .status(400)
         .json({ error: "Missing or invalid fileId, filename, or price" });
     }
-    const amountInPaise = Math.round(price * 100);
-    const options = {
-      amount: amountInPaise,
-      currency: "INR",
-      receipt: `receipt_${fileId}`,
+    const amountInRupees = Math.round(price * 100) / 100; // Cashfree expects amount in rupees
+    
+    const request = {
+      order_id: `order_${fileId}_${Date.now()}`,
+      order_amount: amountInRupees,
+      order_currency: "INR",
+      customer_details: {
+        customer_id: `customer_${fileId}`,
+        customer_email: "customer@example.com",
+        customer_phone: "9999999999",
+      },
+      order_meta: {
+        return_url: `${process.env.BASE_URL || 'http://localhost:8000'}/payment-success?order_id={order_id}`,
+        notify_url: `${process.env.BASE_URL || 'http://localhost:8000'}/webhook`,
+      },
     };
-    const order = await razorpay.orders.create(options);
-    // console.log(order);
-    res.json(order);
+
+    const response = await Cashfree.PGCreateOrder("2023-08-01", request);
+    // console.log(response.data);
+    res.json({
+      id: response.data.order_id,
+      amount: amountInRupees * 100, // Keep compatibility with frontend expecting paise
+      currency: "INR",
+      order_token: response.data.order_token,
+    });
   } catch (error) {
     console.error("Order creation failed:", error);
     res.status(500).json({ error: "Failed to create order" });
@@ -531,45 +546,42 @@ app.get("/terms-and-conditions", (req, res) => {
 let token;
 const Adminbal = require("./models/admin/adminBal.js");
 
-// Razorpay Payment Verification - No auth needed (public)
+// Cashfree Payment Verification - No auth needed (public)
 app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
   const {
-    razorpay_order_id,
-    razorpay_payment_id,
-    razorpay_signature,
+    order_id,
+    payment_id,
+    signature,
     fileId,
     totalprice,
   } = req.body;
 
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+  if (!order_id || !payment_id) {
     return res.status(400).json({
       success: false,
       message: "Incomplete payment details",
     });
   }
 
-  const body = razorpay_order_id + "|" + razorpay_payment_id;
-  const expectedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_SECRET)
-    .update(body)
-    .digest("hex");
-
-  if (expectedSignature !== razorpay_signature) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid signature" });
-  }
-
   try {
-    // Fetch Razorpay payment details
+    // Fetch Cashfree payment details
     let paymentDetails;
     try {
-      paymentDetails = await razorpay.payments.fetch(razorpay_payment_id);
+      const response = await Cashfree.PGFetchOrder("2023-08-01", order_id);
+      paymentDetails = response.data;
     } catch (err) {
-      console.error("Razorpay fetch failed:", err);
+      console.error("Cashfree fetch failed:", err);
       return res.status(502).json({
         success: false,
         message: "Payment gateway error",
+      });
+    }
+
+    // Check if payment is successful
+    if (paymentDetails.order_status !== "PAID") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment not completed",
       });
     }
 
@@ -587,7 +599,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
         : 0;
 
     const token = jwt.sign(
-      { fileId, orderId: razorpay_order_id, transactionId: razorpay_payment_id },
+      { fileId, orderId: order_id, transactionId: payment_id },
       process.env.JWT_SECRET_FILE_PURCHASE,
       { expiresIn: "10m" }
     );
@@ -598,14 +610,14 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     await Promise.all([
       // Transaction record
       Usertransaction.findOneAndUpdate(
-        { transactionId: razorpay_payment_id },
+        { transactionId: payment_id },
         {
           userId: file.userId,
           ProductId: file._id,
           totalAmount: sellerShare,
           ProductName: file.filename,
           purchaserId: req.user._id,
-          transactionId: razorpay_payment_id,
+          transactionId: payment_id,
           discount,
         },
         { upsert: true, new: true }
@@ -627,12 +639,12 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
 
       // Order record
       Order.findOneAndUpdate(
-        { orderId: razorpay_order_id },
+        { orderId: order_id },
         {
-          orderId: razorpay_order_id,
-          transactionId: razorpay_payment_id,
-          customer: paymentDetails.email || paymentDetails.contact || "Online Customer",
-          payment: paymentDetails.method,
+          orderId: order_id,
+          transactionId: payment_id,
+          customer: paymentDetails.customer_details?.customer_email || "Online Customer",
+          payment: paymentDetails.payment_method || "Online Payment",
           total: totalprice,
           productId: file._id,
           productName: file.filename,
@@ -650,8 +662,8 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
         price: file.price,
         totalPrice: totalprice,
         productName: file.filename,
-        orderId: razorpay_order_id,
-        purchaseId: razorpay_payment_id,
+        orderId: order_id,
+        purchaseId: payment_id,
         quantity: 1,
       }),
 
@@ -720,6 +732,43 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
       success: false,
       message: "Payment verification failed",
     });
+  }
+});
+
+
+// Cashfree Webhook - No auth needed (public)
+app.post("/webhook", (req, res) => {
+  try {
+    const secretKey = process.env.CASHFREE_WEBHOOK_SECRET;
+    const signature = req.headers['x-webhook-signature'] || req.headers['X-Webhook-Signature'];
+    
+    if (!signature) {
+      return res.status(400).json({ error: 'Missing signature' });
+    }
+
+    // Verify webhook signature
+    const expectedSignature = crypto
+      .createHmac('sha256', secretKey)
+      .update(JSON.stringify(req.body))
+      .digest('base64');
+
+    if (signature !== expectedSignature) {
+      return res.status(400).json({ error: 'Invalid signature' });
+    }
+
+    const eventData = req.body;
+    
+    // Handle different webhook events
+    if (eventData.type === 'PAYMENT_SUCCESS_WEBHOOK') {
+      // Payment was successful
+      console.log('Payment successful:', eventData.data);
+      // You can add additional processing here if needed
+    }
+
+    res.status(200).json({ status: 'ok' });
+  } catch (error) {
+    console.error('Webhook error:', error);
+    res.status(500).json({ error: 'Webhook processing failed' });
   }
 });
 
@@ -969,7 +1018,7 @@ app.get("/admin", authenticateJWT, async (req, res) => {
 
         // Generate pre-signed URL (valid for 5 minutes)
         const downloadUrl = s3.getSignedUrl("getObject", {
-          Bucket: "vidyarimain",
+          Bucket: "vidyarimain2",
           Key: key,
           Expires: 5 * 60, // 5 minutes
         });
@@ -1311,7 +1360,7 @@ const previewhttp = axios.create({
 
 async function getValidFileUrl(
   file,
-  CLOUDFRONT_DOMAIN = "previewfiles.vidyari.com",
+  CLOUDFRONT_DOMAIN = "vidyari.com",
   validTypes = ["jpg", "jpeg", "png", "webp"]
 ) {
 
@@ -1469,7 +1518,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       file,
       sellerprofilepic,
       ISVERIFIED,
-      razorpayKey: process.env.RAZORPAY_KEY_ID,
+      cashfreeAppId: process.env.CASHFREE_APP_ID,
       previewUrl,
       pdfUrl,
       isLoggedin: !!req.user,
@@ -1506,16 +1555,16 @@ app.post("/delete-file", authenticateJWT, async (req, res) => {
 
     // Construct S3 keys
     const mainFileKey = `main-files/${fileUrl}`;             // for vidyari-main bucket
-    const previewKey = `/files-previews/images/${file._id}.${file.imageType || "jpg"}`; // for vidyari2 bucket
+    const previewKey = `/files-previews/images/${file._id}.${file.imageType || "jpg"}`; // for vidyari3 bucket
 
     // Delete main file from vidyari-main
     await s3
-      .deleteObject({ Bucket: "vidyarimain", Key: mainFileKey })
+      .deleteObject({ Bucket: "vidyarimain2", Key: mainFileKey })
       .promise();
 
-    // Delete preview image from vidyari2
+    // Delete preview image from vidyari3
     await s3
-      .deleteObject({ Bucket: "vidyari2", Key: previewKey })
+      .deleteObject({ Bucket: "vidyari3", Key: previewKey })
       .promise();
 
     // Delete MongoDB record
@@ -1619,7 +1668,7 @@ const { getSignedUrl } = require("@aws-sdk/cloudfront-signer");
 // const NodeCache = require("node-cache");
 
 // ⚙️ Config
-const CLOUDFRONT_DOMAIN = "mainfile.vidyari.com";
+const CLOUDFRONT_DOMAIN = "d2q25uqlym20sh.cloudfront.net";
 const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID;
 const PRIVATE_KEY_PATH = path.join(__dirname, "private_keys", "cloudfront-private-key.pem");
 const PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
@@ -2334,7 +2383,7 @@ app.get("/checkout", authenticateJWT_user, requireAuth, async (req, res) => {
 
     // Render checkout with all price info
     res.render("checkout", {
-      razorpayKey: process.env.RAZORPAY_KEY_ID,
+      cashfreeAppId: process.env.CASHFREE_APP_ID,
       file,
       priceDetails,
       couponCode: couponCode || null,
