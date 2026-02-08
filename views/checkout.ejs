@@ -739,23 +739,28 @@ if (buyButton) {
               price: currentPriceDetails.total,
               filename: "<%= file.filename %>",
               quantity: currentQuantity,
-              couponCode: couponInput.value.trim()
+              couponCode: couponInput.value.trim(),
+              
             })
         })
         .then(res => res.json())
         .then(order => {
-            const cashfree = new Cashfree();
+            console.log("Backend Response:", order);
+            const cashfree = new Cashfree({mode:"sandbox"});
             cashfree.checkout({
-                paymentSessionId: order.order_token,
+                paymentSessionId: order.payment_session_id,
                 redirectTarget: "_modal",
             }).then((result) => {
+                console.log("Cashfree checkout result:", result)
                 if (result.error) {
                     alert(result.error.message || "Payment failed");
                     buyButton.innerHTML = `<i class="fas fa-arrow-right"></i> Pay ₹${currentPriceDetails.total.toFixed(2)}`;
                     buyButton.disabled = false;
                 } else if (result.paymentDetails) {
                     // Payment successful
+                    console.log(result.paymentDetails)
                     fetch('/verify-payment', {
+                        
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

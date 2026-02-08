@@ -429,7 +429,7 @@ function slugify(text) {
 // Cashfree configuration
 Cashfree.XClientId = process.env.CASHFREE_APP_ID;
 Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
-Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
 
 // Supabase client setup
 const supabase = createClient(
@@ -495,7 +495,9 @@ app.get("/dashboard", (req, res) => {
   res.render("createcourse");
 });
 // Cashfree Order Creation - No auth needed (public)
-app.post("/create-order", async (req, res) => {
+app.post("/create-order", authenticateJWT_user,requireAuth,async (req, res) => {
+  // console.log("data",req.user)
+  console.log("-----------------------------")
   try {
     const { fileId, filename, price } = req.body;
 
@@ -511,8 +513,8 @@ app.post("/create-order", async (req, res) => {
       order_amount: amountInRupees,
       order_currency: "INR",
       customer_details: {
-        customer_id: `customer_${fileId}`,
-        customer_email: "customer@example.com",
+        customer_id: `cusotmer_${req.user._id}`,
+        customer_email:`${req.user.email} `,
         customer_phone: "9999999999",
       },
       order_meta: {
@@ -522,13 +524,16 @@ app.post("/create-order", async (req, res) => {
     };
 
     const response = await Cashfree.PGCreateOrder("2023-08-01", request);
-    // console.log(response.data);
-    res.json({
-      id: response.data.order_id,
-      amount: amountInRupees * 100, // Keep compatibility with frontend expecting paise
-      currency: "INR",
-      order_token: response.data.order_token,
-    });
+  //  console.log("Cashfree Response:", response.data); 
+
+res.json({
+  success: true,
+  order_id: response.data.order_id,
+  // The frontend needs this specific key:
+  payment_session_id: response.data.payment_session_id, 
+  amount: amountInRupees * 100,
+  currency: "INR",
+});
   } catch (error) {
     console.error("Order creation failed:", error);
     res.status(500).json({ error: "Failed to create order" });
@@ -557,6 +562,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
   } = req.body;
 
   if (!order_id || !payment_id) {
+    console.log("incomplete payment details")
     return res.status(400).json({
       success: false,
       message: "Incomplete payment details",
@@ -569,6 +575,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     try {
       const response = await Cashfree.PGFetchOrder("2023-08-01", order_id);
       paymentDetails = response.data;
+      console.log(paymentDetails.order_status)
     } catch (err) {
       console.error("Cashfree fetch failed:", err);
       return res.status(502).json({
@@ -578,7 +585,8 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     }
 
     // Check if payment is successful
-    if (paymentDetails.order_status !== "PAID") {
+    if (paymentDetails.order_status !=='ACTIVE') {
+      console.log("Payment is not active")
       return res.status(400).json({
         success: false,
         message: "Payment not completed",

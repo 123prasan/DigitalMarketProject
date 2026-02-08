@@ -70,14 +70,14 @@ async function pollMessages() {
         await sqsClient.send(deleteCmd);
         console.log(`Processed and deleted SQS message.`);
       } catch (err) {
-        console.error("Error processing message:", err);
+        // console.error("Error processing message:", err);
       }
     }
 
     // Continue polling
     pollMessages();
   } catch (err) {
-    console.error("SQS Polling error:", err);
+    // console.error("SQS Polling error:", err);
     setTimeout(pollMessages, 5000);
   }
 }
@@ -147,7 +147,7 @@ async function createHlsJob(inputKey) {
     const job = await mediaConvertClient.send(command);
     console.log("MediaConvert job created:", job.Job.Id);
   } catch (err) {
-    console.error("Error creating MediaConvert job:", err);
+    // console.error("Error creating MediaConvert job:", err);
   }
 }
 
