@@ -486,8 +486,8 @@
 
         <div class="price-breakdown" id="price-breakdown">
             <p><span>Item Subtotal:</span> ₹<span id="subtotalPrice"><%=priceDetails.originalPrice%></span></p>
-            <p><span>Service Fee:</span> ₹<%=priceDetails.serviceFee%></p>
-            <p><span>GST/Tax:</span> ₹<%=priceDetails.gstTax%></p>
+            <!-- <p><span>Service Fee:</span> ₹<%=priceDetails.serviceFee%></p>
+            <p><span>GST/Tax:</span> ₹<%=priceDetails.gstTax%></p> -->
             <% if(priceDetails.discountedPrice && priceDetails.discountedPrice < priceDetails.originalPrice) { %>
                 <p><span>Coupon Discount:</span> <span class="discount">-₹<%= (priceDetails.originalPrice - priceDetails.discountedPrice).toFixed(2) %></span></p>
             <% } %>
@@ -600,8 +600,8 @@ function updateUI(newPriceDetails, currentSavings = 0) {
 
     priceBreakdown.innerHTML = `
         <p><span>Item Subtotal:</span> ₹${newPriceDetails.originalPrice.toFixed(2)}</p>
-        <p><span>Service Fee:</span> ₹${newPriceDetails.serviceFee.toFixed(2)}</p>
-        <p><span>GST/Tax:</span> ₹${newPriceDetails.gstTax.toFixed(2)}</p>
+        <p><span>Service Fee:</span> ₹${(newPriceDetails.serviceFee+newPriceDetails.gstTax).toFixed(2)}</p>
+        
         ${discountHtml}
     `;
 }
