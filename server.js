@@ -1406,7 +1406,7 @@ const previewhttp = axios.create({
 
 async function getValidFileUrl(
   file,
-  CLOUDFRONT_DOMAIN = "vidyari.com",
+  CLOUDFRONT_DOMAIN = "d3epchi0htsp3c.cloudfront.net",
   validTypes = ["jpg", "jpeg", "png", "webp"]
 ) {
 
@@ -1522,7 +1522,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
 
     // 📄 Get file preview and download URLs
     const previewUrl = await getValidFileUrl(file);
-    const pdfUrl = `https://previewfiles.vidyari.com/${file.fileUrl}`;
+    const pdfUrl = `d3epchi0htsp3c.cloudfront.net/${file.fileUrl}`;
 
     // 👥 Logged-in viewer info (cached)
     let user = null;
@@ -1942,7 +1942,7 @@ dotenv.config();
 // import NodeCache from "node-cache";
 const pageCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache for 10 min
 
-const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
+const CLOUDFRONT_AVATAR_URL = "d3epchi0htsp3c.cloudfront.net/avatars";
 
 // ==========================================
 // ⚡ Optimized & Cached Documents Route

@@ -489,7 +489,12 @@
                                 <h1><%- file.filename || 'Untitled Document' %></h1>
                                 
                                 <div class="creator-info">
-                                    <img src="<%= sellerprofilepic || '/images/avatar.jpg' %>" alt="Creator" class="profile-pic"/>
+<img 
+  src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>" 
+  alt="Creator" 
+  class="profile-pic"
+  onerror="this.onerror=null; this.src='/images/avatar.jpg';"
+/>
                                     <span class="small text-muted">by</span>
                                     <a href="/profile/<%= file.user || 'admin' %>" class="fw-bold text-decoration-none text-dark">
                                         <%= file.user || 'Vidyari Team' %>
