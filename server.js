@@ -40,6 +40,7 @@ const chatRoutes = require("./routes/chat.js");
 const File = require("./models/file");
 const courseRoutes = require("./routes/courseroutes");
 const progressRoutes = require("./routes/progressroutes");
+const adminRoutes = require("./routes/adminRoutes");
 const authenticateJWT_user = require("./routes/authentication/jwtAuth.js");
 const User = require("./models/userData");
 const UserDownloads = require("./models/userDownloads.js");
@@ -333,6 +334,7 @@ app.use(cors());
 
 app.use("/api/courses", courseRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api/admin", adminRoutes);
 
 // app.use(cookieParser())
 function getcategories() {
@@ -547,6 +549,30 @@ app.get("/refund-policy", (req, res) => {
 });
 app.get("/terms-and-conditions", (req, res) => {
   res.render("terms&conditions");
+});
+app.get("/terms&conditions", (req, res) => {
+  res.render("terms&conditions");
+});
+app.get("/refundpolicy", (req, res) => {
+  res.render("refundpolicy");
+});
+app.get("/payment-terms", (req, res) => {
+  res.render("payment-terms");
+});
+app.get("/contact", (req, res) => {
+  res.render("contact");
+});
+app.get("/disclaimer", (req, res) => {
+  res.render("disclaimer");
+});
+app.get("/acceptable-use", (req, res) => {
+  res.render("acceptable-use");
+});
+app.get("/intellectual-property", (req, res) => {
+  res.render("intellectual-property");
+});
+app.get("/return-cancellation", (req, res) => {
+  res.render("return-cancellation");
 });
 let token;
 const Adminbal = require("./models/admin/adminBal.js");
@@ -1180,8 +1206,15 @@ app.get("/admin", authenticateJWT, async (req, res) => {
     aovLabels.push(dayjs(quarterStart).format("Q [Q] YYYY")); // e.g., "2 Q 2024"
   }
 
-  const categories = await getcategories(); // Fetch c
+  const categories = await getcategories(); // Fetch categories
   const allAddresses = await fetchaddress(); // Fetch last 100 addresses
+  
+  // Fetch all users and their statistics
+  const allUsers = await User.find({}).sort({ createdAt: -1 });
+  const verifiedUsers = allUsers.filter(u => u.ISVERIFIED).length;
+  const suspendedUsers = allUsers.filter(u => u.isSuspended).length;
+  const bannedUsers = allUsers.filter(u => u.isBanned).length;
+  
   res.render("admin", {
     orders: await Order.find({}).sort({ dateTime: -1 }), // Ensure orders are sorted for "Recent Orders"
     uploadedFiles: filesWithUrls,
@@ -1194,6 +1227,11 @@ app.get("/admin", authenticateJWT, async (req, res) => {
     fileUpdated,
     totalAmount: totalAmount || 0,
     categories,
+    // Users data
+    allUsers,
+    verifiedUsers,
+    suspendedUsers,
+    bannedUsers,
     // NEW DATA FOR CHARTS
     monthlyLabels: monthlyLabels,
     monthlyTotalOrdersData: monthlyTotalOrdersData,

@@ -3,39 +3,453 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Refund Policy for Vidyari, educational Docs marketplace.">
+  <meta name="description" content="Comprehensive Refund Policy for Vidyari educational marketplace with 7-day guarantee.">
   <title>Refund Policy - Vidyari</title>
-  <link rel="icon" type="image/png" href="./images/logo.png">
+  <link rel="icon" type="image/png" href="./images/logo.svg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; background: #fff; color: #000; line-height: 1.6; }
-    header { text-align: center; margin-bottom: 20px; }
-    header a { text-decoration: none; color: black; border: 1px solid black; padding: 8px 15px; border-radius: 5px; }
-    h1, h2 { margin-top: 30px; }
-    footer { margin-top: 50px; font-size: 0.9em; color: #333; text-align: center; }
+    :root {
+      /* Strictly Monochrome Professional Palette */
+      --bg-body: #ffffff;      /* Pure white background */
+      --text-primary: #000000; /* Jet black for headings */
+      --text-body: #1a1a1a;    /* Near black for high contrast reading */
+      --text-muted: #555555;   /* Gray for metadata */
+      --border-light: #e5e5e5; /* Light divider lines */
+      --border-strong: #000000; /* Strong structural lines */
+      --bg-box: #f9f9f9;       /* Very light gray for section boxes */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      width: 100%;
+    }
+
+    /* --- Layout Container: Full Width --- */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 60px;
+    }
+
+    /* --- Typography --- */
+    h1 {
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--text-primary);
+      margin: 0 0 15px 0;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-top: 60px;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    h2 i { font-size: 1.2rem; }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 30px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      margin-bottom: 1.5em;
+      max-width: 100%;
+      font-size: 1rem;
+    }
+
+    /* --- Header --- */
+    header {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    .meta-info {
+      display: flex;
+      gap: 30px;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: 'Inter', monospace;
+      border-left: 3px solid var(--border-strong);
+      padding-left: 15px;
+    }
+
+    .meta-item { display: flex; align-items: center; gap: 8px; }
+
+    /* --- Notice Box --- */
+    .notice-box {
+      width: 100%;
+      margin: 30px 0;
+      padding: 30px;
+      background-color: var(--bg-box);
+      border: 1px solid var(--border-light);
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .notice-icon { font-size: 24px; color: var(--text-primary); }
+    .notice-content { font-weight: 500; font-size: 1rem; }
+
+    /* --- Eligible/Ineligible Boxes --- */
+    .criteria-box {
+      padding: 30px;
+      margin: 30px 0;
+      border: 1px solid var(--border-light);
+    }
+
+    .criteria-box strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 10px;
+    }
+
+    /* Eligible - Checkmark style bullets */
+    .eligible {
+      background-color: #fff;
+      border-left: 6px solid #666; 
+    }
+
+    /* Ineligible - X style bullets */
+    .ineligible {
+      background-color: #fcfcfc;
+      border-left: 6px solid #000;
+      border: 1px solid #000;
+    }
+
+    /* --- Tables --- */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      font-size: 0.95rem;
+    }
+
+    .table th, .table td {
+      border: 1px solid var(--border-light);
+      padding: 15px;
+      text-align: left;
+    }
+
+    .table th {
+      background-color: var(--bg-box);
+      color: var(--text-primary);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    /* --- Lists --- */
+    ul, ol { margin: 20px 0; padding-left: 25px; }
+    li { margin-bottom: 10px; padding-left: 5px; }
+
+    /* --- Contact Box --- */
+    .contact-section {
+      margin-top: 60px;
+      padding: 40px;
+      border: 1px solid var(--border-strong);
+    }
+
+    /* --- Footer --- */
+    footer {
+      margin-top: 100px;
+      padding: 50px 0;
+      border-top: 4px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    footer p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+    
+    .footer-links { display: flex; gap: 30px; }
+    
+    footer a { color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+    footer a:hover { text-decoration: underline; }
+    
+    a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 2rem; }
+      .meta-info { flex-direction: column; gap: 10px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-direction: column; gap: 15px; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <a href="/">Home</a>
-  </header>
 
-  <h1>Refund Policy</h1>
-  <p>Since Vidyari deals in digital Docs, all sales are final and non-refundable. Please ensure that you review product details carefully before purchasing.</p>
+  <div class="container">
+    <header>
+      <a href="/" class="back-link">&larr; Back to Home</a>
+      <h1>Refund Policy</h1>
+      <div class="meta-info">
+        <div class="meta-item">
+          <i class="fas fa-calendar-alt"></i>
+          <span>UPDATED: FEBRUARY 2026</span>
+        </div>
+        <div class="meta-item">
+          <i class="fas fa-undo"></i>
+          <span>7-DAY GUARANTEE</span>
+        </div>
+      </div>
+    </header>
 
-  <h2>1. No Refunds</h2>
-  <p>Refunds will not be issued for any digital purchases once the files have been delivered.</p>
+    <div class="notice-box">
+      <div class="notice-icon"><i class="fas fa-exclamation-circle"></i></div>
+      <div class="notice-content">
+        <strong>Important Notice</strong> This Refund Policy applies to purchases made on the Vidyari platform. Since Vidyari primarily deals in digital products (e-books, documents, courses), there are specific conditions for refunds. Please read this policy carefully before making a purchase.
+      </div>
+    </div>
 
-  <h2>2. Download Issues</h2>
-  <p>If you encounter issues downloading your Docs, please contact our support team. We will ensure you receive the purchased material.</p>
+    <div class="section">
+      <h2><i class="fas fa-check-circle"></i> Refund Eligibility & Conditions</h2>
 
-  <h2>3. Duplicate Purchases</h2>
-  <p>In rare cases of duplicate charges, please contact support with proof, and we will review your request.</p>
+      <h3>1.1 Eligible for Refund</h3>
+      <div class="criteria-box eligible">
+        <strong>Your purchase may be eligible for a refund if:</strong>
+        <ul>
+          <li>Request is made <strong>within 7 days (168 hours)</strong> of purchase</li>
+          <li>The digital product has <strong>NOT been downloaded</strong> to your device</li>
+          <li>The product file is <strong>incomplete, corrupted, or damaged</strong></li>
+          <li>The product content does <strong>NOT match the description</strong> provided at time of purchase</li>
+          <li>You had a <strong>technical failure</strong> accessing the purchased content</li>
+          <li>You are the <strong>legitimate account owner</strong> and can provide proof</li>
+          <li>The file <strong>does not open</strong> on standard devices/applications</li>
+          <li>You had a <strong>duplicate charge</strong> error on your payment method</li>
+        </ul>
+      </div>
 
-  <h2>4. Changes to Policy</h2>
-  <p>Vidyari reserves the right to update this Refund Policy at any time.</p>
+      <h3>1.2 NOT Eligible for Refund</h3>
+      <div class="criteria-box ineligible">
+        <strong>Your purchase will NOT be eligible for refund if:</strong>
+        <ul>
+          <li>The file has been <strong>downloaded to your device</strong> (even if not fully viewed)</li>
+          <li>The content has been <strong>printed or saved</strong> locally</li>
+          <li>You have <strong>accessed the file</strong> in any way (downloads count as access)</li>
+          <li>More than <strong>7 days</strong> have passed since purchase</li>
+          <li>You changed your mind about the purchase (buyer's remorse)</li>
+          <li>The purchase was made <strong>under false pretenses</strong> or fraudulently</li>
+          <li>You do not like the quality or educational value of the content</li>
+          <li>The content was not suitable for your needs</li>
+          <li>You shared or redistributed the content to others</li>
+          <li>Technical issues are due to your <strong>device, internet, or software</strong></li>
+          <li>The refund request comes from a <strong>different account</strong> than the purchaser</li>
+        </ul>
+      </div>
+    </div>
 
-  <footer>
-    &copy; 2025 Vidyari . All rights reserved.
-  </footer>
+    <div class="section">
+      <h2><i class="fas fa-clock"></i> Refund Timeline & Processing</h2>
+
+      <h3>Processing Timeframe</h3>
+      <table class="table">
+        <tr>
+          <th>Step</th>
+          <th>Timeline</th>
+        </tr>
+        <tr>
+          <td>Submit Refund Request</td>
+          <td>Within 7 days of purchase</td>
+        </tr>
+        <tr>
+          <td>Request Review</td>
+          <td>1-3 business days</td>
+        </tr>
+        <tr>
+          <td>Approval/Denial</td>
+          <td>1-2 business days</td>
+        </tr>
+        <tr>
+          <td>Processing Refund to Payment Method</td>
+          <td>5-7 business days for cards; 1-3 days for digital wallets</td>
+        </tr>
+        <tr>
+          <td>Total Time to Account</td>
+          <td>7-12 business days</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-exchange-alt"></i> How to Request a Refund</h2>
+
+      <h3>2.1 Request Steps</h3>
+      <ol>
+        <li>Go to your <a href="/purchasehistory">Purchase History</a> page</li>
+        <li>Locate the purchase you want to refund</li>
+        <li>Click "Request Refund" button</li>
+        <li>OR email <a href="mailto:support@vidyari.com">support@vidyari.com</a> with:
+          <ul>
+            <li>Subject: "Refund Request - [Order ID]"</li>
+            <li>Order number and transaction ID</li>
+            <li>Date of purchase</li>
+            <li>Reason for refund (brief explanation)</li>
+            <li>Proof of purchase (screenshot of order confirmation)</li>
+            <li>Proof that file was NOT downloaded (screenshot of account)</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h3>2.2 What to Include</h3>
+      <ul>
+        <li>Screenshots of order confirmation email</li>
+        <li>Your account email address</li>
+        <li>Order ID (starts with #VID-)</li>
+        <li>Clear explanation of the issue</li>
+        <li>Proof of technical issues (screenshot of error messages)</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-copy"></i> Duplicate Charge Refunds</h2>
+      <p>If you notice you were charged <strong>multiple times</strong> for the same purchase:</p>
+      <ol>
+        <li>Contact us <strong>immediately</strong> at <a href="mailto:support@vidyari.com">support@vidyari.com</a></li>
+        <li>Provide proof of duplicate charges (bank/payment statement screenshot)</li>
+        <li>Include all transaction IDs involved</li>
+        <li>We will investigate and issue refund within <strong>5-7 business days</strong> upon confirmation</li>
+      </ol>
+      <p>Duplicate charges are processed faster due to their clear technical nature.</p>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-tools"></i> Technical Issue Refunds</h2>
+
+      <h3>4.1 File Cannot Be Opened</h3>
+      <p>If the digital file cannot be opened with standard applications, email support with the error message, screenshot, and device type.</p>
+
+      <h3>4.2 File Is Corrupted</h3>
+      <p>Try downloading again from your account. If still corrupted, contact support with filename and error. We will provide a replacement link or issue a refund.</p>
+
+      <h3>4.3 Download Failure</h3>
+      <p>Try different browsers or devices first. Download failures due to your internet, device, or browser settings are NOT grounds for refund.</p>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-not-equal"></i> Content Mismatch Refunds</h2>
+      <p>If the delivered content does <strong>NOT match</strong> the product description, document the difference and contact support within 7 days. Minor formatting differences do not qualify.</p>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-hourglass-end"></i> Refund Method</h2>
+
+      <h3>6.1 How You'll Receive Refund</h3>
+      <p>Refunds are processed back to the <strong>original payment method used</strong>:</p>
+      <ul>
+        <li><strong>Credit/Debit Card:</strong> 5-7 business days (banking processing)</li>
+        <li><strong>Digital Wallets (PayPal, GPay, PhonePe):</strong> 1-3 business days</li>
+        <li><strong>Bank Transfer:</strong> 3-5 business days</li>
+      </ul>
+
+      <h3>6.2 Refund Does Not Appear</h3>
+      <p>If refund doesn't appear after the stated timeframe, check your bank account thoroughly and contact your bank before contacting us.</p>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-percent"></i> Partial & Store Credit Refunds</h2>
+
+      <h3>7.1 Store Credit Option</h3>
+      <p>Instead of cashback, you may choose to receive <strong>Store Credit</strong>:</p>
+      <ul>
+        <li>Credit is 10% higher than refund amount (e.g., $100 refund = $110 credit)</li>
+        <li>Can be used immediately on any purchase</li>
+        <li>Valid for 1 year from issue date</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-gavel"></i> Appeal Process</h2>
+      <p>If your refund request is denied, you can appeal by emailing <a href="mailto:refunds@vidyari.com">refunds@vidyari.com</a> with subject "Refund Appeal" within 5 days. The decision on appeal is final.</p>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-shield-alt"></i> Rights Protection & Fraud Prevention</h2>
+      <p>We monitor for refund fraud including multiple requests, requesting refunds after sharing content, or systematic abuse. Accounts engaged in refund fraud will be permanently suspended.</p>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-credit-card"></i> Chargeback Policy</h2>
+      <p><strong>IMPORTANT:</strong> Please contact us FIRST before filing a chargeback. If you file a chargeback after rejecting our resolution, your account may be suspended and you may be charged a fee.</p>
+    </div>
+
+    <div class="contact-section">
+      <h2><i class="fas fa-headset"></i> Contact Refund Support</h2>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:refunds@vidyari.com">refunds@vidyari.com</a></li>
+        <li><strong>General Support:</strong> <a href="mailto:support@vidyari.com">support@vidyari.com</a></li>
+        <li><strong>Response Time:</strong> 24-48 hours on business days</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-sync-alt"></i> Policy Updates</h2>
+      <p>Vidyari reserves the right to update this refund policy at any time. All changes take effect 7 days after posting.</p>
+    </div>
+
+    <footer>
+      <div>
+        <p>&copy; 2025-2026 Vidyari. All rights reserved.</p>
+      </div>
+      
+    </footer>
+
+  </div>
 </body>
 </html>

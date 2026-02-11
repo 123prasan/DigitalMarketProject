@@ -575,7 +575,18 @@
                     </div>
                     
                     <div class="dropdown">
-                        <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false" id="userAvatar">
+<img
+    src="/images/avatar.jpg"
+    alt="User Avatar"
+    class="user-avatar"
+    id="userAvatar"
+    loading="lazy"
+    decoding="async"
+    data-user-id="<%= uId %>"
+    data-profile-url="<%= profileUrl || '' %>"
+
+>
+
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li class="px-3 pt-2 pb-3 border-bottom border-dark">
                                 <p class="fw-bold mb-0"><%= username %></p>
@@ -669,6 +680,100 @@
 // -------------------------------------------------------------------
 
     document.addEventListener('DOMContentLoaded', () => {
+        (() => {
+    const img = document.getElementById('userAvatar');
+    if (!img) return;
+
+    const {
+        userId,
+        profileUrl,
+        avatarVersion
+    } = img.dataset;
+
+    const DEFAULT_AVATAR = '/images/avatar.jpg';
+    const CACHE_TTL = 1000 * 60 * 60 * 24; // 24h
+    const LOAD_TIMEOUT = 3500;
+
+    if (!userId || !profileUrl) {
+        img.src = DEFAULT_AVATAR;
+        return;
+    }
+
+    const CACHE_KEY = `avatar:${userId}`;
+    const now = Date.now();
+
+    // ---- Safe cache read ----
+    let cached;
+    try {
+        cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+    } catch {
+        localStorage.removeItem(CACHE_KEY);
+    }
+
+    // ---- Cache validation ----
+    if (
+        cached &&
+        cached.url === profileUrl &&
+        cached.version === avatarVersion &&
+        now - cached.time < CACHE_TTL
+    ) {
+        img.src = cached.url;
+        return;
+    }
+
+    // ---- Optimistic paint (no flicker) ----
+    img.src = DEFAULT_AVATAR;
+
+    // ---- Abortable load ----
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), LOAD_TIMEOUT);
+
+    const testImg = new Image();
+    testImg.decoding = 'async';
+    testImg.src = profileUrl;
+
+    testImg.onload = () => {
+        clearTimeout(timeout);
+
+        // Final safety check
+        if (!testImg.naturalWidth) {
+            img.src = DEFAULT_AVATAR;
+            return;
+        }
+
+        img.src = profileUrl;
+
+        try {
+            localStorage.setItem(
+                CACHE_KEY,
+                JSON.stringify({
+                    url: profileUrl,
+                    version: avatarVersion,
+                    time: Date.now()
+                })
+            );
+        } catch {
+            // storage full / blocked — ignore
+        }
+    };
+
+    testImg.onerror = () => {
+        clearTimeout(timeout);
+        img.src = DEFAULT_AVATAR;
+        localStorage.removeItem(CACHE_KEY);
+    };
+
+    // ---- Page visibility recovery ----
+    document.addEventListener('visibilitychange', () => {
+        if (
+            document.visibilityState === 'visible' &&
+            img.naturalWidth === 0
+        ) {
+            img.src = DEFAULT_AVATAR;
+        }
+    });
+
+})();
         // --- Configuration Object for easy maintenance ---
         const UI_CONFIG = {
             scrollThreshold: 5,

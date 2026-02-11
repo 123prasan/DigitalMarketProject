@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Acceptable Use Policy for Vidyari - Rules and guidelines for platform usage.">
+  <title>Acceptable Use Policy - Vidyari</title>
+  <link rel="icon" type="image/png" href="./images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Strictly Monochrome Professional Palette */
+      --bg-body: #ffffff;      /* Pure white background */
+      --text-primary: #000000; /* Jet black for headings */
+      --text-body: #1a1a1a;    /* Near black for high contrast reading */
+      --text-muted: #555555;   /* Gray for metadata */
+      --border-light: #e5e5e5; /* Light divider lines */
+      --border-strong: #000000; /* Strong structural lines */
+      --bg-box: #f9f9f9;       /* Very light gray for section boxes */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      width: 100%;
+    }
+
+    /* --- Layout Container: Full Width --- */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 60px; /* Padding to prevent text touching the screen edges */
+    }
+
+    /* --- Typography --- */
+    h1 {
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--text-primary);
+      margin: 0 0 15px 0;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-top: 60px;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 1.5em;
+      max-width: 100%; /* Ensures text flows full width */
+      font-size: 1rem;
+    }
+
+    /* --- Header --- */
+    header {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .meta-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: 'Inter', monospace;
+      margin-top: 10px;
+      display: block;
+      border-left: 3px solid var(--border-strong);
+      padding-left: 15px;
+    }
+
+    /* --- Lists --- */
+    ul, ol {
+      margin: 20px 0;
+      padding-left: 25px;
+    }
+
+    li {
+      margin-bottom: 12px;
+      padding-left: 5px;
+    }
+
+    /* --- Structural Boxes (Full Width) --- */
+    .policy-box {
+      width: 100%;
+      margin: 30px 0;
+      padding: 30px;
+      background-color: var(--bg-box);
+      border: 1px solid var(--border-light);
+    }
+
+    .policy-box strong {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-primary);
+    }
+
+    /* "Allowed" Styling */
+    .allowed {
+      border-left: 6px solid #888; /* Dark Gray indicator */
+    }
+
+    /* "Prohibited" Styling */
+    .prohibited {
+      border-left: 6px solid #000; /* Black indicator */
+      background-color: #fff; /* White background for emphasis */
+      border-top: 1px solid #ddd;
+      border-right: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+    }
+
+    /* --- Category Titles --- */
+    .category-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 40px;
+      margin-bottom: 15px;
+      display: inline-block;
+      background-color: #000;
+      color: #fff;
+      padding: 5px 15px;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* --- Grid Layout for Lists (Optional for full width) --- */
+    /* This ensures lists don't look too sparse on wide screens */
+    .policy-box ul {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      padding-left: 20px;
+    }
+    
+    .policy-box li {
+      margin-bottom: 0;
+    }
+
+    /* --- Footer --- */
+    footer {
+      margin-top: 100px;
+      padding: 50px 0;
+      border-top: 4px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    footer p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer .links {
+      display: flex;
+      gap: 30px;
+    }
+
+    footer a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Mobile Response --- */
+    @media (max-width: 768px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 2rem; }
+      .policy-box ul { grid-template-columns: 1fr; } /* Stack lists on mobile */
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      footer .links { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <a href="/" class="back-link">&larr; Back to Home</a>
+      <h1>Acceptable Use Policy</h1>
+      <span class="meta-info">REF: AUP-2026-V1 &nbsp;//&nbsp; EFFECTIVE: FEBRUARY 2026</span>
+    </header>
+
+    <div class="section">
+      <p style="font-size: 1.2rem; font-weight: 500;">This Acceptable Use Policy (AUP) establishes rules and guidelines for all users of the Vidyari platform. By creating an account and using Vidyari, you agree to comply with these rules. Violations may result in account suspension or permanent removal from the platform.</p>
+    </div>
+
+    <h2>1. General Conduct Rules</h2>
+
+    <div class="policy-box allowed">
+      <strong>Allowed - Responsible Platform Use</strong>
+      <ul>
+        <li>Browse and purchase educational materials legally</li>
+        <li>Create and share original educational content</li>
+        <li>Engage respectfully in community discussions</li>
+        <li>Learn and improve your skills and knowledge</li>
+        <li>Provide constructive feedback and reviews</li>
+        <li>Report violations and suspicious activity</li>
+        <li>Use the platform for personal educational benefit</li>
+      </ul>
+    </div>
+
+    <div class="policy-box prohibited">
+      <strong>Prohibited - Harmful Behavior</strong>
+      <ul>
+        <li><b>Abusive Conduct:</b> Harassment, bullying, threats, intimidation, or hate speech toward any user.</li>
+        <li><b>Hate Speech:</b> Language targeting race, ethnicity, religion, gender, sexual orientation, disability.</li>
+        <li><b>Sexual Harassment:</b> Unwanted sexual comments, advances, or requests.</li>
+        <li><b>Doxxing:</b> Sharing personal information (address, phone, SSN) without consent.</li>
+        <li><b>Impersonation:</b> Pretending to be someone else or misrepresenting identity.</li>
+        <li><b>Threats:</b> Making threats of violence, harm, or illegal action.</li>
+        <li><b>Stalking:</b> Repeated unsolicited contact or monitoring of another user.</li>
+        <li><b>Defamation:</b> Making false statements to damage someone's reputation.</li>
+      </ul>
+    </div>
+
+    <h2>2. Content & Intellectual Property</h2>
+
+    <span class="category-title">Prohibited Content Activities</span>
+    <div class="policy-box prohibited">
+      <ul>
+        <li><b>Copyright Infringement:</b> Uploading copyrighted content without permission or license.</li>
+        <li><b>Trademark Violations:</b> Using others' trademarks without authorization.</li>
+        <li><b>Plagiarism:</b> Copying and submitting others' work as your own.</li>
+        <li><b>Unauthorized Sharing:</b> Sharing login credentials or purchased content with unauthorized users.</li>
+        <li><b>Reselling Content:</b> Commercially reselling or redistributing purchased materials.</li>
+        <li><b>Content Scraping:</b> Bulk downloading or copying entire course/material collections.</li>
+        <li><b>Deep Linking:</b> Linking directly to download files to bypass purchase.</li>
+        <li><b>File Modification:</b> Altering then selling others' content.</li>
+      </ul>
+    </div>
+
+    <span class="category-title">Proper Content Use</span>
+    <div class="policy-box allowed">
+      <ul>
+        <li>Use purchased content for personal education only</li>
+        <li>Cite sources when referencing content</li>
+        <li>Create original modifications/derivatives for personal use</li>
+        <li>Share knowledge gained from purchased materials (not the materials themselves)</li>
+        <li>Create your own original content for sale</li>
+        <li>Make backup copies for personal use</li>
+      </ul>
+    </div>
+
+    <h2>3. Prohibited Content Types</h2>
+    <p>The following types of content are strictly prohibited on Vidyari:</p>
+
+    <div class="policy-box prohibited">
+      <strong>Illegal & Harmful Content</strong>
+      <ul>
+        <li><b>Illegal Acts:</b> Content facilitating illegal activities, including drugs, weapons, or explosives.</li>
+        <li><b>Hacking:</b> Instructions for unauthorized access, malware, or cyberattacks.</li>
+        <li><b>Fraud:</b> Scam tutorials, counterfeiting guides, or stolen goods documentation.</li>
+        <li><b>Adult Content:</b> Pornography, sexually explicit material, or non-consensual intimate images.</li>
+        <li><b>Child Safety:</b> ANY content involving the sexualization or exploitation of minors (Criminal Offense).</li>
+        <li><b>Self-Harm:</b> Instructions for suicide, self-harm, or eating disorders.</li>
+        <li><b>Violence:</b> Content glorifying terrorism, biological weapons, or extreme violence.</li>
+        <li><b>Misinformation:</b> Medical fraud, anti-vaccine propaganda, or fake cures.</li>
+        <li><b>Scams:</b> Pyramid schemes, get-rich-quick schemes, phishing, or investment fraud.</li>
+        <li><b>Discrimination:</b> Supremacist ideology, historical denialism, or genocidal propaganda.</li>
+      </ul>
+    </div>
+
+    <h2>4. Account Security</h2>
+
+    <div class="policy-box prohibited">
+      <strong>Strictly Prohibited</strong>
+      <ul>
+        <li>Sharing your password with anyone</li>
+        <li>Using someone else's account without permission</li>
+        <li>Creating multiple accounts to circumvent bans</li>
+        <li>Buying or selling accounts</li>
+        <li>Age misrepresentation</li>
+      </ul>
+    </div>
+
+    <div class="policy-box allowed">
+      <strong>Permitted</strong>
+      <ul>
+        <li>One account per person (multiple for legitimate business use only)</li>
+        <li>Sharing account with direct family members (at own risk)</li>
+        <li>Authorized third-party integrations</li>
+      </ul>
+    </div>
+
+    <h2>5. Spam & Manipulation</h2>
+    <p>We maintain a zero-tolerance policy for manipulation of the platform ecosystem.</p>
+    
+    <div class="policy-box prohibited">
+      <ul>
+        <li><b>Spam:</b> Unsolicited emails, repetitive messages, or promotional spam.</li>
+        <li><b>Manipulation:</b> Fake reviews, paid ratings, or artificially boosting engagement.</li>
+        <li><b>Bot Activity:</b> Using automated scripts to interact with the platform.</li>
+        <li><b>Link Farming:</b> Posting excessive or malicious links.</li>
+      </ul>
+    </div>
+
+    <h2>6. System Security</h2>
+    <p>Any attempt to compromise the technical integrity of Vidyari is a violation of this policy and potentially federal law.</p>
+
+    <div class="policy-box prohibited">
+      <ul>
+        <li>Hacking or unauthorized system access attempts</li>
+        <li>Malware distribution or DDoS attacks</li>
+        <li>SQL injection or database manipulation</li>
+        <li>Brute force attacks or credential stuffing</li>
+        <li>Reverse engineering source code</li>
+        <li>API abuse or rate limit violations</li>
+      </ul>
+    </div>
+
+    <h2>7. Transactions & Payments</h2>
+    <div class="policy-box prohibited">
+      <strong>Financial Violations</strong>
+      <ul>
+        <li>Using stolen payment methods or credit cards</li>
+        <li>Chargeback fraud (friendly fraud)</li>
+        <li>Money laundering</li>
+        <li>Refund abuse or duplicate charge exploitation</li>
+        <li>Purchasing from sanctioned regions</li>
+      </ul>
+    </div>
+
+    <h2>8. Content Standards</h2>
+    <div class="policy-box prohibited">
+      <strong>Instructor Prohibitions</strong>
+      <ul>
+        <li>Misleading course descriptions or fraudulent pricing</li>
+        <li>Failure to disclose sponsored content</li>
+        <li>Obsolete information presented as current</li>
+        <li>Low-quality materials with false claims</li>
+      </ul>
+    </div>
+
+    <h2>9. Reporting & Compliance</h2>
+    
+    <h3>9.1 Reporting Responsibilities</h3>
+    <p>Users must report suspicious activity immediately via the "Report" button or by emailing <strong>abuse@vidyari.com</strong>. Do not intervene personally.</p>
+
+    <h3>9.2 False Reporting</h3>
+    <p>Repeatedly filing false reports is considered harassment and may result in account termination.</p>
+
+    <h3>9.3 Law Enforcement</h3>
+    <p>Vidyari cooperates fully with law enforcement regarding criminal investigations, intellectual property claims, and child safety concerns.</p>
+
+    <h2>10. Enforcement & Consequences</h2>
+    
+    <div class="policy-box" style="border-left: 6px solid #000; background-color: #f0f0f0;">
+      <strong>Enforcement Hierarchy</strong>
+      <ol style="display: block;">
+        <li><b>Warning:</b> Notice of violation.</li>
+        <li><b>Removal:</b> Deletion of violating content.</li>
+        <li><b>Suspension:</b> Temporary lock (24 hours to 30 days).</li>
+        <li><b>Termination:</b> Permanent lifetime ban.</li>
+        <li><b>Legal Action:</b> Referral to authorities.</li>
+      </ol>
+    </div>
+
+    <h3>10.1 Immediate Termination</h3>
+    <p>Accounts will be terminated without warning for CSAM, terrorism, credible threats, hacking, or systematic fraud.</p>
+
+    <h3>10.2 No Refunds</h3>
+    <p>If an account is suspended or terminated for AUP violations, no refunds will be issued and all balances are forfeited.</p>
+
+    <h3>10.3 Appeals</h3>
+    <p>Appeals must be sent to <strong>appeals@vidyari.com</strong> within 7 days, including evidence. Decisions are final.</p>
+
+    <h2>11. Monitoring</h2>
+    <p>Vidyari utilizes automated systems, AI detection, and manual review to monitor for violations. All monitoring is conducted in compliance with our Privacy Policy.</p>
+
+    <div class="policy-box">
+      <strong>Contact Information</strong>
+      <ul style="list-style: none; padding-left: 0; display: block;">
+        <li>General Abuse: abuse@vidyari.com</li>
+        <li>Security: security@vidyari.com</li>
+        <li>Child Safety: childSafety@vidyari.com</li>
+      </ul>
+    </div>
+
+    <div style="margin-top: 50px; font-size: 0.9rem; border-top: 1px solid #eee; padding-top: 20px;">
+      <strong>Policy Updates</strong>
+      <p>Vidyari may update this AUP at any time. Continued use indicates acceptance.</p>
+    </div>
+
+    <footer>
+      <div>
+        <p>&copy; 2025-2026 Vidyari. All rights reserved.</p>
+      </div>
+     
+    </footer>
+  </div>
+
+</body>
+</html>

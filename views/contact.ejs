@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact & Support - Vidyari customer service channels, support email, and response time commitments.">
+  <title>Contact & Support - Vidyari</title>
+  <link rel="icon" type="image/png" href="./images/logo.svg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Strictly Monochrome Professional Palette */
+      --bg-body: #ffffff;      /* Pure white background */
+      --text-primary: #000000; /* Jet black for headings */
+      --text-body: #1a1a1a;    /* Near black for high contrast reading */
+      --text-muted: #555555;   /* Gray for metadata */
+      --border-light: #e5e5e5; /* Light divider lines */
+      --border-strong: #000000; /* Strong structural lines */
+      --bg-box: #f9f9f9;       /* Very light gray for section boxes */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      width: 100%;
+    }
+
+    /* --- Layout Container: Full Width --- */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 60px;
+    }
+
+    /* --- Typography --- */
+    h1 {
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--text-primary);
+      margin: 0 0 15px 0;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-top: 60px;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    h2 i { font-size: 1.2rem; }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    p { margin-bottom: 1em; color: var(--text-body); }
+    
+    a { color: var(--text-primary); text-decoration: none; font-weight: 600; transition: opacity 0.2s; }
+    a:hover { text-decoration: underline; opacity: 0.7; }
+
+    /* --- Header --- */
+    header {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .meta-info {
+      display: flex;
+      gap: 30px;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: 'Inter', monospace;
+      border-left: 3px solid var(--border-strong);
+      padding-left: 15px;
+    }
+
+    .meta-item { display: flex; align-items: center; gap: 8px; }
+    
+    /* --- Notice Box --- */
+    .notice-box {
+      background: var(--bg-box);
+      border: 1px solid var(--border-strong); /* Black border */
+      padding: 30px;
+      margin-bottom: 50px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .notice-icon { font-size: 24px; color: var(--text-primary); }
+    .notice-content { font-weight: 500; font-size: 1rem; }
+
+    /* --- Contact Grid --- */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Wider cards for full width */
+      gap: 30px;
+      margin: 30px 0;
+    }
+
+    .contact-card {
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      padding: 30px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .contact-card:hover {
+      border-color: var(--text-primary);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .contact-icon {
+      color: var(--text-primary);
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .contact-card strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .contact-card p {
+      font-size: 0.95rem;
+      margin-bottom: 5px;
+    }
+
+    .helper-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      display: block;
+      border-top: 1px solid var(--border-light);
+      padding-top: 10px;
+    }
+
+    /* --- Data Tables --- */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-light);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      text-align: left;
+    }
+
+    .table th {
+      background: var(--bg-box);
+      padding: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-strong);
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+
+    .table td {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-body);
+    }
+
+    .table tr:last-child td { border-bottom: none; }
+
+    /* --- Submission List --- */
+    ul { margin: 20px 0; padding-left: 20px; }
+    li { margin-bottom: 10px; padding-left: 10px; }
+
+    /* --- Footer --- */
+    footer {
+      margin-top: 100px;
+      padding: 50px 0;
+      border-top: 4px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    footer p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+    
+    .footer-links { display: flex; gap: 30px; }
+    
+    footer a { color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 2rem; }
+      .meta-info { flex-direction: column; gap: 10px; }
+      .contact-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <a href="/" class="back-link">&larr; Back to Home</a>
+      <h1>Contact & Support</h1>
+      <div class="meta-info">
+        <div class="meta-item"><i class="fas fa-calendar-alt"></i> <span>UPDATED: FEBRUARY 2026</span></div>
+        <div class="meta-item"><i class="fas fa-headset"></i> <span>24/7 SUPPORT AVAILABLE</span></div>
+      </div>
+    </header>
+
+    <div class="notice-box">
+      <div class="notice-icon"><i class="fas fa-info-circle"></i></div>
+      <div class="notice-content">
+        We are committed to responding to all inquiries promptly. Please review the categories below to ensure your request reaches the correct department.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-envelope"></i> Contact Channels</h2>
+      <div class="contact-grid">
+        
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fas fa-headset"></i></div>
+          <strong>General Support</strong>
+          <p><a href="mailto:support@vidyari.com">support@vidyari.com</a></p>
+          <span class="helper-text">General inquiries & orders<br>Response: 24-48 hours</span>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fas fa-credit-card"></i></div>
+          <strong>Billing & Payments</strong>
+          <p><a href="mailto:billing@vidyari.com">billing@vidyari.com</a></p>
+          <span class="helper-text">Payment & invoice issues<br>Response: 24 hours</span>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fas fa-lock"></i></div>
+          <strong>Privacy & Data</strong>
+          <p><a href="mailto:privacy@vidyari.com">privacy@vidyari.com</a></p>
+          <span class="helper-text">Data requests & privacy<br>Response: 5-7 days</span>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fas fa-shield-alt"></i></div>
+          <strong>Security & Fraud</strong>
+          <p><a href="mailto:security@vidyari.com">security@vidyari.com</a></p>
+          <span class="helper-text">Security concerns<br>Response: 1-2 hours</span>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fas fa-undo"></i></div>
+          <strong>Refunds & Returns</strong>
+          <p><a href="mailto:refunds@vidyari.com">refunds@vidyari.com</a></p>
+          <span class="helper-text">Refund requests<br>Response: 24-48 hours</span>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon"><i class="fas fa-comments"></i></div>
+          <strong>Feedback</strong>
+          <p><a href="mailto:feedback@vidyari.com">feedback@vidyari.com</a></p>
+          <span class="helper-text">Feature requests & suggestions<br>Response: 3-5 days</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-clock"></i> Response Time Commitment</h2>
+      <div class="table-container">
+        <table class="table">
+          <tr>
+            <th>Priority Level</th>
+            <th>Type of Issue</th>
+            <th>Response Time</th>
+          </tr>
+          <tr>
+            <td><strong>Critical</strong></td>
+            <td>Security breach, account compromise</td>
+            <td>1-2 hours</td>
+          </tr>
+          <tr>
+            <td><strong>High</strong></td>
+            <td>Payment failure, order issue</td>
+            <td>2-4 hours</td>
+          </tr>
+          <tr>
+            <td><strong>Medium</strong></td>
+            <td>Refund request, billing question</td>
+            <td>24 hours</td>
+          </tr>
+          <tr>
+            <td><strong>Normal</strong></td>
+            <td>General inquiry, technical question</td>
+            <td>24-48 hours</td>
+          </tr>
+          <tr>
+            <td><strong>Low</strong></td>
+            <td>Feedback, feature request</td>
+            <td>3-5 days</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-lightbulb"></i> Frequently Asked Questions</h2>
+      
+      <h3>How do I download my purchased content?</h3>
+      <p>Log into your account, go to Downloads section, and click the download button for each file. Your downloads are available for 30 days from purchase.</p>
+      
+      <h3>What if my download fails?</h3>
+      <p>Contact <strong>support@vidyari.com</strong> with your Order ID. We will provide a replacement link or issue a refund if the file is corrupted.</p>
+      
+      <h3>How long does refund processing take?</h3>
+      <p>Refunds are processed within 5-7 business days for cards and 1-3 days for digital wallets. Contact <strong>refunds@vidyari.com</strong> to start a refund request.</p>
+      
+      <h3>Can I cancel my subscription?</h3>
+      <p>Yes, you can cancel anytime from your Account Settings. Cancellation takes effect at the next billing cycle.</p>
+      
+      <h3>Is my payment information secure?</h3>
+      <p>All payments are processed through Cashfree with PCI DSS Level 1 compliance and 256-bit SSL/TLS encryption. We never store full card details.</p>
+    </div>
+
+    <div class="section">
+      <h2><i class="fas fa-paper-plane"></i> Support Request Guidelines</h2>
+      <div class="notice-box" style="background: white; border: 1px solid var(--border-light); margin-top: 20px;">
+        <div style="width: 100%;">
+          <p><strong>To expedite your request, please include:</strong></p>
+          <ul>
+            <li>Your Vidyari account email address</li>
+            <li>Order ID or Transaction ID (if applicable)</li>
+            <li>Clear description of your issue</li>
+            <li>Screenshots (if applicable)</li>
+            <li>Steps you've already tried</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div>
+        <p>&copy; 2025-2026 Vidyari. All rights reserved.</p>
+      </div>
+      
+    </footer>
+
+  </div>
+</body>
+</html>

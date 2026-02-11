@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Return and Cancellation Policy for Vidyari educational marketplace.">
+  <title>Return & Cancellation Policy - Vidyari</title>
+  <link rel="icon" type="image/png" href="./images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Strictly Monochrome Professional Palette */
+      --bg-body: #ffffff;      /* Pure white background */
+      --text-primary: #000000; /* Jet black for headings */
+      --text-body: #1a1a1a;    /* Near black for high contrast reading */
+      --text-muted: #555555;   /* Gray for metadata */
+      --border-light: #e5e5e5; /* Light divider lines */
+      --border-strong: #000000; /* Strong structural lines */
+      --bg-box: #f9f9f9;       /* Very light gray for section boxes */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      width: 100%;
+    }
+
+    /* --- Layout Container: Full Width --- */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 60px;
+    }
+
+    /* --- Typography --- */
+    h1 {
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--text-primary);
+      margin: 0 0 15px 0;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-top: 60px;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    h2 i { font-size: 1.2rem; }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 30px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      margin-bottom: 1.5em;
+      max-width: 100%;
+      font-size: 1rem;
+    }
+
+    /* --- Header --- */
+    header {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    .meta-info {
+      display: flex;
+      gap: 30px;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: 'Inter', monospace;
+      border-left: 3px solid var(--border-strong);
+      padding-left: 15px;
+    }
+
+    .meta-item { display: flex; align-items: center; gap: 8px; }
+
+    /* --- Notice Box --- */
+    .notice-box {
+      width: 100%;
+      margin: 30px 0;
+      padding: 30px;
+      background-color: var(--bg-box);
+      border: 1px solid var(--border-light);
+    }
+
+    /* --- Eligible/Not Eligible Boxes --- */
+    .criteria-box {
+      padding: 30px;
+      margin: 30px 0;
+      border: 1px solid var(--border-light);
+    }
+
+    .criteria-box strong {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 10px;
+    }
+
+    /* Eligible Style */
+    .eligible {
+      background-color: #fff;
+      border-left: 6px solid #666;
+    }
+
+    /* Not Eligible Style */
+    .not-eligible {
+      background-color: #fcfcfc;
+      border-left: 6px solid #000;
+      border: 1px solid #000;
+    }
+
+    /* --- Tables --- */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      font-size: 0.95rem;
+    }
+
+    .table th, .table td {
+      border: 1px solid var(--border-light);
+      padding: 15px;
+      text-align: left;
+    }
+
+    .table th {
+      background-color: var(--bg-box);
+      color: var(--text-primary);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    /* --- Lists --- */
+    ul, ol { margin: 20px 0; padding-left: 25px; }
+    li { margin-bottom: 10px; padding-left: 5px; }
+
+    /* --- Contact Section --- */
+    .contact-section {
+      margin-top: 60px;
+      padding: 40px;
+      border: 1px solid var(--border-strong);
+    }
+
+    /* --- Footer --- */
+    footer {
+      margin-top: 100px;
+      padding: 50px 0;
+      border-top: 4px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    footer p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+    
+    .footer-links { display: flex; gap: 30px; }
+    
+    footer a { color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+    footer a:hover { text-decoration: underline; }
+    
+    a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 2rem; }
+      .meta-info { flex-direction: column; gap: 10px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <a href="/" class="back-link">&larr; Back to Home</a>
+      <h1>Return & Cancellation Policy</h1>
+      <div class="meta-info">
+        <div class="meta-item"><span>UPDATED: FEBRUARY 2026</span></div>
+      </div>
+    </header>
+
+    <div class="notice-box">
+      <p><strong>Policy Scope</strong> This Return & Cancellation Policy applies to orders and services on the Vidyari platform. Unlike our Refund Policy which covers post-purchase refunds, this policy explains cancellations made BEFORE or DURING the purchase process.</p>
+    </div>
+
+    <h2>1. Order Cancellation</h2>
+
+    <h3>1.1 Pre-Payment Cancellation</h3>
+    <p>If you have added items to your cart but have NOT proceeded to payment:</p>
+    <ul>
+      <li>You can remove items from cart at any time</li>
+      <li>Cart items expire after 7 days of inactivity</li>
+      <li>No cancellation request needed</li>
+      <li>Simply delete items or clear your cart</li>
+    </ul>
+
+    <h3>1.2 During Checkout Cancellation</h3>
+    <p>If you are in the checkout process but haven't completed payment:</p>
+    <ul>
+      <li>Close the browser window to abandon the transaction</li>
+      <li>You won't be charged</li>
+      <li>The items remain in your cart for 7 days</li>
+      <li>You can return to complete purchase later</li>
+    </ul>
+
+    <h3>1.3 Payment In-Progress Cancellation</h3>
+    <p>If payment processing is in progress:</p>
+    <ul>
+      <li>Do NOT close browser or refresh page</li>
+      <li>Wait for completion message</li>
+      <li>If transaction fails, you will NOT be charged</li>
+      <li>You can retry payment immediately</li>
+    </ul>
+
+    <h3>1.4 Post-Payment Cancellation (Before Download)</h3>
+    <p>After successful payment but BEFORE downloading, you have up to 7 days to request cancellation. The file must NOT have been downloaded, accessed, or viewed.</p>
+
+    <div class="criteria-box eligible">
+      <strong>Eligible for Cancellation (Pre-Download)</strong>
+      <ul>
+        <li>Purchase made within 7 days</li>
+        <li>File has not been downloaded</li>
+        <li>File has not been accessed or previewed</li>
+        <li>No streaming/viewing of content</li>
+        <li>Request made via "Request Cancellation" button</li>
+      </ul>
+    </div>
+
+    <div class="criteria-box not-eligible">
+      <strong>Not Eligible for Cancellation</strong>
+      <ul>
+        <li>File has been downloaded to your device</li>
+        <li>File has been opened or viewed</li>
+        <li>More than 7 days have passed</li>
+        <li>Changed your mind about the purchase</li>
+        <li>Requested to download but then cancelled</li>
+      </ul>
+    </div>
+
+    <h2>2. Subscription Cancellation</h2>
+
+    <h3>2.1 Automatic Renewal Cancellation</h3>
+    <p>If you purchased a subscription (course, membership, recurring content), you can cancel anytime with no fee. Cancellation takes effect at the next billing date.</p>
+
+    <h3>2.2 How to Cancel Subscription</h3>
+    <ol>
+      <li>Log into your Vidyari account</li>
+      <li>Go to Settings → Subscriptions & Memberships</li>
+      <li>Find the subscription you want to cancel</li>
+      <li>Click "Cancel Subscription"</li>
+      <li>Confirm cancellation</li>
+    </ol>
+
+    <h3>2.3 Immediate Cancellation</h3>
+    <p>If you need immediate cancellation, email <strong>support@vidyari.com</strong> with your request, subscription name, and order ID.</p>
+
+    <h2>3. Course Enrollment Cancellation</h2>
+
+    <h3>3.1 Course Access Cancellation</h3>
+    <p>Courses purchased are generally permanent access. They cannot be "cancelled" or "returned" after purchase in the traditional sense, but you can de-enroll to remove them from your dashboard.</p>
+
+    <h3>3.2 Course De-Enrollment</h3>
+    <ol>
+      <li>Go to "My Courses"</li>
+      <li>Find the course</li>
+      <li>Click "De-enroll" or "Remove from Dashboard"</li>
+    </ol>
+
+    <h2>4. Download/Access Cancellation</h2>
+
+    <h3>4.1 Download Cancellation</h3>
+    <p>If you initiate a file download but want to cancel, simply click "Cancel" in your download manager. Your purchase is NOT affected, and you can re-download anytime.</p>
+
+    <h3>4.2 Access Expiration</h3>
+    <p>Check product descriptions for access terms. Perpetual access courses last forever, while time-limited access expires on a specified date.</p>
+
+    <h2>5. Content Creator Cancellation Rights</h2>
+
+    <h3>5.1 Course/Content Removal</h3>
+    <p>As a seller, you can remove content, but existing buyers retain lifetime access. You cannot revoke access to sold content.</p>
+
+    <h3>5.2 Creator Account Closure</h3>
+    <p>If you close your creator account, your listings are removed, but buyers keep access to purchased content. New sales cannot occur.</p>
+
+    <h2>6. Return Process & Timeline</h2>
+
+    <table class="table">
+      <tr>
+        <th>Scenario</th>
+        <th>Timeframe</th>
+        <th>Action Required</th>
+        <th>Outcome</th>
+      </tr>
+      <tr>
+        <td>Cart Items Removed</td>
+        <td>Anytime</td>
+        <td>Delete from cart</td>
+        <td>No charge, items gone</td>
+      </tr>
+      <tr>
+        <td>Pre-Payment Cancellation</td>
+        <td>Anytime before paying</td>
+        <td>Close checkout page</td>
+        <td>No charge</td>
+      </tr>
+      <tr>
+        <td>Post-Payment, Pre-Download</td>
+        <td>Within 7 days</td>
+        <td>Request cancellation</td>
+        <td>Refund processed</td>
+      </tr>
+      <tr>
+        <td>After Download</td>
+        <td>Not eligible</td>
+        <td>File refund policy applies</td>
+        <td>May get refund if defective</td>
+      </tr>
+      <tr>
+        <td>Subscription Cancellation</td>
+        <td>Anytime</td>
+        <td>Go to subscriptions → cancel</td>
+        <td>No refund, access ends at renewal</td>
+      </tr>
+    </table>
+
+    <h2>7. Refund Processing for Cancelled Orders</h2>
+
+    <h3>7.1 Refund Timeline</h3>
+    <p>After cancellation approval, refunds are processed to the original payment method within 5-7 business days.</p>
+
+    <h3>7.2 Refund Method</h3>
+    <p>Refunds are credited to the same payment method used for purchase (Credit/Debit Card, Digital Wallet, or Bank Transfer).</p>
+
+    <h2>8. Policy for Different Payment Methods</h2>
+
+    <h3>8.1 Credit/Debit Card Cancellation</h3>
+    <p>Cancel anytime before download. Refund takes 5-7 days to appear.</p>
+
+    <h3>8.2 Digital Wallet (PhonePe, PayTM, Google Pay)</h3>
+    <p>Instant cancellation available. Refund appears in wallet immediately.</p>
+
+    <h2>9. Special Cases & Exceptions</h2>
+
+    <h3>9.1 Duplicate Payment Cancellation</h3>
+    <p>If charged twice, email <strong>billing@vidyari.com</strong> immediately. One transaction can be cancelled and refunded.</p>
+
+    <h3>9.2 Accidental Purchase Cancellation</h3>
+    <p>If you purchased by mistake, act quickly (within 7 days) and request a refund BEFORE downloading.</p>
+
+    <h2>10. Relationship to Other Policies</h2>
+
+    <table class="table">
+      <tr>
+        <th>Policy</th>
+        <th>Applies To</th>
+        <th>Timeline</th>
+        <th>Eligibility</th>
+      </tr>
+      <tr>
+        <td>Return & Cancellation</td>
+        <td>Pre & During Purchase</td>
+        <td>Before download / 7 days</td>
+        <td>Simple need to cancel</td>
+      </tr>
+      <tr>
+        <td>Refund Policy</td>
+        <td>Post-Purchase Issues</td>
+        <td>After download / 7 days</td>
+        <td>Technical or quality issues</td>
+      </tr>
+    </table>
+
+    <div class="contact-section">
+      <h2>11. Questions or Concerns?</h2>
+      <p>For cancellation assistance or questions:</p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:support@vidyari.com">support@vidyari.com</a></li>
+        <li><strong>Cancellations:</strong> <a href="mailto:cancellations@vidyari.com">cancellations@vidyari.com</a></li>
+        <li><strong>Refunds:</strong> <a href="mailto:refunds@vidyari.com">refunds@vidyari.com</a></li>
+        <li><strong>Response Time:</strong> 24-48 hours</li>
+      </ul>
+    </div>
+
+    <h2>12. Policy Effective Date</h2>
+    <p>This Return & Cancellation Policy is effective February 2026 and may be updated anytime.</p>
+
+    <footer>
+      <div>
+        <p>&copy; 2025-2026 Vidyari. All rights reserved.</p>
+      </div>
+      
+    </footer>
+  </div>
+</body>
+</html>

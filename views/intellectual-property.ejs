@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Intellectual Property and Copyright Policy for Vidyari marketplace.">
+  <title>Intellectual Property Policy - Vidyari</title>
+  <link rel="icon" type="image/png" href="./images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Strictly Monochrome Professional Palette */
+      --bg-body: #ffffff;      /* Pure white background */
+      --text-primary: #000000; /* Jet black for headings */
+      --text-body: #1a1a1a;    /* Near black for high contrast reading */
+      --text-muted: #555555;   /* Gray for metadata */
+      --border-light: #e5e5e5; /* Light divider lines */
+      --border-strong: #000000; /* Strong structural lines */
+      --bg-box: #f9f9f9;       /* Very light gray for section boxes */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      width: 100%;
+    }
+
+    /* --- Layout Container: Full Width --- */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 60px;
+    }
+
+    /* --- Typography --- */
+    h1 {
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--text-primary);
+      margin: 0 0 15px 0;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-top: 60px;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 30px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      margin-bottom: 1.5em;
+      max-width: 100%;
+      font-size: 1rem;
+    }
+
+    /* --- Header --- */
+    header {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .meta-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: 'Inter', monospace;
+      margin-top: 10px;
+      display: block;
+      border-left: 3px solid var(--border-strong);
+      padding-left: 15px;
+    }
+
+    /* --- Lists --- */
+    ul, ol {
+      margin: 20px 0;
+      padding-left: 25px;
+    }
+
+    li {
+      margin-bottom: 10px;
+      padding-left: 5px;
+    }
+
+    /* --- Alert/Notice Boxes --- */
+    .notice-box {
+      width: 100%;
+      margin: 30px 0;
+      padding: 30px;
+      background-color: var(--bg-box);
+      border: 1px solid var(--border-light);
+    }
+    
+    .notice-box strong {
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .highlight-box {
+      border-left: 6px solid #000;
+      background-color: #fff;
+      border-top: 1px solid #e5e5e5;
+      border-right: 1px solid #e5e5e5;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 25px;
+      margin: 30px 0;
+    }
+
+    /* --- Tables --- */
+    .ip-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      font-size: 0.95rem;
+    }
+
+    .ip-table th, .ip-table td {
+      border: 1px solid var(--border-light);
+      padding: 15px;
+      text-align: left;
+    }
+
+    .ip-table th {
+      background-color: var(--bg-box);
+      color: var(--text-primary);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    /* --- Contact Section --- */
+    .contact-section {
+      margin-top: 60px;
+      padding: 40px;
+      border: 1px solid var(--border-strong);
+    }
+
+    /* --- Footer --- */
+    footer {
+      margin-top: 100px;
+      padding: 50px 0;
+      border-top: 4px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    footer p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer .links {
+      display: flex;
+      gap: 30px;
+    }
+
+    footer a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    a { color: var(--text-primary); font-weight: 600; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* --- Mobile Response --- */
+    @media (max-width: 768px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 2rem; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      footer .links { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <a href="/" class="back-link">&larr; Back to Home</a>
+      <h1>Intellectual Property & Copyright Policy</h1>
+      <span class="meta-info">REF: IP-2026-V1 &nbsp;//&nbsp; LAST UPDATED: FEBRUARY 2026</span>
+    </header>
+
+    <div class="notice-box">
+      <p><strong>Policy Overview</strong> This Intellectual Property (IP) Policy outlines the ownership, rights, and protections for all intellectual property on the Vidyari platform. It applies to all users, content creators, buyers, and platform visitors.</p>
+    </div>
+
+    <h2>1. Vidyari's Intellectual Property</h2>
+
+    <h3>1.1 What We Own</h3>
+    <p>Vidyari retains full ownership of the following:</p>
+    <ul>
+      <li><strong>Platform Software:</strong> All code, algorithms, and technology powering Vidyari</li>
+      <li><strong>Website Design:</strong> Layout, design, graphics, and user interface</li>
+      <li><strong>Brand & Trademarks:</strong> Vidyari name, logo, slogans, and brand identity</li>
+      <li><strong>Copyrightable Content:</strong> Original written content, documentation, tutorials created by our team</li>
+      <li><strong>Database Compilation:</strong> The collection and organization of user content</li>
+      <li><strong>Proprietary Systems:</strong> Search algorithms, recommendation engines, analytics</li>
+      <li><strong>Improvement Ideas:</strong> Features built from user feedback</li>
+    </ul>
+
+    <h3>1.2 Protection Methods</h3>
+    <p>Vidyari's IP is protected by:</p>
+    <ul>
+      <li>Copyright law (works automatically copyrighted upon creation)</li>
+      <li>Trademark registration</li>
+      <li>Patent applications (where applicable)</li>
+      <li>Trade secret protections</li>
+      <li>Contractual agreements with employees and contractors</li>
+      <li>Technical security measures (encryption, access controls)</li>
+      <li>Terms of Service restrictions on unauthorized use</li>
+    </ul>
+
+    <h3>1.3 Your Limited License</h3>
+    <p>By using Vidyari, you receive a limited, revocable license to:</p>
+    <ul>
+      <li>Access the platform for personal, non-commercial purposes</li>
+      <li>Use the website to browse and purchase content</li>
+      <li>Download purchased digital materials for personal use</li>
+    </ul>
+    
+    <div class="highlight-box">
+      <strong>Strict Prohibitions</strong>
+      <p>You DO NOT receive rights to:</p>
+      <ul>
+        <li>Reproduce or distribute Vidyari itself</li>
+        <li>Create derivative works of the platform</li>
+        <li>Commercially exploit the platform</li>
+        <li>Use our brand, trademarks, or logos</li>
+        <li>Reverse engineer or decompile the software</li>
+      </ul>
+    </div>
+
+    <h2>2. User-Generated Content Ownership</h2>
+
+    <h3>2.1 Your Ownership Rights</h3>
+    <p>When you create and upload content to Vidyari, YOU RETAIN ownership of that content. Specifically:</p>
+    <ul>
+      <li>You own the copyright to original materials you create</li>
+      <li>You retain all intellectual property rights</li>
+      <li>You can modify or delete your content anytime</li>
+      <li>You can request removal of your content</li>
+      <li>You can prevent others from using your materials (with our enforcement)</li>
+    </ul>
+
+    <h3>2.2 License You Grant to Vidyari</h3>
+    <p>When you upload content, you grant Vidyari the right to:</p>
+    <ul>
+      <li><strong>Display:</strong> Show your content on the platform</li>
+      <li><strong>Distribute:</strong> Deliver your content to users who purchase it</li>
+      <li><strong>Reproduce:</strong> Make copies for platform operation and backup</li>
+      <li><strong>Promote:</strong> Use your content in marketing/advertising (with your original consent)</li>
+      <li><strong>Analyze:</strong> Examine content for trends and improvements</li>
+      <li><strong>Index:</strong> Include your content in search and browsing</li>
+      <li><strong>Enforce Rights:</strong> Protect your content against infringement on our platform</li>
+    </ul>
+
+    <h3>2.3 License Scope</h3>
+    <p>The license you grant Vidyari is:</p>
+    <table class="ip-table">
+      <tr>
+        <th>Term</th>
+        <th>Definition</th>
+      </tr>
+      <tr>
+        <td>Non-exclusive</td>
+        <td>You can sell the same content on other platforms.</td>
+      </tr>
+      <tr>
+        <td>Worldwide</td>
+        <td>Available globally on our platform.</td>
+      </tr>
+      <tr>
+        <td>Royalty-free</td>
+        <td>We don't pay you per Vidyari use (you set the price).</td>
+      </tr>
+      <tr>
+        <td>Perpetual</td>
+        <td>Continues even after content removal (to honor past sales).</td>
+      </tr>
+      <tr>
+        <td>Limited</td>
+        <td>Only for Vidyari purposes, not other uses.</td>
+      </tr>
+    </table>
+
+    <h3>2.4 Your Representations</h3>
+    <p>By uploading content, you represent and warrant that:</p>
+    <ul>
+      <li>You own all rights to the content or have permission</li>
+      <li>Content does not infringe any third-party rights</li>
+      <li>Content complies with all applicable laws</li>
+      <li>You have obtained necessary permissions from any subjects (people, quotes, etc.)</li>
+      <li>Content is your original work (or properly licensed)</li>
+      <li>You will defend Vidyari from IP claims regarding your content</li>
+    </ul>
+
+    <h2>3. Protection of Copyrighted Content</h2>
+
+    <h3>3.1 Digital Millennium Copyright Act (DMCA) Compliance</h3>
+    <p>Vidyari complies with the Digital Millennium Copyright Act and will:</p>
+    <ul>
+      <li>Respond to valid DMCA takedown notices</li>
+      <li>Remove infringing content within 10 business days</li>
+      <li>Notify content creators of takedown notices</li>
+      <li>Provide counter-notice procedures</li>
+      <li>Maintain records of copyright complaints</li>
+      <li>Implement repeat infringer policies</li>
+    </ul>
+
+    <h3>3.2 Copyright Infringement Notice</h3>
+    <div class="notice-box">
+      <strong>Reporting Procedure</strong>
+      <p>To report copyright infringement, send a formal notice to:</p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:copyright@vidyari.com">copyright@vidyari.com</a></li>
+        <li><strong>Mail:</strong> Vidyari, Legal Department [Address]</li>
+      </ul>
+      <p style="margin-top: 15px;">Your notice must include:</p>
+      <ol>
+        <li>Your full name and contact information</li>
+        <li>Description of the copyrighted work</li>
+        <li>Location of infringing content on Vidyari (direct link)</li>
+        <li>Your relationship to the copyright owner</li>
+        <li>Statement that you have a good faith belief infringement has occurred</li>
+        <li>Statement under penalty of perjury that information is accurate</li>
+        <li>Your signature (physical or electronic)</li>
+      </ol>
+    </div>
+
+    <h3>3.3 Counter-Notice Procedure</h3>
+    <p>If you receive a DMCA takedown notice and believe it was wrong:</p>
+    <ol>
+      <li>Send written counter-notice to Vidyari</li>
+      <li>Include the removed content URL</li>
+      <li>Include your statement of good faith belief that removal was mistaken</li>
+      <li>Include your contact information and under-perjury statement</li>
+      <li>Consent to jurisdiction of relevant court</li>
+    </ol>
+    <p><strong>Note:</strong> False counter-notices may result in legal liability.</p>
+
+    <h3>3.4 Repeat Infringer Policy</h3>
+    <p>Users who repeatedly infringe copyright will:</p>
+    <ul>
+      <li>Receive warnings after first violation</li>
+      <li>Face account suspension after second violation</li>
+      <li>Have their account permanently terminated after third violation</li>
+      <li>Be reported to relevant authorities if pattern indicates criminal infringement</li>
+    </ul>
+
+    <h2>4. Trademark & Brand Protection</h2>
+
+    <h3>4.1 Our Trademarks</h3>
+    <p>The following are registered/unregistered trademarks of Vidyari:</p>
+    <ul>
+      <li>VIDYARI (word mark)</li>
+      <li>Vidyari logo and design</li>
+      <li>Any variations or stylizations of the above</li>
+    </ul>
+
+    <h3>4.2 Permitted Use of Our Marks</h3>
+    <p>You may use Vidyari marks ONLY:</p>
+    <ul>
+      <li>When referring to the Vidyari service in marketing (fair use)</li>
+      <li>As a seller describing where you sell</li>
+      <li>In partnership or affiliation descriptions (if approved)</li>
+    </ul>
+
+    <h3>4.3 Prohibited Trademark Uses</h3>
+    <p>You MAY NOT:</p>
+    <ul>
+      <li>Register Vidyari trademarks as domain names</li>
+      <li>Create similar marks that could cause confusion</li>
+      <li>Use our marks in product names</li>
+      <li>Register our marks on social media</li>
+      <li>Use our marks to imply endorsement without permission</li>
+      <li>Combine our marks with your brand to create confusion</li>
+      <li>Use marks in comparative advertising</li>
+    </ul>
+
+    <h2>5. Patent & Innovation</h2>
+
+    <h3>5.1 Vidyari Patents</h3>
+    <p>Vidyari may own or be applying for patents on proprietary algorithms, unique system designs, novel features, or technical innovations.</p>
+
+    <h3>5.2 User Innovation</h3>
+    <p>If you share ideas or innovations with Vidyari:</p>
+    <ul>
+      <li>You keep ownership of the idea</li>
+      <li>Vidyari gains rights to use it</li>
+      <li>You cannot prevent Vidyari from using the idea</li>
+      <li>Implement usage in Terms of Service</li>
+    </ul>
+
+    <h2>6. Third-Party Content Rights</h2>
+
+    <h3>6.1 Purchased Digital Content</h3>
+    <p>When you purchase educational materials, you receive:</p>
+    <ul>
+      <li>A personal, non-exclusive license to VIEW and USE for personal education</li>
+      <li>Right to store one personal backup copy</li>
+      <li>Right to take notes and annotations for personal use</li>
+    </ul>
+
+    <div class="highlight-box">
+      <strong>License Restrictions</strong>
+      <p>You DO NOT receive ownership or rights to:</p>
+      <ul>
+        <li>Modify or create derivatives</li>
+        <li>Redistribute, resell, or sublicense</li>
+        <li>Translate or adapt</li>
+        <li>Incorporate into other works</li>
+        <li>Commercial use</li>
+      </ul>
+    </div>
+
+    <h3>6.2 Attribution Requirements</h3>
+    <p>If content requires attribution, you must include the author/creator name, provide copyright notice, link to original source, and retain all notices in copies you make.</p>
+
+    <h3>6.3 Open License Content</h3>
+    <p>Some content may be under Creative Commons or other open licenses. In those cases, the terms of the specific open license apply, and the creator's preferences must be respected.</p>
+
+    <h2>7. Trade Secrets & Confidential Information</h2>
+
+    <h3>7.1 What We Consider Trade Secrets</h3>
+    <p>Vidyari's trade secrets include proprietary algorithms, business strategies, user data, pricing models, and any information marked "Confidential".</p>
+
+    <h3>7.2 Your Obligations</h3>
+    <p>If you receive confidential information:</p>
+    <ul>
+      <li>Keep it confidential</li>
+      <li>Use only for authorized purposes</li>
+      <li>Do not disclose to third parties</li>
+      <li>Do not reverse engineer or analyze</li>
+      <li>Return/destroy upon request</li>
+    </ul>
+
+    <h2>8. Creator Rights & Seller Protection</h2>
+
+    <h3>8.1 Your Rights as a Seller</h3>
+    <p>As a content creator, you have the right to:</p>
+    <ul>
+      <li>Set your own price</li>
+      <li>Control distribution</li>
+      <li>Modify content (with notice to buyers)</li>
+      <li>Remove content (with notice to buyers)</li>
+      <li>Earn revenue from sales</li>
+      <li>Have content protected against theft</li>
+      <li>Receive transaction reports</li>
+    </ul>
+
+    <h3>8.2 Protecting Your Content</h3>
+    <p>Vidyari helps protect your content by requiring login for downloads, tracking activity, removing pirated versions, investigating reports, and warning buyers against redistribution.</p>
+
+    <h3>8.3 Your Responsibilities as Seller</h3>
+    <p>You must ensure content ownership or proper licensing, no third-party IP infringement, clear disclosure if not original creator, no plagiarism, and compliance with all laws.</p>
+
+    <h2>9. Fair Use & Educational Exception</h2>
+
+    <h3>9.1 Fair Use Rights</h3>
+    <p>Nothing in this policy restricts your fair use rights under copyright law, which include commentary, criticism, news reporting, teaching, scholarship, research, and limited quotation.</p>
+
+    <h3>9.2 Educational Use</h3>
+    <p>Educators may use content for classroom purposes if used for direct instruction, limited to classroom size/duration, attributed properly, and not republished commercially.</p>
+
+    <h2>10. Enforcement & Dispute Resolution</h2>
+
+    <h3>10.1 Enforcement Actions</h3>
+    <p>If someone infringes your IP on Vidyari, we will review your complaint, remove infringing content (if valid), notify the infringer, document the complaint, and warn repeat infringers.</p>
+
+    <h3>10.2 Dispute Process</h3>
+    <p>If you dispute an infringement claim, submit a counter-notice, provide evidence of your rights, explain why removal was incorrect, and accept potential court jurisdiction.</p>
+
+    <div class="contact-section">
+      <h2>11. Reporting IP Violations</h2>
+      <p>To report IP infringement:</p>
+      <ul style="list-style: none; padding-left: 0;">
+        <li><strong>Copyright:</strong> <a href="mailto:copyright@vidyari.com">copyright@vidyari.com</a></li>
+        <li><strong>Trademark & Patents:</strong> <a href="mailto:legal@vidyari.com">legal@vidyari.com</a></li>
+        <li><strong>Response Time:</strong> 5-10 business days</li>
+      </ul>
+    </div>
+
+    <h2>12. Policy Updates</h2>
+    <p>Vidyari may update this IP Policy at any time. Updated terms become effective immediately upon posting.</p>
+
+    <footer>
+      <div>
+        <p>&copy; 2025-2026 Vidyari. All rights reserved.</p>
+      </div>
+     
+    </footer>
+  </div>
+</body>
+</html>

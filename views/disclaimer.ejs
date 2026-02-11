@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Disclaimer and Limitation of Liability for Vidyari educational marketplace.">
+  <title>Disclaimer & Liability - Vidyari</title>
+  <link rel="icon" type="image/png" href="./images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Strictly Monochrome Professional Palette */
+      --bg-body: #ffffff;      /* Pure white background */
+      --text-primary: #000000; /* Jet black for headings */
+      --text-body: #1a1a1a;    /* Near black for high contrast reading */
+      --text-muted: #555555;   /* Gray for metadata */
+      --border-light: #e5e5e5; /* Light divider lines */
+      --border-strong: #000000; /* Strong structural lines */
+      --bg-box: #f9f9f9;       /* Very light gray for section boxes */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      width: 100%;
+    }
+
+    /* --- Layout Container: Full Width --- */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 60px;
+    }
+
+    /* --- Typography --- */
+    h1 {
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--text-primary);
+      margin: 0 0 15px 0;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-top: 60px;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 30px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      margin-bottom: 1.5em;
+      max-width: 100%;
+      font-size: 1rem;
+    }
+
+    /* --- Header --- */
+    header {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .meta-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: 'Inter', monospace;
+      margin-top: 10px;
+      display: block;
+      border-left: 3px solid var(--border-strong);
+      padding-left: 15px;
+    }
+
+    /* --- Lists --- */
+    ul, ol {
+      margin: 20px 0;
+      padding-left: 25px;
+    }
+
+    li {
+      margin-bottom: 10px;
+      padding-left: 5px;
+    }
+
+    /* --- Alert/Warning Boxes (Monochrome) --- */
+    .notice-box {
+      width: 100%;
+      margin: 30px 0;
+      padding: 30px;
+      background-color: var(--bg-box);
+      border: 1px solid var(--border-light);
+    }
+
+    /* Important Warnings (Replaces Red) */
+    .warning-box {
+      border-left: 6px solid #000;
+      background-color: #fff;
+      border-top: 1px solid #000;
+      border-right: 1px solid #000;
+      border-bottom: 1px solid #000;
+      padding: 25px;
+      margin: 30px 0;
+    }
+
+    .warning-box strong {
+      display: block;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      color: #000;
+    }
+
+    /* Highlight/Note Boxes (Replaces Orange) */
+    .highlight-box {
+      border-left: 4px solid #555;
+      background-color: #f5f5f5;
+      padding: 25px;
+      margin: 30px 0;
+    }
+
+    /* --- Contact Section --- */
+    .contact-section {
+      margin-top: 60px;
+      padding: 40px;
+      border: 1px solid var(--border-strong);
+    }
+
+    /* --- Footer --- */
+    footer {
+      margin-top: 100px;
+      padding: 50px 0;
+      border-top: 4px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    footer p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer .links {
+      display: flex;
+      gap: 30px;
+    }
+
+    footer a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- Mobile Response --- */
+    @media (max-width: 768px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 2rem; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      footer .links { flex-direction: column; gap: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <a href="/" class="back-link">&larr; Back to Home</a>
+      <h1>Disclaimer & Limitation of Liability</h1>
+      <span class="meta-info">REF: LIABILITY-2026-V1 &nbsp;//&nbsp; LAST UPDATED: FEBRUARY 2026</span>
+    </header>
+
+    <div class="warning-box">
+      <p><strong>Important Legal Notice</strong> This page contains important limitations on Vidyari's liability. Please read this carefully as it affects your legal rights. By using Vidyari, you accept these limitations and have no claim beyond what is stated here.</p>
+    </div>
+
+    <h2>1. General Disclaimer</h2>
+
+    <h3>1.1 "As-Is" Service Provision</h3>
+    <p>Vidyari is provided on an "AS IS" and "AS AVAILABLE" basis. To the maximum extent permitted by law, we make NO WARRANTIES OR REPRESENTATIONS of any kind, whether expressed, implied, or statutory, regarding:</p>
+    <ul>
+      <li>Accuracy, completeness, or reliability of content</li>
+      <li>Suitability for any particular purpose</li>
+      <li>Uninterrupted or error-free operation</li>
+      <li>Freedom from malware or harmful code</li>
+      <li>Quality of purchased digital materials</li>
+      <li>Fitness for educational purposes</li>
+    </ul>
+
+    <h3>1.2 No Warranties</h3>
+    <p>Vidyari specifically disclaims:</p>
+    <ul>
+      <li><strong>EXPRESS WARRANTIES:</strong> All express warranties are disclaimed</li>
+      <li><strong>IMPLIED WARRANTIES:</strong> Including merchantability, fitness for purpose, and non-infringement</li>
+      <li><strong>WARRANTY OF TITLE:</strong> We do not warrant that content is free from infringement</li>
+      <li><strong>WARRANTY OF NON-INTERFERENCE:</strong> We do not warrant uninterrupted service</li>
+    </ul>
+
+    <h3>1.3 Content Disclaimer</h3>
+    <p>Regarding all content on Vidyari:</p>
+    <ul>
+      <li>Content is created by third-party sellers/creators</li>
+      <li>Vidyari does not endorse all materials posted</li>
+      <li>Content is for educational and informational purposes only</li>
+      <li>We do not verify accuracy of all educational materials</li>
+      <li>Users must independently verify important information</li>
+      <li>Content may become outdated over time</li>
+    </ul>
+
+    <h3>1.4 Not Professional Advice</h3>
+    <div class="warning-box">
+      <strong>Critical Notice</strong>
+      <p>Content on Vidyari is NOT professional advice. Materials are for educational purposes only and should NOT be used as:</p>
+      <ul>
+        <li>Legal advice - consult a licensed attorney</li>
+        <li>Medical/health advice - consult a doctor</li>
+        <li>Financial/investment advice - consult a financial advisor</li>
+        <li>Professional consulting - hire qualified professionals</li>
+        <li>Tax advice - consult a CPA or tax professional</li>
+      </ul>
+      <p>Users rely on downloaded content entirely at their own risk.</p>
+    </div>
+
+    <h2>2. Limitation of Liability</h2>
+
+    <div class="warning-box">
+      <p><strong>To the maximum extent permitted by law, Vidyari, its officers, employees, and agents shall not be liable for the damages listed below.</strong></p>
+    </div>
+
+    <h3>2.1 Excluded Damages</h3>
+    <p>Vidyari shall NOT be liable for any of the following, even if advised of the possibility:</p>
+    <ul>
+      <li><strong>Indirect Damages:</strong> Losses that result indirectly from Vidyari use</li>
+      <li><strong>Incidental Damages:</strong> Unplanned or unexpected losses</li>
+      <li><strong>Consequential Damages:</strong> Damages resulting from other damages</li>
+      <li><strong>Punitive Damages:</strong> Additional damages meant to punish</li>
+      <li><strong>Special Damages:</strong> Unusual or extraordinary losses</li>
+      <li><strong>Lost Profits:</strong> Loss of anticipated earnings</li>
+      <li><strong>Loss of Revenue:</strong> Reduction in business income</li>
+      <li><strong>Loss of Data:</strong> Loss or corruption of files or information</li>
+      <li><strong>Loss of Business Opportunity:</strong> Missed chances or deals</li>
+      <li><strong>Loss of Goodwill:</strong> Damage to reputation or brand</li>
+      <li><strong>Business Interruption:</strong> Downtime or service interruption</li>
+      <li><strong>Cost of Substitute Services:</strong> Cost to obtain alternative services</li>
+    </ul>
+
+    <h3>2.2 Situations NOT Covered by Liability</h3>
+    <p>Vidyari is NOT liable for damages arising from:</p>
+    <ul>
+      <li>Your use or misuse of the platform</li>
+      <li>Your reliance on content accuracy</li>
+      <li>Quality or educational value of purchased materials</li>
+      <li>Technical issues with your device or internet</li>
+      <li>Third-party services (payment processors, email providers)</li>
+      <li>Third-party content or seller actions</li>
+      <li>Your violation of these Terms</li>
+      <li>Unauthorized access to your account</li>
+      <li>System bugs or errors</li>
+      <li>Natural disasters or acts of God</li>
+      <li>Government actions or sanctions</li>
+      <li>Third-party hacking or cyber attacks</li>
+    </ul>
+
+    <h3>2.3 Liability Cap</h3>
+    <div class="highlight-box">
+      <strong>Our Maximum Liability</strong>
+      <p>In no event shall Vidyari's total liability exceed the LESSER of:</p>
+      <ol>
+        <li>The amount you paid for the specific purchase/transaction, OR</li>
+        <li>INR 2,000 (₹2,000)</li>
+      </ol>
+      <p><strong>Example:</strong> If you purchased a file for ₹500 and suffered loss, Vidyari's maximum liability is ₹500.</p>
+    </div>
+
+    <h3>2.4 Essential Purchases</h3>
+    <p>If you purchased something essential (like urgent employment documents), you:</p>
+    <ul>
+      <li>Assume all risk of that purchase</li>
+      <li>Should have backup options</li>
+      <li>Should not solely rely on Vidyari</li>
+      <li>Accept that service failures may occur</li>
+    </ul>
+
+    <h2>3. Service Availability Disclaimer</h2>
+
+    <h3>3.1 No Guaranteed Uptime</h3>
+    <p>Vidyari does NOT guarantee:</p>
+    <ul>
+      <li>Continuous 24/7 availability</li>
+      <li>Any specific uptime percentage</li>
+      <li>No service interruptions</li>
+      <li>Uninterrupted download capability</li>
+      <li>No downtime for maintenance</li>
+    </ul>
+
+    <h3>3.2 Maintenance & Updates</h3>
+    <p>Vidyari may:</p>
+    <ul>
+      <li>Become temporarily unavailable for maintenance</li>
+      <li>Perform emergency repairs without notice</li>
+      <li>Update systems which may cause compatibility issues</li>
+      <li>Shut down features with little notice</li>
+      <li>Users who cannot access during maintenance receive no compensation</li>
+    </ul>
+
+    <h3>3.3 No Liability for Interruptions</h3>
+    <p>You accept full responsibility and risk for:</p>
+    <ul>
+      <li>Downloading files during off-peak hours</li>
+      <li>Keeping backup copies of important files</li>
+      <li>Not relying solely on Vidyari for critical content</li>
+    </ul>
+
+    <h2>4. Third-Party Content & Users</h2>
+
+    <h3>4.1 User-Generated Content</h3>
+    <p>Vidyari is NOT liable for:</p>
+    <ul>
+      <li>Content created by other users</li>
+      <li>Accuracy of materials from third-party sellers</li>
+      <li>Quality or educational value of user content</li>
+      <li>Copyright infringement by content creators</li>
+      <li>Harmful content posted by users</li>
+      <li>Scams or fraud by other users</li>
+    </ul>
+
+    <h3>4.2 Third-Party Services</h3>
+    <p>Vidyari uses third-party services (Cashfree, Firebase, Supabase, MongoDB). We are NOT liable for:</p>
+    <ul>
+      <li>These services going down or having issues</li>
+      <li>Data loss with third-party providers</li>
+      <li>Service quality of third parties</li>
+      <li>Privacy breaches at third parties</li>
+      <li>Their actions or negligence</li>
+    </ul>
+
+    <h3>4.3 External Links</h3>
+    <p>Vidyari may contain links to external websites. We are NOT liable for:</p>
+    <ul>
+      <li>Content on external websites</li>
+      <li>Availability of external sites</li>
+      <li>Malware on external sites</li>
+      <li>Actions of external site operators</li>
+      <li>Your interactions with external sites</li>
+    </ul>
+
+    <h2>5. Data Loss & Backup</h2>
+
+    <h3>5.1 No Backup Guarantee</h3>
+    <p>Vidyari makes NO guarantee to maintain backup copies of your data. You are responsible for:</p>
+    <ul>
+      <li>Keeping your own backup copies of purchased files</li>
+      <li>Storing files in secure locations</li>
+      <li>Not relying solely on Vidyari's servers</li>
+      <li>Regular backup of your account data</li>
+    </ul>
+
+    <h3>5.2 Data Loss Scenarios</h3>
+    <p>We are NOT liable if files are lost due to:</p>
+    <ul>
+      <li>Server failures or crashes</li>
+      <li>Cyber attacks or hacking</li>
+      <li>Accidental deletion</li>
+      <li>Hard drive failures</li>
+      <li>Natural disasters</li>
+      <li>Provider negligence</li>
+      <li>Your account being closed/terminated</li>
+    </ul>
+
+    <!-- <h3>5.3 Download Immediately</h3>
+    <div class="highlight-box">
+      <strong>Action Required</strong>
+      <p>After purchase, download files immediately. We do not guarantee permanent availability.</p>
+    </div> -->
+
+    <h2>6. Security & Fraud Disclaimer</h2>
+
+    <h3>6.1 Security Measures</h3>
+    <p>While Vidyari implements industry-standard security (encryption, firewalls, authentication):</p>
+    <ul>
+      <li>NO SECURITY IS 100% SECURE</li>
+      <li>Sophisticated attacks may succeed</li>
+      <li>Zero-day vulnerabilities may exist</li>
+      <li>Insider threats cannot be completely prevented</li>
+      <li>Your password is your responsibility</li>
+    </ul>
+
+    <h3>6.2 Unauthorized Access</h3>
+    <p>You are responsible for:</p>
+    <ul>
+      <li>Keeping your password confidential</li>
+      <li>Not sharing your login credentials</li>
+      <li>Monitoring your account for suspicious activity</li>
+      <li>Reporting unauthorized access immediately</li>
+    </ul>
+    <p>Vidyari is NOT liable for unauthorized access if you negligently shared credentials.</p>
+
+    <h3>6.3 Fraud Risk</h3>
+    <p>Vidyari is NOT liable for:</p>
+    <ul>
+      <li>Fraudulent content from sellers</li>
+      <li>Scams by other users</li>
+      <li>Phishing attacks using Vidyari brand</li>
+      <li>Fake Vidyari websites</li>
+      <li>Your clicking on suspicious links</li>
+    </ul>
+
+    <h2>7. Content Quality Disclaimer</h2>
+
+    <h3>7.1 Educational Content</h3>
+    <p>Purchased files are provided for educational purposes. Vidyari:</p>
+    <ul>
+      <li>Does NOT verify content accuracy</li>
+      <li>Does NOT check if files are out-of-date</li>
+      <li>Does NOT validate teaching methods</li>
+      <li>Does NOT endorse all materials</li>
+      <li>Does NOT guarantee career success</li>
+      <li>Does NOT guarantee grade improvement</li>
+    </ul>
+
+    <h3>7.2 File Format & Compatibility</h3>
+    <p>Vidyari does NOT guarantee files will work with:</p>
+    <ul>
+      <li>Your specific device or operating system</li>
+      <li>Older or outdated software versions</li>
+      <li>Custom or proprietary software</li>
+      <li>Modified versions of standard software</li>
+    </ul>
+    <p>Test downloadable file previews before purchasing to ensure compatibility.</p>
+
+    <h2>8. Pricing & Availability Disclaimer</h2>
+    <p>While we strive for accurate pricing, Vidyari makes NO warranty that prices are always 100% accurate or will not change. We do not guarantee that products will remain available indefinitely.</p>
+
+    <h2>9. Limitation of Remedies</h2>
+
+    <h3>9.1 Exclusive Remedy</h3>
+    <p>If you have a claim, your exclusive remedy is:</p>
+    <ul>
+      <li>Refund of purchase price (if eligible), OR</li>
+      <li>Replacement of defective file, OR</li>
+      <li>Re-delivery of file</li>
+    </ul>
+    <p>You have NO OTHER REMEDIES available.</p>
+
+    <h3>9.2 No Class Actions</h3>
+    <p>You agree to not participate in class action lawsuits against Vidyari, pursue only individual arbitration or claims, and not combine claims with other users.</p>
+
+    <h2>10. Indemnification</h2>
+    <p>You agree to indemnify (defend and pay for) Vidyari against any claims arising from your use of the platform in violation of these terms, your infringement of intellectual property rights, content you upload, or your violation of applicable laws.</p>
+
+    <h2>11. Severability</h2>
+    <p>If any provision of this disclaimer is found invalid or unenforceable, that specific provision is removed, but all other provisions remain valid and enforceable.</p>
+
+    <h2>12. Governing Law</h2>
+    <p>This disclaimer is governed by the laws of India, specifically the Indian Contract Act, 1872, Consumer Protection Act, 2019, and Information Technology Act, 2000.</p>
+
+    <div class="contact-section">
+      <h2>13. Questions About This Disclaimer?</h2>
+      <p>For questions about this disclaimer or if you need clarification:</p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:legal@vidyari.com">legal@vidyari.com</a></li>
+        <li><strong>Support:</strong> <a href="mailto:support@vidyari.com">support@vidyari.com</a></li>
+        <li><strong>Response Time:</strong> 5-7 business days</li>
+      </ul>
+    </div>
+
+    <h2>14. Acknowledgment</h2>
+    <div class="warning-box">
+      <strong>By using Vidyari, you explicitly acknowledge and accept:</strong>
+      <ul>
+        <li>This entire disclaimer and all its limitations</li>
+        <li>That Vidyari is provided "AS IS" with no warranties</li>
+        <li>That your liability is limited to maximum cap stated</li>
+        <li>That you assume all risks of using the platform</li>
+        <li>That you have read and understood these terms</li>
+        <li>That you have no further claims beyond what's stated</li>
+      </ul>
+      <p style="margin-top: 20px;">If you do not accept these terms, you must discontinue use of Vidyari immediately.</p>
+    </div>
+
+    <footer>
+      <div>
+        <p>&copy; 2025-2026 Vidyari. All rights reserved.</p>
+      </div>
+      
+    </footer>
+  </div>
+</body>
+</html>

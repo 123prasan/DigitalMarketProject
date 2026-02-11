@@ -3,64 +3,454 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Terms and Conditions for Vidyari, educational Docs marketplace.">
-  <title>Terms & Conditions -Vidyari</title>
+  <meta name="description" content="Terms and Conditions for Vidyari. Complete legal terms governing the use of our educational platform and services.">
+  <title>Terms & Conditions - Vidyari</title>
   <link rel="icon" type="image/png" href="./images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
+    :root {
+      /* Strictly Monochrome Professional Palette */
+      --bg-body: #ffffff;      /* Pure white background */
+      --text-primary: #000000; /* Jet black for headings */
+      --text-body: #1a1a1a;    /* Near black for high contrast reading */
+      --text-muted: #555555;   /* Gray for metadata */
+      --border-light: #e5e5e5; /* Light divider lines */
+      --border-strong: #000000; /* Strong structural lines */
+      --bg-box: #f9f9f9;       /* Very light gray for section boxes */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #fff;
-      color: #000;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-body);
+      color: var(--text-body);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      width: 100%;
     }
-    header {
-      text-align: center;
-      margin-bottom: 20px;
+
+    /* --- Layout Container: Full Width --- */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 40px 60px;
     }
-    header a {
-      text-decoration: none;
-      color: black;
-      border: 1px solid black;
-      padding: 8px 15px;
-      border-radius: 5px;
+
+    /* --- Typography --- */
+    h1 {
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--text-primary);
+      margin: 0 0 15px 0;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      text-transform: uppercase;
     }
-    h1, h2 {
+
+    h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin-top: 60px;
+      margin-bottom: 25px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
       margin-top: 30px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+      letter-spacing: 0.05em;
     }
+
+    p {
+      margin-bottom: 1.5em;
+      max-width: 100%;
+      font-size: 1rem;
+    }
+
+    /* --- Header --- */
+    header {
+      margin-bottom: 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .back-link {
+      display: inline-block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    .meta-info {
+      display: flex;
+      gap: 30px;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: 'Inter', monospace;
+      border-left: 3px solid var(--border-strong);
+      padding-left: 15px;
+    }
+
+    /* --- Notice Box --- */
+    .notice-box {
+      width: 100%;
+      margin: 30px 0;
+      padding: 30px;
+      background-color: var(--bg-box);
+      border: 1px solid var(--border-light);
+    }
+
+    .important-box {
+      border-left: 6px solid #000;
+      background-color: #fff;
+      border: 1px solid #e5e5e5;
+      border-left-width: 6px;
+      padding: 25px;
+      margin: 30px 0;
+    }
+
+    .important-box strong {
+      display: block;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* --- Contact Box --- */
+    .contact-box {
+      padding: 30px;
+      border: 1px solid var(--border-strong);
+      margin: 30px 0;
+    }
+
+    /* --- Lists --- */
+    ul { margin: 20px 0; padding-left: 25px; }
+    li { margin-bottom: 10px; padding-left: 5px; }
+
+    /* --- Footer --- */
     footer {
-      margin-top: 50px;
-      font-size: 0.9em;
-      color: #333;
-      text-align: center;
+      margin-top: 100px;
+      padding: 50px 0;
+      border-top: 4px solid var(--border-strong);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    footer p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+    
+    .footer-links { display: flex; gap: 30px; }
+    
+    footer a { color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+    footer a:hover { text-decoration: underline; }
+    
+    a { color: var(--text-primary); text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+
+    /* --- Responsive --- */
+    @media (max-width: 768px) {
+      .container { padding: 30px 20px; }
+      h1 { font-size: 2rem; }
+      .meta-info { flex-direction: column; gap: 10px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-direction: column; gap: 15px; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <a href="/">Home</a>
-  </header>
 
-  <h1>Terms & Conditions</h1>
-  <p>Welcome to Vidyari. By accessing or using our website, you agree to comply with these Terms and Conditions. Please read them carefully before using our services.</p>
+  <div class="container">
+    <header>
+      <a href="/" class="back-link">&larr; Back to Home</a>
+      <h1>Terms & Conditions</h1>
+      <div class="meta-info">
+        <span>UPDATED: FEBRUARY 2026</span>
+        <span>LEGAL AGREEMENT</span>
+      </div>
+    </header>
 
-  <h2>1. Use of the Website</h2>
-  <p>You may use this website solely to browse, purchase, and download study materials in Docs format. Any unauthorized use, including redistribution, resale, or reproduction of purchased materials, is strictly prohibited.</p>
+    <div class="notice-box">
+      <p>These Terms and Conditions form a legally binding agreement between you and Vidyari. By accessing, browsing, or using our website and services, you acknowledge that you have read and agree to be bound by these Terms. If you do not agree to these Terms, please do not use our services.</p>
+    </div>
 
-  <h2>2. Purchases</h2>
-  <p>All sales of digital Docs are final. Once purchased, files are delivered electronically and are non-transferable.</p>
+    <div class="section">
+      <h2>1. Overview & Service Description</h2>
+      <p>Vidyari is an educational digital marketplace platform that enables:</p>
+      <ul>
+        <li>Purchase and download of digital educational documents, study materials, and course content</li>
+        <li>User creation of content to sell on the marketplace</li>
+        <li>Community engagement through courses, chat, and collaboration features</li>
+        <li>Payment processing for digital goods and services</li>
+        <li>User account management and notification services</li>
+      </ul>
+      <p>All content on the platform is digital and delivered electronically. We aim to provide a secure, reliable, and user-friendly marketplace for educational materials.</p>
+    </div>
 
-  <h2>3. Intellectual Property</h2>
-  <p>All content available on Vidyari, including Docs, logos, and text, is the intellectual property of Vidyari or its respective sellers. Unauthorized use is prohibited.</p>
+    <div class="section">
+      <h2>2. User Accounts & Registration</h2>
+      <h3>Account Creation</h3>
+      <p>To use many features of Vidyari, you must create an account by providing:</p>
+      <ul>
+        <li>Valid email address</li>
+        <li>Secure password</li>
+        <li>Basic profile information</li>
+        <li>Age verification (must be 18+ or have parental consent)</li>
+      </ul>
+      
+      <h3>Account Responsibility</h3>
+      <p>You are responsible for:</p>
+      <ul>
+        <li>Maintaining the confidentiality of your login credentials</li>
+        <li>All activity that occurs under your account</li>
+        <li>Notifying us immediately of unauthorized access</li>
+        <li>Providing accurate and current information</li>
+      </ul>
+      
+      <h3>Account Termination</h3>
+      <p>We reserve the right to suspend or terminate accounts that violate these Terms or engage in fraudulent behavior, without refund of any prepaid amounts.</p>
+    </div>
 
-  <h2>4. Liability</h2>
-  <p>We strive for accuracy but make no guarantees regarding the completeness, reliability, or suitability of the Docs. Vidyari is not liable for any damages resulting from the use of purchased materials.</p>
+    <div class="section">
+      <h2>3. Permitted Use & Acceptable Conduct</h2>
+      <p>You agree to use Vidyari only for lawful purposes and in a way that does not infringe upon the rights of others. Prohibited behavior includes:</p>
+      <ul>
+        <li>Harassment, abuse, or threatening language toward other users</li>
+        <li>Posting content that is illegal, defamatory, or obscene</li>
+        <li>Attempting to gain unauthorized access to our systems</li>
+        <li>Uploading malware, viruses, or harmful code</li>
+        <li>Scraping, crawling, or automated data collection</li>
+        <li>Reselling, redistributing, or unauthorized reproduction of purchased content</li>
+        <li>Sharing login credentials or allowing others to use your account</li>
+        <li>Creating multiple accounts to circumvent restrictions or gain unfair advantage</li>
+        <li>Posting spam, promotional content, or unsolicited advertisements</li>
+        <li>Engaging in any form of fraudulent transaction or payment</li>
+      </ul>
+    </div>
 
-  <h2>5. Changes to Terms</h2>
-  <p>We may update these Terms & Conditions at any time. Continued use of the website indicates acceptance of updated terms.</p>
+    <div class="section">
+      <h2>4. Digital Products & Purchases</h2>
+      
+      <h3>4.1 Product Delivery</h3>
+      <p>All products are delivered electronically through your account. Upon successful payment confirmation and order completion, you will receive immediate access to download the purchased digital materials. Delivery failures due to user technical issues are not grounds for refund.</p>
+      
+      <h3>4.2 Pricing & Currency</h3>
+      <p>All prices are displayed in Indian Rupees (INR) unless otherwise stated. Prices are subject to change without notice. We reserve the right to modify pricing at any time, though existing orders will maintain their purchase price.</p>
+      
+      <h3>4.3 Payment Processing</h3>
+      <p>Payments are processed securely through Cashfree Payment Gateway and other verified payment processors. By making a purchase, you authorize us to charge your payment method. All payment information is encrypted and handled according to PCI-DSS standards.</p>
+      
+      <h3>4.4 Purchase Terms</h3>
+      <p>All purchases are:</p>
+      <ul>
+        <li><strong>Final and Non-Refundable</strong> once accessed or downloaded (except where required by law)</li>
+        <li><strong>Non-Transferable</strong> - purchased content is for personal use of the purchaser only</li>
+        <li><strong>Non-Exclusive</strong> - authors may sell the same content to multiple buyers</li>
+        <li>Subject to availability at time of purchase</li>
+      </ul>
+      
+      <div class="important-box">
+        <strong>Important Notice</strong>
+        <p>Please review product descriptions, previews, and specifications carefully before purchasing. Digital products cannot be "unsold" once downloaded. We are not responsible for purchases made in error.</p>
+      </div>
+    </div>
 
-  <footer>
-    &copy; 2025 Vidyari. All rights reserved.
-  </footer>
+    <div class="section">
+      <h2>5. Refund & Cancellation Policy</h2>
+      <p>For detailed refund policies and conditions, please refer to our Refund Policy. In summary:</p>
+      <ul>
+        <li>Refunds are available within 7 days of purchase if the product is <strong>NOT downloaded</strong> and in case of technical failures only</li>
+        <li>Duplicate charges will be investigated and refunded within 7-10 business days upon verification</li>
+        <li>Refunds are processed to the original payment method</li>
+        <li>For disputes, please contact our support team with proof of transaction</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>6. Intellectual Property Rights</h2>
+      
+      <h3>6.1 Platform Content</h3>
+      <p>All content on Vidyari platform, including website design, layout, graphics, logo, trademarks, brand identity, software code, algorithms, and compilation of user-generated content, are the intellectual property of Vidyari and protected by copyright and trademark laws. Unauthorized reproduction, distribution, or modification is prohibited.</p>
+      
+      <h3>6.2 User-Generated Content</h3>
+      <p>When you upload content to Vidyari:</p>
+      <ul>
+        <li>You retain ownership of your original content</li>
+        <li>You grant Vidyari a license to display, distribute, and promote your content on the platform</li>
+        <li>You represent and warrant that you own all rights to the content you upload and it does not violate third-party rights</li>
+        <li>You are responsible for ensuring proper citations and permissions for any referenced materials</li>
+      </ul>
+
+      <h3>6.3 Purchased Content</h3>
+      <p>When you purchase content from Vidyari:</p>
+      <ul>
+        <li>You receive a personal, non-exclusive license to view and use the content for educational purposes only</li>
+        <li>You may NOT redistribute, resell, sublicense, or create derivative works</li>
+        <li>You may NOT share access credentials or allow others to access your purchased content</li>
+        <li>The seller retains all intellectual property rights to the original work</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>7. Disclaimers & Warranty</h2>
+      <p>VIDYARI PROVIDES SERVICES "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND.</p>
+      <ul>
+        <li><strong>No Accuracy Guarantee:</strong> While we strive for accuracy, we do not guarantee that all product descriptions, pricing, or content is accurate, current, or error-free</li>
+        <li><strong>Content Quality:</strong> We do not warrant the quality, suitability, or fitness of any content for your specific purpose</li>
+        <li><strong>Availability:</strong> We do not guarantee uninterrupted or error-free service access</li>
+        <li><strong>Third-Party Content:</strong> We are not responsible for content created by third-party sellers and do not endorse all materials</li>
+        <li><strong>No Legal Advice:</strong> Content on this platform is for educational purposes only and does not constitute professional legal, medical, or financial advice</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>8. Limitation of Liability</h2>
+      <div class="important-box">
+        <strong>To the maximum extent permitted by law</strong>
+        <p>Vidyari and its owners, employees, and agents shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including lost profits, data loss, or business interruption, arising from:</p>
+        <ul>
+          <li>Your use or inability to use the service</li>
+          <li>Quality or performance of purchased content</li>
+          <li>Errors in the platform or technical failures</li>
+          <li>Third-party actions or content</li>
+          <li>Data breaches or unauthorized access</li>
+        </ul>
+        <p style="margin-top:10px;"><strong>Total Liability Cap:</strong> Our maximum liability shall not exceed the amount you paid for the specific transaction in question.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>9. Indemnification</h2>
+      <p>You agree to indemnify, defend, and hold harmless Vidyari and its officers, employees, and agents from any claims, damages, losses, or expenses (including attorney fees) arising from:</p>
+      <ul>
+        <li>Your violation of these Terms</li>
+        <li>Your use of the service in violation of applicable law</li>
+        <li>Content you upload, create, or submit</li>
+        <li>Your infringement of third-party intellectual property rights</li>
+        <li>Fraudulent transactions using your account</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>10. Data & Privacy</h2>
+      <p>Your use of Vidyari is also governed by our Privacy Policy, which explains how we collect, use, and protect your personal information. Please review our Privacy Policy to understand our data practices, your rights, and how we handle third-party integrations with payment gateways and other services.</p>
+    </div>
+
+    <div class="section">
+      <h2>11. Payment Gateway & Financial Compliance</h2>
+      <p>Payments on Vidyari are processed through Cashfree and other authorized payment gateways. By making a purchase, you agree to:</p>
+      <ul>
+        <li>Payment terms and conditions established by the payment processor</li>
+        <li>Comply with all applicable laws regarding online transactions</li>
+        <li>Not use fraudulent payment methods or stolen financial information</li>
+        <li>Provide accurate billing and contact information</li>
+        <li>Notify us immediately of any unauthorized charges</li>
+      </ul>
+      <p>We maintain PCI-DSS compliance and do not store your complete payment card information on our servers.</p>
+    </div>
+
+    <div class="section">
+      <h2>12. Dispute Resolution & Complaints</h2>
+      <h3>12.1 Informal Resolution</h3>
+      <p>If you have a complaint or dispute, please contact our support team at support@vidyari.com with detailed information. We will attempt to resolve the issue within 7 business days.</p>
+      
+      <h3>12.2 Formal Dispute Process</h3>
+      <p>If informal resolution fails, disputes shall be handled according to the laws of India and resolved through:</p>
+      <ul>
+        <li>Good faith negotiation between parties</li>
+        <li>Mediation if parties agree</li>
+        <li>Binding arbitration or court proceedings as permitted by Indian law</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>13. Third-Party Links & Services</h2>
+      <p>Vidyari may contain links to third-party websites and services. We are not responsible for:</p>
+      <ul>
+        <li>Availability or content of third-party websites</li>
+        <li>Transactions you conduct with third parties</li>
+        <li>Privacy practices of third parties</li>
+        <li>Any damages or losses resulting from third-party interactions</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>14. Modification of Services & Terms</h2>
+      <p>Vidyari reserves the right to:</p>
+      <ul>
+        <li>Modify, suspend, or discontinue any features or services with or without notice</li>
+        <li>Update these Terms at any time by posting the revised version</li>
+        <li>Implement new policies or restrictions as needed</li>
+      </ul>
+      <p>Your continued use of the platform after changes constitute acceptance of modified Terms. We recommend reviewing these Terms periodically for updates.</p>
+    </div>
+
+    <div class="section">
+      <h2>15. Content Removal & Violations</h2>
+      <p>Vidyari reserves the right to remove any content that:</p>
+      <ul>
+        <li>Violates intellectual property rights</li>
+        <li>Contains illegal, defamatory, or obscene material</li>
+        <li>Violates these Terms or community standards</li>
+        <li>Is flagged as spam or fraudulent</li>
+      </ul>
+      <p>Users whose content is repeatedly removed may have their selling privileges revoked without refund of past sales.</p>
+    </div>
+
+    <div class="contact-box">
+      <h2>16. Contact Information & Support</h2>
+      <p>For questions regarding these Terms or any disputes, please contact:</p>
+      <ul>
+        <li><strong>Support Email:</strong> support@vidyari.com (General inquiries)</li>
+        <li><strong>Billing Email:</strong> billing@vidyari.com (Payment issues)</li>
+        <li><strong>Legal Email:</strong> privacy@vidyari.com (Legal matters)</li>
+        <li><strong>Security Email:</strong> security@vidyari.com (Security concerns)</li>
+        <li><strong>Response Time:</strong> 24-48 hours for most inquiries</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>17. Severability</h2>
+      <p>If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.</p>
+    </div>
+
+    <div class="section">
+      <h2>18. Entire Agreement</h2>
+      <p>These Terms, along with the Privacy Policy, Refund Policy, and any other posted policies, constitute the entire agreement between you and Vidyari regarding your use of the service. They supersede all prior or contemporaneous agreements, understandings, and representations.</p>
+    </div>
+
+    <footer>
+      <div>
+        <p>&copy; 2025-2026 Vidyari. All rights reserved.</p>
+      </div>
+      
+    </footer>
+  </div>
 </body>
 </html>
