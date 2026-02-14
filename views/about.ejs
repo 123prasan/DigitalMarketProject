@@ -1,0 +1,387 @@
+<%-include("header")%>
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>About Vidyari | The Ultimate Creator Marketplace for Knowledge</title>
+    <meta name="description" content="Vidyari is the premier peer-to-peer knowledge marketplace. Sell study materials, video courses, and digital files. Turn your brain into a business with zero gatekeeping.">
+    <meta name="keywords" content="sell courses online, sell digital files, study notes marketplace, creator economy, digital products, peer-to-peer learning, Vidyari">
+    <meta name="author" content="Vidyari Inc.">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <link rel="canonical" href="https://www.vidyari.com/about">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.vidyari.com/about">
+    <meta property="og:title" content="About Vidyari | The Knowledge Economy">
+    <meta property="og:description" content="Sell study materials, video courses, and large digital files effortlessly. Keep 100% of your hustle.">
+    <meta property="og:image" content="https://www.vidyari.com/images/og-about.jpg">
+    <meta property="og:site_name" content="Vidyari">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.vidyari.com/about">
+    <meta name="twitter:title" content="About Vidyari | The Knowledge Economy">
+    <meta name="twitter:description" content="Turn your brain into a business. The marketplace for students and creators.">
+    <meta name="twitter:image" content="https://www.vidyari.com/images/twitter-about.jpg">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Vidyari",
+      "url": "https://www.vidyari.com",
+      "logo": "https://www.vidyari.com/images/logo.svg",
+      "description": "A marketplace for creators and students to buy and sell digital educational resources.",
+      "sameAs": [
+        "https://twitter.com/vidyari",
+        "https://www.linkedin.com/company/vidyari"
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.vidyari.com/"
+      },{
+        "@type": "ListItem", "position": 2, "name": "About", "item": "https://www.vidyari.com/about"
+      }]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;800;900&family=Space+Grotesk:wght@700;900&family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --color-bg: #f4f4f0;
+            --color-black: #0a0a0a;
+            --color-pink: #ff66a3;
+            --color-green: #4ade80;
+            --color-yellow: #ffd60a;
+            --color-blue: #1ac2ff;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-black);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Montserrat', sans-serif; }
+        .font-extreme { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Typography Effects */
+        .text-outline {
+            color: transparent;
+            -webkit-text-stroke: 2px var(--color-black);
+            text-shadow: 4px 4px 0 var(--color-black);
+            transition: all 0.3s ease;
+        }
+        .text-outline:hover {
+            color: var(--color-black);
+            -webkit-text-stroke: 0px;
+            text-shadow: 6px 6px 0 var(--color-yellow);
+        }
+
+        /* Brutalist Utilities */
+        .chunky-card {
+            background-color: #fff;
+            border: 6px solid var(--color-black);
+            box-shadow: 12px 12px 0 var(--color-black);
+            border-radius: 24px;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+        }
+        .chunky-card:hover {
+            transform: translate(-6px, -6px);
+            box-shadow: 18px 18px 0 var(--color-black);
+        }
+
+        /* 3D Button System */
+        .chunky-btn-wrapper { position: relative; display: inline-block; }
+        .chunky-btn-bg {
+            position: absolute; inset: 0; background: var(--color-black);
+            border-radius: 12px; transform: translate(8px, 8px); transition: transform 0.2s ease;
+        }
+        .chunky-btn {
+            position: relative; z-index: 10; display: inline-flex; align-items: center; justify-content: center;
+            border: 6px solid var(--color-black); border-radius: 12px;
+            padding: 18px 36px; font-size: 1.25rem; font-weight: 900; font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase; cursor: pointer; transition: transform 0.2s ease;
+            text-decoration: none; color: var(--color-black);
+        }
+        .chunky-btn-wrapper:hover .chunky-btn { transform: translate(-4px, -4px); }
+        .chunky-btn-wrapper:hover .chunky-btn-bg { transform: translate(12px, 12px); }
+        .chunky-btn-wrapper:active .chunky-btn { transform: translate(4px, 4px); }
+        .chunky-btn-wrapper:active .chunky-btn-bg { transform: translate(4px, 4px); }
+
+        /* Kinetic Marquee */
+        .marquee-container {
+            border-top: 6px solid var(--color-black);
+            border-bottom: 6px solid var(--color-black);
+            background: var(--color-black);
+            color: white;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 1.5rem 0;
+            display: flex;
+        }
+        .marquee-content {
+            display: inline-flex;
+            animation: marquee 25s linear infinite;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 900;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Scroll Animations (AOS replacement) */
+        .reveal-up { opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal-scale { opacity: 0; transform: scale(0.9); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .is-revealed { opacity: 1; transform: translateY(0) scale(1); }
+
+        /* Pattern Definitions for SVG Shapes */
+        .pattern-dots { fill: url(#dots); }
+        .pattern-stripes { fill: url(#stripes); }
+    </style>
+</head>
+<body>
+
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <defs>
+            <pattern id="dots" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+                <circle fill="#0a0a0a" cx="4" cy="4" r="3"></circle>
+            </pattern>
+            <pattern id="stripes" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="10" stroke="#0a0a0a" stroke-width="6" />
+            </pattern>
+        </defs>
+    </svg>
+
+    <section class="relative pt-32 pb-24 px-6 lg:pt-56 lg:pb-40 overflow-hidden" id="parallax-container">
+        
+        <svg class="absolute z-0 parallax-shape" data-speed="0.05" style="top: 15%; left: 8%; width: 140px; height: 140px; filter: drop-shadow(8px 8px 0px #0a0a0a);" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="46" fill="#ff66a3" stroke="#0a0a0a" stroke-width="6"/>
+            <circle cx="50" cy="50" r="46" class="pattern-dots" opacity="0.3"/>
+        </svg>
+
+        <svg class="absolute z-0 parallax-shape" data-speed="-0.08" style="bottom: 15%; right: 10%; width: 130px; height: 130px; filter: drop-shadow(8px 8px 0px #0a0a0a); transform: rotate(15deg);" viewBox="0 0 100 100">
+            <rect x="5" y="5" width="90" height="90" fill="#1ac2ff" stroke="#0a0a0a" stroke-width="6"/>
+            <rect x="5" y="5" width="90" height="90" class="pattern-stripes" opacity="0.2"/>
+        </svg>
+
+        <svg class="absolute z-0 parallax-shape hidden md:block" data-speed="0.1" style="top: 30%; right: 20%; width: 150px; height: 150px; filter: drop-shadow(8px 8px 0px #0a0a0a); transform: rotate(-10deg);" viewBox="0 0 100 100">
+            <polygon points="50,5 95,90 5,90" fill="#ffd60a" stroke="#0a0a0a" stroke-width="6" stroke-linejoin="round"/>
+        </svg>
+
+        <div class="max-w-6xl mx-auto text-center relative z-10 reveal-up">
+            <div class="inline-block bg-[#4ade80] text-black font-black px-6 py-3 border-[5px] border-black rounded-full mb-8 shadow-[6px_6px_0_#000] rotate-[-2deg] text-lg uppercase tracking-widest">
+                The Vidyari Mission
+            </div>
+            
+            <h1 class="text-6xl md:text-[7.5rem] font-extreme leading-[0.85] tracking-tighter mb-8 text-balance">
+                UNLOCK YOUR <br> <span class="text-outline cursor-crosshair">KNOWLEDGE.</span>
+            </h1>
+            
+            <p class="text-xl md:text-3xl font-bold max-w-3xl mx-auto leading-tight mb-14 text-gray-800">
+                The ultimate peer-to-peer ecosystem where students learn from students, and creators get paid for their brains.
+            </p>
+            
+            <div class="chunky-btn-wrapper scale-110">
+                <div class="chunky-btn-bg bg-[#ff66a3]"></div>
+                <a href="/register" class="chunky-btn bg-white">Join the Ecosystem <i class="fa-solid fa-arrow-right ml-4"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <div class="marquee-container">
+        <div class="marquee-content">
+            <span class="mx-8 text-[#ffd60a]">•</span> STUDENTS TEACHING STUDENTS 
+            <span class="mx-8 text-[#ff66a3]">•</span> MONETIZE YOUR BRAIN 
+            <span class="mx-8 text-[#1ac2ff]">•</span> ZERO GATEKEEPING 
+            <span class="mx-8 text-[#4ade80]">•</span> SELL DIGITAL FILES UP TO 8GB 
+            <span class="mx-8 text-[#ffd60a]">•</span> STUDENTS TEACHING STUDENTS 
+            <span class="mx-8 text-[#ff66a3]">•</span> MONETIZE YOUR BRAIN 
+            <span class="mx-8 text-[#1ac2ff]">•</span> ZERO GATEKEEPING 
+            <span class="mx-8 text-[#4ade80]">•</span> SELL DIGITAL FILES UP TO 8GB 
+        </div>
+    </div>
+
+    <section class="py-24 px-6 bg-white border-b-[6px] border-black">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-5xl md:text-7xl font-extreme mb-12 text-center uppercase tracking-tight reveal-up">Why we built this.</h2>
+            
+            <div class="w-full flex justify-center mb-16 reveal-scale">
+                
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 mt-12">
+                
+                <div class="md:col-span-8 bg-[#e0f6ff] chunky-card p-10 flex flex-col justify-center group reveal-up">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-4xl font-black">The Student Struggle</h3>
+                        <i class="fa-solid fa-book-skull text-5xl opacity-80 transition-transform duration-300 group-hover:scale-125 group-hover:-rotate-12"></i>
+                    </div>
+                    <p class="text-xl font-bold text-gray-800 leading-relaxed">Textbooks are outdated. The best study materials are the raw, unfiltered notes taken by the student who aced the class last semester. We built a marketplace to find exactly that.</p>
+                </div>
+
+                <div class="md:col-span-4 bg-[#c4b5fd] chunky-card p-10 flex flex-col justify-center items-center text-center group reveal-up" style="transition-delay: 0.1s;">
+                    <i class="fa-solid fa-hand-holding-dollar text-6xl mb-6 transition-transform duration-300 group-hover:-translate-y-4"></i>
+                    <h3 class="text-3xl font-black mb-4">Creator Freedom</h3>
+                    <p class="text-lg font-bold text-gray-900">Stop giving away your hard work for free. Monetize your expertise instantly.</p>
+                </div>
+
+                <div class="md:col-span-5 bg-[#ffd60a] chunky-card p-10 flex flex-col justify-center group reveal-up">
+                    <i class="fa-solid fa-unlock-keyhole text-5xl mb-6 transition-transform duration-300 group-hover:rotate-12"></i>
+                    <h3 class="text-3xl font-black mb-4">Zero Gatekeeping</h3>
+                    <p class="text-lg font-bold text-gray-900">Whether it's a complete video course, an 8GB digital file, or a simple study guide, there are no monthly subscriptions just to be a seller.</p>
+                </div>
+
+                <div class="md:col-span-7 bg-[#4ade80] chunky-card p-10 flex flex-col justify-center relative overflow-hidden group reveal-up" style="transition-delay: 0.1s;">
+                    <div class="relative z-10">
+                        <h3 class="text-4xl font-black mb-6">Instant Delivery.</h3>
+                        <p class="text-xl font-bold text-gray-900 max-w-md leading-relaxed">Secure UPI/Card payments, instant digital fulfillment, and direct chat between buyer and seller.</p>
+                    </div>
+                    <i class="fa-solid fa-bolt text-[10rem] absolute -bottom-8 -right-4 opacity-20 transition-transform duration-500 group-hover:scale-150 group-hover:text-white"></i>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 px-6 bg-var(--color-bg) border-b-[6px] border-black">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                <div class="reveal-up">
+                    <div class="text-7xl font-extreme text-[#ff66a3] mb-2 drop-shadow-[4px_4px_0_#000]"><span class="counter" data-target="30000">0</span>+</div>
+                    <div class="text-2xl font-bold uppercase tracking-wide">Active Learners</div>
+                </div>
+                <div class="reveal-up" style="transition-delay: 0.1s;">
+                    <div class="text-7xl font-extreme text-[#1ac2ff] mb-2 drop-shadow-[4px_4px_0_#000]"><span class="counter" data-target="3000">0</span>+</div>
+                    <div class="text-2xl font-bold uppercase tracking-wide">Creators Earning</div>
+                </div>
+                <div class="reveal-up" style="transition-delay: 0.2s;">
+                    <div class="text-7xl font-extreme text-[#4ade80] mb-2 drop-shadow-[4px_4px_0_#000]"><span class="counter" data-target="100">0</span>%</div>
+                    <div class="text-2xl font-bold uppercase tracking-wide">Creative Control</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 px-6 bg-[#ffd60a] text-center relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(var(--color-black) 3px, transparent 3px); background-size: 40px 40px;"></div>
+        
+        <div class="max-w-5xl mx-auto relative z-10 reveal-scale">
+            <h2 class="text-6xl md:text-[7rem] font-extreme tracking-tighter mb-8 leading-[0.9] uppercase">
+                Ready to share <br> <span class="text-outline">what you know?</span>
+            </h2>
+            <p class="text-2xl font-bold mb-14 text-gray-900">
+                Join thousands of creators and students dominating the knowledge economy.
+            </p>
+            
+            <div class="chunky-btn-wrapper scale-110">
+                <div class="chunky-btn-bg bg-[#ff66a3]"></div>
+                <a href="/register" class="chunky-btn bg-white py-6 px-12">Launch Your Storefront</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Mouse Tracking Parallax for SVG Shapes
+            const container = document.getElementById('parallax-container');
+            const shapes = document.querySelectorAll('.parallax-shape');
+            
+            if (window.matchMedia("(min-width: 768px)").matches) {
+                container.addEventListener('mousemove', (e) => {
+                    const x = e.clientX;
+                    const y = e.clientY;
+                    const centerX = window.innerWidth / 2;
+                    const centerY = window.innerHeight / 2;
+
+                    shapes.forEach(shape => {
+                        const speed = parseFloat(shape.getAttribute('data-speed'));
+                        // Calculate offset from center, multiply by speed
+                        const moveX = (x - centerX) * speed;
+                        const moveY = (y - centerY) * speed;
+                        
+                        // Apply transform (retaining original rotation if set in inline style)
+                        const currentTransform = shape.style.transform;
+                        let rotateMatch = currentTransform.match(/rotate\([^)]+\)/);
+                        let rotateStr = rotateMatch ? rotateMatch[0] : '';
+                        
+                        shape.style.transform = `translate(${moveX}px, ${moveY}px) ${rotateStr}`;
+                    });
+                });
+
+                // Reset shapes on mouse leave
+                container.addEventListener('mouseleave', () => {
+                    shapes.forEach(shape => {
+                        let rotateMatch = shape.style.transform.match(/rotate\([^)]+\)/);
+                        let rotateStr = rotateMatch ? rotateMatch[0] : '';
+                        shape.style.transform = `translate(0px, 0px) ${rotateStr}`;
+                    });
+                });
+            }
+
+            // 2. Intersection Observer for Scroll Reveals
+            const revealElements = document.querySelectorAll('.reveal-up, .reveal-scale');
+            
+            const revealOptions = {
+                threshold: 0.15,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    
+                    entry.target.classList.add('is-revealed');
+                    
+                    // Trigger counter if this element contains counters
+                    const counters = entry.target.querySelectorAll('.counter');
+                    if(counters.length > 0) {
+                        runCounters(counters);
+                    }
+                    
+                    observer.unobserve(entry.target);
+                });
+            }, revealOptions);
+
+            revealElements.forEach(el => revealOnScroll.observe(el));
+
+            // 3. Animated Number Counters
+            function runCounters(counters) {
+                counters.forEach(counter => {
+                    const target = +counter.getAttribute('data-target');
+                    const duration = 2000; // 2 seconds
+                    const increment = target / (duration / 16); // 60fps
+                    
+                    let current = 0;
+                    
+                    const updateCounter = () => {
+                        current += increment;
+                        if (current < target) {
+                            counter.innerText = Math.ceil(current).toLocaleString();
+                            requestAnimationFrame(updateCounter);
+                        } else {
+                            counter.innerText = target.toLocaleString();
+                        }
+                    };
+                    
+                    updateCounter();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+<%-include("footer")%>

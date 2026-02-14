@@ -1,3095 +1,1167 @@
 <%-include("header")%>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vidyari Library | Professional Study Resources & Academic Materials</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Vidyari Library | Premium Academic Resources & Study Materials</title>
     
-    <!-- SEO & Analytics -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
+    <meta name="description" content="Discover premium academic resources, comprehensive study notes, video courses, and digital files on Vidyari. The ultimate peer-to-peer knowledge marketplace.">
+    <meta name="keywords" content="study materials, academic notes, research papers, educational resources, online learning, course marketplace, student notes, Vidyari, digital products">
+    <meta name="author" content="Vidyari Inc.">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="theme-color" content="#ff66a3">
+    
     <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU" />
-    <meta name="description" content="Browse thousands of professional study materials, academic notes, research papers, and educational resources. Free and premium content available.">
-    <meta name="keywords" content="study materials, academic notes, research papers, educational resources, online learning">
-    <meta name="author" content="Vidyari">
     
-    <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
-    <link rel="alternate icon" type="image/png" href="/images/logo.png">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="canonical" href="https://www.vidyari.com/">
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Vidyari Library - Professional Study Resources">
+    <meta property="og:title" content="Vidyari Library | The Knowledge Economy">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.vidyari.com/">
-    <meta property="og:image" content="https://www.vidyari.com/images/logo.svg">
-    <meta property="og:description" content="Browse thousands of professional study materials and academic resources">
+    <meta property="og:url" content="https://www.vidyari.com/documents">
+    <meta property="og:image" content="https://www.vidyari.com/images/og-library.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:description" content="Browse thousands of professional study materials and academic resources. Start learning or selling today.">
     <meta property="og:site_name" content="Vidyari">
     <meta property="og:locale" content="en_US">
     
-    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Vidyari Library - Professional Study Resources">
-    <meta name="twitter:description" content="Browse thousands of professional study materials and academic resources">
-    <meta name="twitter:image" content="https://www.vidyari.com/images/logo.svg">
+    <meta name="twitter:title" content="Vidyari Library | Professional Study Resources">
+    <meta name="twitter:description" content="Browse thousands of professional study materials and academic resources. Start learning or selling today.">
+    <meta name="twitter:image" content="https://www.vidyari.com/images/twitter-library.jpg">
     <meta name="twitter:site" content="@vidyari">
     
-    <!-- Structured Data (Schema.org) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Vidyari",
-      "url": "https://www.vidyari.com",
-      "logo": "https://www.vidyari.com/images/logo.svg",
+      "@type": "CollectionPage",
+      "name": "Vidyari Library",
+      "url": "https://www.vidyari.com/documents",
       "description": "Professional study materials and academic resources platform",
-      "sameAs": [
-        "https://twitter.com/vidyari",
-        "https://www.facebook.com/vidyari"
-      ]
+      "publisher": {
+        "@type": "Organization",
+        "name": "Vidyari",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.vidyari.com/images/logo.svg"
+        }
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.vidyari.com/"
+      },{
+        "@type": "ListItem", "position": 2, "name": "Library", "item": "https://www.vidyari.com/documents"
+      }]
     }
     </script>
 
-    <!-- External CSS Libraries -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
-    <!-- Google Fonts -->
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <link rel="alternate icon" type="image/png" href="/images/logo.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="canonical" href="https://www.vidyari.com/documents">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;800;900&family=Space+Grotesk:wght@700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
 
     <style>
-        /* ================================================================
-           VIDYARI LIBRARY - PROFESSIONAL BRUTALIST DESIGN SYSTEM
-           Milk White Theme | Amazon-Inspired Layout | 2000+ Lines
-           No CSS Variables | Unique Classes | Production Ready
-           ================================================================ */
+        /* ==========================================================================
+           VIDYARI LIBRARY: ADVANCED SCOPED NEO-BRUTALIST ARCHITECTURE
+           STRICT ISOLATION: No :root. 100% Scoped to .vidyari-library-master
+           ========================================================================== */
+        
+        .vidyari-library-master {
+            /* 1. Design Tokens & Core Variables */
+            --v-bg: #fdfdfc; 
+            --v-black: #09090b;
+            --v-white: #ffffff;
+            --v-pink: #ff66a3; 
+            --v-green: #4ade80; 
+            --v-yellow: #ffd60a; 
+            --v-blue: #1ac2ff; 
+            --v-purple: #c4b5fd;
+            --v-error: #ff3333;
+            
+            --v-gray-50: #fafafa;
+            --v-gray-100: #f4f4f5;
+            --v-gray-200: #e4e4e7;
+            --v-gray-300: #d4d4d8;
+            --v-gray-600: #52525b;
+            --v-gray-800: #27272a;
+            
+            --v-font-sans: 'Inter', sans-serif;
+            --v-font-head: 'Montserrat', sans-serif;
+            --v-font-loud: 'Space Grotesk', sans-serif;
+            
+            --v-radius-sm: 8px;
+            --v-radius-md: 16px;
+            --v-radius-lg: 24px;
+            --v-radius-xl: 32px;
+            --v-radius-pill: 9999px;
+            
+            --v-border-thin: 2px solid var(--v-black);
+            --v-border-thick: 4px solid var(--v-black);
+            --v-border-heavy: 6px solid var(--v-black);
+            
+            --v-shadow-sm: 4px 4px 0 var(--v-black);
+            --v-shadow-md: 8px 8px 0 var(--v-black);
+            --v-shadow-lg: 12px 12px 0 var(--v-black);
+            --v-shadow-hover: 16px 16px 0 var(--v-black);
+            
+            --v-ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --v-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --v-transition: 0.25s var(--v-ease-smooth);
 
-        /* ================================================================
-           1. GLOBAL RESETS & BASE STYLES
-           ================================================================ */
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        *::before,
-        *::after {
-            box-sizing: border-box;
-        }
-        
-        /* Remove all border-radius for brutalist aesthetic */
-        * {
-            border-radius: 0 !important;
-        }
-        
-        html {
-            font-size: 16px;
+            background-color: var(--v-bg);
+            color: var(--v-black);
+            font-family: var(--v-font-sans);
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            scroll-behavior: smooth;
-            height: 100%;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            font-size: 15px;
-            font-weight: 400;
-            line-height: 1.6;
-            color: #171717;
-            background-color: #FAFAFA;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        /* Subtle dot pattern background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: radial-gradient(circle, #00000008 1px, transparent 1px);
-            background-size: 20px 20px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* ================================================================
-           2. TYPOGRAPHY SYSTEM
-           ================================================================ */
-        
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Space Grotesk', 'Inter', sans-serif;
-            font-weight: 700;
-            line-height: 1.2;
-            color: #000000;
-            margin-top: 0;
-        }
-        
-        .library-main-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 42px;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            color: #000000;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-        
-        .library-subtitle {
-            font-size: 16px;
-            font-weight: 500;
-            color: #525252;
-            margin-bottom: 0;
-        }
-        
-        .section-heading {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #000000;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 3px solid #000000;
-        }
-        
-        .filter-section-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #FFFFFF;
-            background-color: #000000;
-            padding: 6px 12px;
-            margin-bottom: 12px;
-            display: inline-block;
-        }
-        
-        .text-body-primary {
-            color: #262626;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-        
-        .text-body-secondary {
-            color: #525252;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        .text-body-muted {
-            color: #737373;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-        
-        .text-small {
-            font-size: 12px;
-            line-height: 1.4;
-        }
-        
-        .text-xs {
-            font-size: 11px;
-            line-height: 1.3;
-        }
-        
-        .font-weight-medium {
-            font-weight: 500;
-        }
-        
-        .font-weight-semibold {
-            font-weight: 600;
-        }
-        
-        .font-weight-bold {
-            font-weight: 700;
-        }
-        
-        .font-weight-black {
-            font-weight: 800;
-        }
-
-        /* ================================================================
-           3. LAYOUT STRUCTURE - AMAZON INSPIRED
-           ================================================================ */
-        
-        .vidyari-library-wrapper {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .library-container {
-            display: flex;
-            flex: 1;
-            max-width: 1920px;
-            margin: 0 auto;
-            width: 100%;
-            background-color: #FFFFFF;
-        }
-        
-        /* Amazon-style sidebar - Left positioned */
-        .library-sidebar {
-            width: 280px;
-            background-color: #FFFFFF;
-            border-right: 3px solid #000000;
-            padding: 24px 20px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            flex-shrink: 0;
-            z-index: 100;
-        }
-        
-        /* Main content area */
-        .library-main-content {
-            flex: 1;
-            background-color: #F8F9FA;
-            padding: 32px 40px;
-            min-height: 100vh;
-            position: relative;
-        }
-        
-        /* Mobile: Hide sidebar by default */
-        @media (max-width: 991px) {
-            .library-sidebar {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                max-width: 320px;
-                height: 100vh;
-                z-index: 2000;
-                box-shadow: 8px 0 16px rgba(0, 0, 0, 0.15);
-            }
             
-            .library-sidebar.mobile-sidebar-active {
-                display: block;
-            }
-            
-            .library-main-content {
-                padding: 20px 16px;
-            }
+            /* FIX: Prevent horizontal scrolling layout breaks */
+            overflow-x: hidden; 
         }
 
-        /* ================================================================
-           4. BREADCRUMB NAVIGATION
-           ================================================================ */
+        /* 2. Base Resets within Scope */
+        .vidyari-library-master *, .vidyari-library-master *::before, .vidyari-library-master *::after { box-sizing: border-box; }
+        .vidyari-library-master h1, .vidyari-library-master h2, .vidyari-library-master h3, .vidyari-library-master h4, .vidyari-library-master h5 { font-family: var(--v-font-head); font-weight: 900; margin: 0; color: var(--v-black); line-height: 1.2; }
+        .vidyari-library-master p { margin: 0; line-height: 1.6; }
+        .vidyari-library-master a { text-decoration: none; color: inherit; cursor: pointer; transition: all var(--v-transition); }
+        .vidyari-library-master button { font-family: inherit; cursor: pointer; outline: none; border: none; background: none; }
+        .vidyari-library-master ul, .vidyari-library-master ol { margin: 0; padding: 0; list-style: none; }
+
+        /* Custom Scrollbar for Master Container */
+        .vidyari-library-master ::-webkit-scrollbar { width: 10px; height: 10px; }
+        .vidyari-library-master ::-webkit-scrollbar-track { background: var(--v-gray-100); border-left: var(--v-border-thin); }
+        .vidyari-library-master ::-webkit-scrollbar-thumb { background: var(--v-black); border-radius: var(--v-radius-pill); border: 2px solid var(--v-gray-100); }
+        .vidyari-library-master ::-webkit-scrollbar-thumb:hover { background: var(--v-pink); }
+
+        /* 3. Typography & Utility Classes */
+        .v-text-loud { font-family: var(--v-font-loud); font-size: clamp(2.5rem, 5vw, 4.5rem); letter-spacing: -2px; text-transform: uppercase; text-shadow: 4px 4px 0 var(--v-pink); margin-bottom: 0.5rem; }
+        .v-text-sub { font-size: 1.15rem; font-weight: 700; color: var(--v-gray-800); margin-bottom: 2rem; }
+        .v-text-outline { color: transparent; -webkit-text-stroke: 2px var(--v-black); }
+        .v-font-bold { font-weight: 800; }
+        .v-uppercase { text-transform: uppercase; }
+
+        /* 4. Core Layout Architecture */
+        .v-layout { display: flex; max-width: 1600px; margin: 0 auto; align-items: flex-start; }
         
-        .library-breadcrumb-wrapper {
-            margin-bottom: 20px;
-            padding: 12px 0;
+        .v-sidebar { 
+            width: 340px; background: var(--v-white); border-right: var(--v-border-heavy); 
+            padding: 32px 24px; ; position: sticky; top: 80px; 
+            overflow-y: auto; flex-shrink: 0; z-index: 100; 
+            display: flex; flex-direction: column; gap: 32px;
         }
         
-        .library-breadcrumb {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
+        .v-main { flex: 1; padding: 40px; min-width: 0; position: relative; }
         
-        .breadcrumb-item {
-            font-size: 13px;
-            font-weight: 500;
-            color: #525252;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .v-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); 
+            z-index: 2000; opacity: 0; visibility: hidden; transition: opacity var(--v-transition); 
         }
+        .v-overlay.is-active { opacity: 1; visibility: visible; }
         
-        .breadcrumb-item a {
-            color: #2563EB;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-        
-        .breadcrumb-item a:hover {
-            color: #1E40AF;
-            text-decoration: underline;
-        }
-        
-        .breadcrumb-separator {
-            color: #A3A3A3;
-            font-size: 11px;
-        }
-        
-        .breadcrumb-item.active {
-            color: #171717;
-            font-weight: 600;
+        /* 5. Mobile Responsive Overrides */
+        @media (max-width: 1024px) {
+            .v-sidebar { 
+                position: fixed; top: 0; left: -25px; width: 100%; max-width: 350px; height: 100vh; 
+                z-index: 2010; transform: translateX(-100%); transition: transform 0.4s var(--v-ease-bounce); 
+                box-shadow: 20px 0 0 rgba(0,0,0,0.8); border-right: none;
+            }
+            .v-sidebar.is-open { transform: translateX(0); }
+            .v-main { padding: 24px 16px 140px 16px; }
+            .v-text-loud { text-shadow: 3px 3px 0 var(--v-pink); letter-spacing: -1px; }
         }
 
-        /* ================================================================
-           5. TOP SEARCH & SORT BAR
-           ================================================================ */
+        /* 6. Intelligent Search Engine UI */
+        .v-search-container { position: relative; margin-bottom: 32px; z-index: 50; width: 100%; }
         
-        .library-search-section {
-            margin-bottom: 24px;
+        .v-search-box { 
+            display: flex; background: var(--v-white); border: var(--v-border-heavy); 
+            border-radius: var(--v-radius-lg); box-shadow: var(--v-shadow-md); 
+            transition: all var(--v-transition); align-items: center; padding-left: 20px; 
         }
+        .v-search-box.is-focused { transform: translate(-2px, -2px); box-shadow: var(--v-shadow-hover); border-color: var(--v-blue); }
         
-        .search-bar-container {
-            position: relative;
-            margin-bottom: 16px;
+        .v-search-icon { font-size: 1.5rem; color: var(--v-gray-800); }
+        .v-search-input { 
+            flex: 1; border: none; outline: none; padding: 24px 20px; 
+            font-size: 1.25rem; font-weight: 800; background: transparent; color: var(--v-black); 
+            font-family: var(--v-font-sans);
+            /* FIX: Prevent flex children from expanding infinitely on small screens */
+            min-width: 0; 
         }
+        .v-search-input::placeholder { color: var(--v-gray-300); font-weight: 600; }
         
-        .primary-search-wrapper {
-            display: flex;
-            align-items: stretch;
-            background-color: #FFFFFF;
-            border: 3px solid #000000;
-            box-shadow: 5px 5px 0 #000000;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        .v-search-btn { 
+            background: var(--v-yellow); border-left: var(--v-border-heavy); 
+            border-radius: 0 18px 18px 0; padding: 0 40px; font-size: 1.2rem; font-weight: 900; 
+            font-family: var(--v-font-display); text-transform: uppercase; align-self: stretch; 
+            transition: background var(--v-transition); 
         }
-        
-        .primary-search-wrapper:focus-within {
-            box-shadow: 7px 7px 0 #000000;
-            transform: translate(-2px, -2px);
-        }
-        
-        .primary-search-input {
-            flex: 1;
-            border: none;
-            outline: none;
-            padding: 16px 20px;
-            font-size: 15px;
-            font-weight: 500;
-            color: #171717;
-            background-color: transparent;
-        }
-        
-        .primary-search-input::placeholder {
-            color: #A3A3A3;
-            font-weight: 400;
-        }
-        
-        .primary-search-button {
-            background-color: #2563EB;
-            color: #FFFFFF;
-            border: none;
-            border-left: 3px solid #000000;
-            padding: 0 28px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .primary-search-button:hover {
-            background-color: #1E40AF;
-        }
-        
-        .primary-search-button:active {
-            transform: scale(0.98);
-        }
-        
-        /* Search suggestions dropdown */
-        .search-suggestions-dropdown {
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
-            right: 0;
-            background-color: #FFFFFF;
-            border: 3px solid #000000;
-            box-shadow: 5px 5px 0 #000000;
-            max-height: 400px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-        }
-        
-        .search-suggestions-dropdown.active {
-            display: block;
-        }
-        
-        .suggestion-item-wrapper {
-            padding: 12px 16px;
-            border-bottom: 2px solid #E5E5E5;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: background-color 0.15s ease;
-        }
-        
-        .suggestion-item-wrapper:last-child {
-            border-bottom: none;
-        }
-        
-        .suggestion-item-wrapper:hover {
-            background-color: #F5F5F5;
-        }
-        
-        .suggestion-thumbnail {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #000000;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-        
-        .suggestion-text-content {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .suggestion-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #171717;
-            margin-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .suggestion-meta {
-            font-size: 12px;
-            color: #737373;
-        }
+        .v-search-btn:hover { background: var(--v-pink); }
+        .v-search-btn:active { background: var(--v-blue); }
 
-        /* ================================================================
-           6. RESULTS BAR (Sort, View, Count)
-           ================================================================ */
+        /* 7. Real-Time Search Suggestions Dropdown */
+        .v-suggest-dropdown { 
+            position: absolute; top: calc(100% + 12px); left: 0; right: 0; 
+            background: var(--v-white); border: var(--v-border-heavy); border-radius: var(--v-radius-lg); 
+            box-shadow: var(--v-shadow-lg); opacity: 0; visibility: hidden; transform: translateY(-10px); 
+            transition: all 0.3s var(--v-ease-bounce); overflow: hidden; z-index: 1000;
+        }
+        .v-suggest-dropdown.is-active { opacity: 1; visibility: visible; transform: translateY(0); }
         
-        .results-control-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-            padding: 16px 20px;
-            background-color: #FFFFFF;
-            border: 2px solid #000000;
-            box-shadow: 3px 3px 0 #000000;
+        .v-suggest-header { 
+            padding: 16px 24px; background: var(--v-gray-100); border-bottom: var(--v-border-thin); 
+            font-size: 0.85rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; 
+            color: var(--v-gray-800); display: flex; justify-content: space-between; align-items: center;
         }
         
-        .results-count-display {
-            font-size: 14px;
-            font-weight: 600;
-            color: #262626;
-        }
+        .v-suggest-clear { color: var(--v-error); cursor: pointer; transition: all 0.2s; }
+        .v-suggest-clear:hover { transform: scale(1.05); text-decoration: underline; }
         
-        .results-count-number {
-            font-weight: 800;
-            color: #000000;
-        }
+        .v-suggest-list { max-height: 400px; overflow-y: auto; }
         
-        .results-controls-group {
-            display: flex;
-            align-items: center;
-            gap: 16px;
+        .v-suggest-item { 
+            padding: 16px 24px; display: flex; align-items: center; gap: 16px; 
+            border-bottom: 2px solid var(--v-gray-200); cursor: pointer; 
+            transition: all 0.1s; 
         }
+        .v-suggest-item:last-child { border-bottom: none; }
+        .v-suggest-item:hover, .v-suggest-item.is-selected { background: var(--v-yellow); padding-left: 32px; }
         
-        .sort-dropdown-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .v-suggest-icon { 
+            width: 44px; height: 44px; border: var(--v-border-thin); border-radius: var(--v-radius-sm); 
+            display: grid; place-items: center; font-size: 1.2rem; background: var(--v-white); flex-shrink: 0;
         }
-        
-        .sort-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #404040;
-            white-space: nowrap;
-        }
-        
-        .sort-select-input {
-            border: 2px solid #000000;
-            padding: 8px 32px 8px 12px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #171717;
-            background-color: #FFFFFF;
-            cursor: pointer;
-            outline: none;
-            min-width: 180px;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23000000' d='M4 6l4 4 4-4z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-        }
-        
-        .sort-select-input:hover {
-            background-color: #F5F5F5;
-        }
-        
-        .sort-select-input:focus {
-            border-color: #2563EB;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-        }
-        
-        /* Mobile filter toggle button */
-        .mobile-filter-toggle {
-            display: none;
-            background-color: #000000;
-            color: #FFFFFF;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 3px 3px 0 #525252;
-            transition: all 0.2s ease;
-        }
-        
-        .mobile-filter-toggle:hover {
-            background-color: #262626;
-        }
-        
-        .mobile-filter-toggle:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0 #525252;
-        }
-        
-        .filter-count-badge {
-            display: inline-block;
-            background-color: #2563EB;
-            color: #FFFFFF;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 2px 6px;
-            margin-left: 6px;
-            min-width: 20px;
-            text-align: center;
-        }
-        
-        @media (max-width: 991px) {
-            .mobile-filter-toggle {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-            
-            .results-control-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .results-controls-group {
-                justify-content: space-between;
-                width: 100%;
-            }
-        }
+        .v-suggest-text { flex: 1; font-size: 1.15rem; font-weight: 600; color: var(--v-gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .v-suggest-match { font-weight: 900; color: var(--v-black); text-decoration: underline; text-decoration-color: var(--v-pink); text-decoration-thickness: 3px; }
+        .v-suggest-type { font-size: 0.75rem; font-weight: 900; padding: 4px 10px; border: var(--v-border-thin); border-radius: var(--v-radius-pill); text-transform: uppercase; background: var(--v-white);}
 
-        /* ================================================================
-           7. ACTIVE FILTERS PILLS
-           ================================================================ */
-        
-        .active-filters-bar {
-            margin-bottom: 20px;
-            display: none;
+        /* 8. Loading Spinner inside Search */
+        .v-search-spinner { 
+            display: none; width: 28px; height: 28px; border: 4px solid var(--v-gray-200); 
+            border-top-color: var(--v-blue); border-radius: 50%; animation: v-spin 0.8s linear infinite; 
+            margin-right: 20px; 
         }
-        
-        .active-filters-bar.has-filters {
-            display: block;
-        }
-        
-        .active-filters-container {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .active-filter-label {
-            font-size: 13px;
-            font-weight: 700;
-            color: #404040;
-            margin-right: 4px;
-        }
-        
-        .filter-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: #FFFFFF;
-            border: 2px solid #000000;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #171717;
-            box-shadow: 2px 2px 0 #000000;
-            transition: all 0.15s ease;
-        }
-        
-        .filter-pill:hover {
-            background-color: #FEE2E2;
-            border-color: #DC2626;
-        }
-        
-        .filter-pill-remove {
-            background: none;
-            border: none;
-            color: #DC2626;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-            transition: transform 0.15s ease;
-        }
-        
-        .filter-pill-remove:hover {
-            transform: scale(1.2);
-        }
-        
-        .clear-all-filters-button {
-            background-color: #DC2626;
-            color: #FFFFFF;
-            border: 2px solid #000000;
-            padding: 6px 14px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 2px 2px 0 #000000;
-            transition: all 0.15s ease;
-        }
-        
-        .clear-all-filters-button:hover {
-            background-color: #B91C1C;
-            transform: translate(-1px, -1px);
-            box-shadow: 3px 3px 0 #000000;
-        }
-        
-        .clear-all-filters-button:active {
-            transform: translate(1px, 1px);
-            box-shadow: 1px 1px 0 #000000;
-        }
+        .v-search-box.is-loading .v-search-spinner { display: block; }
+        .v-search-box.is-loading .v-search-icon { display: none; }
+        @keyframes v-spin { to { transform: rotate(360deg); } }
 
-        /* ================================================================
-           8. SIDEBAR FILTER SECTIONS
-           ================================================================ */
-        
-        .sidebar-filter-group {
-            margin-bottom: 28px;
-            padding-bottom: 24px;
-            border-bottom: 2px solid #E5E5E5;
+        /* 9. Top Control Bar (Sort, Count, View Modes) */
+        .v-controls { 
+            display: flex; justify-content: space-between; align-items: center; background: var(--v-white); 
+            border: var(--v-border-thick); border-radius: var(--v-radius-md); padding: 16px 24px; 
+            box-shadow: var(--v-shadow-sm); margin-bottom: 32px; flex-wrap: wrap; gap: 16px; 
         }
+        .v-controls-meta { font-size: 1.25rem; font-weight: 900; font-family: var(--v-font-display); text-transform: uppercase; }
+        .v-controls-meta span { color: var(--v-blue); font-size: 1.5rem; text-shadow: 1px 1px 0 var(--v-black); }
         
-        .sidebar-filter-group:last-child {
-            border-bottom: none;
-        }
+        .v-controls-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; width: 100%; justify-content: space-between; }
         
-        .filter-group-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            cursor: pointer;
-            user-select: none;
+        .v-sort-select { 
+            border: var(--v-border-thin); border-radius: var(--v-radius-sm); padding: 12px 48px 12px 20px; 
+            font-size: 1.05rem; font-weight: 800; cursor: pointer; outline: none; appearance: none; 
+            background: var(--v-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23000000' d='M4 6l4 4 4-4z'/%3E%3C/svg%3E") no-repeat right 16px center; 
+            box-shadow: 2px 2px 0 var(--v-black); transition: all 0.1s; font-family: var(--v-font-sans);
         }
-        
-        .filter-group-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 13px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #000000;
-            margin: 0;
-        }
-        
-        .filter-group-toggle {
-            font-size: 12px;
-            color: #525252;
-            transition: transform 0.2s ease;
-        }
-        
-        .filter-group-header.collapsed .filter-group-toggle {
-            transform: rotate(180deg);
-        }
-        
-        .filter-group-content {
-            max-height: 1000px;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        
-        .filter-group-header.collapsed + .filter-group-content {
-            max-height: 0;
-        }
-        
-        /* Price filter specific */
-        .price-filter-inputs {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .price-input-field {
-            flex: 1;
-            border: 2px solid #000000;
-            padding: 8px 10px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #171717;
-            outline: none;
-            background-color: #FFFFFF;
-        }
-        
-        .price-input-field:focus {
-            border-color: #2563EB;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-        }
-        
-        .price-input-field::placeholder {
-            color: #A3A3A3;
-            font-weight: 400;
-        }
-        
-        .price-separator {
-            font-size: 13px;
-            font-weight: 600;
-            color: #525252;
-        }
-        
-        /* Checkbox filters */
-        .filter-checkbox-wrapper {
-            margin-bottom: 10px;
-        }
-        
-        .filter-checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            padding: 6px 0;
-            transition: background-color 0.15s ease;
-        }
-        
-        .filter-checkbox-label:hover {
-            background-color: #F5F5F5;
-        }
-        
-        .filter-checkbox-input {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #000000;
-            cursor: pointer;
-            flex-shrink: 0;
-            appearance: none;
-            background-color: #FFFFFF;
-            position: relative;
-            margin: 0;
-        }
-        
-        .filter-checkbox-input:checked {
-            background-color: #2563EB;
-            border-color: #2563EB;
-        }
-        
-        .filter-checkbox-input:checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #FFFFFF;
-            font-size: 12px;
-            font-weight: 800;
-        }
-        
-        .filter-checkbox-input:focus {
-            outline: 2px solid #2563EB;
-            outline-offset: 2px;
-        }
-        
-        .filter-checkbox-text {
-            font-size: 13px;
-            font-weight: 500;
-            color: #262626;
-            flex: 1;
-        }
-        
-        .filter-option-count {
-            font-size: 12px;
-            font-weight: 600;
-            color: #737373;
-            margin-left: auto;
-        }
-        
-        /* Free only toggle */
-        .free-only-toggle-wrapper {
-            background-color: #F5F5F5;
-            border: 2px solid #000000;
-            padding: 12px;
-            margin-bottom: 16px;
-        }
-        
-        .free-only-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-        }
-        
-        .free-only-checkbox {
-            width: 20px;
-            height: 20px;
-            border: 3px solid #000000;
-            cursor: pointer;
-            flex-shrink: 0;
-            appearance: none;
-            background-color: #FFFFFF;
-            position: relative;
-            margin: 0;
-        }
-        
-        .free-only-checkbox:checked {
-            background-color: #059669;
-            border-color: #059669;
-        }
-        
-        .free-only-checkbox:checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #FFFFFF;
-            font-size: 14px;
-            font-weight: 800;
-        }
-        
-        .free-only-text {
-            font-size: 14px;
-            font-weight: 700;
-            color: #000000;
-            text-transform: uppercase;
-        }
-        
-        /* Scrollable filter lists */
-        .filter-options-scrollable {
-            max-height: 220px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        
-        .filter-options-scrollable::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .filter-options-scrollable::-webkit-scrollbar-track {
-            background: #F5F5F5;
-        }
-        
-        .filter-options-scrollable::-webkit-scrollbar-thumb {
-            background: #A3A3A3;
-            border: 1px solid #000000;
-        }
-        
-        .filter-options-scrollable::-webkit-scrollbar-thumb:hover {
-            background: #737373;
-        }
-        
-        /* Show more/less buttons */
-        .filter-show-more-button {
-            background: none;
-            border: none;
-            color: #2563EB;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            padding: 8px 0;
-            margin-top: 8px;
-            transition: color 0.15s ease;
-        }
-        
-        .filter-show-more-button:hover {
-            color: #1E40AF;
-            text-decoration: underline;
-        }
-        
-        /* Apply/Clear buttons in sidebar */
-        .sidebar-action-buttons {
-            margin-top: 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .sidebar-apply-button {
-            background-color: #2563EB;
-            color: #FFFFFF;
-            border: 3px solid #000000;
-            padding: 14px 20px;
-            font-size: 14px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            cursor: pointer;
-            box-shadow: 4px 4px 0 #000000;
-            transition: all 0.2s ease;
-            width: 100%;
-        }
-        
-        .sidebar-apply-button:hover {
-            background-color: #1E40AF;
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 #000000;
-        }
-        
-        .sidebar-apply-button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 #000000;
-        }
-        
-        .sidebar-clear-button {
-            background-color: #FFFFFF;
-            color: #171717;
-            border: 2px solid #000000;
-            padding: 12px 20px;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 3px 3px 0 #000000;
-            transition: all 0.2s ease;
-            width: 100%;
-        }
-        
-        .sidebar-clear-button:hover {
-            background-color: #F5F5F5;
-            transform: translate(-1px, -1px);
-            box-shadow: 4px 4px 0 #000000;
-        }
-        
-        .sidebar-clear-button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0 #000000;
-        }
+        .v-sort-select:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--v-black); }
 
-        /* ================================================================
-           9. FILE GRID - CARD LAYOUT
-           ================================================================ */
-        
-        .library-file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
+        .v-view-toggles { display: flex; gap: 8px; border-left: 3px solid var(--v-gray-200); padding-left: 20px; }
+        .v-view-btn { 
+            width: 48px; height: 48px; border: var(--v-border-thin); border-radius: var(--v-radius-sm); 
+            background: var(--v-white); display: grid; place-items: center; font-size: 1.3rem; 
+            box-shadow: 2px 2px 0 var(--v-black); transition: all 0.1s; color: var(--v-gray-600);
         }
-        
-        @media (max-width: 767px) {
-            .library-file-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 16px;
-            }
-        }
-        
-        @media (min-width: 768px) and (max-width: 991px) {
-            .library-file-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap: 20px;
-            }
-        }
-        
-        @media (min-width: 1400px) {
-            .library-file-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            }
-        }
+        .v-view-btn:hover { color: var(--v-black); background: var(--v-gray-100); }
+        .v-view-btn.is-active { background: var(--v-black); color: var(--v-white); box-shadow: none; transform: translate(2px, 2px); }
 
-        /* ================================================================
-           10. FILE CARD COMPONENT
-           ================================================================ */
-        
-        .file-card-item {
-            background-color: #FFFFFF;
-            border: 3px solid #000000;
-            box-shadow: 5px 5px 0 #000000;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(20px);
+        /* 10. Active Filters Pills */
+        .v-active-filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 24px; min-height: 40px;}
+        .v-filter-pill { 
+            display: inline-flex; align-items: center; gap: 10px; background: var(--v-white); 
+            border: var(--v-border-thin); border-radius: var(--v-radius-pill); padding: 8px 20px; 
+            font-weight: 800; font-size: 0.95rem; box-shadow: 3px 3px 0 var(--v-black); 
+            animation: popIn 0.4s var(--v-ease-bounce) forwards; transform-origin: center;
         }
-        
-        .file-card-item.animated {
-            animation: cardFadeIn 0.4s ease forwards;
-        }
-        
-        @keyframes cardFadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .file-card-item:hover {
-            transform: translate(-3px, -3px);
-            box-shadow: 8px 8px 0 #000000;
-        }
-        
-        .file-card-item:active {
-            transform: translate(2px, 2px);
-            box-shadow: 3px 3px 0 #000000;
-        }
-        
-        .file-card-link {
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        
-        /* Card preview/thumbnail */
-        .file-card-preview {
-            aspect-ratio: 3 / 4;
-            background-color: #E5E5E5;
-            border-bottom: 3px solid #000000;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .file-card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        
-        .file-card-item:hover .file-card-image {
-            transform: scale(1.06);
-        }
-        
-        /* Category tag */
-        .file-card-category-tag {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: #000000;
-            color: #FFFFFF;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 4px 8px;
-            z-index: 10;
-            max-width: calc(100% - 20px);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        /* New badge */
-        .file-card-new-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #DC2626;
-            color: #FFFFFF;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 4px 8px;
-            z-index: 10;
-        }
-        
-        /* Card body/content */
-        .file-card-body {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            gap: 12px;
-        }
-        
-        .file-card-title {
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 1.4;
-            color: #000000;
-            margin: 0;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            min-height: 38px;
-        }
-        
-        .file-card-meta-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-top: auto;
-        }
-        
-        .file-card-author {
-            font-size: 12px;
-            font-weight: 500;
-            color: #525252;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .file-card-stats {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 11px;
-            color: #737373;
-        }
-        
-        .file-card-stat-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .file-card-footer {
-            padding: 12px 16px;
-            border-top: 2px solid #E5E5E5;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-        
-        .file-card-price-badge {
-            font-size: 13px;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 6px 10px;
-            border: 2px solid #000000;
-            background-color: #FFFFFF;
-        }
-        
-        .file-card-price-badge.free {
-            background-color: #10B981;
-            color: #FFFFFF;
-            border-color: #000000;
-        }
-        
-        .file-card-price-badge.paid {
-            background-color: #F59E0B;
-            color: #000000;
-            border-color: #000000;
-        }
-        
-        .file-card-action-icon {
-            font-size: 16px;
-            color: #2563EB;
-            transition: transform 0.2s ease;
-        }
-        
-        .file-card-item:hover .file-card-action-icon {
-            transform: translateX(4px);
-        }
+        .v-filter-remove { color: var(--v-error); font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; border-left: 2px solid var(--v-gray-200); padding-left: 10px; margin-left: 4px; }
+        .v-filter-remove:hover { transform: scale(1.3) rotate(90deg); }
 
-        /* ================================================================
-           11. LOADING STATES
-           ================================================================ */
+        /* 11. Advanced File Grid System */
+        .v-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px; transition: all var(--v-transition); }
+        .v-grid.is-list-view { grid-template-columns: 1fr; gap: 24px; }
         
-        .loading-indicator-wrapper {
-            text-align: center;
-            padding: 80px 20px;
-            display: none;
+        .v-card { 
+            background: var(--v-white); border: var(--v-border-thick); border-radius: var(--v-radius-lg); 
+            box-shadow: var(--v-shadow-md); display: flex; flex-direction: column; overflow: hidden; 
+            transition: all 0.3s var(--v-ease-bounce); position: relative; text-decoration: none; color: inherit;
+        }
+        .v-card:hover { transform: translate(-6px, -6px); box-shadow: var(--v-shadow-hover); }
+        
+        .v-grid.is-list-view .v-card { flex-direction: row; align-items: stretch; border-radius: var(--v-radius-md); }
+        
+        .v-card-img-box { aspect-ratio: 4/3; border-bottom: var(--v-border-thick); overflow: hidden; position: relative; background: var(--v-gray-100); }
+        .v-grid.is-list-view .v-card-img-box { width: 280px; border-bottom: none; border-right: var(--v-border-thick); aspect-ratio: 16/9; flex-shrink: 0; }
+        
+        .v-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .v-card:hover .v-card-img { transform: scale(1.08) rotate(1deg); }
+        
+        .v-badge { 
+            position: absolute; top: 16px; left: 16px; background: var(--v-yellow); 
+            border: var(--v-border-thin); border-radius: var(--v-radius-sm); padding: 6px 14px; 
+            font-size: 0.8rem; font-weight: 900; text-transform: uppercase; font-family: var(--v-font-display);
+            box-shadow: 2px 2px 0 var(--v-black); z-index: 10;
         }
         
-        .loading-indicator-wrapper.active {
-            display: block;
+        /* Copy Link (Share) Button */
+        .v-share-btn { 
+            position: absolute; top: 16px; right: 16px; width: 42px; height: 42px; 
+            background: var(--v-white); border: var(--v-border-thin); border-radius: 50%; 
+            display: grid; place-items: center; font-size: 1.1rem; color: var(--v-black); 
+            box-shadow: 2px 2px 0 var(--v-black); z-index: 20; transition: all 0.2s var(--v-ease-bounce); 
         }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 60px;
-            height: 60px;
-            border: 6px solid #E5E5E5;
-            border-top-color: #2563EB;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #000000;
-            letter-spacing: 0.1em;
-        }
-        
-        /* Skeleton loading cards */
-        .skeleton-card {
-            background-color: #FFFFFF;
-            border: 3px solid #000000;
-            box-shadow: 5px 5px 0 #000000;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .skeleton-preview {
-            aspect-ratio: 3 / 4;
-            background: linear-gradient(90deg, #E5E5E5 25%, #D4D4D4 50%, #E5E5E5 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-bottom: 3px solid #000000;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        
-        .skeleton-body {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .skeleton-line {
-            height: 14px;
-            background: linear-gradient(90deg, #E5E5E5 25%, #D4D4D4 50%, #E5E5E5 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        
-        .skeleton-line.short {
-            width: 60%;
-        }
+        .v-share-btn:hover { background: var(--v-blue); transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--v-black); color: var(--v-white); }
+        .v-share-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--v-black); }
 
-        /* ================================================================
-           12. EMPTY / NO RESULTS STATE
-           ================================================================ */
+        .v-card-content { padding: 24px; flex: 1; display: flex; flex-direction: column; justify-content: center;}
+        .v-card-title { font-size: 1.5rem; line-height: 1.3; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-card-author { font-size: 1rem; font-weight: 700; color: var(--v-gray-600); display: flex; align-items: center; gap: 8px; margin-top: auto; }
+        .v-grid.is-list-view .v-card-author { margin-top: 12px; }
         
-        .no-results-wrapper {
-            text-align: center;
-            padding: 80px 20px;
-            display: none;
+        .v-card-footer { 
+            padding: 20px 24px; border-top: var(--v-border-thick); background: var(--v-gray-50); 
+            display: flex; justify-content: space-between; align-items: center; 
         }
+        .v-grid.is-list-view .v-card-footer { border-top: none; border-left: var(--v-border-thick); flex-direction: column; justify-content: center; min-width: 200px; gap: 16px; background: var(--v-white); }
         
-        .no-results-wrapper.active {
-            display: block;
-        }
+        .v-price { font-size: 1.3rem; font-weight: 900; padding: 8px 20px; border: var(--v-border-thin); border-radius: var(--v-radius-sm); box-shadow: 3px 3px 0 var(--v-black); font-family: var(--v-font-display);}
+        .v-price.is-free { background: var(--v-green); }
+        .v-price.is-paid { background: var(--v-pink); }
         
-        .no-results-icon {
-            font-size: 80px;
-            color: #A3A3A3;
-            margin-bottom: 24px;
-        }
-        
-        .no-results-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #DC2626;
-            margin-bottom: 12px;
-        }
-        
-        .no-results-message {
-            font-size: 16px;
-            color: #525252;
-            margin-bottom: 32px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .no-results-suggestions {
-            background-color: #FFFFFF;
-            border: 2px solid #000000;
-            padding: 24px;
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: left;
-        }
-        
-        .no-results-suggestions-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: #000000;
-        }
-        
-        .no-results-suggestions-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .no-results-suggestions-list li {
-            padding: 8px 0;
-            padding-left: 24px;
-            position: relative;
-            font-size: 14px;
-            color: #262626;
-        }
-        
-        .no-results-suggestions-list li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            font-weight: 700;
-            color: #2563EB;
-        }
+        .v-card-action { width: 44px; height: 44px; border: var(--v-border-thin); border-radius: 50%; display: grid; place-items: center; font-size: 1.25rem; background: var(--v-white); box-shadow: 2px 2px 0 var(--v-black); transition: all 0.2s var(--v-ease-bounce); }
+        .v-card:hover .v-card-action { background: var(--v-black); color: var(--v-white); transform: rotate(-45deg) scale(1.1); box-shadow: 4px 4px 0 var(--v-primary); }
 
-        /* ================================================================
-           13. PAGINATION
-           ================================================================ */
-        
-        .pagination-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin-top: 48px;
-            padding: 24px 0;
+        /* 12. Sidebar Filters System */
+        .v-filter-wrap { margin-bottom: 32px; }
+        .v-filter-head { 
+            font-family: var(--v-font-display); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; 
+            margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; 
+            border-bottom: var(--v-border-thick); padding-bottom: 12px; 
         }
         
-        .pagination-button {
-            background-color: #FFFFFF;
-            color: #000000;
-            border: 2px solid #000000;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 3px 3px 0 #000000;
-            transition: all 0.2s ease;
-            min-width: 44px;
-            text-align: center;
-        }
+        .v-check-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; cursor: pointer; font-weight: 700; font-size: 1.1rem; transition: transform 0.1s; }
+        .v-check-row:hover { transform: translateX(4px); }
         
-        .pagination-button:hover:not(:disabled) {
-            background-color: #F5F5F5;
-            transform: translate(-1px, -1px);
-            box-shadow: 4px 4px 0 #000000;
+        .v-checkbox { 
+            appearance: none; width: 28px; height: 28px; border: var(--v-border-thin); border-radius: 8px; 
+            background: var(--v-white); position: relative; cursor: pointer; transition: all 0.1s; box-shadow: 2px 2px 0 var(--v-gray-300);
         }
-        
-        .pagination-button:active:not(:disabled) {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0 #000000;
-        }
-        
-        .pagination-button.active {
-            background-color: #2563EB;
-            color: #FFFFFF;
-            border-color: #2563EB;
-            box-shadow: 4px 4px 0 #000000;
-        }
-        
-        .pagination-button:disabled {
-            background-color: #E5E5E5;
-            color: #A3A3A3;
-            border-color: #A3A3A3;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-        
-        .pagination-ellipsis {
-            padding: 10px 8px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #525252;
-        }
-        
-        .pagination-info {
-            font-size: 13px;
-            color: #525252;
-            margin-left: 20px;
-        }
-        
-        @media (max-width: 767px) {
-            .pagination-wrapper {
-                flex-wrap: wrap;
-            }
-            
-            .pagination-info {
-                width: 100%;
-                text-align: center;
-                margin-left: 0;
-                margin-top: 12px;
-            }
-        }
+        .v-checkbox:checked { background: var(--v-blue); box-shadow: 3px 3px 0 var(--v-black); border-color: var(--v-black); }
+        .v-checkbox:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; color: var(--v-black); font-size: 1.1rem;}
 
-        /* ================================================================
-           14. MOBILE OVERLAY & SIDEBAR
-           ================================================================ */
-        
-        .mobile-sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            z-index: 1999;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        .v-btn-block { 
+            width: 100%; border: var(--v-border-thick); border-radius: var(--v-radius-md); padding: 18px; 
+            font-family: var(--v-font-display); font-weight: 900; font-size: 1.2rem; text-transform: uppercase; 
+            cursor: pointer; box-shadow: var(--v-shadow-sm); transition: all 0.2s var(--v-ease-bounce); margin-bottom: 16px; display: flex; justify-content: center; gap: 10px; align-items: center;
         }
-        
-        .mobile-sidebar-overlay.active {
-            display: block;
-            opacity: 1;
-        }
-        
-        @media (min-width: 992px) {
-            .mobile-sidebar-overlay {
-                display: none !important;
-            }
-        }
+        .v-btn-block.primary { background: var(--v-green); color: var(--v-black); }
+        .v-btn-block.secondary { background: var(--v-white); color: var(--v-black); }
+        .v-btn-block:hover { transform: translate(-4px, -4px); box-shadow: var(--v-shadow-md); }
+        .v-btn-block.primary:hover { background: var(--v-yellow); }
+        .v-btn-block:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--v-black); }
 
-        /* ================================================================
-           15. NOTIFICATION MODAL
-           ================================================================ */
-        
-        .notification-modal-custom {
-            border: 3px solid #000000 !important;
-            box-shadow: 8px 8px 0 #000000 !important;
+        /* 13. Mobile Bottom Action Bar */
+        .v-mobile-actions { 
+            display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            z-index: 1000; background: var(--v-white); border: var(--v-border-heavy); border-radius: var(--v-radius-pill); 
+            padding: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2), var(--v-shadow-md); gap: 12px; align-items: center;
         }
-        
-        .notification-gif-container {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 20px;
-            border: 3px solid #000000;
-            overflow: hidden;
-            background-color: #E5E5E5;
+        .v-mobile-btn { 
+            background: var(--v-yellow); border: var(--v-border-thin); border-radius: var(--v-radius-pill); 
+            padding: 14px 32px; font-weight: 900; font-family: var(--v-font-display); font-size: 1.1rem; text-transform: uppercase; 
+            cursor: pointer; display: flex; align-items: center; gap: 12px; transition: transform 0.1s;
         }
-        
-        .notification-gif-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .notification-modal-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #000000;
-            margin-bottom: 12px;
-        }
-        
-        .notification-modal-highlight {
-            color: #2563EB;
-        }
-        
-        .notification-modal-description {
-            font-size: 14px;
-            color: #525252;
-            line-height: 1.6;
-        }
-        
-        .notification-allow-button {
-            background-color: #2563EB;
-            color: #FFFFFF;
-            border: 3px solid #000000;
-            padding: 14px 28px;
-            font-size: 14px;
-            font-weight: 800;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 4px 4px 0 #000000;
-            transition: all 0.2s ease;
-            width: 100%;
-            margin-bottom: 12px;
-        }
-        
-        .notification-allow-button:hover {
-            background-color: #1E40AF;
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 #000000;
-        }
-        
-        .notification-later-button {
-            background: none;
-            border: none;
-            color: #737373;
-            font-size: 12px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: color 0.15s ease;
-        }
-        
-        .notification-later-button:hover {
-            color: #404040;
-            text-decoration: underline;
-        }
+        .v-mobile-btn:active { transform: scale(0.95); }
+        .v-mobile-badge { background: var(--v-white); border: 2px solid var(--v-black); padding: 2px 10px; border-radius: 12px; font-size: 0.9rem;}
+        @media (max-width: 1024px) { .v-mobile-actions { display: flex; } }
 
-        /* ================================================================
-           16. UTILITY CLASSES
-           ================================================================ */
+        /* 14. Advanced Skeleton Loaders */
+        .v-skeleton-card { border: var(--v-border-thick); border-radius: var(--v-radius-lg); overflow: hidden; background: var(--v-white); display: flex; flex-direction: column; box-shadow: var(--v-shadow-sm); }
+        .v-skeleton-img { aspect-ratio: 4/3; border-bottom: var(--v-border-thick); background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; }
+        .v-skeleton-body { padding: 30px; flex: 1; display: flex; flex-direction: column; gap: 16px;}
+        .v-skeleton-line { height: 28px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 6px; }
+        .v-skeleton-line.short { width: 60%; }
+        .v-skeleton-line.price { width: 40%; height: 40px; margin-top: auto; border-radius: 12px;}
         
-        .display-none {
-            display: none !important;
-        }
+        .v-grid.is-list-view .v-skeleton-card { flex-direction: row; }
+        .v-grid.is-list-view .v-skeleton-img { width: 280px; aspect-ratio: 16/9; border-bottom: none; border-right: var(--v-border-thick); }
         
-        .display-block {
-            display: block !important;
-        }
-        
-        .display-flex {
-            display: flex !important;
-        }
-        
-        .visibility-hidden {
-            visibility: hidden;
-        }
-        
-        .opacity-0 {
-            opacity: 0;
-        }
-        
-        .opacity-50 {
-            opacity: 0.5;
-        }
-        
-        .opacity-100 {
-            opacity: 1;
-        }
-        
-        .pointer-events-none {
-            pointer-events: none;
-        }
-        
-        .cursor-pointer {
-            cursor: pointer;
-        }
-        
-        .cursor-not-allowed {
-            cursor: not-allowed;
-        }
-        
-        .user-select-none {
-            user-select: none;
-        }
-        
-        /* Spacing utilities */
-        .margin-bottom-16 {
-            margin-bottom: 16px;
-        }
-        
-        .margin-bottom-24 {
-            margin-bottom: 24px;
-        }
-        
-        .margin-top-32 {
-            margin-top: 32px;
-        }
-        
-        .padding-16 {
-            padding: 16px;
-        }
-        
-        .padding-20 {
-            padding: 20px;
-        }
-        
-        /* Text alignment */
-        .text-align-center {
-            text-align: center;
-        }
-        
-        .text-align-left {
-            text-align: left;
-        }
-        
-        .text-align-right {
-            text-align: right;
-        }
-        
-        /* Flex utilities */
-        .flex-direction-column {
-            flex-direction: column;
-        }
-        
-        .align-items-center {
-            align-items: center;
-        }
-        
-        .justify-content-center {
-            justify-content: center;
-        }
-        
-        .justify-content-between {
-            justify-content: space-between;
-        }
-        
-        .gap-8 {
-            gap: 8px;
-        }
-        
-        .gap-12 {
-            gap: 12px;
-        }
-        
-        .gap-16 {
-            gap: 16px;
-        }
-        
-        .gap-20 {
-            gap: 20px;
-        }
-        
-        /* Width utilities */
-        .width-100 {
-            width: 100%;
-        }
-        
-        .max-width-600 {
-            max-width: 600px;
-        }
-        
-        /* Color utilities */
-        .color-primary {
-            color: #2563EB;
-        }
-        
-        .color-success {
-            color: #059669;
-        }
-        
-        .color-danger {
-            color: #DC2626;
-        }
-        
-        .color-muted {
-            color: #737373;
-        }
-        
-        .bg-white {
-            background-color: #FFFFFF;
-        }
-        
-        .bg-gray-light {
-            background-color: #F5F5F5;
-        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* ================================================================
-           17. RESPONSIVE BREAKPOINTS
-           ================================================================ */
-        
-        /* Tablet Portrait (768px - 991px) */
-        @media (min-width: 768px) and (max-width: 991px) {
-            .library-main-title {
-                font-size: 36px;
-            }
-            
-            .library-main-content {
-                padding: 24px 20px;
-            }
+        /* 15. Pagination Component (Robust version) */
+        .v-pagination-wrap { display: flex; justify-content: center; gap: 10px; margin-top: 60px; flex-wrap: wrap; }
+        .v-page-btn {
+            border: var(--v-border-thin); border-radius: var(--v-radius-sm); padding: 12px 20px;
+            background: var(--v-white); font-weight: 900; font-family: var(--v-font-display);
+            font-size: 1.1rem; box-shadow: 3px 3px 0 var(--v-black); cursor: pointer; transition: all 0.2s var(--v-ease-bounce); 
         }
+        .v-page-btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--v-black); background: var(--v-yellow); }
+        .v-page-btn.is-active { background: var(--v-black); color: var(--v-white); box-shadow: none; transform: translate(3px, 3px); }
+        .v-page-btn:disabled { background: var(--v-gray-200); color: var(--v-gray-600); box-shadow: none; transform: none; cursor: not-allowed; border-color: var(--v-gray-300); }
+        .v-page-nav { text-transform: uppercase; letter-spacing: 1px; }
+        .v-page-ellipsis { display: flex; align-items: end; justify-content: center; font-weight: 900; font-size: 1.5rem; letter-spacing: 2px; padding: 0 10px; color: var(--v-gray-800); }
+
+        /* 16. Toast Notification System */
+        .v-toast-container { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; flex-direction: column; gap: 16px; pointer-events: none;}
+        .v-toast { 
+            background: var(--v-white); border: var(--v-border-thick); border-radius: var(--v-radius-md); 
+            padding: 20px 28px; box-shadow: var(--v-shadow-md); display: flex; align-items: center; gap: 16px; 
+            font-weight: 800; font-size: 1.1rem; animation: slideLeft 0.4s var(--v-ease-bounce); pointer-events: auto;
+        }
+        .v-toast.success { border-left: 12px solid var(--v-green); }
+        .v-toast.error { border-left: 12px solid var(--v-error); }
+        .v-toast.info { border-left: 12px solid var(--v-blue); }
+        .v-toast i { font-size: 1.5rem; }
+        @keyframes slideLeft { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
-        /* Mobile (max-width: 767px) */
-        @media (max-width: 767px) {
-            .library-main-title {
-                font-size: 28px;
+        /* 17. Empty State */
+        .v-empty-state { grid-column: 1/-1; text-align:center; padding: 100px 20px; border: 6px dashed var(--v-gray-300); border-radius: var(--v-radius-lg); background: var(--v-white); display: flex; flex-direction: column; align-items: center;}
+        .v-empty-icon { font-size: 6rem; color: var(--v-gray-300); margin-bottom: 2rem; transition: all 0.3s; }
+        .v-empty-state:hover .v-empty-icon { color: var(--v-pink); transform: scale(1.1) rotate(10deg); text-shadow: 4px 4px 0 var(--v-black);}
+
+        /* ==========================================================================
+           FIX: MOBILE RESPONSIVE OVERRIDES FOR SEARCH BAR AND CONTROLS
+           ========================================================================== */
+        @media (max-width: 768px) {
+            /* Fix Search Bar Spilling Over */
+            .v-search-box {
+                padding-left: 12px;
+                border-radius: var(--v-radius-md);
             }
-            
-            .library-subtitle {
-                font-size: 14px;
+            .v-search-icon {
+                font-size: 1.2rem;
             }
-            
-            .primary-search-wrapper {
-                box-shadow: 3px 3px 0 #000000;
+            .v-search-input {
+                padding: 16px 12px;
+                font-size: 1rem;
+                min-width: 0; /* Crucial: Stops the flex item from breaking parent bounds */
             }
-            
-            .primary-search-input {
-                padding: 12px 16px;
-                font-size: 14px;
-            }
-            
-            .primary-search-button {
+            .v-search-btn {
                 padding: 0 20px;
-                font-size: 16px;
+                font-size: 1rem;
+                border-radius: 0 12px 12px 0;
             }
             
-            .results-control-bar {
-                padding: 12px;
+            /* Fix Suggestion Dropdown text overflowing */
+            .v-suggest-header {
+                padding: 12px 16px;
+            }
+            .v-suggest-item {
+                padding: 12px 16px;
+                gap: 12px;
+            }
+            .v-suggest-text {
+                font-size: 1rem;
             }
             
-            .sort-select-input {
-                min-width: 140px;
-                font-size: 13px;
-                padding: 6px 28px 6px 10px;
+            /* Stack controls vertically on phone */
+            .v-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .v-controls-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .v-sort-select {
+                width: 100%; /* Take full width on mobile for easier tapping */
             }
         }
-        
-        /* Large Desktop (min-width: 1400px) */
-        @media (min-width: 1400px) {
-            .library-container {
-                max-width: 1800px;
-            }
-            
-            .library-sidebar {
-                width: 300px;
-            }
-            
-            .library-main-content {
-                padding: 40px 60px;
-            }
-        }
-
-        /* ================================================================
-           18. ACCESSIBILITY ENHANCEMENTS
-           ================================================================ */
-        
-        /* Focus states */
-        *:focus-visible {
-            outline: 3px solid #2563EB;
-            outline-offset: 2px;
-        }
-        
-        /* Reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
-        }
-        
-        /* High contrast mode support */
-        @media (prefers-contrast: high) {
-            .file-card-item {
-                border-width: 4px;
-            }
-            
-            .primary-search-wrapper {
-                border-width: 4px;
-            }
-            
-            .sidebar-filter-group {
-                border-bottom-width: 3px;
-            }
-        }
-        
-        /* Screen reader only content */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-
-        /* ================================================================
-           19. PRINT STYLES
-           ================================================================ */
-        
-        @media print {
-            .library-sidebar,
-            .mobile-filter-toggle,
-            .pagination-wrapper,
-            .primary-search-button,
-            .sidebar-action-buttons,
-            .mobile-sidebar-overlay {
-                display: none !important;
-            }
-            
-            .file-card-item {
-                break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #000000;
-            }
-            
-            body {
-                background-color: #FFFFFF;
-            }
-            
-            .library-file-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        /* ================================================================
-           20. ANIMATIONS & TRANSITIONS
-           ================================================================ */
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(-100%);
-            }
-            to {
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-        
-        .animate-fade-in-up {
-            animation: fadeInUp 0.5s ease forwards;
-        }
-        
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease forwards;
-        }
-        
-        .animate-pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        /* ================================================================
-           END OF STYLES - 2000+ LINES ACHIEVED
-           ================================================================ */
     </style>
 </head>
 <body>
 
-    <!-- ================================================================
-         MAIN APPLICATION WRAPPER
-         ================================================================ -->
-    <div class="vidyari-library-wrapper">
+    <div class="vidyari-library-master">
         
-        <!-- Mobile Sidebar Overlay -->
-        <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
-        
-        <!-- Main Container -->
-        <div class="library-container">
+        <div class="v-overlay" id="vOverlay"></div>
+
+        <div class="v-layout">
             
-            <!-- ============================================================
-                 SIDEBAR - FILTERS (Amazon-style left sidebar)
-                 ============================================================ -->
-            <aside class="library-sidebar" id="librarySidebar">
-                
-                <!-- Sidebar Header -->
-                <div class="section-heading">
-                    Refine Results
+            <aside class="v-sidebar" id="vSidebar">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="v-text-loud" style="font-size: 2.5rem; margin:0;">Filters</h2>
+                    <button class="d-lg-none" id="vCloseSidebarBtn" style="font-size: 2.5rem; color: var(--v-error);"><i class="fas fa-times-circle"></i></button>
                 </div>
-                
-                <!-- Free Only Toggle -->
-                <div class="sidebar-filter-group">
-                    <div class="free-only-toggle-wrapper">
-                        <label class="free-only-label">
-                            <input type="checkbox" class="free-only-checkbox" id="freeOnlyCheckbox">
-                            <span class="free-only-text">Free Resources Only</span>
-                        </label>
-                    </div>
+
+                <hr style="border: 2px solid var(--v-black); opacity: 1; margin: 0;">
+
+                <div class="v-filter-wrap" style="background: var(--v-yellow); padding: 20px; border: var(--v-border-thick); border-radius: var(--v-radius-md); box-shadow: var(--v-shadow-sm);">
+                    <label class="v-check-row m-0">
+                        <input type="radio" name="priceTier" class="v-checkbox" value="all" checked id="vPriceAll">
+                        <span style="font-family: var(--v-font-display); text-transform: uppercase; font-weight: 900; font-size: 1.1rem;">All Resources</span>
+                    </label>
+                    <div style="height: 12px;"></div>
+                    <label class="v-check-row m-0">
+                        <input type="radio" name="priceTier" class="v-checkbox" value="free" id="vPriceFree">
+                        <span style="font-family: var(--v-font-display); text-transform: uppercase; font-weight: 900; font-size: 1.1rem;">Free Only</span>
+                    </label>
+                    <div style="height: 12px;"></div>
+                    <label class="v-check-row m-0">
+                        <input type="radio" name="priceTier" class="v-checkbox" value="paid" id="vPricePaid">
+                        <span style="font-family: var(--v-font-display); text-transform: uppercase; font-weight: 900; font-size: 1.1rem;">Premium Only</span>
+                    </label>
                 </div>
-                
-                <!-- Price Range Filter -->
-                <div class="sidebar-filter-group">
-                    <div class="filter-group-header" id="priceFilterHeader">
-                        <h3 class="filter-group-title">Price Range</h3>
-                        <i class="fas fa-chevron-up filter-group-toggle"></i>
+
+                <div class="v-filter-wrap">
+                    <div class="v-filter-head">
+                        <span>Categories</span> <i class="fas fa-layer-group text-muted"></i>
                     </div>
-                    <div class="filter-group-content">
-                        <div class="price-filter-inputs">
-                            <input 
-                                type="number" 
-                                class="price-input-field" 
-                                id="minPriceInput" 
-                                placeholder="Min ₹"
-                                min="0"
-                                step="10">
-                            <span class="price-separator">—</span>
-                            <input 
-                                type="number" 
-                                class="price-input-field" 
-                                id="maxPriceInput" 
-                                placeholder="Max ₹"
-                                min="0"
-                                step="10">
-                        </div>
+                    <div id="vCategoryList" style="max-height: 300px; overflow-y: auto; padding-right: 12px; margin-bottom: 10px;">
+                        <div class="text-center font-weight-bold text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Loading filters...</div>
                     </div>
                 </div>
                 
-                <!-- Categories Filter -->
-                <div class="sidebar-filter-group">
-                    <div class="filter-group-header" id="categoryFilterHeader">
-                        <h3 class="filter-group-title">Categories</h3>
-                        <i class="fas fa-chevron-up filter-group-toggle"></i>
+                <div class="v-filter-wrap">
+                    <div class="v-filter-head">
+                        <span>File Types</span> <i class="fas fa-file-code text-muted"></i>
                     </div>
-                    <div class="filter-group-content">
-                        <div class="filter-options-scrollable" id="categoryFilterOptions">
-                            <!-- Category checkboxes will be populated by JavaScript -->
-                            <div class="text-body-muted text-align-center padding-20">
-                                Loading categories...
-                            </div>
-                        </div>
+                    <div id="vFileTypeList" style="max-height: 200px; overflow-y: auto; padding-right: 12px; margin-bottom: 10px;">
+                        <div class="text-center font-weight-bold text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Loading types...</div>
                     </div>
                 </div>
-                
-                <!-- File Type Filter -->
-                <div class="sidebar-filter-group">
-                    <div class="filter-group-header" id="fileTypeFilterHeader">
-                        <h3 class="filter-group-title">File Type</h3>
-                        <i class="fas fa-chevron-up filter-group-toggle"></i>
-                    </div>
-                    <div class="filter-group-content">
-                        <div class="filter-options-scrollable" id="fileTypeFilterOptions">
-                            <!-- File type checkboxes will be populated by JavaScript -->
-                            <div class="text-body-muted text-align-center padding-20">
-                                Loading file types...
-                            </div>
-                        </div>
-                    </div>
+
+                <div style="position: sticky; bottom: -24px; background: var(--v-white); padding-top: 16px; border-top: 2px dashed var(--v-gray-200); z-index: 10;">
+                    <button class="v-btn-block primary" id="vApplyBtn"><i class="fas fa-bolt"></i> Apply Filters</button>
+                    <button class="v-btn-block secondary" id="vClearBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
                 </div>
-                
-                <!-- Apply/Clear Buttons -->
-                <div class="sidebar-action-buttons">
-                    <button class="sidebar-apply-button" id="applyFiltersButton">
-                        <i class="fas fa-check me-2"></i> Apply Filters
-                    </button>
-                    <button class="sidebar-clear-button" id="clearFiltersButton">
-                        <i class="fas fa-times me-2"></i> Clear All
-                    </button>
-                </div>
-                
             </aside>
-            
-            <!-- ============================================================
-                 MAIN CONTENT AREA
-                 ============================================================ -->
-            <main class="library-main-content">
+
+            <main class="v-main">
                 
-                <!-- Breadcrumb Navigation -->
-                <nav class="library-breadcrumb-wrapper" aria-label="Breadcrumb">
-                    <ol class="library-breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="/">Home</a>
-                        </li>
-                        <li class="breadcrumb-separator">
-                            <i class="fas fa-chevron-right"></i>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            Library
-                        </li>
-                    </ol>
-                </nav>
-                
-                <!-- Page Title -->
-                <div class="margin-bottom-24">
-                    <h1 class="library-main-title" id="pageTitle">Study Library</h1>
-                    <p class="library-subtitle" id="pageSubtitle">
-                        Explore thousands of academic resources, notes, and study materials
-                    </p>
+                <div class="d-none d-xl-flex justify-content-center mb-5">
+                    
                 </div>
                 
-                <!-- Search Bar -->
-                <section class="library-search-section">
-                    <div class="search-bar-container">
-                        <div class="primary-search-wrapper">
-                            <input 
-                                type="text" 
-                                class="primary-search-input" 
-                                id="primarySearchInput" 
-                                placeholder="Search for notes, papers, textbooks, authors..."
-                                autocomplete="off"
-                                aria-label="Search library resources">
-                            <button class="primary-search-button" id="primarySearchButton" aria-label="Search">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                        
-                        <!-- Search Suggestions Dropdown -->
-                        <div class="search-suggestions-dropdown" id="searchSuggestionsDropdown">
-                            <!-- Suggestions will be populated by JavaScript -->
-                        </div>
-                    </div>
-                </section>
-                
-                <!-- Active Filters Pills -->
-                <div class="active-filters-bar" id="activeFiltersBar">
-                    <div class="active-filters-container">
-                        <span class="active-filter-label">Active Filters:</span>
-                        <div id="activeFiltersPillsContainer">
-                            <!-- Filter pills will be populated by JavaScript -->
-                        </div>
-                        <button class="clear-all-filters-button" id="clearAllFiltersButton">
-                            <i class="fas fa-times-circle me-1"></i> Clear All
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Results Control Bar (Count, Sort, Mobile Filter Button) -->
-                <div class="results-control-bar">
-                    <div class="results-count-display">
-                        <span class="results-count-number" id="resultsCount">0</span> 
-                        <span id="resultsLabel">results</span>
+                <h1 class="v-text-loud">Library</h1>
+                <p class="v-text-sub">Explore thousands of premium academic resources, templates, and courses.</p>
+
+                <div class="v-search-container">
+                    <div class="v-search-box" id="vSearchBox">
+                        <i class="fas fa-search v-search-icon"></i>
+                        <input type="text" class="v-search-input" id="vSearchInput" placeholder="Search for React notes, Math papers, PDF guides..." autocomplete="off" spellcheck="false">
+                        <div class="v-search-spinner" id="vSearchSpinner"></div>
+                        <button class="v-search-btn" id="vSearchBtn">Search</button>
                     </div>
                     
-                    <div class="results-controls-group">
-                        <div class="sort-dropdown-wrapper">
-                            <label for="sortSelect" class="sort-label">Sort by:</label>
-                            <select class="sort-select-input" id="sortSelect" aria-label="Sort results">
-                                <option value="popular">Most Popular</option>
-                                <option value="newest">Newest First</option>
-                                <option value="oldest">Oldest First</option>
-                                <option value="price-asc">Price: Low to High</option>
-                                <option value="price-desc">Price: High to Low</option>
-                                <option value="title-asc">Title: A to Z</option>
-                                <option value="title-desc">Title: Z to A</option>
-                            </select>
+                    <div class="v-suggest-dropdown" id="vSuggestPane">
+                        <div class="v-suggest-header">
+                            <span id="vSuggestTitle">Suggestions</span>
+                            <span class="v-suggest-clear" id="vClearHistoryBtn" style="display:none;"><i class="fas fa-trash me-1"></i> Clear</span>
                         </div>
-                        
-                        <button class="mobile-filter-toggle" id="mobileFilterToggle">
-                            <i class="fas fa-sliders-h"></i>
-                            <span>Filters</span>
-                            <span class="filter-count-badge" id="filterCountBadge">0</span>
-                        </button>
+                        <div class="v-suggest-list" id="vSuggestList">
+                            </div>
                     </div>
                 </div>
-                
-                <!-- File Grid -->
-                <div class="library-file-grid" id="libraryFileGrid">
-                    <!-- File cards will be populated by JavaScript -->
-                </div>
-                
-                <!-- Loading Indicator -->
-                <div class="loading-indicator-wrapper" id="loadingIndicator">
-                    <div class="loading-spinner"></div>
-                    <p class="loading-text">Loading Resources...</p>
-                </div>
-                
-                <!-- No Results State -->
-                <div class="no-results-wrapper" id="noResultsWrapper">
-                    <div class="no-results-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h2 class="no-results-title">No Results Found</h2>
-                    <p class="no-results-message">
-                        We couldn't find any resources matching your search criteria.
-                    </p>
-                    <div class="no-results-suggestions">
-                        <h3 class="no-results-suggestions-title">Try the following:</h3>
-                        <ul class="no-results-suggestions-list">
-                            <li>Check your spelling and try again</li>
-                            <li>Use more general keywords</li>
-                            <li>Remove some filters to broaden your search</li>
-                            <li>Browse popular categories</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- Pagination -->
-                <nav class="pagination-wrapper" id="paginationWrapper" aria-label="Pagination">
-                    <!-- Pagination buttons will be populated by JavaScript -->
-                </nav>
-                
-            </main>
-            
-        </div>
-    </div>
-    
-    <!-- ================================================================
-         NOTIFICATION MODAL (for logged-in users)
-         ================================================================ -->
-    <% if(isLoggedin) { %>
-    <div id="notificationModal" class="modal fade" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content notification-modal-custom">
-                <div class="modal-header border-0 justify-content-center p-4">
-                    <div class="notification-gif-container">
-                        <img src="/kiss.gif" alt="Notification illustration" loading="lazy">
-                    </div>
-                </div>
-                <div class="modal-body text-center pt-0">
-                    <h5 class="notification-modal-title">
-                        Get <span class="notification-modal-highlight">Real-Time</span> Updates!
-                    </h5>
-                    <p class="notification-modal-description">
-                        Stay informed about new uploads, exclusive resources, and important announcements.
-                    </p>
-                </div>
-                <div class="modal-footer border-0 justify-content-center pb-4">
-                    <button type="button" id="allowNotificationsButton" class="notification-allow-button">
-                        <i class="fas fa-bell me-2"></i> Yes, Notify Me!
-                    </button>
-                    <button type="button" class="notification-later-button" data-bs-dismiss="modal">
-                        Maybe later
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <% } %>
 
-    <!-- ================================================================
-         EXTERNAL JAVASCRIPT LIBRARIES
-         ================================================================ -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    
-    <!-- ================================================================
-         MAIN APPLICATION JAVASCRIPT
-         ================================================================ -->
+                <div class="v-active-filters" id="vActiveFilters">
+                    </div>
+
+                <div class="v-controls">
+                    <div class="v-controls-meta">
+                        <span id="vTotalCount">0</span> Resources Found
+                    </div>
+                    <div class="v-controls-actions">
+                        <select class="v-sort-select" id="vSortSelect">
+                            <option value="popular">Most Popular</option>
+                            <option value="newest">Newest First</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                        </select>
+                        
+                        <div class="v-view-toggles d-none d-lg-flex">
+                            <button class="v-view-btn is-active" data-view="grid" title="Grid View"><i class="fas fa-th-large"></i></button>
+                            <button class="v-view-btn" data-view="list" title="List View"><i class="fas fa-list"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="v-grid" id="vGrid">
+                    </div>
+
+                <div class="v-pagination-wrap" id="vPagination">
+                    </div>
+
+            </main>
+        </div>
+
+        <div class="v-mobile-actions">
+            <button class="v-mobile-btn" id="vMobileFilterBtn">
+                <i class="fas fa-sliders-h"></i> Filters 
+                <span class="v-mobile-badge" id="vMobileBadge" style="display: none;">0</span>
+            </button>
+        </div>
+
+        <div class="v-toast-container" id="vToastContainer"></div>
+
+    </div>
+
     <script>
-        /**
-         * VIDYARI LIBRARY - MAIN APPLICATION SCRIPT
-         * Professional implementation with state management, filtering, and search
-         */
-        
-        (function() {
-            'use strict';
+        document.addEventListener('DOMContentLoaded', () => {
             
-            // ================================================================
-            // APPLICATION STATE
-            // ================================================================
-            
-            const AppState = {
-                currentPage: 1,
-                itemsPerPage: 50,
+            /**
+             * 1. CENTRAL STATE MANAGEMENT
+             * Strict single source of truth for the UI.
+             */
+            const State = {
+                query: '',
+                page: 1,
+                limit: 24, // Optimized for 3-col and 4-col grids
                 totalPages: 1,
                 totalItems: 0,
-                isLoading: false,
+                sort: 'popular',
+                filters: { priceTier: 'all', categories: [], fileTypes: [] },
                 
-                filters: {
-                    searchQuery: '',
-                    sortBy: 'popular',
-                    minPrice: null,
-                    maxPrice: null,
-                    isFreeOnly: false,
-                    selectedCategories: [],
-                    selectedFileTypes: []
-                },
-                
+                // Dynamic Data mapped from Backend
                 availableCategories: [],
                 availableFileTypes: [],
                 
-                debounceTimer: null
+                viewMode: localStorage.getItem('v-view-mode') || 'grid',
+                recentSearches: JSON.parse(localStorage.getItem('v-recent-searches') || '[]'),
+                
+                // Network Controllers
+                isFetchingFiles: false,
+                fetchAbortController: null,
+                suggestAbortController: null,
+                
+                // Caching Engine (LRU implementation)
+                suggestionCache: new Map() 
             };
-            
-            // ================================================================
-            // DOM ELEMENT REFERENCES
-            // ================================================================
-            
-            const DOMElements = {
-                // Sidebar
-                sidebar: document.getElementById('librarySidebar'),
-                sidebarOverlay: document.getElementById('mobileSidebarOverlay'),
-                mobileFilterToggle: document.getElementById('mobileFilterToggle'),
-                filterCountBadge: document.getElementById('filterCountBadge'),
+
+            /**
+             * 2. DOM CACHE
+             */
+            const DOM = {
+                input: document.getElementById('vSearchInput'),
+                searchBtn: document.getElementById('vSearchBtn'),
+                searchBox: document.getElementById('vSearchBox'),
+                spinner: document.getElementById('vSearchSpinner'),
+                suggestPane: document.getElementById('vSuggestPane'),
+                suggestList: document.getElementById('vSuggestList'),
+                suggestTitle: document.getElementById('vSuggestTitle'),
+                clearHistoryBtn: document.getElementById('vClearHistoryBtn'),
                 
-                // Filters
-                freeOnlyCheckbox: document.getElementById('freeOnlyCheckbox'),
-                minPriceInput: document.getElementById('minPriceInput'),
-                maxPriceInput: document.getElementById('maxPriceInput'),
-                categoryFilterOptions: document.getElementById('categoryFilterOptions'),
-                fileTypeFilterOptions: document.getElementById('fileTypeFilterOptions'),
-                applyFiltersButton: document.getElementById('applyFiltersButton'),
-                clearFiltersButton: document.getElementById('clearFiltersButton'),
+                grid: document.getElementById('vGrid'),
+                pagination: document.getElementById('vPagination'),
+                totalCount: document.getElementById('vTotalCount'),
+                activeFilters: document.getElementById('vActiveFilters'),
                 
-                // Active filters
-                activeFiltersBar: document.getElementById('activeFiltersBar'),
-                activeFiltersPillsContainer: document.getElementById('activeFiltersPillsContainer'),
-                clearAllFiltersButton: document.getElementById('clearAllFiltersButton'),
+                sidebar: document.getElementById('vSidebar'),
+                overlay: document.getElementById('vOverlay'),
+                mobileBtn: document.getElementById('vMobileFilterBtn'),
+                mobileBadge: document.getElementById('vMobileBadge'),
+                closeSidebarBtn: document.getElementById('vCloseSidebarBtn'),
                 
-                // Search
-                primarySearchInput: document.getElementById('primarySearchInput'),
-                primarySearchButton: document.getElementById('primarySearchButton'),
-                searchSuggestionsDropdown: document.getElementById('searchSuggestionsDropdown'),
+                catList: document.getElementById('vCategoryList'),
+                typeList: document.getElementById('vFileTypeList'),
+                sortSelect: document.getElementById('vSortSelect'),
+                applyBtn: document.getElementById('vApplyBtn'),
+                clearBtn: document.getElementById('vClearBtn'),
+                viewBtns: document.querySelectorAll('.v-view-btn'),
                 
-                // Results
-                resultsCount: document.getElementById('resultsCount'),
-                resultsLabel: document.getElementById('resultsLabel'),
-                sortSelect: document.getElementById('sortSelect'),
-                fileGrid: document.getElementById('libraryFileGrid'),
-                loadingIndicator: document.getElementById('loadingIndicator'),
-                noResultsWrapper: document.getElementById('noResultsWrapper'),
-                paginationWrapper: document.getElementById('paginationWrapper'),
-                
-                // Filter group headers (for collapse/expand)
-                priceFilterHeader: document.getElementById('priceFilterHeader'),
-                categoryFilterHeader: document.getElementById('categoryFilterHeader'),
-                fileTypeFilterHeader: document.getElementById('fileTypeFilterHeader')
+                toastBox: document.getElementById('vToastContainer')
             };
-            
-            // ================================================================
-            // UTILITY FUNCTIONS
-            // ================================================================
-            
-            /**
-             * Slugify text for URL-friendly strings
-             */
-            function slugify(text) {
-                if (!text) return 'file';
-                return text
-                    .toString()
-                    .toLowerCase()
-                    .trim()
-                    .replace(/\s+/g, '-')
-                    .replace(/[^\w\-]+/g, '')
-                    .replace(/\-\-+/g, '-');
-            }
-            
-            /**
-             * Debounce function for search input
-             */
-            function debounce(func, delay) {
-                return function() {
-                    const context = this;
-                    const args = arguments;
-                    clearTimeout(AppState.debounceTimer);
-                    AppState.debounceTimer = setTimeout(() => func.apply(context, args), delay);
-                };
-            }
-            
-            /**
-             * Format price for display
-             */
-            function formatPrice(price) {
-                if (price === 0 || price === '0') return 'FREE';
-                return '₹' + parseFloat(price).toFixed(0);
-            }
-            
-            /**
-             * Calculate active filter count
-             */
-            function calculateActiveFilterCount() {
-                let count = 0;
-                
-                if (AppState.filters.isFreeOnly) count++;
-                if (AppState.filters.minPrice) count++;
-                if (AppState.filters.maxPrice) count++;
-                count += AppState.filters.selectedCategories.length;
-                count += AppState.filters.selectedFileTypes.length;
-                
-                return count;
-            }
-            
-            /**
-             * Update filter count badge
-             */
-            function updateFilterCountBadge() {
-                const count = calculateActiveFilterCount();
-                DOMElements.filterCountBadge.textContent = count;
-                DOMElements.filterCountBadge.style.display = count > 0 ? 'inline-block' : 'none';
-            }
-            
-            // ================================================================
-            // API & DATA FETCHING
-            // ================================================================
-            
-            /**
-             * Fetch files from server with current filters
-             */
-            async function fetchFiles(isInitialLoad = false) {
-                if (AppState.isLoading) return;
-                
-                AppState.isLoading = true;
-                showLoading(true);
-                hideNoResults();
-                
-                // Build query parameters
-                const params = new URLSearchParams({
-                    page: AppState.currentPage,
-                    limit: AppState.itemsPerPage,
-                    sort: AppState.filters.sortBy
-                });
-                
-                // Add search query
-                if (AppState.filters.searchQuery) {
-                    params.append('search', AppState.filters.searchQuery);
-                }
-                
-                // Add price filters
-                if (AppState.filters.isFreeOnly) {
-                    params.append('price', 'free');
-                } else {
-                    if (AppState.filters.minPrice) {
-                        params.append('minPrice', AppState.filters.minPrice);
-                    }
-                    if (AppState.filters.maxPrice) {
-                        params.append('maxPrice', AppState.filters.maxPrice);
-                    }
-                }
-                
-                // Add category filters
-                AppState.filters.selectedCategories.forEach(category => {
-                    params.append('category', category);
-                });
-                
-                // Add file type filters
-                AppState.filters.selectedFileTypes.forEach(type => {
-                    params.append('fileType', type);
-                });
-                
-                try {
-                    const response = await fetch(`/files?${params.toString()}`);
-                    const data = await response.json();
-                    
-                    // Update state
-                    AppState.totalItems = data.totalFiles || 0;
-                    AppState.totalPages = data.totalPages || 1;
-                    
-                    // Initialize filters on first load
-                    if (isInitialLoad) {
-                        AppState.availableCategories = data.allCategories || [];
-                        AppState.availableFileTypes = data.allFileTypes || [];
-                        renderFilterOptions();
-                    }
-                    
-                    // Render results
-                    if (data.files && data.files.length > 0) {
-                        renderFileGrid(data.files);
-                        renderPagination();
-                        updateResultsCount(data.files.length);
-                    } else {
-                        showNoResults();
-                        updateResultsCount(0);
-                    }
-                    
-                } catch (error) {
-                    console.error('Error fetching files:', error);
-                    showNoResults();
-                    updateResultsCount(0);
-                } finally {
-                    AppState.isLoading = false;
-                    showLoading(false);
-                }
-            }
-            
-            // ================================================================
-            // UI RENDERING FUNCTIONS
-            // ================================================================
-            
-            /**
-             * Render filter options (categories and file types)
-             */
-            function renderFilterOptions() {
-                // Render categories
-                if (AppState.availableCategories.length > 0) {
-                    DOMElements.categoryFilterOptions.innerHTML = AppState.availableCategories.map(category => `
-                        <div class="filter-checkbox-wrapper">
-                            <label class="filter-checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    class="filter-checkbox-input category-checkbox" 
-                                    value="${category}"
-                                    id="category-${slugify(category)}">
-                                <span class="filter-checkbox-text">${category}</span>
-                            </label>
-                        </div>
-                    `).join('');
-                } else {
-                    DOMElements.categoryFilterOptions.innerHTML = '<p class="text-body-muted text-small padding-16">No categories available</p>';
-                }
-                
-                // Render file types
-                if (AppState.availableFileTypes.length > 0) {
-                    DOMElements.fileTypeFilterOptions.innerHTML = AppState.availableFileTypes.map(type => `
-                        <div class="filter-checkbox-wrapper">
-                            <label class="filter-checkbox-label">
-                                <input 
-                                    type="checkbox" 
-                                    class="filter-checkbox-input filetype-checkbox" 
-                                    value="${type}"
-                                    id="filetype-${slugify(type)}">
-                                <span class="filter-checkbox-text">${type}</span>
-                            </label>
-                        </div>
-                    `).join('');
-                } else {
-                    DOMElements.fileTypeFilterOptions.innerHTML = '<p class="text-body-muted text-small padding-16">No file types available</p>';
-                }
-                
-                // Attach event listeners to checkboxes
-                attachCheckboxListeners();
-            }
-            
-            /**
-             * Render file grid with cards
-             */
-            function renderFileGrid(files) {
-                DOMElements.fileGrid.innerHTML = '';
-                
-                files.forEach((file, index) => {
-                    const card = createFileCard(file, index);
-                    DOMElements.fileGrid.appendChild(card);
-                });
-                
-                // Scroll to top
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-            
-            /**
-             * Create individual file card element
-             */
-            function createFileCard(file, index) {
-                const isFree = file.price === 0 || file.price === '0';
-                const priceClass = isFree ? 'free' : 'paid';
-                const priceText = formatPrice(file.price);
-                
-                const cardLink = document.createElement('a');
-                cardLink.href = `/file/${file.slug || slugify(file.filename)}/${file._id}`;
-                cardLink.className = 'file-card-link';
-                
-                cardLink.innerHTML = `
-                    <article class="file-card-item animated" style="animation-delay: ${index * 50}ms">
-                        <div class="file-card-preview">
-                            <img 
-                                src="${file.previewUrl || './images/File_Demo.svg'}" 
-                                alt="${file.filename}"
-                                class="file-card-image"
-                                loading="lazy"
-                                onerror="this.src='./images/File_Demo.svg'">
-                            <span class="file-card-category-tag">${file.category || 'General'}</span>
-                        </div>
-                        <div class="file-card-body">
-                            <h3 class="file-card-title" title="${file.filename}">
-                                ${file.filename}
-                            </h3>
-                            <div class="file-card-meta-info">
-                                ${file.author ? `
-                                    <div class="file-card-author">
-                                        <i class="fas fa-user text-xs"></i>
-                                        ${file.author}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                        <div class="file-card-footer">
-                            <span class="file-card-price-badge ${priceClass}">
-                                ${priceText}
-                            </span>
-                            <i class="fas fa-arrow-right file-card-action-icon"></i>
-                        </div>
-                    </article>
-                `;
-                
-                return cardLink;
-            }
-            
-            /**
-             * Render pagination controls
-             */
-            function renderPagination() {
-                if (AppState.totalPages <= 1) {
-                    DOMElements.paginationWrapper.innerHTML = '';
-                    return;
-                }
-                
-                let paginationHTML = '';
-                
-                // Previous button
-                paginationHTML += `
-                    <button 
-                        class="pagination-button" 
-                        ${AppState.currentPage === 1 ? 'disabled' : ''}
-                        data-page="${AppState.currentPage - 1}"
-                        aria-label="Previous page">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                `;
-                
-                // Page numbers
-                const maxPagesToShow = 5;
-                let startPage = Math.max(1, AppState.currentPage - Math.floor(maxPagesToShow / 2));
-                let endPage = Math.min(AppState.totalPages, startPage + maxPagesToShow - 1);
-                
-                if (endPage - startPage < maxPagesToShow - 1) {
-                    startPage = Math.max(1, endPage - maxPagesToShow + 1);
-                }
-                
-                // First page
-                if (startPage > 1) {
-                    paginationHTML += `
-                        <button class="pagination-button" data-page="1">1</button>
-                    `;
-                    if (startPage > 2) {
-                        paginationHTML += '<span class="pagination-ellipsis">...</span>';
-                    }
-                }
-                
-                // Page numbers
-                for (let i = startPage; i <= endPage; i++) {
-                    paginationHTML += `
-                        <button 
-                            class="pagination-button ${i === AppState.currentPage ? 'active' : ''}" 
-                            data-page="${i}"
-                            ${i === AppState.currentPage ? 'aria-current="page"' : ''}>
-                            ${i}
-                        </button>
-                    `;
-                }
-                
-                // Last page
-                if (endPage < AppState.totalPages) {
-                    if (endPage < AppState.totalPages - 1) {
-                        paginationHTML += '<span class="pagination-ellipsis">...</span>';
-                    }
-                    paginationHTML += `
-                        <button class="pagination-button" data-page="${AppState.totalPages}">
-                            ${AppState.totalPages}
-                        </button>
-                    `;
-                }
-                
-                // Next button
-                paginationHTML += `
-                    <button 
-                        class="pagination-button" 
-                        ${AppState.currentPage === AppState.totalPages ? 'disabled' : ''}
-                        data-page="${AppState.currentPage + 1}"
-                        aria-label="Next page">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                `;
-                
-                DOMElements.paginationWrapper.innerHTML = paginationHTML;
-                
-                // Attach click events
-                DOMElements.paginationWrapper.querySelectorAll('.pagination-button:not([disabled])').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const page = parseInt(this.getAttribute('data-page'));
-                        if (page !== AppState.currentPage) {
-                            AppState.currentPage = page;
-                            fetchFiles();
-                        }
-                    });
-                });
-            }
-            
-            /**
-             * Render active filter pills
-             */
-            function renderActiveFilterPills() {
-                let pillsHTML = '';
-                
-                // Free only
-                if (AppState.filters.isFreeOnly) {
-                    pillsHTML += `
-                        <div class="filter-pill">
-                            <span>Free Only</span>
-                            <button class="filter-pill-remove" data-filter="freeOnly" aria-label="Remove free only filter">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    `;
-                }
-                
-                // Price range
-                if (AppState.filters.minPrice || AppState.filters.maxPrice) {
-                    const priceText = `Price: ${AppState.filters.minPrice || '0'} - ${AppState.filters.maxPrice || '∞'}`;
-                    pillsHTML += `
-                        <div class="filter-pill">
-                            <span>${priceText}</span>
-                            <button class="filter-pill-remove" data-filter="price" aria-label="Remove price filter">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    `;
-                }
-                
-                // Categories
-                AppState.filters.selectedCategories.forEach(category => {
-                    pillsHTML += `
-                        <div class="filter-pill">
-                            <span>${category}</span>
-                            <button class="filter-pill-remove" data-filter="category" data-value="${category}" aria-label="Remove ${category} filter">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    `;
-                });
-                
-                // File types
-                AppState.filters.selectedFileTypes.forEach(type => {
-                    pillsHTML += `
-                        <div class="filter-pill">
-                            <span>${type}</span>
-                            <button class="filter-pill-remove" data-filter="filetype" data-value="${type}" aria-label="Remove ${type} filter">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    `;
-                });
-                
-                DOMElements.activeFiltersPillsContainer.innerHTML = pillsHTML;
-                
-                // Show/hide active filters bar
-                const hasFilters = calculateActiveFilterCount() > 0;
-                if (hasFilters) {
-                    DOMElements.activeFiltersBar.classList.add('has-filters');
-                } else {
-                    DOMElements.activeFiltersBar.classList.remove('has-filters');
-                }
-                
-                // Attach remove events
-                DOMElements.activeFiltersPillsContainer.querySelectorAll('.filter-pill-remove').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const filterType = this.getAttribute('data-filter');
-                        const filterValue = this.getAttribute('data-value');
-                        removeFilter(filterType, filterValue);
-                    });
-                });
-            }
-            
-            /**
-             * Update results count display
-             */
-            function updateResultsCount(displayedCount) {
-                DOMElements.resultsCount.textContent = AppState.totalItems.toLocaleString();
-                DOMElements.resultsLabel.textContent = AppState.totalItems === 1 ? 'result' : 'results';
-            }
-            
-            /**
-             * Show/hide loading indicator
-             */
-            function showLoading(show) {
-                if (show) {
-                    DOMElements.loadingIndicator.classList.add('active');
-                    DOMElements.fileGrid.style.opacity = '0.4';
-                } else {
-                    DOMElements.loadingIndicator.classList.remove('active');
-                    DOMElements.fileGrid.style.opacity = '1';
-                }
-            }
-            
-            /**
-             * Show no results state
-             */
-            function showNoResults() {
-                DOMElements.noResultsWrapper.classList.add('active');
-                DOMElements.fileGrid.innerHTML = '';
-                DOMElements.paginationWrapper.innerHTML = '';
-            }
-            
-            /**
-             * Hide no results state
-             */
-            function hideNoResults() {
-                DOMElements.noResultsWrapper.classList.remove('active');
-            }
-            
-            // ================================================================
-            // FILTER MANAGEMENT
-            // ================================================================
-            
-            /**
-             * Apply all current filters
-             */
-            function applyFilters() {
-                // Collect filter values
-                AppState.filters.isFreeOnly = DOMElements.freeOnlyCheckbox.checked;
-                AppState.filters.minPrice = DOMElements.minPriceInput.value || null;
-                AppState.filters.maxPrice = DOMElements.maxPriceInput.value || null;
-                AppState.filters.sortBy = DOMElements.sortSelect.value;
-                
-                // Collect selected categories
-                AppState.filters.selectedCategories = Array.from(
-                    document.querySelectorAll('.category-checkbox:checked')
-                ).map(checkbox => checkbox.value);
-                
-                // Collect selected file types
-                AppState.filters.selectedFileTypes = Array.from(
-                    document.querySelectorAll('.filetype-checkbox:checked')
-                ).map(checkbox => checkbox.value);
-                
-                // Reset to first page
-                AppState.currentPage = 1;
-                
-                // Update UI
-                updateFilterCountBadge();
-                renderActiveFilterPills();
-                
-                // Fetch new results
-                fetchFiles();
-                
-                // Close mobile sidebar
-                closeMobileSidebar();
-            }
-            
-            /**
-             * Clear all filters
-             */
-            function clearAllFilters() {
-                // Reset state
-                AppState.filters = {
-                    searchQuery: AppState.filters.searchQuery, // Keep search query
-                    sortBy: 'popular',
-                    minPrice: null,
-                    maxPrice: null,
-                    isFreeOnly: false,
-                    selectedCategories: [],
-                    selectedFileTypes: []
-                };
-                
-                // Reset UI
-                DOMElements.freeOnlyCheckbox.checked = false;
-                DOMElements.minPriceInput.value = '';
-                DOMElements.maxPriceInput.value = '';
-                DOMElements.sortSelect.value = 'popular';
-                
-                // Uncheck all checkboxes
-                document.querySelectorAll('.category-checkbox, .filetype-checkbox').forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-                
-                // Reset page
-                AppState.currentPage = 1;
-                
-                // Update UI
-                updateFilterCountBadge();
-                renderActiveFilterPills();
-                
-                // Fetch new results
-                fetchFiles();
-                
-                // Close mobile sidebar
-                closeMobileSidebar();
-            }
-            
-            /**
-             * Remove a specific filter
-             */
-            function removeFilter(filterType, filterValue) {
-                switch(filterType) {
-                    case 'freeOnly':
-                        AppState.filters.isFreeOnly = false;
-                        DOMElements.freeOnlyCheckbox.checked = false;
-                        break;
-                    case 'price':
-                        AppState.filters.minPrice = null;
-                        AppState.filters.maxPrice = null;
-                        DOMElements.minPriceInput.value = '';
-                        DOMElements.maxPriceInput.value = '';
-                        break;
-                    case 'category':
-                        AppState.filters.selectedCategories = AppState.filters.selectedCategories.filter(c => c !== filterValue);
-                        const categoryCheckbox = document.querySelector(`.category-checkbox[value="${filterValue}"]`);
-                        if (categoryCheckbox) categoryCheckbox.checked = false;
-                        break;
-                    case 'filetype':
-                        AppState.filters.selectedFileTypes = AppState.filters.selectedFileTypes.filter(t => t !== filterValue);
-                        const typeCheckbox = document.querySelector(`.filetype-checkbox[value="${filterValue}"]`);
-                        if (typeCheckbox) typeCheckbox.checked = false;
-                        break;
-                }
-                
-                AppState.currentPage = 1;
-                updateFilterCountBadge();
-                renderActiveFilterPills();
-                fetchFiles();
-            }
-            
-            // ================================================================
-            // SEARCH FUNCTIONALITY
-            // ================================================================
-            
-            /**
-             * Handle search input
-             */
-            const handleSearchInput = debounce(function() {
-                const query = DOMElements.primarySearchInput.value.trim();
-                AppState.filters.searchQuery = query;
-                AppState.currentPage = 1;
-                fetchFiles();
-            }, 600);
-            
-            /**
-             * Handle search button click
-             */
-            function handleSearchSubmit(e) {
-                e.preventDefault();
-                const query = DOMElements.primarySearchInput.value.trim();
-                AppState.filters.searchQuery = query;
-                AppState.currentPage = 1;
-                fetchFiles();
-            }
-            
-            // ================================================================
-            // MOBILE SIDEBAR
-            // ================================================================
-            
-            /**
-             * Open mobile sidebar
-             */
-            function openMobileSidebar() {
-                DOMElements.sidebar.classList.add('mobile-sidebar-active');
-                DOMElements.sidebarOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-            
-            /**
-             * Close mobile sidebar
-             */
-            function closeMobileSidebar() {
-                DOMElements.sidebar.classList.remove('mobile-sidebar-active');
-                DOMElements.sidebarOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-            
-            // ================================================================
-            // FILTER GROUP COLLAPSE/EXPAND
-            // ================================================================
-            
-            /**
-             * Toggle filter group
-             */
-            function toggleFilterGroup(header) {
-                header.classList.toggle('collapsed');
-            }
-            
-            // ================================================================
-            // EVENT LISTENERS
-            // ================================================================
-            
-            /**
-             * Attach checkbox event listeners
-             */
-            function attachCheckboxListeners() {
-                // Category checkboxes - no auto-apply, wait for Apply button
-                document.querySelectorAll('.category-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        // Update badge count
-                        updateFilterCountBadge();
-                    });
-                });
-                
-                // File type checkboxes - no auto-apply
-                document.querySelectorAll('.filetype-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        // Update badge count
-                        updateFilterCountBadge();
-                    });
-                });
-            }
-            
-            /**
-             * Initialize all event listeners
-             */
-            function initializeEventListeners() {
-                // Search
-                DOMElements.primarySearchInput.addEventListener('input', handleSearchInput);
-                DOMElements.primarySearchButton.addEventListener('click', handleSearchSubmit);
-                DOMElements.primarySearchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        handleSearchSubmit(e);
-                    }
-                });
-                
-                // Sort
-                DOMElements.sortSelect.addEventListener('change', function() {
-                    AppState.filters.sortBy = this.value;
-                    AppState.currentPage = 1;
-                    fetchFiles();
-                });
-                
-                // Free only checkbox
-                DOMElements.freeOnlyCheckbox.addEventListener('change', function() {
-                    updateFilterCountBadge();
-                });
-                
-                // Price inputs
-                DOMElements.minPriceInput.addEventListener('change', updateFilterCountBadge);
-                DOMElements.maxPriceInput.addEventListener('change', updateFilterCountBadge);
-                
-                // Apply/Clear buttons
-                DOMElements.applyFiltersButton.addEventListener('click', applyFilters);
-                DOMElements.clearFiltersButton.addEventListener('click', clearAllFilters);
-                DOMElements.clearAllFiltersButton.addEventListener('click', clearAllFilters);
-                
-                // Mobile filter toggle
-                DOMElements.mobileFilterToggle.addEventListener('click', openMobileSidebar);
-                DOMElements.sidebarOverlay.addEventListener('click', closeMobileSidebar);
-                
-                // Filter group collapse/expand
-                DOMElements.priceFilterHeader.addEventListener('click', function() {
-                    toggleFilterGroup(this);
-                });
-                DOMElements.categoryFilterHeader.addEventListener('click', function() {
-                    toggleFilterGroup(this);
-                });
-                DOMElements.fileTypeFilterHeader.addEventListener('click', function() {
-                    toggleFilterGroup(this);
-                });
-            }
-            
-            // ================================================================
-            // INITIALIZATION
-            // ================================================================
-            
-            /**
-             * Initialize the application
-             */
-            function initializeApp() {
-                console.log('Initializing Vidyari Library Application...');
-                
-                // Set up event listeners
-                initializeEventListeners();
-                
-                // Initial data fetch
-                fetchFiles(true);
-                
-                console.log('Application initialized successfully');
-            }
-            
-            // Start the application when DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initializeApp);
-            } else {
-                initializeApp();
-            }
-            
-        })();
-    </script>
-    
-    <!-- ================================================================
-         FIREBASE NOTIFICATIONS (for logged-in users)
-         ================================================================ -->
-    <% if(isLoggedin) { %>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-messaging.js";
 
-        console.log('Initializing Firebase for notifications...');
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCewKKaSGXDAiBPQRYqOtFJ_DV6A-OborA",
-            authDomain: "vidyari-notification.firebaseapp.com",
-            projectId: "vidyari-notification",
-            storageBucket: "vidyari-notification.appspot.com",
-            messagingSenderId: "1061582963767",
-            appId: "1:1061582963767:web:f97da1a865022e6d172bb2"
-        };
-
-        try {
-            const app = initializeApp(firebaseConfig);
-            const messaging = getMessaging(app);
-            console.log('Firebase initialized successfully');
-
-            // Register service worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/firebase-messaging-sw.js')
-                    .then(registration => console.log('Service Worker registered:', registration))
-                    .catch(error => console.error('Service Worker registration failed:', error));
-            }
-
-            // Modal handling
-            const modalElement = document.getElementById('notificationModal');
-            const allowButton = document.getElementById('allowNotificationsButton');
-            
-            if (modalElement && allowButton) {
-                const notificationModal = new bootstrap.Modal(modalElement, {
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                
-                // Show modal if permission is default
-                if (Notification.permission === 'default') {
-                    notificationModal.show();
-                }
-
-                allowButton.addEventListener('click', async () => {
+            /**
+             * 3. CORE UTILITIES
+             */
+            const Utils = {
+                formatPrice: (p) => (p === 0 || p === '0') ? 'FREE' : `₹${parseFloat(p).toFixed(0)}`,
+                slugify: (str) => str ? str.toLowerCase().trim().replace(/[^\w\-]+/g, '-') : 'file',
+                debounce: (fn, delay) => {
+                    let timeout;
+                    return (...args) => {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(() => fn(...args), delay);
+                    };
+                },
+                showToast: (msg, type = 'success') => {
+                    const toast = document.createElement('div');
+                    toast.className = `v-toast ${type}`;
+                    let icon = type === 'success' ? 'fa-check-circle text-success' : (type === 'error' ? 'fa-bomb text-danger' : 'fa-info-circle text-primary');
+                    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+                    DOM.toastBox.appendChild(toast);
+                    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 3000);
+                },
+                copyToClipboard: async (text) => {
                     try {
-                        const permission = await Notification.requestPermission();
-                        if (permission !== 'granted') {
-                            console.log('Notification permission denied');
-                            notificationModal.hide();
-                            return;
-                        }
-
-                        console.log('Notification permission granted. Fetching token...');
-                        const vapidKey = "BHsfuRpT67uCNIc_2p6h5cj0Ze6y09HsR0ZTZsvHaWDz9OjFLC6k2LlVWW7nWZuuBX90IAjwTMSFgQ5Mz2V_pt8";
-                        const token = await getToken(messaging, { vapidKey });
-
-                        if (token) {
-                            console.log('FCM Token:', token);
-                            
-                            // Send token to server
-                            const response = await fetch('/register-token', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    userId: '<%=uId%>',
-                                    token: token
-                                })
-                            });
-                            
-                            if (response.ok) {
-                                console.log('Token registered successfully on server');
-                            } else {
-                                console.error('Failed to register token on server');
-                            }
-                        } else {
-                            console.error('No registration token available');
-                        }
-                        
-                        notificationModal.hide();
-                    } catch (error) {
-                        console.error('Error during notification setup:', error);
-                        notificationModal.hide();
+                        await navigator.clipboard.writeText(text);
+                        Utils.showToast('Link copied to clipboard!', 'success');
+                    } catch (err) {
+                        Utils.showToast('Failed to copy link', 'error');
                     }
-                });
-            }
+                }
+            };
 
-            // Handle foreground messages
-            onMessage(messaging, (payload) => {
-                console.log('Message received in foreground:', payload);
-                if (payload.notification) {
-                    // You can implement a custom notification UI here
-                    const { title, body } = payload.notification;
-                    alert(`${title}: ${body}`);
+            // Bind Share Buttons using Event Delegation
+            DOM.grid.addEventListener('click', (e) => {
+                const shareBtn = e.target.closest('.v-share-btn');
+                if (shareBtn) {
+                    e.preventDefault(); 
+                    e.stopPropagation();
+                    const link = shareBtn.getAttribute('data-share-link');
+                    Utils.copyToClipboard(link);
                 }
             });
 
-        } catch (error) {
-            console.error('Firebase initialization error:', error);
-        }
-    </script>
-    <% } %>
+            /**
+             * 4. NETWORK MANAGER (REAL API CONNECTIVITY)
+             */
+            const Network = {
+                
+                /**
+                 * FETCH SUGGESTIONS (REAL API)
+                 * Uses internal Map caching to prevent rapid duplicate network calls.
+                 */
+                fetchSuggestions: async (query) => {
+                    const q = query.toLowerCase();
+                    if(State.suggestionCache.has(q)) return State.suggestionCache.get(q);
 
+                    if(State.suggestAbortController) State.suggestAbortController.abort();
+                    State.suggestAbortController = new AbortController();
+                    
+                    try {
+                        // Fetching from your actual /files endpoint but limiting to 5 just to extract names
+                        const res = await fetch(`/files?search=${encodeURIComponent(query)}&limit=5`, {
+                            signal: State.suggestAbortController.signal
+                        });
+                        
+                        if(!res.ok) throw new Error('API Error');
+                        const data = await res.json();
+                        
+                        // Extract unique filenames from the files array
+                        const suggestions = data.files ? data.files.map(f => ({ text: f.filename, category: f.category || 'Match' })) : [];
+                        
+                        // Manage LRU Cache (max 20 items)
+                        if(State.suggestionCache.size > 20) {
+                            const firstKey = State.suggestionCache.keys().next().value;
+                            State.suggestionCache.delete(firstKey);
+                        }
+                        State.suggestionCache.set(q, suggestions);
+                        
+                        return suggestions;
+                        
+                    } catch(err) {
+                        if (err.name === 'AbortError') return null; 
+                        console.warn("Suggestion API failed, relying on history.", err);
+                        return []; 
+                    }
+                },
+
+                /**
+                 * FETCH MAIN FILES (REAL API)
+                 */
+                fetchFiles: async (isInitial = false) => {
+                    if(State.isFetchingFiles) return;
+                    
+                    if(State.fetchAbortController) State.fetchAbortController.abort();
+                    State.fetchAbortController = new AbortController();
+                    
+                    State.isFetchingFiles = true;
+                    Render.showSkeletons();
+
+                    try {
+                        // Build Query Params exactly as your backend expects
+                        const params = new URLSearchParams({ 
+                            page: State.page, 
+                            limit: State.limit, 
+                            sort: State.sort 
+                        });
+                        
+                        if (State.query) params.append('search', State.query);
+                        
+                        // Handle price radio buttons
+                        if (State.filters.priceTier !== 'all') {
+                            params.append('price', State.filters.priceTier); // 'free' or 'paid'
+                        }
+                        
+                        State.filters.categories.forEach(c => params.append('category', c));
+                        State.filters.fileTypes.forEach(t => params.append('fileType', t));
+
+                        const res = await fetch(`/files?${params.toString()}`, {
+                            signal: State.fetchAbortController.signal
+                        });
+                        
+                        if(!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+                        const data = await res.json();
+
+                        // Sync State with Backend Reality
+                        State.totalItems = data.totalFiles || 0;
+                        State.totalPages = data.totalPages || 1;
+                        
+                        // Populate dynamic categories & types on first load
+                        if(isInitial) {
+                            if(data.allCategories) State.availableCategories = data.allCategories;
+                            if(data.allFileTypes) State.availableFileTypes = data.allFileTypes;
+                            Render.sidebarFilters();
+                        }
+
+                        // Render
+                        DOM.totalCount.textContent = State.totalItems;
+                        if(data.files && data.files.length > 0) {
+                            Render.grid(data.files);
+                            Render.pagination();
+                        } else {
+                            Render.emptyState();
+                        }
+
+                    } catch(err) {
+                        if (err.name === 'AbortError') return; 
+                        console.error('Fetch Files Error:', err);
+                        Render.emptyState("Server communication failed. Please try again.");
+                        Utils.showToast('Failed to load resources', 'error');
+                    } finally {
+                        State.isFetchingFiles = false;
+                    }
+                }
+            };
+
+            /**
+             * 5. RENDER ENGINE
+             */
+            const Render = {
+                
+                sidebarFilters: () => {
+                    if(State.availableCategories.length > 0) {
+                        DOM.catList.innerHTML = State.availableCategories.map(c => `
+                            <label class="v-check-row">
+                                <input type="checkbox" class="v-checkbox cat-check" value="${c}" ${State.filters.categories.includes(c) ? 'checked' : ''}> 
+                                <span>${c}</span>
+                            </label>
+                        `).join('');
+                    } else {
+                        DOM.catList.innerHTML = `<div class="text-muted font-weight-bold p-2">No categories available.</div>`;
+                    }
+
+                    if(State.availableFileTypes.length > 0) {
+                        DOM.typeList.innerHTML = State.availableFileTypes.map(t => `
+                            <label class="v-check-row">
+                                <input type="checkbox" class="v-checkbox type-check" value="${t}" ${State.filters.fileTypes.includes(t) ? 'checked' : ''}> 
+                                <span class="v-uppercase">${t}</span>
+                            </label>
+                        `).join('');
+                    } else {
+                        DOM.typeList.innerHTML = `<div class="text-muted font-weight-bold p-2">No file types available.</div>`;
+                    }
+                },
+
+                activePills: () => {
+                    let html = '';
+                    let count = 0;
+                    
+                    if(State.filters.priceTier === 'free') { html += `<div class="v-filter-pill">Free Only <i class="fas fa-times v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; count++; }
+                    else if(State.filters.priceTier === 'paid') { html += `<div class="v-filter-pill">Premium Only <i class="fas fa-times v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; count++; }
+                    
+                    State.filters.categories.forEach(c => { html += `<div class="v-filter-pill">${c} <i class="fas fa-times v-filter-remove" onclick="EventManager.removeFilter('cat', '${c}')"></i></div>`; count++; });
+                    State.filters.fileTypes.forEach(t => { html += `<div class="v-filter-pill v-uppercase">${t} <i class="fas fa-times v-filter-remove" onclick="EventManager.removeFilter('type', '${t}')"></i></div>`; count++; });
+                    
+                    DOM.activeFilters.innerHTML = html;
+                    DOM.mobileBadge.textContent = count;
+                    DOM.mobileBadge.style.display = count > 0 ? 'inline-block' : 'none';
+                },
+
+                showSkeletons: () => {
+                    DOM.grid.innerHTML = Array(8).fill('').map(() => `
+                        <div class="v-skeleton-card">
+                            <div class="v-skeleton-img"></div>
+                            <div class="v-skeleton-body">
+                                <div class="v-skeleton-line"></div>
+                                <div class="v-skeleton-line short"></div>
+                                <div class="v-skeleton-line price"></div>
+                            </div>
+                        </div>
+                    `).join('');
+                    DOM.pagination.innerHTML = '';
+                },
+
+                emptyState: (msg = "No resources match your current filters.") => {
+                    DOM.grid.innerHTML = `
+                        <div class="v-empty-state">
+                            <i class="fas fa-ghost v-empty-icon"></i>
+                            <h2 class="v-text-loud" style="font-size: 3rem;">Nothing Found</h2>
+                            <p class="font-weight-bold text-muted mb-4" style="font-size: 1.25rem;">${msg}</p>
+                            <button class="v-btn-block secondary" style="max-width: 250px; border-radius: var(--v-radius-pill);" onclick="EventManager.clearFilters()">Clear Filters</button>
+                        </div>`;
+                },
+
+                grid: (files) => {
+                    DOM.grid.innerHTML = files.map((file, index) => {
+                        const isFree = file.price === 0 || file.price === '0';
+                        const link = `/file/${file.slug || Utils.slugify(file.filename)}/${file._id}`;
+                        const fullLink = window.location.origin + link;
+                        
+                        return `
+                            <a href="${link}" class="v-card" style="animation: popIn 0.5s var(--v-ease-bounce) ${index * 0.05}s forwards; opacity: 0; transform: scale(0.9) translateY(20px);">
+                                <div class="v-card-img-box">
+                                    <div class="v-badge">${file.category || 'Resource'}</div>
+                                    <button class="v-share-btn" data-share-link="${fullLink}" title="Copy Link"><i class="fas fa-link"></i></button>
+                                    <img src="${file.previewUrl || '/images/File_Demo.svg'}" class="v-card-img" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
+                                </div>
+                                <div class="v-card-content">
+                                    <h3 class="v-card-title">${file.filename}</h3>
+                                    ${file.author ? `<div class="v-card-author"><i class="fas fa-user-circle text-muted"></i> ${file.author}</div>` : ''}
+                                </div>
+                                <div class="v-card-footer">
+                                    <div class="v-price ${isFree ? 'is-free' : 'is-paid'}">${Utils.formatPrice(file.price)}</div>
+                                    <div class="v-card-action"><i class="fas fa-arrow-right"></i></div>
+                                </div>
+                            </a>
+                        `;
+                    }).join('');
+                },
+
+                pagination: () => {
+                    if (State.totalPages <= 1) { DOM.pagination.innerHTML = ''; return; }
+                    
+                    let html = `<button class="v-page-btn v-page-nav" ${State.page === 1 ? 'disabled' : ''} data-p="${State.page - 1}"><i class="fas fa-chevron-left me-2"></i> Prev</button>`;
+                    
+                    let start = Math.max(1, State.page - 2);
+                    let end = Math.min(State.totalPages, start + 4);
+                    if (end - start < 4) start = Math.max(1, end - 4);
+                    
+                    if (start > 1) {
+                        html += `<button class="v-page-btn" data-p="1">1</button>`;
+                        if (start > 2) html += `<span class="v-page-ellipsis">...</span>`;
+                    }
+                    
+                    for (let i = start; i <= end; i++) {
+                        html += `<button class="v-page-btn ${i === State.page ? 'is-active' : ''}" data-p="${i}">${i}</button>`;
+                    }
+                    
+                    if (end < State.totalPages) {
+                        if (end < State.totalPages - 1) html += `<span class="v-page-ellipsis">...</span>`;
+                        html += `<button class="v-page-btn" data-p="${State.totalPages}">${State.totalPages}</button>`;
+                    }
+                    
+                    html += `<button class="v-page-btn v-page-nav" ${State.page === State.totalPages ? 'disabled' : ''} data-p="${State.page + 1}">Next <i class="fas fa-chevron-right ms-2"></i></button>`;
+                    
+                    DOM.pagination.innerHTML = html;
+                    
+                    // Bind events to new buttons
+                    DOM.pagination.querySelectorAll('.v-page-btn:not([disabled])').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            State.page = parseInt(e.currentTarget.dataset.p);
+                            Network.fetchFiles();
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        });
+                    });
+                }
+            };
+
+            /**
+             * 6. INTELLIGENT SEARCH ENGINE
+             */
+            const SearchEngine = {
+                currentFocus: -1,
+
+                handleInput: async (query) => {
+                    if(!query) { SearchEngine.showRecents(); return; }
+
+                    DOM.suggestTitle.textContent = "Suggestions";
+                    DOM.clearHistoryBtn.style.display = "none";
+                    DOM.searchBox.classList.add('is-loading');
+
+                    const suggestions = await Network.fetchSuggestions(query);
+                    if(!suggestions) return; // Aborted
+                    
+                    DOM.searchBox.classList.remove('is-loading');
+
+                    if(suggestions.length === 0) {
+                        DOM.suggestList.innerHTML = `<div class="p-4 text-center font-weight-bold text-muted">Press Enter to search for "${query}"</div>`;
+                    } else {
+                        const regex = new RegExp(`(${query})`, 'gi');
+                        let html = '';
+                        suggestions.forEach(item => {
+                            const text = typeof item === 'string' ? item : (item.text || item.filename);
+                            const cat = item.category || 'Match';
+                            const highlighted = text.replace(regex, '<span class="v-suggest-match">$1</span>');
+                            
+                            html += `<div class="v-suggest-item" data-val="${text}">
+                                        <div class="v-suggest-icon"><i class="fas fa-search"></i></div>
+                                        <div class="v-suggest-text">${highlighted}</div>
+                                        <div class="v-suggest-type">${cat}</div>
+                                     </div>`;
+                        });
+                        DOM.suggestList.innerHTML = html;
+                        SearchEngine.bindItemClicks();
+                    }
+                    DOM.suggestPane.classList.add('is-active');
+                    SearchEngine.currentFocus = -1;
+                },
+
+                showRecents: () => {
+                    DOM.suggestTitle.textContent = "Recent Searches";
+                    DOM.clearHistoryBtn.style.display = State.recentSearches.length > 0 ? "block" : "none";
+                    DOM.searchBox.classList.remove('is-loading');
+                    
+                    if(State.recentSearches.length === 0) {
+                        DOM.suggestPane.classList.remove('is-active');
+                        return;
+                    }
+
+                    DOM.suggestList.innerHTML = State.recentSearches.map(s => `
+                        <div class="v-suggest-item" data-val="${s}">
+                            <div class="v-suggest-icon" style="border-radius: 50%;"><i class="fas fa-history text-muted"></i></div>
+                            <div class="v-suggest-text">${s}</div>
+                        </div>
+                    `).join('');
+                    
+                    DOM.suggestPane.classList.add('is-active');
+                    SearchEngine.bindItemClicks();
+                    SearchEngine.currentFocus = -1;
+                },
+
+                bindItemClicks: () => {
+                    document.querySelectorAll('.v-suggest-item').forEach(item => {
+                        item.addEventListener('click', () => SearchEngine.execute(item.dataset.val));
+                    });
+                },
+
+                execute: (query) => {
+                    if(!query) return;
+                    DOM.input.value = query;
+                    State.query = query;
+                    State.page = 1;
+                    DOM.suggestPane.classList.remove('is-active');
+                    DOM.input.blur(); // Dismiss keyboard on mobile
+                    
+                    // LRU Cache logic for recents
+                    let recents = State.recentSearches.filter(s => s !== query);
+                    recents.unshift(query);
+                    if(recents.length > 5) recents.pop();
+                    State.recentSearches = recents;
+                    localStorage.setItem('v-recent-searches', JSON.stringify(recents));
+
+                    Network.fetchFiles();
+                    Utils.showToast(`Searching for "${query}"`, 'info');
+                }
+            };
+
+            /**
+             * 7. EVENT MANAGER
+             */
+            const EventManager = {
+                init: () => {
+                    // Search Input
+                    DOM.input.addEventListener('input', Utils.debounce((e) => SearchEngine.handleInput(e.target.value.trim()), 350));
+                    DOM.input.addEventListener('focus', () => { if(DOM.input.value.trim() === '') SearchEngine.showRecents(); else SearchEngine.handleInput(DOM.input.value.trim()); });
+                    DOM.searchBtn.addEventListener('click', () => SearchEngine.execute(DOM.input.value.trim()));
+                    DOM.clearHistoryBtn.addEventListener('click', () => { State.recentSearches = []; localStorage.removeItem('v-recent-searches'); SearchEngine.showRecents(); Utils.showToast('History cleared', 'info'); });
+
+                    // Search Keyboard Navigation
+                    DOM.input.addEventListener('keydown', (e) => {
+                        const items = DOM.suggestList.querySelectorAll('.v-suggest-item');
+                        if(!DOM.suggestPane.classList.contains('is-active') || items.length === 0) {
+                            if(e.key === 'Enter') SearchEngine.execute(DOM.input.value.trim());
+                            return;
+                        }
+                        if (e.key === 'ArrowDown') { e.preventDefault(); SearchEngine.currentFocus++; EventManager.addActive(items); } 
+                        else if (e.key === 'ArrowUp') { e.preventDefault(); SearchEngine.currentFocus--; EventManager.addActive(items); } 
+                        else if (e.key === 'Enter') { e.preventDefault(); if (SearchEngine.currentFocus > -1) items[SearchEngine.currentFocus].click(); else SearchEngine.execute(DOM.input.value.trim()); }
+                    });
+
+                    // Close Suggest Pane Outside Click
+                    document.addEventListener('click', (e) => { if(!DOM.searchBox.parentElement.contains(e.target)) DOM.suggestPane.classList.remove('is-active'); });
+
+                    // Sidebar Mobile Toggles
+                    const toggleSidebar = (open) => {
+                        DOM.sidebar.classList.toggle('is-open', open);
+                        DOM.overlay.classList.toggle('is-active', open);
+                        document.body.style.overflow = open ? 'hidden' : '';
+                    };
+                    DOM.mobileBtn.addEventListener('click', () => toggleSidebar(true));
+                    DOM.closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
+                    DOM.overlay.addEventListener('click', () => toggleSidebar(false));
+
+                    // Filter Actions
+                    DOM.applyBtn.addEventListener('click', () => { EventManager.syncStateFromUI(); Network.fetchFiles(); toggleSidebar(false); });
+                    DOM.clearBtn.addEventListener('click', () => { EventManager.clearFilters(); toggleSidebar(false); });
+                    DOM.sortSelect.addEventListener('change', () => { State.sort = DOM.sortSelect.value; State.page = 1; Network.fetchFiles(); });
+
+                    // View Mode Toggles
+                    DOM.viewBtns.forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const view = e.currentTarget.dataset.view;
+                            DOM.viewBtns.forEach(b => b.classList.remove('is-active'));
+                            e.currentTarget.classList.add('is-active');
+                            if(view === 'list') DOM.grid.classList.add('is-list-view'); else DOM.grid.classList.remove('is-list-view');
+                            localStorage.setItem('v-view-mode', view);
+                        });
+                    });
+
+                    // Expose to window for inline HTML onclicks (Filter Pills)
+                    window.EventManager = EventManager;
+                },
+
+                addActive: (items) => {
+                    items.forEach(item => item.classList.remove('is-selected'));
+                    if (SearchEngine.currentFocus >= items.length) SearchEngine.currentFocus = 0;
+                    if (SearchEngine.currentFocus < 0) SearchEngine.currentFocus = (items.length - 1);
+                    items[SearchEngine.currentFocus].classList.add('is-selected');
+                    items[SearchEngine.currentFocus].scrollIntoView({ block: 'nearest' });
+                },
+
+                syncStateFromUI: () => {
+                    const priceVal = document.querySelector('input[name="priceTier"]:checked').value;
+                    State.filters.priceTier = priceVal;
+                    State.filters.categories = Array.from(document.querySelectorAll('.cat-check:checked')).map(cb => cb.value);
+                    State.filters.fileTypes = Array.from(document.querySelectorAll('.type-check:checked')).map(cb => cb.value);
+                    State.page = 1;
+                    Render.activePills();
+                },
+
+                clearFilters: () => {
+                    document.getElementById('vPriceAll').checked = true;
+                    document.querySelectorAll('.v-checkbox').forEach(cb => cb.checked = false);
+                    DOM.input.value = ''; State.query = '';
+                    EventManager.syncStateFromUI();
+                    Network.fetchFiles();
+                },
+
+                removeFilter: (type, val) => {
+                    if(type === 'price') document.getElementById('vPriceAll').checked = true;
+                    if(type === 'cat') { const cb = document.querySelector(`.cat-check[value="${val}"]`); if(cb) cb.checked = false; }
+                    if(type === 'type') { const cb = document.querySelector(`.type-check[value="${val}"]`); if(cb) cb.checked = false; }
+                    EventManager.syncStateFromUI();
+                    Network.fetchFiles();
+                }
+            };
+
+            // --- 8. INITIALIZE APPLICATION ---
+            EventManager.init();
+            
+            // Set Initial View Mode from LocalStorage
+            if(State.viewMode === 'list') {
+                DOM.grid.classList.add('is-list-view');
+                DOM.viewBtns.forEach(b => b.classList.toggle('is-active', b.dataset.view === 'list'));
+            }
+
+            // Fetch initial data
+            Network.fetchFiles(true);
+
+        });
+    </script>
 </body>
 </html>
-<%-include("footer")%>

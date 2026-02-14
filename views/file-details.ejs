@@ -1,10 +1,10 @@
 <%-include("header")%>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
 
     <title>
         <% if(file.price==0) { %>
@@ -14,597 +14,416 @@
         <% } %>
     </title>
 
-    <meta name="description"
-        content="Securely purchase and instantly download '<%= file.filename %>'. <%= file.filedescription %> | Vidyari Checkout">
+    <meta name="description" content="Securely purchase and instantly download '<%= file.filename %>'. <%= file.filedescription %> | Vidyari Checkout">
     <meta property="og:type" content="product">
     <meta property="og:title" content="Checkout • <%= file.filename %> | Vidyari">
     <meta property="og:image" content="<%= previewUrl || 'https://vidyari.com/images/logo-1200x630.png' %>">
 
     <link rel="icon" href="/images/logo.svg" type="image/svg" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;800;900&family=Space+Grotesk:wght@700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* --- Root and Base Styles --- */
-        :root {
-            --font-main: 'Inter', sans-serif;
-            --font-display: 'Anton', sans-serif;
-            --color-black: #000;
-            --color-white: #fff;
-            --color-accent: #1ac2ff; 
-            --color-primary-card: #ff66a3; 
-            --color-sidebar: #f0f0f0; 
-            --color-paid: #E84C86;
-            --color-free: #30B45E;
-        }
+        /* ==========================================================================
+           VIDYARI CHECKOUT: RESTRUCTURED NEO-BRUTALISM
+           ========================================================================== */
+        .vidyari-checkout-master {
+            --v-bg: #fdfdfc; 
+            --v-black: #09090b;
+            --v-white: #ffffff;
+            --v-pink: #ff66a3; 
+            --v-green: #4ade80; 
+            --v-yellow: #ffd60a; 
+            --v-blue: #1ac2ff; 
+            --v-gray-50: #fafafa;
+            --v-gray-100: #f4f4f5;
+            --v-gray-200: #e4e4e7;
+            --v-gray-800: #27272a;
+            
+            --v-font-sans: 'Inter', sans-serif;
+            --v-font-head: 'Montserrat', sans-serif;
+            --v-font-loud: 'Space Grotesk', sans-serif;
+            
+            --v-border-thin: 2px solid var(--v-black);
+            --v-border-thick: 4px solid var(--v-black);
+            
+            --v-shadow-sm: 4px 4px 0 var(--v-black);
+            --v-shadow-md: 8px 8px 0 var(--v-black);
+            --v-shadow-hover: 12px 12px 0 var(--v-black);
+            
+            --v-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-        html, body {
+            background-color: var(--v-bg);
+            /* Subtle Dot Pattern Background to make boxes pop */
+            background-image: radial-gradient(var(--v-gray-300) 1px, transparent 1px);
+            background-size: 20px 20px;
+            
+            color: var(--v-black);
+            font-family: var(--v-font-sans);
+            min-height: 100vh;
             width: 100%;
-            height: 100%;
-        }
-        body {
-            background-color: var(--color-black);
-            color: var(--color-white);
-            font-family: var(--font-main);
-            overflow-x: hidden;
-            font-size: 1rem; 
-        }
-        
-        main {
-            /* Padding is now on the container */
+            overflow-x: hidden; /* Strict horizontal overflow prevention */
+            padding-top: clamp(20px, 4vw, 60px);
+            padding-bottom: clamp(100px, 10vw, 120px); /* Space for mobile bar */
+            box-sizing: border-box;
         }
 
-        .container-xl {
+        .vidyari-checkout-master * { box-sizing: border-box; }
+        .vidyari-checkout-master a { text-decoration: none; color: inherit; }
+        .vidyari-checkout-master ul { padding: 0; margin: 0; list-style: none; }
+
+        /* Container & Grid Layout */
+        .v-container {
             width: 100%;
-        }
-        
-        /* --- High-Contrast Block Styling --- */
-        .product-block {
-            background-color: var(--color-white);
-            color: var(--color-black);
-            box-shadow: 10px 10px 0 var(--color-black); /* --- REFINED --- */
-            padding: 1rem; /* --- REFINED --- */
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 5vw, 32px);
         }
 
-        /* --- Typography --- */
-        h1 {
-            font-family: var(--font-display);
-            text-transform: uppercase;
-            font-size: clamp(2.2rem, 5vw, 3.5rem);
-            margin-bottom: 0.5rem;
-            line-height: 1.1;
-        }
-        
-        /* --- Product Details and Spacing --- */
-        .details-box { 
-            border: 2px dashed var(--color-black); 
-            padding: 1.5rem; 
-            margin-top: 2rem; 
-            line-height: 1.7; 
-            background-color: #fcfcfc; 
-        }
-        .details-box h2 {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            border-bottom: 2px solid var(--color-black); 
-            padding-bottom: 5px; 
-            margin-bottom: 1rem;
-        }
-        .details-box p, 
-        .details-box ul, 
-        .details-box ol, 
-        .details-box blockquote {
-            margin-bottom: 1rem; 
-        }
-
-        /* --- Image Previews --- */
-        .preview-image-wrapper {
-            width: 100%; 
-            max-width: 380px; 
-            aspect-ratio: 1 / 1.414; 
-            position: relative; 
-            border: 4px solid var(--color-black); 
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.5); 
-            overflow: hidden;
-            margin: 0 auto 1.5rem auto; 
-            background-color: #eee;
-            cursor: zoom-in; /* Indicate clickable for zoom */
-        }
-        .preview-image-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
-        
-        /* Style for the new image modal - OPTIMIZED FOR FULL, CLEAR VIEW */
-        #imageModal .modal-dialog {
-            display: flex; /* Flexbox for centering */
-            align-items: center; /* Vertically center */
-            justify-content: center; /* Horizontally center */
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            padding: 0 !important;
-        }
-        #imageModal .modal-content {
-            background-color: rgba(0, 0, 0, 0.95); /* Deeper black background */
-            border: none;
-            width: 100%;
-            height: 100%;
-        }
-        #imageModal .modal-header {
-            position: fixed; /* Keep close button visible */
-            top: 0;
-            right: 0;
-            z-index: 1056; /* Above the image */
-            border-bottom: none;
-            padding: 1rem;
-        }
-        #imageModal .modal-body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px; /* Small padding buffer */
-            overflow: auto; /* Allow scrolling if image is truly huge */
-            flex-grow: 1;
-        }
-        #imageModal img {
-            object-fit: contain;
-            max-height: 100%; /* Fill 100% of the modal body height */
-            max-width: 100%;  /* Fill 100% of the modal body width */
-            width: auto;      /* Maintain aspect ratio */
-            height: auto;     /* Maintain aspect ratio */
-            display: block;
-            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
-            transform: scale(0.85); /* Initial scale for distinct zoom-in effect */
-        }
-        #imageModal.show #modalFullImage {
-            transform: scale(1); /* Final scale when modal is shown (100% size) */
-        }
-        #imageModal .btn-close {
-            filter: invert(1);
-            opacity: 1;
-            box-shadow: none; /* Clean up button focus */
-        }
-
-        /* --- Creator Info --- */
-        .creator-info { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
-        .creator-info .profile-pic { 
-            width: 48px; /* --- REFINED --- */ 
-            height: 48px; /* --- REFINED --- */
-            border-radius: 50%; 
-            border: 3px solid var(--color-black); 
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-        .category-tag {
-            display: inline-block; background-color: var(--color-primary-card); color: var(--color-black); padding: 0.2rem 0.6rem; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; border: 2px solid var(--color-black); box-shadow: 2px 2px 0 var(--color-black); margin-bottom: 0.5rem;
-        }
-        
-        /* --- REFINED: Stats Detail Box --- */
-        .stats-detail {
-            background-color: #f8f8f8;
-            padding: 1rem 1.5rem;
-            border: 2px dashed var(--color-black);
-            border-radius: 4px;
-        }
-
-        /* New styles for improved details layout */
-        .spec-list {
-            list-style: none;
-            padding: 0;
-            margin: 0.5rem 0 1rem 0;
-        }
-        .spec-list li {
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--color-black);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .spec-list li span {
-            font-weight: 400;
-            color: #333;
-        }
-        
-        /* --- NEW: Like Button & Animation --- */
-        .like-button {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-            border: 3px solid var(--color-black);
-            box-shadow: 5px 5px 0 var(--color-black);
-            background: var(--color-white);
-            color: var(--color-black);
-            padding: 0.75rem 1.25rem;
-            font-size: 1.1rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            overflow: hidden; /* Hide overflowing particles */
-        }
-        .like-button:hover:not(.liked) {
-            transform: translate(2px, 2px);
-            box-shadow: 3px 3px 0 var(--color-black);
-            background: #f5f5f5;
-        }
-        .like-button:active:not(.liked) {
-            transform: translate(3px, 3px);
-            box-shadow: 2px 2px 0 var(--color-black);
-        }
-        .like-button .icon {
-            font-size: 1.3rem;
-            transition: transform 0.3s ease;
-        }
-        .like-button .count {
-            font-size: 1rem;
-        }
-
-        /* Liked State */
-        .like-button.liked {
-            background: var(--color-paid);
-            color: var(--color-white);
-            border-color: var(--color-paid);
-            box-shadow: 5px 5px 0 #a1345c; /* Darker shade of --color-paid */
-        }
-        .like-button.liked:hover {
-            background: #d4447a; /* Lighter shade */
-        }
-        .like-button.liked .icon .fa-regular {
-            display: none; /* Hide outline */
-        }
-        .like-button .icon .fa-solid {
-            display: none; /* Hide solid by default */
-        }
-        .like-button.liked .icon .fa-solid {
-            display: inline-block; /* Show solid when liked */
-        }
-
-        /* Pop Animation */
-        .like-button.animating .icon {
-            animation: heart-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes heart-pop {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.4); }
-        }
-
-        /* Particle Burst Animation */
-        .like-button .particle-container {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none; /* Don't block clicks */
-        }
-        .like-button .particle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 6px;
-            height: 6px;
-            background: var(--color-paid);
-            border-radius: 50%;
-            opacity: 0;
-            transform: translate(-50%, -50%);
-        }
-        /* Only animate when .animating is on the parent button */
-        .like-button.animating .particle {
-            animation: particle-burst 0.7s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        @keyframes particle-burst {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(2.5) translate(var(--x), var(--y)); opacity: 0; }
-        }
-
-
-        /* --- Buy Box (Sidebar) --- */
-        .buy-action-sidebar {
-            border: 4px solid var(--color-black);
-            padding: 1.5rem;
-            background-color: var(--color-sidebar); 
-            position: sticky; 
-            top: 20px;
-        }
-        .price-large {
-            font-family: var(--font-display);
-            font-size: 3.5rem;
-            color: var(--color-paid); 
-            line-height: 1;
-            margin-top: 1rem;
-        }
-        .buy-action-sidebar .btn-action {
-            border: 3px solid var(--color-black); 
-            background: var(--color-accent); 
-            color: var(--color-black); 
-            padding: 1rem;
-            font-size: 1.25rem; 
-            font-weight: 900;
-            text-transform: uppercase; 
-            box-shadow: 6px 6px 0 var(--color-black);
-            transition: all 0.1s;
-            text-decoration: none;
-        }
-        .buy-action-sidebar .btn-action:hover {
-            transform: translate(1px, 1px);
-            box-shadow: 4px 4px 0 var(--color-black);
-            background: var(--color-primary-card);
-        }
-        
-        /* --- REFINED: Trust Badges --- */
-        .trust-badges-list {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 0;
-        }
-        .trust-badges-list li {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .trust-badges-list li:last-child {
-            margin-bottom: 0;
-        }
-        .trust-badges-list .fa-check-circle,
-        .trust-badges-list .fa-lock,
-        .trust-badges-list .fa-shield-alt {
-            font-size: 1.1rem;
-            color: var(--color-paid);
-            flex-shrink: 0;
-        }
-
-        /* --- Related Documents Styling - GRID --- */
-        .related-header {
-            font-family: var(--font-display); 
-            text-transform: uppercase;
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
-            border-bottom: 4px solid var(--color-black); 
-            padding-bottom: 10px;
-            margin-bottom: 1.5rem;
-        }
-        
-        .related-grid { 
+        .v-layout-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
-            gap: 20px;
-            padding: 5px 0; 
-            margin-bottom: 20px; 
+            /* grid-template-columns: 1fr 380px; */
+            gap: clamp(24px, 4vw, 40px);
+            align-items: start;
         }
 
-        @media (max-width: 575.98px) {
-            .related-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
-                gap: 10px; 
-            }
+        /* UI Building Blocks */
+        .v-box {
+            background: var(--v-white);
+            border: var(--v-border-thick);
+            border-radius: 20px;
+            box-shadow: var(--v-shadow-md);
+            padding: clamp(20px, 4vw, 40px);
+            margin-bottom: clamp(24px, 4vw, 40px);
+            position: relative;
+        }
+
+        .v-title {
+            font-family: var(--v-font-loud);
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            text-transform: uppercase;
+            line-height: 1.05;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0 var(--v-pink);
+            letter-spacing: -1px;
+        }
+
+        .v-subtitle {
+            font-family: var(--v-font-loud);
+            font-weight: 900;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            text-transform: uppercase;
+            border-bottom: var(--v-border-thick);
+            padding-bottom: 12px;
+            margin-bottom: 24px;
+        }
+
+        .v-badge {
+            display: inline-block;
+            background: var(--v-yellow);
+            border: var(--v-border-thin);
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-family: var(--v-font-loud);
+            font-weight: 900;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0 var(--v-black);
+            margin-bottom: 20px;
+        }
+
+        /* Preview Image */
+        .preview-wrapper {
+            border: var(--v-border-thick);
+            border-radius: 16px;
+            box-shadow: var(--v-shadow-md);
+            overflow: hidden;
+            background: var(--v-gray-100);
+            /* aspect-ratio: 1 / 1.2; */
+            width: 70%;
+
+
+            cursor: zoom-in;
+            transition: transform var(--v-transition);
+        }
+        .preview-wrapper:hover { transform: translate(-4px, -4px); box-shadow: var(--v-shadow-hover); }
+        .preview-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Creator Bar */
+        .creator-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--v-white);
+            border: var(--v-border-thin);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--v-shadow-sm);
+        }
+        .creator-pic {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            border: var(--v-border-thin);
+            object-fit: cover;
+        }
+
+        /* Spec Grid (New Restructure) */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .spec-card {
+            background: var(--v-gray-50);
+            border: var(--v-border-thin);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 3px 3px 0 var(--v-gray-300);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .spec-card i { font-size: 1.5rem; color: var(--v-blue); }
+        .spec-card .val { font-weight: 900; font-size: 1.1rem; }
+        .spec-card .lbl { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--v-gray-600); }
+
+        /* Description Content */
+        .desc-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--v-gray-800);
+        }
+        .desc-content p { margin-bottom: 16px; }
+
+        /* Sidebar Buy Box */
+        .sidebar-sticky { position: sticky; top: 100px; }
+        
+        .price-display {
+            font-family: var(--v-font-loud);
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            color: var(--v-black);
+            text-align: center;
+            line-height: 1;
+            margin: 10px 0 24px 0;
+            text-shadow: 4px 4px 0 var(--v-green);
+        }
+        .price-display.is-free { text-shadow: 4px 4px 0 var(--v-pink); }
+
+        .v-btn-buy {
+            width: 100%;
+            background: var(--v-green);
+            border: var(--v-border-thick);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: var(--v-font-loud);
+            font-size: 1.3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            box-shadow: var(--v-shadow-md);
+            transition: all var(--v-transition);
+            display: flex; justify-content: center; align-items: center; gap: 12px;
+            color: var(--v-black);
+            cursor: pointer;
+        }
+        .v-btn-buy:hover { transform: translate(-4px, -4px); box-shadow: var(--v-shadow-hover); background: var(--v-yellow); }
+        .v-btn-buy:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--v-black); }
+        .v-btn-buy.is-free { background: var(--v-pink); text-shadow: 1px 1px 0 var(--v-white); }
+
+        .trust-badges { margin-top: 24px; padding-top: 24px; border-top: 3px dashed var(--v-gray-200); }
+        .trust-badges li { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1rem; margin-bottom: 16px; }
+        .trust-badges i { color: var(--v-blue); font-size: 1.4rem; }
+
+        /* Action Buttons */
+        .action-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+        .v-btn-like {
+            background: var(--v-white); border: var(--v-border-thin); border-radius: 12px;
+            padding: 12px 24px; font-weight: 900; font-size: 1.1rem; box-shadow: 3px 3px 0 var(--v-black);
+            display: inline-flex; align-items: center; gap: 10px; transition: all var(--v-transition);
+        }
+        .v-btn-like:hover { background: var(--v-yellow); transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--v-black); }
+        .v-btn-like.liked { background: var(--v-pink); color: var(--v-white); }
+
+        /* Related Grid */
+        .v-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
+        .v-card { 
+            background: var(--v-white); border: var(--v-border-thick); border-radius: 16px; 
+            box-shadow: var(--v-shadow-md); display: flex; flex-direction: column; overflow: hidden; 
+            transition: all var(--v-transition); text-decoration: none; color: inherit;
+        }
+        .v-card:hover { transform: translate(-6px, -6px); box-shadow: var(--v-shadow-hover); }
+        .v-card-img-box { aspect-ratio: 4/3; border-bottom: var(--v-border-thick); overflow: hidden; position: relative; background: var(--v-gray-100); }
+        .v-card-img { width: 100%; height: 100%; object-fit: cover; }
+        .v-badge-card { position: absolute; top: 12px; left: 12px; background: var(--v-yellow); border: var(--v-border-thin); border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; }
+        .v-card-content { padding: 20px; flex: 1; }
+        .v-card-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+        .v-card-footer { padding: 16px 20px; border-top: var(--v-border-thick); background: var(--v-gray-50); display: flex; justify-content: space-between; align-items: center; }
+        .v-price { font-size: 1.1rem; font-weight: 900; padding: 6px 16px; border: var(--v-border-thin); border-radius: 8px; box-shadow: 2px 2px 0 var(--v-black); }
+        .v-price.is-free { background: var(--v-green); }
+        .v-price.is-paid { background: var(--v-pink); }
+        .v-card-action { width: 36px; height: 36px; border: var(--v-border-thin); border-radius: 50%; display: grid; place-items: center; background: var(--v-white); box-shadow: 2px 2px 0 var(--v-black); font-size: 1.2rem;}
+
+        /* Modal Overrides */
+        #imageModal .modal-content { background: rgba(0,0,0,0.95); }
+        #imageModal .btn-close { filter: invert(1); opacity: 1; margin: 20px; }
+        #imageModal img { max-width: 95vw; max-height: 90vh; object-fit: contain; }
+
+        /* ==========================================================================
+           MOBILE RESPONSIVENESS FIXES
+           ========================================================================== */
+        @media (max-width: 991px) {
+            /* .v-layout-grid { grid-template-columns: 1fr; } */
+            /* .sidebar-box { display: none; } Hide right column completely */
+            
+           .preview-wrapper {
+             width: 100%;
+           }
+            
         }
         
-        .file-card-wrapper { 
-            width: 100%; 
-            display: block;
-            text-decoration: none;
-        }
-        .file-card {
-            border: 3px solid var(--color-black); 
-            box-shadow: 4px 4px 0 var(--color-black); 
-            background: var(--color-primary-card);
-            height: 100%; 
-            display: flex; 
-            flex-direction: column;
-            text-decoration: none;
-        }
-        .file-card .card-img {
-            aspect-ratio: 1 / 1.414; 
-            position: relative; 
-            overflow: hidden;
-            background-color: var(--color-white);
-            padding: 5px;
-        }
-        .file-card .card-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-            display: block;
-        }
-        .file-card .detail-bar {
-            min-height: 40px; 
-            padding: 6px 8px; 
-            border-top: 3px solid var(--color-black); 
-            background: var(--color-white); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-shrink: 0;
-        }
-        .file-card .file-title-related {
-            font-size: 0.85rem; 
-            font-weight: 700; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-            flex-grow: 1; 
-            color: var(--color-black);
-        }
-        .file-card .stats-overlay {
-            position: absolute; top: 0; left: 0; padding: 5px 8px; font-size: 0.7rem; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0)); z-index: 5;
-        }
-        .file-card .price-badge-related {
-            padding: 2px 5px; border: 2px solid var(--color-black); font-weight: 900; font-size: 0.55rem; box-shadow: 1px 1px 0 var(--color-black); text-transform: uppercase; flex-shrink: 0;
-        }
     </style>
 </head>
 
 <body>
     <% 
-    // Helper function for formatting file size
-    const formatBytes=(bytes, decimals=2)=> {
+    const formatBytes = (bytes, decimals=2) => {
         if (!+bytes) return '0 Bytes';
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes=['Bytes', 'KB' , 'MB' , 'GB' , 'TB' ];
-        const i=Math.floor(Math.log(bytes) / Math.log(k));
+        const k = 1024; const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB' , 'MB' , 'GB' , 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
     }; 
     %>
 
-    <main>
-        <div class="containe">
-            <div class="product-block">
-                <div class="row g-5">
-
-                    <div class="col-lg-8">
-                        <div class="row g-4">
-                            
-                            <div class="col-lg-5 col-xl-4">
-                                <div class="preview-image-wrapper" data-bs-toggle="modal" data-bs-target="#imageModal">
-                                    <img 
-                                        id="mainPreviewImage"
-                                        src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>" 
-                                        alt="Preview of <%= file.filename %>" 
-                                        onerror="this.onerror=null;this.src='/images/File_Demo.svg';"
-                                    >
-                                </div>
-                                
-                                <div class="details-box p-3 mt-3 d-lg-none">
-                                    <h2 class="h6 fw-bold text-uppercase mb-2">File Specifications</h2>
-                                    <ul class="spec-list small">
-                                        <li>File Type: <span><i class="fas fa-file me-1"></i> <%= file.fileType || 'PDF' %></span></li>
-                                        <li>File Size: <span><i class="fas fa-box-open me-1"></i> <%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span></li>
-                                        <li>Added on: <span><%= new Date(file.createdAt).toLocaleDateString() %></span></li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-7 col-xl-8">
-                                <span class="category-tag"><%= file.category || 'Notes' %></span>
-                                
-                                <h1><%- file.filename || 'Untitled Document' %></h1>
-                                
-                                <div class="creator-info">
-<img 
-  src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>" 
-  alt="Creator" 
-  class="profile-pic"
-  onerror="this.onerror=null; this.src='/images/avatar.jpg';"
-/>
-                                    <span class="small text-muted">by</span>
-                                    <a href="/profile/<%= file.user || 'admin' %>" class="fw-bold text-decoration-none text-dark">
-                                        <%= file.user || 'Vidyari Team' %>
-                                        <% if (ISVERIFIED) { %>
-                                            <img style="width: 20px; height: 20px;" src="/images/verify.png" alt="Verified Badge"/>
-                                        <% } %>
-                                    </a>
-                                </div>
-                                
-                                <div class="stats-detail d-flex align-items-center gap-4 py-2 my-3">
-                                    <span class="file-meta-item fw-bold" title="Rating">
-                                        <i class="fas fa-star text-warning me-1"></i> 4.5/5.0
-                                    </span>
-                                    <span class="text-muted">|</span>
-                                    <span class="file-meta-item fw-bold" title="Total Downloads">
-                                        <i class="fas fa-download me-1"></i>
-                                        <%= (file.downloadCount || 0).toLocaleString() %> Downloads
-                                    </span>
-                                </div>
-
-                                <div class="d-flex align-items-center gap-3 mb-4">
-                                    <button class="like-button" id="likeButton" data-file-id="<%= file._id %>" data-likes="<%= file.likes %>">
-                                        </button>
-                                        
-                                </div>
-                                <%-include("share")%>
-
-                                <div class="details-box p-3 d-none d-lg-block">
-                                    <h2 class="h6 fw-bold text-uppercase mb-2">File Specifications</h2>
-                                    <ul class="spec-list small">
-                                        <li>File Type: <span><i class="fas fa-file me-1"></i> <%= file.fileType || 'PDF' %></span></li>
-                                        <li>File Size: <span><i class="fas fa-box-open me-1"></i> <%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span></li>
-                                        <li>Added on: <span><%= new Date(file.createdAt).toLocaleDateString() %></span></li>
-                                    </ul>
-                                </div>
-                                
-                            </div>
-                        </div>
-
-                        <% if (file.filedescription) { %>
-                            <div class="details-box mt-4">
-                                <h2 class="h5 fw-bold text-uppercase">Product Description</h2>
-                                <div class="product-description-content">
-                                    <%-file.filedescription %>
-                                </div>
-                            </div>
-                        <% } %>
+    <div class="vidyari-checkout-master">
+        <div class="v-container">
+            
+            <div class="v-layout-grid">
+                
+                <div class="main-column">
+                    <div class="v-box">
+                        <span class="v-badge"><%= file.category || 'Resource' %></span>
+                        <h1 class="v-title"><%- file.filename || 'Untitled Document' %></h1>
                         
-                        <div class="mt-4">
-                            <%- include("reporttemplate") %>
-                        </div>
-                    </div> 
-
-                    <div class="col-lg-4">
-                        <div class="buy-action-sidebar">
-                            
-                            <div class="d-flex flex-column align-items-center justify-content-center py-2 mb-3">
-                                <span class="h5 fw-bold text-uppercase text-center">Price:</span>
-                                <% if (Number(file.price) === 0) { %>
-                                    <span class="price-large" style="color: var(--color-free);">FREE</span>
-                                <% } else { %>
-                                    <span class="price-large">₹<%= Number(file.price).toLocaleString('en-IN') %></span>
-                                <% } %>
-                            </div>
-                            
-                            <hr style="border-top: 3px solid var(--color-black); margin: 1.5rem 0;">
-                            
-                            <% if (Number(file.price) > 0) { %>
-                                <button id="rzp-button" class="btn-action w-100 d-flex align-items-center justify-content-center gap-2" type="button">
-                                    <i class="fa-solid fa-cart-shopping"></i>
-                                    <span>Secure Checkout </span>
-                                </button>
-                            <% } else { %>
-                                <a href="/download?file_id=<%=file._id%>" class="btn-action w-100 d-flex align-items-center justify-content-center gap-2" id="downloadBtn">
-                                    <i class="fa-solid fa-download"></i>
-                                    <span>Instant Download</span>
+                        <div class="creator-bar">
+                            <img src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>" alt="Creator" class="creator-pic" onerror="this.onerror=null; this.src='/images/avatar.jpg';">
+                            <div>
+                                <div class="text-muted small fw-bold text-uppercase">Created By</div>
+                                <a href="/profile/<%= file.user || 'admin' %>" class="fw-bold fs-5">
+                                    <%= file.user || 'Vidyari Team' %>
+                                    <% if (ISVERIFIED) { %> <img style="width:20px; margin-left:6px;" src="/images/verify.png" alt="Verified"> <% } %>
                                 </a>
-                            <% } %>
+                            </div>
+                        </div>
 
-                            <ul class="trust-badges-list small fw-bold mt-4 pt-3 border-top border-dark">
-                                <li><i class="fas fa-check-circle"></i>Instant Digital Access</li>
-                                <li><i class="fas fa-lock"></i>Secure Checkout Guaranteed</li>
-                                <li><i class="fas fa-shield-alt"></i>Seller Verified</li>
-                            </ul>
-                            
+                        <div class="preview-wrapper mb-4" data-bs-toggle="modal" data-bs-target="#imageModal">
+                            <img id="mainPreviewImage" 
+                                src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>" 
+                                alt="<%= file.filename %>" 
+                                onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
+                        </div>
+
+                        <div class="action-row">
+                            <button class="v-btn-like" id="likeButton" data-file-id="<%= file._id %>" data-likes="<%= file.likes %>">
+                                </button>
+                            <div><%-include("share")%></div>
+                        </div>
+
+                        <div class="spec-grid">
+                            <div class="spec-card">
+                                <i class="fas fa-star"></i>
+                                <span class="val">4.5 / 5.0</span>
+                                <span class="lbl">Rating</span>
+                            </div>
+                            <div class="spec-card">
+                                <i class="fas fa-download"></i>
+                                <span class="val"><%= (file.downloadCount || 0).toLocaleString() %></span>
+                                <span class="lbl">Downloads</span>
+                            </div>
+                            <div class="spec-card">
+                                <i class="fas fa-file-code"></i>
+                                <span class="val"><%= file.fileType || 'PDF' %></span>
+                                <span class="lbl">Format</span>
+                            </div>
+                            <div class="spec-card">
+                                <i class="fas fa-hdd"></i>
+                                <span class="val"><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></span>
+                                <span class="lbl">Size</span>
+                            </div>
+                        </div>
+                                        <div class="sidebar-box">
+                    <div class="v-box sidebar-sticky" style="border-width: 6px;">
+                        <div class="text-center fw-bold text-muted text-uppercase mb-2">Total Price</div>
+                        
+                        <% if (Number(file.price) === 0) { %>
+                            <div class="price-display is-free">FREE</div>
+                            <a href="/download?file_id=<%=file._id%>" class="v-btn-buy is-free" id="downloadBtn">
+                                <i class="fa-solid fa-download"></i> Download
+                            </a>
+                        <% } else { %>
+                            <div class="price-display">₹<%= Number(file.price).toLocaleString('en-IN') %></div>
+                            <button id="rzp-button" class="v-btn-buy" type="button">
+                                <i class="fa-solid fa-cart-shopping"></i> Checkout
+                            </button>
+                        <% } %>
+
+                        
+                    </div>
+                </div>
+                    </div>
+
+                    <% if (file.filedescription) { %>
+                        <div class="v-box">
+                            <h2 class="v-subtitle">Description</h2>
+                            <div class="desc-content">
+                                <%- file.filedescription %>
+                            </div>
+                        </div>
+                    <% } %>
+
+                    <div class="mt-4 mb-5"><%- include("reporttemplate") %></div>
+
+                    <div class="v-box" style="background: transparent; box-shadow: none; border: none; padding: 0;">
+                        <h2 class="v-subtitle" style="border-color: var(--v-black);">More Like This</h2>
+                        <div class="v-grid" id="relatedGrid">
+                            <p class="fw-bold text-muted fs-5">Loading similar files...</p>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="product-block related-section mt-5"> <span class="related-header">More Like This</span>
-                
-                <div class="related-grid" id="relatedGrid"> 
-                    <p id="gridLoading" class="text-dark ps-2">Loading similar files...</p>
-                </div>
+
+
+
             </div>
             
             <%- include("chat") %>
 
         </div>
-    </main>
-    
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    </div>
+
+    <div class="mobile-buy-bar">
+        <% if (Number(file.price) === 0) { %>
+            <div class="price-display is-free">FREE</div>
+            <a href="/download?file_id=<%=file._id%>" class="v-btn-buy is-free">Download</a>
+        <% } else { %>
+            <div class="price-display">₹<%= Number(file.price).toLocaleString('en-IN') %></div>
+            <button id="rzp-button-mobile" class="v-btn-buy">Checkout</button>
+        <% } %>
+    </div>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header border-0 position-absolute top-0 end-0 z-3">
+                    <button type="button" class="btn-close fs-1" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <img id="modalFullImage" src="" alt="Full preview of <%= file.filename %>">
+                <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                    <img id="modalFullImage" src="" alt="Full preview" style="border: 6px solid white; border-radius: 16px; background: white;">
                 </div>
             </div>
         </div>
@@ -612,197 +431,111 @@
     
     <%- include('footer') %>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-// JavaScript slugify function
-const slugifyJS = (text) => text ? text.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-') : 'file';
+        const slugifyJS = (text) => text ? text.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-') : 'file';
 
-// Define single render function for all dynamic JS use, relying fully on CSS classes
-const renderFileCardJS = (doc) => {
-    const slugify = slugifyJS;
-    const fileUrl = `/file/${doc.slug || slugify(doc.filename)}/${doc._id}`;
-    const priceBadgeText = doc.price > 0 ? `₹${doc.price}` : `FREE`;
-    const priceBadgeClass = doc.price > 0 ? `badge-paid` : `badge-free`;
+        const renderFileCardJS = (doc) => {
+            const fileUrl = `/file/${doc.slug || slugifyJS(doc.filename)}/${doc._id}`;
+            const isFree = doc.price === 0 || doc.price === '0';
+            const priceBadgeText = isFree ? `FREE` : `₹${doc.price}`;
+            const priceBadgeClass = isFree ? `is-free` : `is-paid`;
 
-    // Returns the raw card HTML, relying on defined CSS classes for all styling
-    return `
-        <a href="${fileUrl}" class="file-card-wrapper">
-            <div class="file-card">
-                <div class="card-img">
-                    <div class="stats-overlay">
-                        <span class="stats-item" title="Creator"><i class="fas fa-user me-1"></i> ${doc.user || 'Admin'}</span>
+            return `
+                <a href="${fileUrl}" class="v-card">
+                    <div class="v-card-img-box">
+                        <div class="v-badge-card">${doc.category || 'Resource'}</div>
+                        <img src="${doc.previewUrl && doc.previewUrl.trim() !== '' ? doc.previewUrl : '/images/File_Demo.svg'}" 
+                             alt="${doc.filename}" class="v-card-img" loading="lazy" 
+                             onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
                     </div>
-                <img 
-    src="${doc.previewUrl && typeof doc.previewUrl === 'string' && doc.previewUrl.trim() !== '' ? doc.previewUrl : '/images/File_Demo.svg'}" 
-    alt="${doc.filename}" 
-    loading="lazy"
-    onerror="this.onerror=null;this.src='/images/File_Demo.svg';"
-/>
-
-
-                </div>
-                <div class="detail-bar">
-                    <span class="file-title-related" title="${doc.filename}">${doc.filename}</span>
-                    <span class="price-badge-related ${priceBadgeClass}">${priceBadgeText}</span>
-                </div>
-            </div>
-        </a>
-    `;
-};
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    // --- Data and Constants ---
-    const currentFileId = "<%= file._id %>";
-    const relatedGrid = document.getElementById('relatedGrid'); 
-    
-    // --- Image Modal Setup ---
-    const mainPreviewImage = document.getElementById('mainPreviewImage');
-    const modalFullImage = document.getElementById('modalFullImage');
-    const imageModalElement = document.getElementById('imageModal');
-
-    if (imageModalElement && mainPreviewImage) {
-        // Use Bootstrap's native event to set the image source when the modal is about to open
-        imageModalElement.addEventListener('show.bs.modal', function (event) {
-            // Get the source from the main preview image
-            const imageSrc = mainPreviewImage.src; 
-            if (modalFullImage) {
-                modalFullImage.src = imageSrc;
-            }
-        });
-    }
-
-    // --- Liking Logic (New) ---
-    const likeButton = document.getElementById('likeButton');
-    
-    if (likeButton) {
-        const fileId = likeButton.dataset.fileId;
-        let likeCount = parseInt(likeButton.dataset.likes, 10);
-        let allFiles = JSON.parse(localStorage.getItem("fileData")) || {};
-        let isLiked = (allFiles[fileId] && allFiles[fileId].liked) || false;
-
-        const updateLikeButtonState = (isInitial = false) => {
-            if (isLiked) {
-                likeButton.classList.add('liked');
-            } else {
-                likeButton.classList.remove('liked');
-            }
-            
-            likeButton.innerHTML = `
-                <span class="icon">
-                    <i class="fa-regular fa-thumbs-up"></i>
-                    <i class="fa-solid fa-thumbs-up"></i>
-                </span>
-                <span class="count">${likeCount.toLocaleString()} ${likeCount === 1 ? 'Like' : 'Likes'}</span>
+                    <div class="v-card-content">
+                        <h3 class="v-card-title">${doc.filename}</h3>
+                        <div class="small fw-bold text-muted"><i class="fas fa-user-circle"></i> ${doc.user || 'Admin'}</div>
+                    </div>
+                    <div class="v-card-footer">
+                        <div class="v-price ${priceBadgeClass}">${priceBadgeText}</div>
+                        <div class="v-card-action"><i class="fas fa-arrow-right"></i></div>
+                    </div>
+                </a>
             `;
-
-            // Trigger animation only on click, not on initial load
-            if (!isInitial && isLiked) { // Only animate when liking, not unliking
-                likeButton.classList.add('animating');
-                
-                // Add particle effects
-                const particleContainer = document.createElement('div');
-                particleContainer.classList.add('particle-container');
-                for (let i = 0; i < 7; i++) {
-                    const particle = document.createElement('span');
-                    particle.classList.add('particle');
-                    // Set random exit vectors
-                    particle.style.setProperty('--x', (Math.random() - 0.5) * 70 + 'px');
-                    particle.style.setProperty('--y', (Math.random() - 0.5) * 70 + 'px');
-                    particleContainer.appendChild(particle);
-                }
-                likeButton.appendChild(particleContainer);
-
-                // Clean up animation classes and particles
-                setTimeout(() => {
-                    likeButton.classList.remove('animating');
-                    if (likeButton.contains(particleContainer)) {
-                        likeButton.removeChild(particleContainer);
-                    }
-                }, 700); // Match animation duration
-            } else if (!isInitial && !isLiked) {
-                // If unliking, just remove class without particle animation
-                likeButton.classList.remove('animating');
-            }
         };
 
-        // Initial render on page load
-        updateLikeButtonState(true);
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentFileId = "<%= file._id %>";
+            const relatedGrid = document.getElementById('relatedGrid'); 
+            
+            // Modal Sync
+            const mainPreviewImage = document.getElementById('mainPreviewImage');
+            const modalFullImage = document.getElementById('modalFullImage');
+            const imageModalElement = document.getElementById('imageModal');
 
-        // Click handler
-        likeButton.addEventListener('click', () => {
-            // Prevent spam-clicking
-            if (likeButton.classList.contains('animating')) {
-                return;
+            if (imageModalElement && mainPreviewImage) {
+                imageModalElement.addEventListener('show.bs.modal', () => {
+                    if (modalFullImage) modalFullImage.src = mainPreviewImage.src;
+                });
             }
 
-            let endpoint = '';
-            if (isLiked) {
-                // Currently liked, so unlike
-                likeCount--;
-                isLiked = false;
-                endpoint = 'dislike';
-            } else {
-                // Currently not liked, so like
-                likeCount++;
-                isLiked = true;
-                endpoint = 'like';
-            }
+            // Neo-Brutalist Like Logic
+            const likeButton = document.getElementById('likeButton');
+            if (likeButton) {
+                const fileId = likeButton.dataset.fileId;
+                let likeCount = parseInt(likeButton.dataset.likes, 10);
+                let allFiles = JSON.parse(localStorage.getItem("fileData")) || {};
+                let isLiked = (allFiles[fileId] && allFiles[fileId].liked) || false;
 
-            // Update local storage
-            if (!allFiles[fileId]) allFiles[fileId] = {};
-            allFiles[fileId].liked = isLiked;
-            localStorage.setItem("fileData", JSON.stringify(allFiles));
+                const updateUI = () => {
+                    likeButton.classList.toggle('liked', isLiked);
+                    likeButton.innerHTML = `
+                        <i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart"></i>
+                        <span>${likeCount}</span>
+                    `;
+                };
 
-            // Update button UI and trigger animation
-            updateLikeButtonState(false);
+                updateUI();
 
-            // Send request to server
-            fetch(`/files/impression/${fileId}/${endpoint}`).catch(err => console.error("Like request failed:", err));
-        });
-    }
-    
-    // --- Buy Button Logic ---
-    const buyButton = document.getElementById('rzp-button');
-    if (buyButton) {
-        buyButton.onclick = function (e) {
-            window.location.href = "/checkout?fileId=" + currentFileId;
-            e.preventDefault();
-        }
-    }
+                likeButton.addEventListener('click', () => {
+                    isLiked = !isLiked;
+                    likeCount += isLiked ? 1 : -1;
+                    
+                    if (!allFiles[fileId]) allFiles[fileId] = {};
+                    allFiles[fileId].liked = isLiked;
+                    localStorage.setItem("fileData", JSON.stringify(allFiles));
 
-    // --- Core: Fetch and Render Related Docs (GRID) ---
-    const fetchRelatedFiles = async () => { 
-        if (relatedGrid) {
-            relatedGrid.innerHTML = `<p id="gridLoading" class="text-dark ps-2">Loading similar files...</p>`;
-        }
-
-        try {
-            const response = await fetch(`/products/related?fileId=${currentFileId}`);
-            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-            
-            const relatedDocs = await response.json();
-            
-            // Render ALL related documents directly into the grid
-            if (relatedDocs && relatedDocs.length > 0) {
-                const allCardsHTML = relatedDocs.map(doc => renderFileCardJS(doc)).join(''); 
-                if (relatedGrid) relatedGrid.innerHTML = allCardsHTML;
-            } else {
-                if (relatedGrid) relatedGrid.innerHTML = '<p class="text-dark ps-2">No related files found.</p>';
+                    updateUI();
+                    fetch(`/files/impression/${fileId}/${isLiked ? 'like' : 'dislike'}`).catch(console.error);
+                });
             }
             
-        } catch (error) {
-            console.error("Error fetching related files:", error);
-            if (relatedGrid) relatedGrid.innerHTML = '<p class="text-danger ps-2">Error loading files.</p>';
-        }
-    };
+            // Checkout Handlers (Bind both Desktop and Mobile buttons)
+            const rzpBtn = document.getElementById('rzp-button');
+            const rzpBtnMobile = document.getElementById('rzp-button-mobile');
+            const handleCheckout = (e) => {
+                window.location.href = "/checkout?fileId=" + currentFileId;
+                e.preventDefault();
+            };
+            if (rzpBtn) rzpBtn.onclick = handleCheckout;
+            if (rzpBtnMobile) rzpBtnMobile.onclick = handleCheckout;
 
-    // --- Initial Load for Grid ---
-    fetchRelatedFiles();
-}); 
+            // Fetch Related Grid
+            const fetchRelatedFiles = async () => { 
+                try {
+                    const response = await fetch(`/products/related?fileId=${currentFileId}`);
+                    if (!response.ok) throw new Error(`HTTP Error`);
+                    const relatedDocs = await response.json();
+                    
+                    if (relatedDocs && relatedDocs.length > 0) {
+                        relatedGrid.innerHTML = relatedDocs.map(doc => renderFileCardJS(doc)).join(''); 
+                    } else {
+                        relatedGrid.innerHTML = '<p class="fw-bold text-muted fs-5">No related files found.</p>';
+                    }
+                } catch (error) {
+                    relatedGrid.innerHTML = '<p class="fw-bold text-danger fs-5">Error loading files.</p>';
+                }
+            };
+            fetchRelatedFiles();
+        }); 
     </script>
-
 </body>
-
 </html>

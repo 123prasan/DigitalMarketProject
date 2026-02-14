@@ -395,7 +395,12 @@
                 // This structure ensures the message and badge are aligned horizontally
                 listItem.innerHTML = `
                     <div class="profile-pic-container">
-                        <img src="${partner.profilePicUrl || '/images/avatar.jpg'}" class="profile-pic">
+                        <img
+  src="${partner.profilePicUrl || '/images/avatar.jpg'}"
+  class="profile-pic"
+  onerror="this.onerror=null; this.src='/images/avatar.jpg';"
+/>
+
                         <div class="online-dot" data-user-id="${partner._id}"></div>
                     </div>
                     <div class="chat-details">
