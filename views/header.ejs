@@ -162,6 +162,7 @@
             position: relative; 
             -webkit-tap-highlight-color: transparent; 
         }
+        
         .chunky-btn:hover { 
             transform: translate(1px, 1px); 
             box-shadow: calc(var(--shadow-offset) - 1px) calc(var(--shadow-offset) - 1px) 0 var(--color-black);
@@ -251,6 +252,7 @@
         .hamburger-btn { 
             width: 48px; height: 48px; 
             font-size: 1.8rem;
+            border: white;
         }
         /* Icon transition effect (Kept) */
         .hamburger-btn i {
@@ -387,6 +389,7 @@
             background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
             transform: skewX(-20deg); animation: shimmer 1.5s infinite;
         }
+        
         @keyframes shimmer { 0% { left: -75%; } 100% { left: 100%; } }
         @keyframes pulse-border {
             0% { box-shadow: 0 0 0 0 rgba(255, 214, 10, 0.7); } 
@@ -535,16 +538,17 @@
                 <span class="brand-name">Vidyari</span>
             </a>
 
-            <div class="d-flex align-items-center flex-grow-1 justify-content-center d-none d-lg-flex">
-                <nav class="main-nav"> 
-                    <a href="/"  aria-current="page">Home</a>
-                    <a href="/documents">Documents</a>
-                    <a href="/courses">Courses</a>
-                </nav>
-            </div>
+            
 
             <div class="d-flex align-items-center header-actions">
-                
+                <div class="d-flex align-items-center flex-grow-1 justify-content-center d-none d-lg-flex">
+                <nav class="main-nav"> 
+                    
+                    <a href="/documents">Documents</a>
+                    <a href="/courses">Courses</a>
+                    <a href="/pricing">Pricing</a>
+                </nav>
+            </div>
                 <% if(isLoggedin) { %>
 
                     <button onclick="window.location.href='/user-notifications'" type="button" class="chunky-btn header-icon-btn d-none d-md-flex primary rotate-icon" aria-label="Notifications">
@@ -601,7 +605,7 @@
 
                 <% } else { %>
                     <button onclick="window.location.href='/dashboard'" class="chunky-btn d-none d-md-block secondary">Become Seller</button>
-                    <button onclick="window.location.href='/user-login'" class="chunky-btn primary">Login / Sign Up</button>
+                    <button onclick="window.location.href='/user-login'" class="chunky-btn primary">Login</button>
                 <% } %>
 
                 <button class="hamburger-btn d-lg-none ms-2" id="hamburgerBtn" type="button" aria-label="Toggle navigation">
@@ -634,9 +638,10 @@
 
             <div class="panel-section">
                 <p class="panel-section-label panel-link-stagger">Navigation</p>
-                <a href="/" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-home"><i class="fa-solid fa-house"></i></span><span>Home</span></a>
+                
                 <a href="/documents" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
                 <a href="/courses" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
+                <a href="/pricing" class="panel-link panel-link-stagger"><span style="background-color: green;" class="icon-wrapper icon-courses"><i class="fa-solid fa-hand-holding-dollar"></i></span><span>pricing</span></a>
                 <% if(isLoggedin) { %>
                     <a href="/chats" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-focus"><i class="fa-solid fa-comments"></i></span><span>Chats</span></a>
                 <% } %>

@@ -880,7 +880,54 @@ app.get("/save", async (req, res) => {
     res.status(500).send("Failed to convert PDF");
   }
 });
+app.get("/pricing",authenticateJWT_user,async(req,res)=>{
+  let profileUrl = null;
+ let user = null;
+    if (req.user) {
+      const cacheKey = `user_${req.user._id}`;
+      const cachedUser = pageCache.get(cacheKey);
 
+      if (cachedUser) {
+        user = cachedUser;
+        profileUrl = cachedUser.profilePicUrl;
+      } else {
+        // Fetch minimal data for rendering
+        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+        if (user) {
+          // Convert to CloudFront if S3-based
+          if (user.profilePicUrl?.includes("s3.")) {
+            try {
+              const fileName = user.profilePicUrl.split("/").pop();
+              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+            } catch (err) {
+              console.warn("⚠️ Profile URL conversion failed:", err.message);
+            }
+          }
+
+          // Cache for future requests
+          pageCache.set(cacheKey, user);
+          profileUrl = user.profilePicUrl;
+        }
+      }
+    }
+
+    // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
+    if (req.user) {
+      const cacheKey = `user_${req.user._id}`;
+      const ttl = pageCache.getTtl(cacheKey);
+      if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
+        pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
+      }
+    }
+
+  res.render("pricing",{
+    isLoggedin: !!req.user,
+      profileUrl,
+      username: user?.username || null,
+      useremail: user?.email || null,
+      uId: user?._id?.toString() || null,
+  })
+})
 // Download PDF - No auth needed (public, post-payment)
 // app.post("/download-pdf", async (req, res) => {
 //     const { fileId, paymentId } = req.body;
