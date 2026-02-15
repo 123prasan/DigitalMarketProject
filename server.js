@@ -1,15 +1,15 @@
 /**
  * The code is a Node.js application that uses Express to create a server for handling file uploads,
- * user authentication, order processing with Cashfree, MongoDB database interactions, and various
+ * user authentication, order processing with Razorpay, MongoDB database interactions, and various
  * routes for managing files, admin dashboard, notifications, and error handling.
  * @returns The code provided is a Node.js application using Express framework. It includes routes for
  * handling file uploads, user authentication, file management, order processing, notifications, and
  * admin functionalities. The application interacts with MongoDB for data storage and Supabase for file
- * storage. It also integrates with Cashfree for payment processing.
+ * storage. It also integrates with Razorpay for payment processing.
  */
 
 const express = require("express");
-const { Cashfree } = require("cashfree-pg");
+const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const path = require("path");
 const Order = require("./models/Order");
@@ -428,10 +428,11 @@ function slugify(text) {
 
 // This must match the collection name in your database
 
-// Cashfree configuration
-Cashfree.XClientId = process.env.CASHFREE_APP_ID;
-Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
-Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+// Razorpay configuration
+const razorpayInstance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 // Supabase client setup
 const supabase = createClient(
@@ -496,7 +497,7 @@ app.get("/files/impression/:id/:impression", authenticateJWT_user, requireAuth, 
 app.get("/dashboard", (req, res) => {
   res.render("createcourse");
 });
-// Cashfree Order Creation - No auth needed (public)
+// Razorpay Order Creation - No auth needed (public)
 app.post("/create-order", authenticateJWT_user,requireAuth,async (req, res) => {
   // console.log("data",req.user)
   console.log("-----------------------------")
@@ -508,34 +509,32 @@ app.post("/create-order", authenticateJWT_user,requireAuth,async (req, res) => {
         .status(400)
         .json({ error: "Missing or invalid fileId, filename, or price" });
     }
-    const amountInRupees = Math.round(price * 100) / 100; // Cashfree expects amount in rupees
+    const amountInPaisa = Math.round(price * 100); // Razorpay expects amount in smallest currency unit (paisa)
     
-    const request = {
-      order_id: `order_${fileId}_${Date.now()}`,
-      order_amount: amountInRupees,
-      order_currency: "INR",
-      customer_details: {
-        customer_id: `cusotmer_${req.user._id}`,
-        customer_email:`${req.user.email} `,
-        customer_phone: "9999999999",
-      },
-      order_meta: {
-        return_url: `${process.env.BASE_URL || 'http://localhost:8000'}/payment-success?order_id={order_id}`,
-        notify_url: `${process.env.BASE_URL || 'http://localhost:8000'}/webhook`,
-      },
+    // Generate receipt - must be 40 chars or less
+    const receipt = `${fileId.toString().slice(-8)}_${Date.now().toString().slice(-6)}`;
+    
+    const orderOptions = {
+      amount: amountInPaisa,
+      currency: "INR",
+      receipt: receipt,
+      notes: {
+        fileId: fileId,
+        filename: filename,
+        userId: req.user._id.toString(),
+        userEmail: req.user.email
+      }
     };
 
-    const response = await Cashfree.PGCreateOrder("2023-08-01", request);
-  //  console.log("Cashfree Response:", response.data); 
+    const response = await razorpayInstance.orders.create(orderOptions);
 
-res.json({
-  success: true,
-  order_id: response.data.order_id,
-  // The frontend needs this specific key:
-  payment_session_id: response.data.payment_session_id, 
-  amount: amountInRupees * 100,
-  currency: "INR",
-});
+    res.json({
+      success: true,
+      order_id: response.id,
+      amount: amountInPaisa,
+      currency: "INR",
+      key: process.env.RAZORPAY_KEY_ID
+    });
   } catch (error) {
     console.error("Order creation failed:", error);
     res.status(500).json({ error: "Failed to create order" });
@@ -577,17 +576,17 @@ app.get("/return-cancellation", (req, res) => {
 let token;
 const Adminbal = require("./models/admin/adminBal.js");
 
-// Cashfree Payment Verification - No auth needed (public)
+// Razorpay Payment Verification - No auth needed (public)
 app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
   const {
-    order_id,
-    payment_id,
-    signature,
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
     fileId,
     totalprice,
   } = req.body;
 
-  if (!order_id || !payment_id) {
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
     console.log("incomplete payment details")
     return res.status(400).json({
       success: false,
@@ -596,14 +595,28 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
   }
 
   try {
-    // Fetch Cashfree payment details
+    // Verify Razorpay signature
+    const crypto = require('crypto');
+    const expectedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest('hex');
+
+    if (expectedSignature !== razorpay_signature) {
+      console.log("Signature verification failed")
+      return res.status(400).json({
+        success: false,
+        message: "Payment signature verification failed",
+      });
+    }
+
+    // Fetch payment details from Razorpay
     let paymentDetails;
     try {
-      const response = await Cashfree.PGFetchOrder("2023-08-01", order_id);
-      paymentDetails = response.data;
-      console.log(paymentDetails.order_status)
+      paymentDetails = await razorpayInstance.payments.fetch(razorpay_payment_id);
+      console.log(paymentDetails.status)
     } catch (err) {
-      console.error("Cashfree fetch failed:", err);
+      console.error("Razorpay fetch failed:", err);
       return res.status(502).json({
         success: false,
         message: "Payment gateway error",
@@ -611,8 +624,8 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     }
 
     // Check if payment is successful
-    if (paymentDetails.order_status !=='ACTIVE') {
-      console.log("Payment is not active")
+    if (paymentDetails.status !== 'captured') {
+      console.log("Payment is not captured")
       return res.status(400).json({
         success: false,
         message: "Payment not completed",
@@ -633,7 +646,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
         : 0;
 
     const token = jwt.sign(
-      { fileId, orderId: order_id, transactionId: payment_id },
+      { fileId, orderId: razorpay_order_id, transactionId: razorpay_payment_id },
       process.env.JWT_SECRET_FILE_PURCHASE,
       { expiresIn: "10m" }
     );
@@ -644,14 +657,14 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
     await Promise.all([
       // Transaction record
       Usertransaction.findOneAndUpdate(
-        { transactionId: payment_id },
+        { transactionId: razorpay_payment_id },
         {
           userId: file.userId,
           ProductId: file._id,
           totalAmount: sellerShare,
           ProductName: file.filename,
           purchaserId: req.user._id,
-          transactionId: payment_id,
+          transactionId: razorpay_payment_id,
           discount,
         },
         { upsert: true, new: true }
@@ -673,12 +686,12 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
 
       // Order record
       Order.findOneAndUpdate(
-        { orderId: order_id },
+        { orderId: razorpay_order_id },
         {
-          orderId: order_id,
-          transactionId: payment_id,
-          customer: paymentDetails.customer_details?.customer_email || "Online Customer",
-          payment: paymentDetails.payment_method || "Online Payment",
+          orderId: razorpay_order_id,
+          transactionId: razorpay_payment_id,
+          customer: paymentDetails.email || "Online Customer",
+          payment: paymentDetails.method || "Online Payment",
           total: totalprice,
           productId: file._id,
           productName: file.filename,
@@ -696,8 +709,8 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
         price: file.price,
         totalPrice: totalprice,
         productName: file.filename,
-        orderId: order_id,
-        purchaseId: payment_id,
+        orderId: razorpay_order_id,
+        purchaseId: razorpay_payment_id,
         quantity: 1,
       }),
 
@@ -770,11 +783,12 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
 });
 
 
-// Cashfree Webhook - No auth needed (public)
+// Razorpay Webhook - No auth needed (public)
 app.post("/webhook", (req, res) => {
   try {
-    const secretKey = process.env.CASHFREE_WEBHOOK_SECRET;
-    const signature = req.headers['x-webhook-signature'] || req.headers['X-Webhook-Signature'];
+    const crypto = require('crypto');
+    const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const signature = req.headers['x-razorpay-signature'];
     
     if (!signature) {
       return res.status(400).json({ error: 'Missing signature' });
@@ -782,7 +796,7 @@ app.post("/webhook", (req, res) => {
 
     // Verify webhook signature
     const expectedSignature = crypto
-      .createHmac('sha256', secretKey)
+      .createHmac('sha256', secret)
       .update(JSON.stringify(req.body))
       .digest('base64');
 
@@ -793,9 +807,13 @@ app.post("/webhook", (req, res) => {
     const eventData = req.body;
     
     // Handle different webhook events
-    if (eventData.type === 'PAYMENT_SUCCESS_WEBHOOK') {
-      // Payment was successful
-      console.log('Payment successful:', eventData.data);
+    if (eventData.event === 'payment.captured') {
+      // Payment was captured/successful
+      console.log('Payment captured:', eventData.payload.payment.entity);
+      // You can add additional processing here if needed
+    } else if (eventData.event === 'payment.failed') {
+      // Payment failed
+      console.log('Payment failed:', eventData.payload.payment.entity);
       // You can add additional processing here if needed
     }
 

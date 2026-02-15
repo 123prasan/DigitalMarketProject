@@ -366,7 +366,7 @@
     </div>
 </div>
 
-<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 // --- CORE LOGIC PRESERVED ---
 const fileId = "<%=file._id%>";
@@ -512,7 +512,6 @@ applyBtn.addEventListener('click', async ()=>{
 // --- Payment Logic ---
 if (payButton) {
     payButton.onclick = function (e) {
-        return;
         e.preventDefault();
         const originalContent = payButton.innerHTML;
         payButton.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Processing...`;
@@ -531,22 +530,22 @@ if (payButton) {
         })
         .then(res => res.json())
         .then(order => {
-            const cashfree = new Cashfree({mode:"sandbox"});
-            cashfree.checkout({
-                paymentSessionId: order.payment_session_id,
-                redirectTarget: "_modal",
-            }).then((result) => {
-                if (result.error) {
-                    alert(result.error.message);
-                    payButton.innerHTML = originalContent;
-                    payButton.disabled = false;
-                } else if (result.paymentDetails) {
+            const options = {
+                key: order.key,
+                amount: order.amount,
+                currency: order.currency,
+                name: "Vidyari",
+                description: "<%= file.filename %>",
+                order_id: order.order_id,
+                handler: function (response) {
+                    // Payment successful, verify with backend
                     fetch('/verify-payment', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                          order_id: result.paymentDetails.orderId,
-                          payment_id: result.paymentDetails.paymentId,
+                          razorpay_order_id: response.razorpay_order_id,
+                          razorpay_payment_id: response.razorpay_payment_id,
+                          razorpay_signature: response.razorpay_signature,
                           fileId: "<%= file._id %>",
                           totalprice: currentPriceDetails.total,
                           filename:"<%=file.filename%>",
@@ -563,9 +562,31 @@ if (payButton) {
                             payButton.innerHTML = originalContent;
                             payButton.disabled = false;
                         }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Payment verification error.");
+                        payButton.innerHTML = originalContent;
+                        payButton.disabled = false;
                     });
+                },
+                prefill: {
+                    email: "<%= typeof useremail !== 'undefined' ? useremail : '' %>",
+                    name: "<%= typeof username !== 'undefined' ? username : '' %>"
+                },
+                theme: {
+                    color: "#000000"
+                },
+                modal: {
+                    ondismiss: function() {
+                        payButton.innerHTML = originalContent;
+                        payButton.disabled = false;
+                    }
                 }
-            });
+            };
+            
+            const rzp = new Razorpay(options);
+            rzp.open();
         }).catch(err => {
             console.error(err);
             alert("Could not start payment.");
