@@ -1,606 +1,485 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure Checkout</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<style>
-    :root {
-        --bg-body: #f7f7f5; /* Milk/Bone White */
-        --bg-card: #ffffff;
-        --text-primary: #1a1a1a;
-        --text-secondary: #555555;
-        --text-tertiary: #888888;
-        --accent-color: #000000; /* Strict Black for primary actions */
-        --border-color: #eaeaea;
-        --success-color: #2e7d32;
-        --error-color: #d32f2f;
-        --radius-sm: 8px;
-        --radius-lg: 16px;
-        --shadow-soft: 0 20px 40px -10px rgba(0,0,0,0.05);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <title>Secure Checkout | Vidyari</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
 
-    * { box-sizing: border-box; outline: none; }
+<style>
+    /* ==========================================================================
+       VIDYARI: THE ULTIMATE CONVERSION CHECKOUT
+       ========================================================================== */
+    :root {
+        --font-display: 'Space Grotesk', sans-serif;
+        --font-main: 'Inter', sans-serif;
+        
+        --v-black: #09090b;
+        --v-white: #ffffff;
+        --v-pink: #ff66a3;
+        --v-yellow: #ffd60a;
+        --v-green: #00e676;
+        --v-blue: #1ac2ff;
+        
+        --v-gray-50: #f8f9fa;
+        --v-gray-200: #e4e4e7;
+        --v-gray-800: #27272a;
+        
+        --border-thick: 3px solid var(--v-black);
+        --shadow-hard: 6px 6px 0 var(--v-black);
+        --shadow-hover: 10px 10px 0 var(--v-black);
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
     body {
         margin: 0;
-        padding: 40px 20px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        background-color: var(--bg-body);
-        color: var(--text-primary);
+        font-family: var(--font-main);
+        background-color: var(--v-white);
+        color: var(--v-black);
         min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
     }
 
-    /* --- MAIN CARD STRUCTURE --- */
-    .checkout-wrapper {
+    .checkout-layout {
         display: flex;
+        min-height: 100vh;
         width: 100%;
-        max-width: 950px;
-        background: var(--bg-card);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-soft);
+    }
+
+    /* ==========================================================================
+       LEFT SIDE: PRODUCT SHOWCASE
+       ========================================================================== */
+    .showcase-panel {
+        flex: 1;
+        background-color: var(--v-yellow);
+        background-image: radial-gradient(#d4b300 2px, transparent 2px);
+        background-size: 24px 24px;
+        border-right: var(--border-thick);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 60px;
+        position: relative;
+    }
+
+    .showcase-inner {
+        max-width: 480px;
+        width: 100%;
+        background: var(--v-white);
+        border: var(--border-thick);
+        box-shadow: var(--shadow-hard);
+        border-radius: 24px;
+        padding: 40px;
+    }
+
+    .product-preview-box {
+        width: 100%;
+        aspect-ratio: 4/3;
+        border: var(--border-thick);
+        border-radius: 12px;
         overflow: hidden;
-        border: 1px solid #ffffff; /* Subtle highlight */
+        margin-bottom: 30px;
+        background: var(--v-gray-50);
+    }
+    .product-preview-box img {
+        width: 100%; height: 100%; object-fit: cover;
     }
 
-    /* --- LEFT SIDE: PRODUCT VISUAL --- */
-    .product-section {
-        flex: 1.1;
-        padding: 60px;
-        background: #fafaf9; /* Very subtle separation */
-        border-right: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .brand-header {
-        margin-bottom: 40px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 1px;
+    .v-title-label {
+        font-family: var(--font-display);
+        font-size: 0.9rem;
         text-transform: uppercase;
-        color: var(--text-tertiary);
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        letter-spacing: 2px;
+        color: var(--v-pink);
+        font-weight: 900;
+        margin-bottom: 8px;
     }
 
-    .img-wrapper {
-        width: 100%;
-        max-width: 280px;
-        aspect-ratio: 1/1; /* Square */
-        background: #fff;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        padding: 10px;
-        margin-bottom: 30px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .product-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-
-    .product-title {
-        font-size: 2rem;
-        font-weight: 700;
+    .v-product-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 2.8rem);
         line-height: 1.1;
-        margin: 0 0 15px 0;
-        letter-spacing: -0.02em;
+        margin: 0 0 10px 0;
+        text-transform: uppercase;
     }
 
-    .product-details {
-        font-size: 1rem;
-        color: var(--text-secondary);
-        line-height: 1.6;
-        max-width: 90%;
+    .v-product-id {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--v-gray-800);
+        margin-bottom: 30px;
     }
 
-    .secure-badge {
-        margin-top: auto;
-        padding-top: 40px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.8rem;
-        color: var(--text-tertiary);
+    .included-list {
+        list-style: none;
+        padding: 0; margin: 0;
+        border-top: 2px dashed var(--v-gray-200);
+        padding-top: 24px;
     }
-    .secure-badge i { color: var(--success-color); }
+    .included-list li {
+        display: flex; align-items: center; gap: 12px;
+        font-weight: 700; font-size: 1rem;
+        margin-bottom: 16px;
+    }
+    .included-list i { color: var(--v-green); font-size: 1.2rem; }
 
-    /* --- RIGHT SIDE: PAYMENT FORM --- */
-    .payment-section {
-        flex: 0.9;
-        padding: 60px;
-        background: var(--bg-card);
+    /* ==========================================================================
+       RIGHT SIDE: PAYMENT TERMINAL
+       ========================================================================== */
+    .payment-panel {
+        flex: 1.2;
+        background-color: var(--v-bg);
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        padding: 60px;
     }
 
-    .section-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 30px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--border-color);
+    .payment-inner {
+        max-width: 520px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    /* Progress Tracker */
+    .progress-tracker {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
+    }
+    .step {
+        display: flex; align-items: center; gap: 8px;
+        font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+        color: var(--v-gray-800); opacity: 0.5;
+    }
+    .step.active { opacity: 1; color: var(--v-black); }
+    .step-icon {
+        width: 24px; height: 24px; border-radius: 50%; border: 2px solid currentColor;
+        display: grid; place-items: center; font-size: 0.7rem;
+    }
+    .step.active .step-icon { background: var(--v-black); color: var(--v-white); }
+    .step-divider { flex: 1; height: 2px; background: var(--v-gray-200); }
+
+    /* Invoice Summary */
+    .invoice-section {
+        background: var(--v-gray-50);
+        border: var(--border-thick);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
     }
 
-    /* Price Lines */
-    .line-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 18px;
-        font-size: 0.95rem;
-        color: var(--text-secondary);
+    .invoice-row {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 1.1rem; font-weight: 600; padding: 12px 0;
     }
-    .line-item.main {
-        color: var(--text-primary);
-        font-weight: 500;
-        font-size: 1.05rem;
-        margin-bottom: 25px;
+    .invoice-row.muted { color: #71717a; font-size: 0.95rem; }
+    .invoice-row.discount { color: var(--v-green); font-weight: 800; }
+    
+    .invoice-total {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        border-top: var(--border-thick);
+        margin-top: 15px; padding-top: 25px;
     }
-    .line-item.discount {
-        color: var(--success-color);
-    }
+    .total-lbl { font-family: var(--font-display); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; }
+    .total-val { font-family: var(--font-display); font-size: 2.8rem; font-weight: 900; line-height: 1; }
 
     /* Coupon Field */
-    .coupon-container {
-        position: relative;
-        margin: 25px 0;
-    }
-    .coupon-input {
-        width: 100%;
-        padding: 14px 45px 14px 15px; /* Space for button */
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        background: #fff;
-        font-size: 0.95rem;
-        transition: all 0.2s ease;
-        color: var(--text-primary);
-    }
-    .coupon-input:focus {
-        border-color: var(--accent-color);
-        box-shadow: 0 0 0 1px var(--accent-color);
-    }
-    .apply-btn {
-        position: absolute;
-        right: 8px;
-        top: 8px;
-        bottom: 8px;
-        padding: 0 15px;
-        background: var(--text-primary);
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: opacity 0.2s;
-    }
-    .apply-btn:hover { opacity: 0.85; }
-    
-    .coupon-feedback {
-        font-size: 0.8rem;
-        margin-top: 8px;
-        display: none;
-    }
-
-    /* Total & Action */
-    .total-container {
-        margin-top: 30px;
-        padding-top: 25px;
-        border-top: 1px dashed var(--border-color);
+    .coupon-box {
         display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
+        border: var(--border-thick);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 40px;
+        box-shadow: var(--shadow-hard);
+        transition: var(--transition);
+        background: var(--v-white);
     }
-    .total-label {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        margin-bottom: 5px;
+    .coupon-box:focus-within { box-shadow: var(--shadow-hover); transform: translate(-2px, -2px); }
+    
+    .coupon-input {
+        flex: 1; border: none; padding: 20px; font-family: var(--font-main);
+        font-weight: 700; font-size: 1rem; outline: none; text-transform: uppercase;
     }
-    .total-value {
-        font-size: 2rem;
-        font-weight: 700;
-        letter-spacing: -1px;
+    .coupon-input::placeholder { color: #a1a1aa; font-weight: 500; }
+    
+    .coupon-btn {
+        background: var(--v-black); color: var(--v-white); border: none;
+        border-left: var(--border-thick); padding: 0 30px; font-family: var(--font-display);
+        font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: background 0.2s;
     }
-    .currency { font-size: 1.2rem; font-weight: 500; margin-right: 4px; }
+    .coupon-btn:hover { background: var(--v-blue); color: var(--v-black); }
 
-    .cta-btn {
-        margin-top: 30px;
+    /* The Ultimate CTA Button */
+    .v-pay-btn {
         width: 100%;
-        padding: 18px;
-        background: var(--accent-color);
-        color: #fff;
-        border: none;
-        border-radius: var(--radius-sm);
-        font-size: 1rem;
-        font-weight: 600;
+        background: var(--v-green);
+        color: var(--v-black);
+        border: var(--border-thick);
+        border-radius: 16px;
+        padding: 24px;
+        font-family: var(--font-display);
+        font-size: 1.6rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        box-shadow: var(--shadow-hard);
         cursor: pointer;
-        transition: transform 0.1s ease, box-shadow 0.2s ease;
+        transition: var(--transition);
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 10px;
+        gap: 16px;
     }
-    .cta-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-    }
-    .cta-btn:active { transform: translateY(0); }
-    .cta-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+    .v-pay-btn:hover { transform: translate(-4px, -4px); box-shadow: var(--shadow-hover); background: var(--v-yellow); }
+    .v-pay-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 #000; }
 
-    /* Modal */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(255,255,255,0.8);
-        backdrop-filter: blur(5px);
-        z-index: 100;
-        display: none;
-        place-items: center;
+    /* Security Footer */
+    .security-footer {
+        display: flex; justify-content: center; gap: 30px; margin-top: 40px;
     }
-    .modal-card {
-        background: #fff;
-        padding: 40px;
-        border-radius: var(--radius-lg);
-        box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-        text-align: center;
-        border: 1px solid var(--border-color);
-        max-width: 350px;
-        width: 90%;
-        animation: slideUp 0.3s ease-out;
-    }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .sec-item { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.85rem; color: #71717a; text-transform: uppercase;}
+    .sec-item i { font-size: 1.2rem; color: var(--v-black); }
 
-    /* Responsive */
-    @media (max-width: 850px) {
-        body { padding: 10px; align-items: flex-start; }
-        .checkout-wrapper { flex-direction: column; max-width: 500px; margin-top: 20px; }
-        .product-section { padding: 40px 30px; border-right: none; border-bottom: 1px solid var(--border-color); }
-        .payment-section { padding: 40px 30px; }
-        .img-wrapper { max-width: 150px; margin: 0 auto 20px 0; }
-        .product-title { font-size: 1.5rem; }
+    /* Toast Notification */
+    #toast-msg {
+        position: fixed; top: 20px; right: 20px;
+        background: var(--v-white); border: var(--border-thick);
+        padding: 20px 30px; border-radius: 12px; box-shadow: var(--shadow-hard);
+        font-family: var(--font-display); font-weight: 900; font-size: 1.1rem; text-transform: uppercase;
+        display: flex; align-items: center; gap: 15px;
+        transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 9999;
+    }
+    #toast-msg.show { transform: translateX(0); }
+    #toast-msg.success { border-color: var(--v-green); }
+    #toast-msg.success i { color: var(--v-green); }
+    #toast-msg.error { border-color: var(--v-pink); }
+    #toast-msg.error i { color: var(--v-pink); }
+
+    /* Mobile Restructure */
+    @media (max-width: 1024px) {
+        .checkout-layout { flex-direction: column; }
+        .showcase-panel { 
+            align-items: center; padding: 40px 20px; border-right: none; 
+            border-bottom: var(--border-thick); position: relative; height: auto; 
+        }
+        .showcase-inner { box-shadow: none; border: none; padding: 0; background: transparent; }
+        .product-preview-box { border-radius: 16px; border: var(--border-thick); box-shadow: var(--shadow-hard); background: var(--v-white);}
+        
+        .payment-panel { padding: 40px 20px; }
+        .progress-tracker { display: none; } /* Hide on mobile to save space */
+        .invoice-total .total-val { font-size: 2.2rem; }
     }
 </style>
 </head>
 <body>
 
-<div class="checkout-wrapper">
-    <div class="product-section">
-        <div class="brand-header">
-            <i class="fas fa-shield-alt"></i> Secure Digital Download
-        </div>
+<div class="checkout-layout">
+    
+    <aside class="showcase-panel">
+        <div class="showcase-inner">
+            <div class="v-title-label">You are purchasing</div>
+            <h1 class="v-product-title"><%=file.title%></h1>
+            <div class="v-product-id"><%=file.filename%> • Ref: #<%= file._id.toString().substring(0,6).toUpperCase() %></div>
 
-        <div class="img-wrapper">
-            <img 
-             src="<%= file.imageType 
-                      ? `https://d3epchi0htsp3c.cloudfront.net/files-previews/images/${file._id}.${file.imageType}` 
-                      : '/images/File-Demo.svg' %>" 
-             alt="<%= file.filename %>" 
-             class="product-img">
-        </div>
-
-        <h1 class="product-title"><%=file.title%></h1>
-        <div class="product-details">
-            <%=file.filename%>
-            <br><span style="font-size:0.9rem; margin-top:10px; display:block; opacity:0.7;">Verified Digital Asset</span>
-        </div>
-
-        <div class="secure-badge">
-            <i class="fas fa-lock"></i> 256-bit SSL Encrypted Payment
-        </div>
-    </div>
-
-    <div class="payment-section">
-        <div class="section-title">
-            <span>Order Summary</span>
-            <span style="font-size:0.9rem; font-weight:400; color:#888;">ID: #<%= file._id.toString().substring(0,6).toUpperCase() %></span>
-        </div>
-
-        <div class="line-item main" id="mainOrderItem">
-            <span>Product Price (x<span id="displayQuantity">1</span>)</span>
-            <span>₹<span id="itemBasePrice"><%=priceDetails.originalPrice%></span></span>
-        </div>
-
-        <div id="price-breakdown">
-            <div class="line-item">
-                <span>Subtotal</span>
-                <span>₹<span id="subtotalPrice"><%=priceDetails.originalPrice%></span></span>
+            <div class="product-preview-box">
+                <img src="<%= file.imageType ? `https://d3epchi0htsp3c.cloudfront.net/files-previews/images/${file._id}.${file.imageType}` : '/images/File-Demo.svg' %>" alt="<%= file.filename %>">
             </div>
-            <div class="line-item">
-                <span>Platform Fee</span> <span>₹<%= (priceDetails.serviceFee + priceDetails.gstTax).toFixed(2) %></span>
+
+            <ul class="included-list">
+                <li><i class="fas fa-circle-check"></i> Lifetime Digital Access</li>
+                <li><i class="fas fa-circle-check"></i> Instant Download Link</li>
+                <li><i class="fas fa-circle-check"></i> Verified Creator Asset</li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="payment-panel">
+        <div class="payment-inner">
+            
+            <div class="progress-tracker">
+                <div class="step"><div class="step-icon"><i class="fas fa-check"></i></div> Account</div>
+                <div class="step-divider"></div>
+                <div class="step active"><div class="step-icon">2</div> Payment</div>
+                <div class="step-divider"></div>
+                <div class="step"><div class="step-icon">3</div> Download</div>
             </div>
-            <% if(priceDetails.discountedPrice && priceDetails.discountedPrice < priceDetails.originalPrice) { %>
-                <div class="line-item discount">
-                    <span>Code Applied</span>
-                    <span>-₹<%= (priceDetails.originalPrice - priceDetails.discountedPrice).toFixed(2) %></span>
+
+            <div class="invoice-section">
+                <div class="invoice-row">
+                    <span>Base Asset Price</span>
+                    <span>₹<%=priceDetails.originalPrice.toFixed(2)%></span>
                 </div>
-            <% } %>
-        </div>
+                <div class="invoice-row muted">
+                    <span>Platform </span>
+                    <span>₹<%=(priceDetails.serviceFee + priceDetails.gstTax).toFixed(2)%></span>
+                </div>
+                <div id="dynamic-discount-row">
+                    </div>
 
-        <div class="coupon-container">
-            <input type="text" id="coupon-code" class="coupon-input" placeholder="Have a discount code?">
-            <button id="apply-coupon-btn" class="apply-btn">APPLY</button>
-            <div id="coupon-message" class="coupon-feedback"></div>
-        </div>
-
-        <div class="total-container">
-            <div>
-                <div class="total-label">Total Amount</div>
-                <div style="font-size:0.8rem; color:#888;">Include. all taxes</div>
+                <div class="invoice-total">
+                    <div class="total-lbl">Total Due</div>
+                    <div class="total-val">₹<span id="finalTotalPrice"><%=priceDetails.total%></span></div>
+                </div>
             </div>
-            <div class="total-value">
-                <span class="currency">₹</span><span id="finalTotalPrice"><%=priceDetails.total%></span>
+
+            <div class="coupon-box">
+                <input type="text" id="coupon-code" class="coupon-input" placeholder="Enter Promo Code" autocomplete="off" spellcheck="false">
+                <button id="apply-coupon-btn" class="coupon-btn">Apply</button>
             </div>
+
+            <button type="button" class="v-pay-btn" id="razorpay-pay-btn">
+                <span>Buy Now</span>
+                <i class="fas fa-lock"></i>
+            </button>
+
+            <div class="security-footer">
+                <div class="sec-item"><i class="fas fa-shield-halved"></i> 256-Bit SSL</div>
+                <div class="sec-item"><i class="fas fa-credit-card"></i> Secure Gateway</div>
+            </div>
+
         </div>
-
-        <button type="button" class="cta-btn">
-            <span>Complete Payment</span> <i class="fas fa-arrow-right"></i>
-        </button>
-
-    </div>
+    </main>
 </div>
 
-<div class="modal-overlay" id="successModalBackdrop" style="display:none;">
-    <div class="modal-card">
-        <div style="font-size: 3rem; color: var(--success-color); margin-bottom: 20px;">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <h3 style="margin: 0 0 10px 0; font-size: 1.4rem;">Code Applied!</h3>
-        <p style="color: #666; margin: 0 0 25px 0;">You saved <span style="font-weight:700; color:#000;">₹<span id="savingsAmount">0.00</span></span></p>
-        <button id="modalCloseBtn" style="width:100%; padding:12px; border:1px solid #ddd; background:transparent; border-radius:8px; cursor:pointer;">Dismiss</button>
-    </div>
+<div id="toast-msg">
+    <i class="icon"></i> <span class="text"></span>
 </div>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-// --- CORE LOGIC PRESERVED ---
-const fileId = "<%=file._id%>";
-const originalPricePerItem = <%=priceDetails.originalPrice%>; 
-const serviceFee = <%=priceDetails.serviceFee%>;
-const gstTax = <%=priceDetails.gstTax%>;
-let currentQuantity = 1; 
+    const fileId = "<%=file._id%>";
+    const originalPrice = <%=priceDetails.originalPrice%>; 
+    const fees = <%=priceDetails.serviceFee + priceDetails.gstTax%>;
 
-const applyBtn = document.getElementById('apply-coupon-btn');
-const couponInput = document.getElementById('coupon-code');
-const couponMessage = document.getElementById('coupon-message');
-const totalAmountElement = document.getElementById('finalTotalPrice');
-const payButton = document.querySelector('.cta-btn');
-const priceBreakdown = document.getElementById('price-breakdown');
-const successModalBackdrop = document.getElementById('successModalBackdrop');
-const savingsAmountElement = document.getElementById('savingsAmount');
-const modalCloseBtn = document.getElementById('modalCloseBtn');
-const displayQuantity = document.getElementById('displayQuantity');
-const subtotalPriceDisplay = document.getElementById('subtotalPrice');
+    const couponInput = document.getElementById('coupon-code');
+    const applyBtn = document.getElementById('apply-coupon-btn');
+    const totalAmountDisplay = document.getElementById('finalTotalPrice');
+    const discountRowContainer = document.getElementById('dynamic-discount-row');
+    const payButton = document.getElementById('razorpay-pay-btn');
+    const toast = document.getElementById('toast-msg');
 
-let currentPriceDetails = {
-    originalPrice: <%=priceDetails.originalPrice%>,
-    discountedPrice: <%=priceDetails.discountedPrice%>,
-    serviceFee: <%=priceDetails.serviceFee%>,
-    gstTax: <%=priceDetails.gstTax%>,
-    total: <%=priceDetails.total%>
-};
-let appliedCouponData = null; 
+    let activeData = { total: <%=priceDetails.total%>, discount: 0 };
 
-// --- Calculation ---
-function calculatePrices(quantity, couponData = null) {
-    const itemSubtotal = originalPricePerItem * quantity;
-    let actualDiscountedPrice = itemSubtotal;
-    let calculatedDiscount = 0;
-
-    if (couponData && couponData.valid && couponData.priceDetails) {
-        return {
-            priceDetails: couponData.priceDetails,
-            savings: (originalPricePerItem * quantity) - couponData.priceDetails.discountedPrice
-        };
-    } 
-    
-    let prices = {
-        originalPrice: itemSubtotal, 
-        discountedPrice: actualDiscountedPrice,
-        serviceFee: serviceFee * quantity, 
-        gstTax: gstTax * quantity 
-    };
-
-    prices.total = prices.discountedPrice + prices.serviceFee + prices.gstTax;
-    return { priceDetails: prices, savings: calculatedDiscount };
-}
-
-// --- UI Update ---
-function updateUI(newPriceDetails) {
-    currentPriceDetails = newPriceDetails;
-
-    displayQuantity.textContent = currentQuantity;
-    subtotalPriceDisplay.textContent = newPriceDetails.originalPrice.toFixed(2);
-    totalAmountElement.textContent = newPriceDetails.total.toFixed(2);
-    // Update button text contextually if you want, but fixed "Complete Payment" is cleaner for this design
-
-    let discountHtml = '';
-    const actualDiscountValue = newPriceDetails.originalPrice - newPriceDetails.discountedPrice;
-    
-    if (actualDiscountValue > 0) {
-         discountHtml = `
-            <div class="line-item discount">
-                <span>Code Applied</span>
-                <span>-₹${actualDiscountValue.toFixed(2)}</span>
-            </div>`;
+    // --- Toast Function ---
+    function showToast(message, type = 'success') {
+        toast.className = `show ${type}`;
+        toast.querySelector('.text').textContent = message;
+        toast.querySelector('i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+        setTimeout(() => { toast.classList.remove('show'); }, 4000);
     }
 
-    priceBreakdown.innerHTML = `
-        <div class="line-item">
-            <span>Subtotal</span>
-            <span>₹${newPriceDetails.originalPrice.toFixed(2)}</span>
-        </div>
-        <div class="line-item">
-            <span>Platform Fee</span>
-            <span>₹${(newPriceDetails.serviceFee+newPriceDetails.gstTax).toFixed(2)}</span>
-        </div>
-        ${discountHtml}
-    `;
-}
-
-// --- Modal Handlers ---
-function showSuccessModal(savings) {
-    if (savings > 0) {
-        savingsAmountElement.textContent = savings.toFixed(2);
-        successModalBackdrop.style.display = 'grid'; // Grid centers content
-    }
-}
-function hideSuccessModal() {
-    successModalBackdrop.style.display = 'none';
-}
-modalCloseBtn.addEventListener('click', hideSuccessModal);
-successModalBackdrop.addEventListener('click', (e) => {
-    if (e.target.id === 'successModalBackdrop') hideSuccessModal();
-});
-
-// --- Coupon Logic ---
-applyBtn.addEventListener('click', async ()=>{
-    const couponCode = couponInput.value.trim();
-    if(!couponCode){
-        couponMessage.textContent = 'Please enter a code';
-        couponMessage.style.color = 'var(--error-color)';
-        couponMessage.style.display = 'block';
-        return;
-    }
-    couponMessage.style.display = 'none';
-    const originalText = applyBtn.innerText;
-    applyBtn.innerText = "wait...";
-
-    try {
-        const response = await fetch(`/check/coupon?fileId=${fileId}&couponCode=${couponCode}&quantity=${currentQuantity}`);
-        const result = await response.json(); 
-
-        if(result.valid){
-            appliedCouponData = result;
-            const p = result.priceDetails;
-            const savings = (originalPricePerItem * currentQuantity) - p.discountedPrice;
-            updateUI(p);
-            showSuccessModal(savings); 
+    // --- Render Pricing ---
+    function renderSummary() {
+        if (activeData.discount > 0) {
+            discountRowContainer.innerHTML = `
+                <div class="invoice-row discount">
+                    <span><i class="fas fa-tag me-2"></i> Promo Applied</span>
+                    <span>-₹${activeData.discount.toFixed(2)}</span>
+                </div>
+            `;
         } else {
-            appliedCouponData = null;
-            const { priceDetails } = calculatePrices(currentQuantity, null);
-            updateUI(priceDetails);
-            couponMessage.textContent = result.message || 'Invalid code';
-            couponMessage.style.color = 'var(--error-color)';
-            couponMessage.style.display = 'block';
+            discountRowContainer.innerHTML = '';
         }
-    } catch (err) {
-        console.error(err);
-        couponMessage.textContent = 'System error';
-        couponMessage.style.color = 'var(--error-color)';
-        couponMessage.style.display = 'block';
-    } finally {
-        applyBtn.innerText = originalText;
+        totalAmountDisplay.textContent = activeData.total.toFixed(2);
     }
-});
 
-// --- Payment Logic ---
-if (payButton) {
-    payButton.onclick = function (e) {
+    // --- Coupon Logic ---
+    applyBtn.addEventListener('click', async () => {
+        const code = couponInput.value.trim();
+        if(!code) return;
+        
+        applyBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+        
+        try {
+            const res = await fetch(`/check/coupon?fileId=${fileId}&couponCode=${code}&quantity=1`);
+            const data = await res.json();
+            
+            if(data.valid) {
+                const p = data.priceDetails;
+                activeData.total = p.total;
+                activeData.discount = p.originalPrice - p.discountedPrice;
+                renderSummary();
+                showToast(`Code Applied! Saved ₹${activeData.discount.toFixed(2)}`, 'success');
+                couponInput.disabled = true; // Lock input after success
+                applyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                applyBtn.disabled = true;
+            } else {
+                showToast(data.message || "Invalid Code", 'error');
+                applyBtn.textContent = "Apply";
+            }
+        } catch (e) { 
+            showToast("Server Error", 'error');
+            applyBtn.textContent = "Apply";
+        }
+    });
+
+    // --- Razorpay Payment Logic ---
+    payButton.onclick = async function(e) {
         e.preventDefault();
+        
+        // Button Loading State
         const originalContent = payButton.innerHTML;
-        payButton.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Processing...`;
+        payButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+        payButton.style.background = 'var(--v-yellow)';
         payButton.disabled = true;
-
-        fetch('/create-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              fileId: "<%= file._id %>",
-              price: currentPriceDetails.total,
-              filename: "<%= file.filename %>",
-              quantity: currentQuantity,
-              couponCode: couponInput.value.trim(),
-            })
-        })
-        .then(res => res.json())
-        .then(order => {
+        
+        try {
+            const res = await fetch('/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fileId: fileId, price: activeData.total, filename: "<%= file.filename %>", couponCode: couponInput.value.trim() })
+            });
+            const order = await res.json();
+            
             const options = {
                 key: order.key,
                 amount: order.amount,
-                currency: order.currency,
                 name: "Vidyari",
                 description: "<%= file.filename %>",
                 order_id: order.order_id,
-                handler: function (response) {
-                    // Payment successful, verify with backend
-                    fetch('/verify-payment', {
+                theme: { color: "#09090b" }, // Jet Black Theme
+                handler: async function (response) {
+                    payButton.innerHTML = 'VERIFYING... <i class="fas fa-shield-check"></i>';
+                    const verify = await fetch('/verify-payment', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                          razorpay_order_id: response.razorpay_order_id,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          razorpay_signature: response.razorpay_signature,
-                          fileId: "<%= file._id %>",
-                          totalprice: currentPriceDetails.total,
-                          filename:"<%=file.filename%>",
-                          quantity: currentQuantity,
-                          CouponData: appliedCouponData && appliedCouponData.valid ? appliedCouponData : null
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            fileId: fileId,
+                            totalprice: activeData.total
                         })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.href = data.downloadUrl;
-                        } else {
-                            alert("Payment verification failed.");
-                            payButton.innerHTML = originalContent;
-                            payButton.disabled = false;
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        alert("Payment verification error.");
-                        payButton.innerHTML = originalContent;
-                        payButton.disabled = false;
                     });
-                },
-                prefill: {
-                    email: "<%= typeof useremail !== 'undefined' ? useremail : '' %>",
-                    name: "<%= typeof username !== 'undefined' ? username : '' %>"
-                },
-                theme: {
-                    color: "#000000"
-                },
-                modal: {
-                    ondismiss: function() {
-                        payButton.innerHTML = originalContent;
-                        payButton.disabled = false;
+                    const d = await verify.json();
+                    if(d.success) {
+                        payButton.innerHTML = 'SUCCESS! <i class="fas fa-check"></i>';
+                        payButton.style.background = 'var(--v-green)';
+                        window.location.href = d.downloadUrl;
                     }
+                },
+                modal: { 
+                    ondismiss: () => { 
+                        payButton.disabled = false; 
+                        payButton.innerHTML = originalContent; 
+                        payButton.style.background = 'var(--v-green)';
+                    } 
                 }
             };
-            
-            const rzp = new Razorpay(options);
-            rzp.open();
-        }).catch(err => {
-            console.error(err);
-            alert("Could not start payment.");
+            new Razorpay(options).open();
+        } catch (err) { 
+            showToast("Failed to initialize gateway.", "error");
+            payButton.disabled = false; 
             payButton.innerHTML = originalContent;
-            payButton.disabled = false;
-        });
-    }
-}
-
-// Initial Load
-document.addEventListener('DOMContentLoaded', () => {
-    const { priceDetails } = calculatePrices(currentQuantity, null);
-    updateUI(priceDetails);
-});
+            payButton.style.background = 'var(--v-green)';
+        }
+    };
 </script>
 </body>
 </html>
