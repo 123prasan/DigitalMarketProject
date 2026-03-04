@@ -488,11 +488,14 @@
             </div>
 
             <div class="preview-wrapper" data-bs-toggle="modal" data-bs-target="#imageModal">
-                <img id="mainPreviewImage" 
-                    src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>" 
-                    alt="<%= file.filename %>" 
-                    loading="eager"
-                    onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
+                <picture>
+                    <source type="image/webp" srcset="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl.replace(/\.(jpe?g|png)$/i,'.webp') : '/images/File_Demo.webp' %>">
+                    <img id="mainPreviewImage" 
+                        src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>" 
+                        alt="<%= file.filename %>" 
+                        loading="lazy"
+                        onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
+                </picture>
                 <div class="zoom-hint"><i class="fa-solid fa-expand me-2"></i> Tap to Expand</div>
             </div>
             
@@ -653,13 +656,18 @@
             const isFree = doc.price === 0 || doc.price === '0';
             const priceBadgeText = isFree ? `Free` : `₹${doc.price}`;
             const priceBadgeClass = isFree ? `is-free` : ``;
+            const imgUrl = doc.previewUrl && doc.previewUrl.trim() !== '' ? doc.previewUrl : '/images/File_Demo.svg';
+            const webpUrl = imgUrl.replace(/\.(jpe?g|png)$/i, '.webp');
 
             return `
                 <a href="${fileUrl}" class="related-card">
                     <div class="related-img-box">
-                        <img src="${doc.previewUrl && doc.previewUrl.trim() !== '' ? doc.previewUrl : '/images/File_Demo.svg'}" 
-                             alt="${doc.filename}" loading="lazy" 
-                             onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
+                        <picture>
+                            <source type="image/webp" srcset="${webpUrl}">
+                            <img src="${imgUrl}" 
+                                 alt="${doc.filename}" loading="lazy" 
+                                 onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
+                        </picture>
                     </div>
                     <div class="related-content">
                         <h3 class="related-title">${doc.filename}</h3>
