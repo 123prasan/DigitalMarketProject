@@ -489,9 +489,9 @@
 
             <div class="preview-wrapper" data-bs-toggle="modal" data-bs-target="#imageModal">
                 <picture>
-                    <source type="image/webp" srcset="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl.replace(/\.(jpe?g|png)$/i,'.webp') : '/images/File_Demo.webp' %>">
+                    <source type="image/webp" srcset="<%= (file.previewUrl && typeof file.previewUrl === 'string' && file.previewUrl.trim() !== '') ? file.previewUrl.replace(/\.(jpe?g|png)$/i,'.webp') : '/images/File_Demo.webp' %>">
                     <img id="mainPreviewImage" 
-                        src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>" 
+                        src="<%= (file.previewUrl && typeof file.previewUrl === 'string' && file.previewUrl.trim() !== '') ? file.previewUrl : '/images/File_Demo.svg' %>" 
                         alt="<%= file.filename %>" 
                         loading="lazy"
                         onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
