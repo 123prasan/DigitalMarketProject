@@ -1,193 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thank You for Your Purchase | Vidyari</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    
+    <title>Purchase Successful | Vidyari</title>
 
     <meta name="robots" content="noindex, nofollow">
 
-    <link rel="icon" href="/images/logo.svg" type="image/png" />
+    <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <style>
-      /* --- Galactic Dark Theme --- */
-      :root {
-        --font-family: 'Sora', sans-serif;
-        --color-primary: #8b5cf6;
-        --color-secondary: #ec4899;
-        --color-success: #22c55e;
-        --color-text: #e5e7eb;
-        --color-text-muted: #9ca3af;
-        --color-bg-dark: #111827;
-        --color-bg-card: rgba(31, 41, 55, 0.5);
-        --color-border: rgba(255, 255, 255, 0.1);
-        --radius-xl: 1.25rem;
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-        --transition: 0.3s ease-in-out;
-        --gradient-download: linear-gradient(90deg, rgba(77, 54, 208, 1) 0%, rgba(132, 116, 254, 1) 100%);
-      }
+        /* ==========================================================================
+           VIDYARI THANK YOU PAGE: GEMINI / MATERIAL 3 THEME
+           ========================================================================== */
+        :root {
+            --v-bg: #f0f4f9;           /* Gemini Soft Background */
+            --v-surface: #ffffff;      /* Clean White Cards */
+            
+            --v-text-main: #1f1f1f;
+            --v-text-muted: #444746;
+            
+            --v-primary: #0b57d0;      /* Google Blue */
+            --v-primary-hover: #1a73e8;
+            --v-primary-bg: #e8f0fe;
+            
+            --v-success: #146c2e;
+            --v-success-bg: #e6f4ea;
+            
+            --v-border: #e3e3e3;
+            
+            --v-font-display: 'Outfit', sans-serif;
+            --v-font-sans: 'Inter', sans-serif;
+            
+            --v-radius-sm: 12px;
+            --v-radius-md: 16px;
+            --v-radius-lg: 24px;
+            --v-radius-pill: 9999px;
+            
+            --v-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --v-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --v-shadow-float: 0 8px 24px rgba(11, 87, 208, 0.08);
+            
+            --v-transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
 
-      body {
-        font-family: var(--font-family);
-        color: var(--color-text);
-        background-color: var(--color-bg-dark);
-        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><g fill="%231f2937"><circle cx="20" cy="20" r="1.5"/><circle cx="50" cy="50" r="1"/><circle cx="80" cy="30" r="1.2"/><circle cx="10" cy="70" r="1"/><circle cx="90" cy="80" r="1.5"/></g></svg>');
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-      
-      main {
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 2rem;
-      }
+        body {
+            font-family: var(--v-font-sans);
+            color: var(--v-text-main);
+            background-color: var(--v-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
 
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .v-thankyou-master {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(24px, 5vw, 48px);
+            position: relative;
+            overflow: hidden;
+        }
 
-      .thank-you-card {
-        width: 100%;
-        max-width: 800px;
-        background-color: var(--color-bg-card);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-xl);
-        box-shadow: var(--shadow-lg);
-        padding: 3rem;
-        animation: fadeIn 0.6s ease-out forwards;
-      }
+        /* Subtle Background Glow */
+        .v-ambient-glow {
+            position: absolute;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(230,244,234,0.8) 0%, rgba(240,244,249,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+        }
 
-      .thank-you-icon {
-        font-size: 4rem;
-        color: var(--color-success);
-        margin-bottom: 1.5rem;
-      }
+        /* Main Card */
+        .v-card {
+            background: var(--v-surface);
+            border: 1px solid var(--v-border);
+            border-radius: var(--v-radius-lg);
+            box-shadow: var(--v-shadow-md);
+            padding: clamp(32px, 6vw, 64px) clamp(24px, 5vw, 48px);
+            max-width: 640px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            animation: slideUpFade 0.6s cubic-bezier(0.2, 0, 0, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
 
-      .thank-you-title {
-        font-weight: 800;
-        font-size: 2.25rem;
-        color: #fff;
-        margin-bottom: 0.5rem;
-      }
-      
-      .thank-you-subtitle {
-        font-size: 1.1rem;
-        color: var(--color-text-muted);
-        margin-bottom: 2rem;
-      }
-      
-      .filename-highlight {
-        color: var(--color-primary);
-        font-weight: 700;
-      }
-      
-      .download-section {
-        margin-top: 2.5rem;
-        padding-top: 2rem;
-        border-top: 1px solid var(--color-border);
-      }
-      
-      .btn-download-main {
-        line-height: 1; background: var(--gradient-download); cursor: pointer;
-        display: inline-flex; align-items: center; gap: 0.75em; padding: 1em 2em;
-        color: #fff; border: 1px solid transparent; font-weight: 700;
-        border-radius: 2em; font-size: 1.1rem;
-        box-shadow: 0 0.7em 1.5em -0.5em hsla(249, 62%, 51%, 0.5);
-        transition: all var(--transition);
-        text-decoration: none;
-      }
-      .btn-download-main:hover {
-        transform: translateY(-3px) scale(1.03);
-        border-color: rgba(255,255,255,0.8);
-        box-shadow: 0 1em 2em -0.5em hsla(249, 62%, 51%, 0.4);
-      }
-      .btn-download-main.disabled {
-        background: #4b5563;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-        opacity: 0.5;
-      }
-      .btn-download-main__icon {
-        width: 1.5em;
-        height: 1.5em;
-      }
-      
-      /* NEW: Styles for Countdown Timer */
-      .countdown-timer {
-        font-size: 2rem;
-        color: var(--color-text-muted);
-        margin-top: 1.5rem;
-      }
-      .countdown-timer #timerDisplay {
-        color: var(--color-primary);
-        font-weight: 700;
-      }
+        @keyframes slideUpFade {
+            to { opacity: 1; transform: translateY(0); }
+        }
 
+        .v-success-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            background-color: var(--v-success-bg);
+            color: var(--v-success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 24px auto;
+        }
+
+        .v-hero-image {
+            width: 100%;
+            max-width: 240px;
+            margin: 0 auto 24px auto;
+            display: block;
+        }
+
+        .v-title {
+            font-family: var(--v-font-display);
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 600;
+            color: var(--v-text-main);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .v-subtitle {
+            font-size: 1.1rem;
+            color: var(--v-text-muted);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .v-filename {
+            font-weight: 600;
+            color: var(--v-text-main);
+            background: var(--v-bg);
+            padding: 4px 12px;
+            border-radius: var(--v-radius-sm);
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .v-download-section {
+            padding-top: 32px;
+            border-top: 1px solid var(--v-border);
+            margin-top: 16px;
+        }
+
+        /* Action Button */
+        .v-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: var(--v-primary);
+            color: white;
+            border: none;
+            border-radius: var(--v-radius-pill);
+            padding: 16px 32px;
+            font-family: var(--v-font-sans);
+            font-size: 1.15rem;
+            font-weight: 500;
+            box-shadow: var(--v-shadow-float);
+            cursor: pointer;
+            transition: var(--v-transition);
+            text-decoration: none;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .v-btn-primary:hover {
+            background: var(--v-primary-hover);
+            box-shadow: 0 10px 20px rgba(11,87,208,0.15);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .v-btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .v-btn-primary.disabled {
+            background: var(--v-border);
+            color: #9aa0a6;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Countdown Timer */
+        .v-countdown {
+            font-size: 0.95rem;
+            color: var(--v-text-muted);
+            margin-top: 24px;
+            background: var(--v-bg);
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: var(--v-radius-pill);
+        }
+
+        .v-countdown span {
+            color: var(--v-primary);
+            font-weight: 600;
+            font-family: var(--v-font-display);
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
 
-    <div class="page-wrapper">
-        
-      
-        <main>
-          
-            <div class="thank-you-card">
-              <img src="./images/Confirmed-bro.svg">
-                
-                <h1 class="thank-you-title">Thank You!</h1>
-                <p class="thank-you-subtitle">
-                    Your purchase is complete. You can now download 
-                    <span class="filename-highlight"><%= file.filename %></span>.
-                </p>
 
-                <div class="download-section">
-                    <a  class="btn-download-main" id="downloadButton">
-                        <svg class="btn-download-main__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                           <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
-                           <path d="M7 11l5 5l5 -5"></path>
-                           <path d="M12 4l0 12"></path>
-                        </svg>
-                        <span>Download Now</span>
-                    </a>
-                    
-                    <p class="countdown-timer" id="countdownTimer">
-                        Your secure link will expire in: <span id="timerDisplay">60</span> seconds
-                    </p>
+    <main class="v-thankyou-master">
+        <div class="v-ambient-glow"></div>
+        
+        <div class="v-card">
+            <div class="v-success-icon-wrapper">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            
+            <img src="./images/Confirmed-bro.svg" alt="Order Confirmed" class="v-hero-image">
+            
+            <h1 class="v-title">Purchase Complete!</h1>
+            <p class="v-subtitle">
+                Thank you for your order. Your secure access to the following resource is ready: <br>
+                <span class="v-filename"><i class="fa-regular fa-file-lines me-2"></i> <%= file.filename %></span>
+            </p>
+
+            <div class="v-download-section">
+                <a class="v-btn-primary" id="downloadButton">
+                    <i class="fa-solid fa-cloud-arrow-down" style="font-size: 1.3rem;"></i>
+                    <span>Download Now</span>
+                </a>
+                
+                <div class="v-countdown" id="countdownTimer">
+                    Link expires in <span id="timerDisplay">60</span> seconds
                 </div>
             </div>
-        </main>
-      
-        <%- include('footer') %>
-    </div>
+        </div>
+    </main>
+  
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const downloadButton = document.getElementById('downloadButton');
             const timerDisplay = document.getElementById('timerDisplay');
             const countdownContainer = document.getElementById('countdownTimer');
-            downloadButton.onclick = () => {
-       window.location.href="/download/?file_id=<%=file._id%>";
-         
-      // a.download = "<%=file.filename%>";
-      // document.body.appendChild(a);
-     
-    };
-            let timeLeft =<%=expiry%>; // 60 seconds
+            
+            // Handle Download Click
+            downloadButton.onclick = (e) => {
+                if(downloadButton.classList.contains('disabled')) {
+                    e.preventDefault();
+                    return;
+                }
+                window.location.href = "/download/?file_id=<%=file._id%>";
+            };
+            
+            // Handle Countdown
+            let timeLeft = <%= typeof expiry !== 'undefined' ? expiry : 60 %>; 
 
             const countdownInterval = setInterval(() => {
                 timeLeft--;
+                
                 if (timerDisplay) {
                     timerDisplay.textContent = timeLeft;
                 }
@@ -195,17 +279,19 @@
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
                     
-                    // Handle expiry
+                    // Handle Expiry UI State
                     if (downloadButton) {
                         downloadButton.classList.add('disabled');
-                        downloadButton.removeAttribute('href'); // Remove link to prevent clicking
-                        downloadButton.innerHTML = `<span>Link Expired</span>`;
+                        downloadButton.removeAttribute('href'); 
+                        downloadButton.innerHTML = `<i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i> <span>Link Expired</span>`;
                     }
                     if (countdownContainer) {
-                        countdownContainer.textContent = 'Your secure download link has expired.';
+                        countdownContainer.textContent = 'Your secure download link has expired. Please refresh or contact support.';
+                        countdownContainer.style.color = '#b3261e'; // Material Danger
+                        countdownContainer.style.backgroundColor = '#fce8e6';
                     }
                 }
-            }, 1000); // Run every second
+            }, 1000); 
         });
     </script>
 

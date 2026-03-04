@@ -1124,7 +1124,7 @@ app.get("/admin-login", (req, res) => {
       return res.redirect("/admin");
     } catch (error) {
       // Token is invalid, clear it and proceed to login page to show error
-      res.clearCookie("jwt");
+      res.clearCookie("jwt", { domain: ".vidyari.com" });
     }
   }
   res.render("login", { error: null });
@@ -1148,11 +1148,13 @@ app.post("/login", async (req, res) => {
     );
 
     // Set the token as an HTTP-only cookie with 24h maxAge
+    // specify domain to cover both vidyari.com and www.vidyari.com
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
       sameSite: "Lax",
+      domain: ".vidyari.com",
     });
 
     // Redirect to admin page upon successful login
@@ -1165,7 +1167,7 @@ app.post("/login", async (req, res) => {
 
 // Logout Route - Clears the JWT cookie
 app.get("/logout", (req, res) => {
-  res.clearCookie("jwt"); // Clear the JWT cookie from the browser
+  res.clearCookie("jwt", { domain: ".vidyari.com" }); // Clear the JWT cookie from the browser
   res.redirect("/login"); // Redirect to login page
 });
 
@@ -1795,6 +1797,9 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
     if (req.user) extendTTL(`user_${req.user._id}`);
     if (file.userId) extendTTL(`seller_${file.userId}`);
 
+    // Prepare price details for checkout display
+    const priceDetails = GenCheckOutPrice(Number(file.price) || 0);
+
     // 🎨 Render final optimized view
     res.render("file-details", {
       file,
@@ -1808,6 +1813,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       username: user?.username || null,
       useremail: user?.email || null,
       uId: user?._id || null,
+      priceDetails,
     });
   } catch (error) {
     console.error("⚠️ Error fetching file:", error);
@@ -1981,10 +1987,60 @@ const urlCache = new NodeCache({
   deleteOnExpire: true,
 });
 
+// 🚦 Download Rate Limiting: per-user per-second tracker
+// Format: downloadRateLimiter[userId] = { count: number, resetTime: timestamp }
+// Allow max 2 downloads per user per second to prevent CloudFront abuse
+const downloadRateLimiter = {};
+const DOWNLOAD_RATE_LIMIT = 2; // max downloads per user per second
+const RATE_LIMIT_WINDOW = 1000; // 1 second in milliseconds
+
+function checkDownloadRateLimit(userId) {
+  const now = Date.now();
+  const limiterKey = String(userId);
+
+  // Initialize or reset if window has passed
+  if (!downloadRateLimiter[limiterKey] || now >= downloadRateLimiter[limiterKey].resetTime) {
+    downloadRateLimiter[limiterKey] = {
+      count: 1,
+      resetTime: now + RATE_LIMIT_WINDOW,
+    };
+    return { allowed: true, remaining: DOWNLOAD_RATE_LIMIT - 1 };
+  }
+
+  // Increment count within current window
+  const current = downloadRateLimiter[limiterKey];
+  if (current.count < DOWNLOAD_RATE_LIMIT) {
+    current.count++;
+    return {
+      allowed: true,
+      remaining: DOWNLOAD_RATE_LIMIT - current.count,
+    };
+  }
+
+  // Rate limit exceeded
+  const waitMs = current.resetTime - now;
+  return {
+    allowed: false,
+    remaining: 0,
+    retryAfter: Math.ceil(waitMs / 1000), // seconds until next window
+  };
+}
+
 app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
   try {
     const fileId = req.query.file_id;
     if (!fileId || fileId.length !== 24) return res.render("file-not-found");
+
+    // 🚦 Check download rate limit (prevent CloudFront abuse)
+    const rateLimitCheck = checkDownloadRateLimit(req.user._id);
+    if (!rateLimitCheck.allowed) {
+      console.warn(`⏱ Download rate limit hit for user ${req.user._id}. Retry after ${rateLimitCheck.retryAfter}s`);
+      return res.status(429).json({
+        success: false,
+        message: `Too many download requests. Please try again in ${rateLimitCheck.retryAfter} second(s).`,
+        retryAfter: rateLimitCheck.retryAfter,
+      });
+    }
 
     const file = await File.findById(fileId).lean();
     if (!file) return res.render("file-not-found");
@@ -2076,6 +2132,11 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
     process.nextTick(() => {
       console.log(`📊 Downloaded: ${file.filename} by ${req.user._id}`);
     });
+
+    // 🛡️ Add rate limit headers to response
+    res.set('X-RateLimit-Limit', String(DOWNLOAD_RATE_LIMIT));
+    res.set('X-RateLimit-Remaining', String(rateLimitCheck.remaining));
+    res.set('X-RateLimit-Reset', String(downloadRateLimiter[String(req.user._id)].resetTime));
 
     // ✅ Redirect to CloudFront (fastest edge delivery)
     return res.redirect(signedUrl);

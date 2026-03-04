@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
     ph: { type: Number },
     role: {
       type: String,
-      enum: ["Buyer", "seller", "Admin"],
+      enum: ["Buyer", "buyer", "seller", "Seller", "Admin", "admin"],
       default: "Buyer",
     },
 
@@ -58,8 +58,8 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Pre-save middleware
-userSchema.pre("save", function (next) {
+// Pre-save middleware (modern promise-style, avoid `next` callback)
+userSchema.pre("save", function () {
   // 1. Remove spaces from username
   if (this.username) {
     this.username = this.username.replace(/\s+/g, "");
@@ -79,39 +79,34 @@ userSchema.pre("save", function (next) {
   if (this.followers && this.followers.length >= 1000) {
     this.ISVERIFIED = true;
   }
-
-  next();
+  // No explicit `next()` call required when returning/finishing synchronously
 });
 
 // Middleware for updates to handle verification based on follower count
-userSchema.pre("findOneAndUpdate", function (next) {
+userSchema.pre("findOneAndUpdate", async function () {
   const update = this.getUpdate();
 
   // Check if followers are being updated
   if (update.$push?.followers || update.$addToSet?.followers || update.followers) {
-    this.model.findOne(this.getQuery()).then((doc) => {
-      if (!doc) return next();
+    const doc = await this.model.findOne(this.getQuery());
+    if (!doc) return;
 
-      const currentCount = doc.followers ? doc.followers.length : 0;
-      let newCount = currentCount;
+    const currentCount = doc.followers ? doc.followers.length : 0;
+    let newCount = currentCount;
 
-      if (update.$push?.followers || update.$addToSet?.followers) {
-        newCount += 1;
-      } else if (update.followers) {
-        newCount = update.followers.length;
-      }
+    if (update.$push?.followers || update.$addToSet?.followers) {
+      newCount += 1;
+    } else if (update.followers) {
+      newCount = update.followers.length;
+    }
 
-      if (newCount >= 1000) {
-        this.set({ ISVERIFIED: true });
-      } else {
-        this.set({ ISVERIFIED: false });
-      }
-
-      next();
-    });
-  } else {
-    next();
+    if (newCount >= 1000) {
+      this.set({ ISVERIFIED: true });
+    } else {
+      this.set({ ISVERIFIED: false });
+    }
   }
+  // returning/finishing the function resolves the middleware
 });
 
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);
