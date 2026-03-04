@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const User = require('../models/UserData.js'); 
-const Usertransaction = require('../models/UserTransactions.js'); 
+const User = require('../models/userData.js'); 
+const Usertransaction = require('../models/userTransactions.js'); 
 const authenticateJWT_user = require('./authentication/jwtAuth.js'); 
 
 /**
