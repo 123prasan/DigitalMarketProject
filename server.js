@@ -1884,6 +1884,150 @@ app.post("/delete-file", authenticateJWT, async (req, res) => {
 });
 //user-notifications
 
+// ====================================================================
+// 🔍 SEO ROUTES - Sitemap & Schema Generation
+// ====================================================================
+
+// Generate main XML sitemap
+app.get("/sitemap.xml", async (req, res) => {
+  try {
+    const baseUrl = "https://vidyari.com";
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
+
+    // Static pages with high priority
+    const staticPages = [
+      { url: "/", priority: "1.0", changefreq: "daily" },
+      { url: "/courses", priority: "0.9", changefreq: "daily" },
+      { url: "/pricing", priority: "0.8", changefreq: "weekly" },
+      { url: "/About", priority: "0.7", changefreq: "monthly" },
+      { url: "/contact", priority: "0.7", changefreq: "monthly" },
+      { url: "/privacy-policy", priority: "0.5", changefreq: "yearly" },
+      { url: "/terms-and-conditions", priority: "0.5", changefreq: "yearly" },
+    ];
+
+    staticPages.forEach((page) => {
+      xml += `  <url>\n    <loc>${baseUrl}${page.url}</loc>\n    <changefreq>${page.changefreq}</changefreq>\n    <priority>${page.priority}</priority>\n  </url>\n`;
+    });
+
+    xml += "</urlset>";
+
+    res.header("Content-Type", "application/xml");
+    res.send(xml);
+  } catch (err) {
+    console.error("Sitemap error:", err);
+    res.status(500).send("Error generating sitemap");
+  }
+});
+
+// Generate files sitemap (top 5000 files)
+app.get("/sitemap-files.xml", async (req, res) => {
+  try {
+    const baseUrl = "https://vidyari.com";
+    const files = await File.find().select("slug _id uploadedAt downloadCount").limit(5000).sort({ downloadCount: -1 }).lean();
+
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+    files.forEach((file) => {
+      const priority = file.downloadCount > 100 ? "0.8" : file.downloadCount > 50 ? "0.7" : "0.6";
+      const lastmod = file.uploadedAt ? new Date(file.uploadedAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0];
+
+      xml += `  <url>\n    <loc>${baseUrl}/file/${file.slug}/${file._id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <priority>${priority}</priority>\n  </url>\n`;
+    });
+
+    xml += "</urlset>";
+
+    res.header("Content-Type", "application/xml");
+    res.send(xml);
+  } catch (err) {
+    console.error("Files sitemap error:", err);
+    res.status(500).send("Error generating files sitemap");
+  }
+});
+
+// Generate courses sitemap
+app.get("/sitemap-courses.xml", async (req, res) => {
+  try {
+    const baseUrl = "https://vidyari.com";
+    const courses = await Course.find().select("slug _id createdAt").limit(2000).sort({ createdAt: -1 }).lean();
+
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+    courses.forEach((course) => {
+      const lastmod = course.createdAt ? new Date(course.createdAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0];
+      xml += `  <url>\n    <loc>${baseUrl}/course/${course.slug}/${course._id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <priority>0.7</priority>\n  </url>\n`;
+    });
+
+    xml += "</urlset>";
+
+    res.header("Content-Type", "application/xml");
+    res.send(xml);
+  } catch (err) {
+    console.error("Courses sitemap error:", err);
+    res.status(500).send("Error generating courses sitemap");
+  }
+});
+
+// Robots.txt route (also serve from public folder)
+app.get("/robots.txt", (req, res) => {
+  res.header("Content-Type", "text/plain");
+  const robotsContent = `# Robots.txt for Vidyari - Peer Learning Platform
+User-agent: *
+Allow: /
+Allow: /file/
+Allow: /courses
+Allow: /profile/
+Allow: /pricing
+Allow: /About
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms-and-conditions
+Allow: /refund-policy
+
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /api/
+Disallow: /checkout
+Disallow: /download
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+
+Crawl-delay: 1
+User-agent: Googlebot
+Crawl-delay: 0
+
+Sitemap: https://vidyari.com/sitemap.xml
+Sitemap: https://vidyari.com/sitemap-files.xml
+Sitemap: https://vidyari.com/sitemap-courses.xml
+`;
+  res.send(robotsContent);
+});
+
+// JSON-LD for Organization (global schema)
+app.get("/schema/organization.json", (req, res) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Vidyari",
+    "url": "https://vidyari.com",
+    "logo": "https://vidyari.com/images/logo.png",
+    "description": "Peer-to-peer learning platform for study materials, notes, and digital resources",
+    "sameAs": ["https://twitter.com/vidyari", "https://www.facebook.com/vidyari"],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Support",
+      "email": "support@vidyari.com"
+    },
+    "founder": {
+      "@type": "Person",
+      "name": "Vidyari Team"
+    }
+  };
+  res.json(schema);
+});
+
 // Start Server
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
