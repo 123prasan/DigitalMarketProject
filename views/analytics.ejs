@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidyari Pro | Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --color-bg: #f8fafc;
+            --color-black: #0f172a;
+            --color-border: #e2e8f0;
+            --color-muted: #64748b;
+            --color-accent: #3b82f6; 
+            --color-success: #10b981; 
+            --color-warn: #f59e0b; 
+            --color-danger: #ef4444; 
+            --color-purple: #8b5cf6;
+            --color-pink: #ec4899;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg);
+            color: var(--color-black);
+            overflow-x: hidden;
+        }
+
+        .font-mono { font-family: var(--font-mono); }
+
+        /* Clean Bento Grid Layout */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.25rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Neubrutalist Clean Cards */
+        .bento-card {
+            background: #ffffff;
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bento-card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border-color: #cbd5e1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Data Typography */
+        .data-value {
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            line-height: 1;
+        }
+        .data-trend {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Progress Tracks (Geo Section) */
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background-color: #f1f5f9;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        /* Cohort Heatmap Styles */
+        .cohort-table { width: 100%; border-collapse: separate; border-spacing: 2px; }
+        .cohort-table th { font-size: 0.65rem; color: var(--color-muted); font-weight: 600; padding: 4px; text-align: center; text-transform: uppercase; }
+        .cohort-table td { font-family: var(--font-mono); font-size: 0.75rem; padding: 8px; text-align: center; border-radius: 4px; font-weight: 600; }
+        .cohort-label { text-align: left !important; color: var(--color-muted); font-family: var(--font-sans) !important; font-weight: 500 !important; }
+
+        /* Hourly Heatmap */
+        .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+        .heatmap-cell { aspect-ratio: 1; border-radius: 4px; transition: transform 0.1s; cursor: crosshair; }
+        .heatmap-cell:hover { transform: scale(1.1); z-index: 10; border: 1px solid black; }
+        
+        .heat-0 { background: #f1f5f9; }
+        .heat-1 { background: #bae6fd; }
+        .heat-2 { background: #7dd3fc; }
+        .heat-3 { background: #38bdf8; }
+        .heat-4 { background: #0ea5e9; }
+        .heat-5 { background: #0284c7; }
+
+        /* Live Feed Animation */
+        .live-ping { position: relative; display: flex; width: 8px; height: 8px; }
+        .live-ping-dot { position: absolute; width: 100%; height: 100%; background-color: var(--color-success); border-radius: 50%; }
+        .live-ping-pulse {
+            position: absolute; width: 100%; height: 100%; background-color: var(--color-success); border-radius: 50%;
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        @keyframes ping { 75%, 100% { transform: scale(3); opacity: 0; } }
+
+        /* Badges */
+        .badge {
+            display: inline-flex; align-items: center; px-2; py-0.5;
+            border-radius: 6px; font-size: 0.65rem; font-weight: 700;
+            font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .badge-pro { background: #0f172a; color: #fff; }
+        .badge-ai { background: rgba(139, 92, 246, 0.1); color: var(--color-purple); border: 1px solid rgba(139, 92, 246, 0.2); }
+        .badge-warn { background: rgba(245, 158, 11, 0.1); color: var(--color-warn); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto px-6 h-14 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="/" class="flex items-center gap-2 no-underline text-black">
+                    <div class="h-7 w-7 bg-black text-white rounded flex items-center justify-center font-mono font-bold text-sm">V</div>
+                    <span class="font-bold tracking-tight text-sm uppercase">Vidyari</span>
+                </a>
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="/dashboard" class="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:text-black rounded-md hover:bg-gray-50 transition-colors">Overview</a>
+                    <a href="/analytics" class="px-3 py-1.5 text-xs font-semibold text-black bg-gray-100 rounded-md">Command Center</a>
+                    <a href="/settings" class="px-3 py-1.5 text-xs font-semibold text-gray-500 hover:text-black rounded-md hover:bg-gray-50 transition-colors">Settings</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="badge badge-pro"><i class="fa-solid fa-bolt text-[#ffd60a] mr-1"></i> Pro</span>
+                <div class="h-7 w-7 rounded bg-gray-200 border border-gray-300 overflow-hidden">
+                    <img src="<%= typeof user !== 'undefined' && user.profilePicUrl ? user.profilePicUrl : '/images/avatar.jpg' %>" alt="Profile" class="h-full w-full object-cover">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="p-4 md:p-8">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-black mb-1">Intelligence Hub</h1>
+                <p class="text-xs text-gray-500 flex items-center gap-2">
+                    <span class="live-ping"><span class="live-ping-pulse"></span><span class="live-ping-dot"></span></span>
+                    Data synced securely from Vidyari Engine.
+                </p>
+            </div>
+            <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1 shadow-sm font-mono text-[10px] uppercase font-bold">
+                <button class="px-3 py-1 rounded bg-gray-100 text-black">24H</button>
+                <button class="px-3 py-1 rounded text-gray-500 hover:text-black">7D</button>
+                <button class="px-3 py-1 rounded text-gray-500 hover:text-black">30D</button>
+                <button class="px-3 py-1 rounded text-gray-500 hover:text-black">YTD</button>
+            </div>
+        </div>
+
+        <div class="bento-grid">
+            
+            <div class="bento-card col-span-12 lg:col-span-8">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title"><i class="fa-solid fa-chart-line text-blue-500"></i> Revenue Velocity</h2>
+                        <div class="flex items-baseline gap-3 mt-1">
+                            <span class="data-value text-blue-600" id="stat-revenue">Loading...</span>
+                            <span class="data-trend text-emerald-500" id="stat-trend"></span>
+                        </div>
+                    </div>
+                    <span class="badge badge-ai"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Forecast</span>
+                </div>
+                <div class="flex-grow w-full min-h-[250px] relative mt-2">
+                    <canvas id="velocityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 lg:col-span-4 bg-gray-900 text-white border-gray-800" id="elasticity-card">
+                <div class="card-header">
+                    <h2 class="card-title text-gray-400"><i class="fa-solid fa-bullseye text-purple-400"></i> Pricing Elasticity</h2>
+                    <span class="badge badge-ai border-purple-500/30">Auto-Yield</span>
+                </div>
+                <div class="mt-2 flex-grow flex flex-col justify-between">
+                    <div>
+                        <p class="text-xs text-gray-400 mb-1" id="elast-product-name">Calculating...</p>
+                        <div class="flex items-baseline gap-2">
+                            <span class="data-value text-white" id="elast-suggested-price">--</span>
+                            <span class="text-xs font-mono text-purple-400" id="elast-current-price">--</span>
+                        </div>
+                    </div>
+                    <div class="w-full h-32 mt-4 relative">
+                        <canvas id="elasticityChart"></canvas>
+                        <div class="absolute top-2 right-0 text-[9px] font-mono text-gray-400 border border-gray-700 bg-black/50 p-1 rounded backdrop-blur">
+                            Max Yield
+                        </div>
+                    </div>
+                    <button class="w-full py-2 mt-4 bg-white text-black text-xs font-bold font-mono rounded hover:bg-gray-200 transition-colors uppercase tracking-wider">Apply Suggested Price</button>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 lg:col-span-4">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fa-solid fa-clock text-amber-500"></i> Conversion by Hour</h2>
+                    <i class="fa-solid fa-circle-info text-gray-400 text-xs cursor-help" title="Darker blue means higher conversion rate"></i>
+                </div>
+                <div class="mt-2 flex gap-2 h-full">
+                    <div class="flex flex-col justify-between text-[9px] font-mono text-gray-400 font-bold uppercase py-1">
+                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                    </div>
+                    <div class="flex-grow flex flex-col">
+                        <div class="heatmap-grid flex-grow" id="hourly-heatmap"></div>
+                        <div class="flex justify-between text-[9px] font-mono text-gray-400 font-bold mt-1">
+                            <span>12a</span><span>4a</span><span>8a</span><span>12p</span><span>4p</span><span>8p</span><span>11p</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 bg-blue-50 border border-blue-100 p-2 rounded text-xs text-blue-800 font-medium">
+                    <i class="fa-solid fa-lightbulb text-blue-500 mr-1"></i> Peak buying time: <strong>Wed at 8 PM</strong>.
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 lg:col-span-8">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title"><i class="fa-solid fa-table-cells text-emerald-500"></i> Cohort Retention Matrix</h2>
+                        <p class="text-[10px] text-gray-500 mt-1">Percentage of buyers returning to buy another product.</p>
+                    </div>
+                    <button class="text-xs font-mono text-blue-500 hover:underline">Download CSV</button>
+                </div>
+                <div class="overflow-x-auto mt-2">
+                    <table class="cohort-table">
+                        <thead>
+                            <tr>
+                                <th class="text-left w-24">Cohort</th>
+                                <th>Size</th>
+                                <th>Wk 0</th>
+                                <th>Wk 1</th>
+                                <th>Wk 2</th>
+                                <th>Wk 3</th>
+                                <th>Wk 4</th>
+                                <th>Wk 5</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="cohort-label">Jan 01 - 07</td>
+                                <td>142</td>
+                                <td style="background: rgba(16, 185, 129, 1); color: white;">100%</td>
+                                <td style="background: rgba(16, 185, 129, 0.4);">42%</td>
+                                <td style="background: rgba(16, 185, 129, 0.25);">28%</td>
+                                <td style="background: rgba(16, 185, 129, 0.15);">18%</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);">12%</td>
+                                <td style="background: rgba(16, 185, 129, 0.05);">8%</td>
+                            </tr>
+                            <tr>
+                                <td class="cohort-label">Jan 08 - 14</td>
+                                <td>215</td>
+                                <td style="background: rgba(16, 185, 129, 1); color: white;">100%</td>
+                                <td style="background: rgba(16, 185, 129, 0.5);">55%</td>
+                                <td style="background: rgba(16, 185, 129, 0.3);">31%</td>
+                                <td style="background: rgba(16, 185, 129, 0.2);">22%</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);">14%</td>
+                                <td style="background: #f1f5f9; color: #94a3b8;">--</td>
+                            </tr>
+                            <tr>
+                                <td class="cohort-label">Jan 15 - 21</td>
+                                <td>188</td>
+                                <td style="background: rgba(16, 185, 129, 1); color: white;">100%</td>
+                                <td style="background: rgba(16, 185, 129, 0.35);">38%</td>
+                                <td style="background: rgba(16, 185, 129, 0.2);">21%</td>
+                                <td style="background: rgba(16, 185, 129, 0.12);">11%</td>
+                                <td style="background: #f1f5f9; color: #94a3b8;">--</td>
+                                <td style="background: #f1f5f9; color: #94a3b8;">--</td>
+                            </tr>
+                            <tr>
+                                <td class="cohort-label">Jan 22 - 28</td>
+                                <td>304</td>
+                                <td style="background: rgba(16, 185, 129, 1); color: white;">100%</td>
+                                <td style="background: rgba(16, 185, 129, 0.45);">48%</td>
+                                <td style="background: rgba(16, 185, 129, 0.28);">26%</td>
+                                <td style="background: #f1f5f9; color: #94a3b8;">--</td>
+                                <td style="background: #f1f5f9; color: #94a3b8;">--</td>
+                                <td style="background: #f1f5f9; color: #94a3b8;">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 lg:col-span-4 bg-orange-50/50 border-orange-200">
+                <div class="card-header">
+                    <h2 class="card-title text-orange-600"><i class="fa-solid fa-chart-pie"></i> Cannibalization Radar</h2>
+                    <span class="badge badge-warn text-orange-700">Warning</span>
+                </div>
+                <div class="flex-grow flex flex-col gap-3 mt-2">
+                    <p class="text-[10px] text-gray-500 font-sans leading-tight">Are new products eating sales from old ones instead of creating new revenue?</p>
+                    
+                    <div class="bg-white border border-orange-200 p-3 rounded-lg shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-gray-800">"Next.js Guide" <span class="text-[9px] text-gray-400 font-mono">(New)</span></span>
+                            <i class="fa-solid fa-arrows-to-circle text-gray-300"></i>
+                            <span class="text-xs font-bold text-gray-800 text-right">"React Notes" <span class="text-[9px] text-gray-400 font-mono">(Old)</span></span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden flex">
+                            <div class="bg-emerald-400 h-full" style="width: 60%;" title="New Revenue"></div>
+                            <div class="bg-orange-500 h-full" style="width: 40%;" title="Cannibalized Revenue"></div>
+                        </div>
+                        <p class="text-[9px] font-mono text-orange-600 mt-2 text-center">40% of Next.js buyers abandoned a React cart.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 lg:col-span-4 relative">
+                <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg')] opacity-[0.03] bg-no-repeat bg-right-bottom bg-contain pointer-events-none"></div>
+                <div class="relative z-10">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-map-location-dot text-pink-500"></i> Geo-Spatial Revenue</h2>
+                    </div>
+                    <div class="space-y-4 mt-2">
+                        <div>
+                            <div class="flex justify-between items-center text-xs font-semibold">
+                                <span class="flex items-center gap-2"><img src="https://flagcdn.com/16x12/in.png" alt="IN"> Bengaluru, KA</span>
+                                <span class="font-mono text-gray-500">38%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill bg-blue-500" style="width: 38%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center text-xs font-semibold">
+                                <span class="flex items-center gap-2"><img src="https://flagcdn.com/16x12/in.png" alt="IN"> Mumbai, MH</span>
+                                <span class="font-mono text-gray-500">24%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill bg-blue-400" style="width: 24%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center text-xs font-semibold">
+                                <span class="flex items-center gap-2"><img src="https://flagcdn.com/16x12/in.png" alt="IN"> Delhi, DL</span>
+                                <span class="font-mono text-gray-500">18%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill bg-blue-300" style="width: 18%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center text-xs font-semibold">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-earth-americas text-gray-400"></i> Rest of World</span>
+                                <span class="font-mono text-gray-500">20%</span>
+                            </div>
+                            <div class="progress-track"><div class="progress-fill bg-gray-300" style="width: 20%"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 lg:col-span-4 bg-[#09090b] text-white border-gray-800 relative overflow-hidden">
+                <div class="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] z-0 pointer-events-none opacity-20"></div>
+                <div class="relative z-10 h-full flex flex-col">
+                    <div class="card-header border-b border-gray-800 pb-2 mb-3">
+                        <h2 class="card-title !text-gray-400 font-mono"><i class="fa-solid fa-terminal"></i> Event_Stream</h2>
+                        <span class="flex items-center gap-2 text-[10px] font-mono text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> WS_CONN_OK</span>
+                    </div>
+                    <div class="flex-grow font-mono text-[10px] space-y-2 overflow-y-hidden relative h-32" id="terminal-feed">
+                        </div>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 md:col-span-6 lg:col-span-6">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fa-solid fa-mobile-screen text-gray-500"></i> Platform Telemetry</h2>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center justify-around h-full mt-2 gap-6">
+                    <div class="relative w-32 h-32">
+                        <canvas id="deviceChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <span class="font-mono text-xl font-bold text-black">72%</span>
+                            <span class="text-[9px] font-bold text-gray-400 uppercase">Mobile</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 w-full sm:w-auto">
+                        <p class="text-[10px] text-gray-500 font-mono uppercase mb-2">Actionable Insight</p>
+                        <p class="text-xs font-medium text-gray-700 leading-relaxed">Since 72% of buyers use Mobile, ensure your uploaded PDFs use a <strong>minimum 14pt font size</strong> to prevent negative reviews and chargebacks.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 md:col-span-6 lg:col-span-6 border-red-200 bg-red-50/30">
+                <div class="card-header">
+                    <h2 class="card-title text-red-600"><i class="fa-solid fa-shield-virus"></i> Refund Risk Queue</h2>
+                    <span class="badge badge-warn">Action Required</span>
+                </div>
+                <div class="flex flex-col gap-3 mt-2" id="risk-queue-container">
+                    <p class="text-xs font-mono text-gray-500">Analyzing recent transactions...</p>
+                </div>
+            </div>
+
+            <div class="bento-card col-span-12 lg:col-span-4" style="grid-column: span 12;">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fa-solid fa-boxes-stacked text-indigo-500"></i> Affinity Engine</h2>
+                    <span class="badge badge-ai">Bundle AI</span>
+                </div>
+                <div class="flex-grow flex flex-col justify-center gap-4 mt-2" id="affinity-container">
+                     <p class="text-xs font-mono text-gray-500">Analyzing co-purchasing data...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            Chart.defaults.font.family = "'JetBrains Mono', monospace";
+            Chart.defaults.color = '#64748b';
+
+            try {
+                // Fetch real data from the backend route
+                const response = await fetch('/api/creator/deep-analytics');
+                const data = await response.json();
+
+                if (data.success) {
+                    
+                    // --- 1. Populate Revenue KPI ---
+                    const revEl = document.getElementById('stat-revenue');
+                    if (revEl) revEl.textContent = `₹${data.kpis.revenue.toLocaleString('en-IN')}`;
+                    
+                    const trendEl = document.getElementById('stat-trend');
+                    if (trendEl && data.kpis.velocityTrend > 0) {
+                        trendEl.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> ${data.kpis.velocityTrend}%`;
+                    }
+
+                    // --- 2. Populate Elasticity Card ---
+                    if (data.elasticity.name !== "No Data") {
+                        document.getElementById('elast-product-name').textContent = `Optimal price for "${data.elasticity.name.substring(0,20)}..."`;
+                        document.getElementById('elast-suggested-price').textContent = `₹${data.elasticity.suggestedPrice}`;
+                        document.getElementById('elast-current-price').textContent = `Current: ₹${data.elasticity.currentPrice}`;
+                        
+                        const ctxElast = document.getElementById('elasticityChart').getContext('2d');
+                        const base = data.elasticity.currentPrice;
+                        const prices = [`₹${Math.round(base*0.5)}`, `₹${Math.round(base*0.8)}`, `₹${base}`, `₹${data.elasticity.suggestedPrice}`, `₹${Math.round(base*1.5)}`, `₹${Math.round(base*2)}`];
+                        const yieldData = [5000, 12000, 18000, 24000, 16000, 8000];
+
+                        new Chart(ctxElast, {
+                            type: 'line',
+                            data: {
+                                labels: prices,
+                                datasets: [{
+                                    data: yieldData, borderColor: '#a855f7', borderWidth: 2, tension: 0.4,
+                                    pointRadius: [0,0,0, 6, 0,0], pointBackgroundColor: '#fff', pointBorderColor: '#a855f7', pointBorderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true, maintainAspectRatio: false,
+                                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                                scales: { x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#94a3b8' } }, y: { display: false } },
+                                layout: { padding: { top: 10 } }
+                            }
+                        });
+                    }
+
+                    // --- 3. Render Velocity Chart ---
+                    const ctxVel = document.getElementById('velocityChart').getContext('2d');
+                    const gradient = ctxVel.createLinearGradient(0, 0, 0, 250);
+                    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.15)');
+                    gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+
+                    new Chart(ctxVel, {
+                        type: 'line',
+                        data: {
+                            labels: data.velocityChart.labels,
+                            datasets: [{
+                                label: 'Actual Revenue',
+                                data: data.velocityChart.actual,
+                                borderColor: '#3b82f6', backgroundColor: gradient, borderWidth: 2, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 4
+                            }, {
+                                label: 'AI Prediction',
+                                data: data.velocityChart.predicted,
+                                borderColor: '#8b5cf6', borderDash: [4, 4], borderWidth: 2, fill: false, tension: 0.4, pointRadius: 0, pointHoverRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            interaction: { mode: 'index', intersect: false },
+                            plugins: { 
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#0f172a', titleFont: { size: 11 }, bodyFont: { size: 12, weight: 'bold' },
+                                    padding: 10, cornerRadius: 6,
+                                    callbacks: { label: context => '₹' + context.parsed.y + 'k' }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false }, ticks: { font: { size: 9 } } },
+                                y: { grid: { color: '#f1f5f9', borderDash: [4, 4] }, ticks: { font: { size: 9 }, callback: value => '₹' + value + 'k' }, border: { display: false } }
+                            }
+                        }
+                    });
+
+                    // --- 4. Populate Risk Queue ---
+                    const riskContainer = document.getElementById('risk-queue-container');
+                    if (riskContainer && data.risks.length > 0) {
+                        riskContainer.innerHTML = data.risks.map(risk => `
+                            <div class="bg-white border border-red-200 p-3 rounded-lg shadow-sm flex items-center justify-between mb-2">
+                                <div>
+                                    <p class="text-xs font-bold text-gray-800 truncate w-32">${risk.product}</p>
+                                    <p class="text-[10px] text-gray-600 mt-1"><strong>Cause:</strong> ${risk.cause}</p>
+                                </div>
+                                <div class="flex flex-col items-end gap-2">
+                                    <span class="text-[10px] font-mono font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded border border-red-100">${risk.riskPercentage}% Risk</span>
+                                    <button class="px-3 py-1 bg-white border border-gray-300 text-[10px] font-bold rounded hover:bg-gray-50">Investigate</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else if (riskContainer) {
+                        riskContainer.innerHTML = `<p class="text-xs text-gray-500 mt-2 font-mono">No high-risk transactions detected.</p>`;
+                    }
+
+                    // --- 5. Populate Affinity Engine ---
+                    const affinityContainer = document.getElementById('affinity-container');
+                    if (affinityContainer && data.affinity.length > 0) {
+                        let html = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
+                        
+                        html += data.affinity.map(aff => `
+                            <div class="border border-gray-100 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex justify-between items-center text-[10px] font-bold text-gray-700 mb-2">
+                                    <span class="truncate w-1/3">${aff.product1}</span> <i class="fa-solid fa-plus text-gray-300"></i> <span class="truncate w-1/3 text-right">${aff.product2}</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-grow h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-indigo-500" style="width: ${aff.matchScore}%;"></div></div>
+                                    <span class="font-mono text-[10px] font-bold text-gray-500">${aff.matchScore}% Match</span>
+                                </div>
+                            </div>
+                        `).join('');
+                        
+                        html += `</div><button class="w-48 py-2 mt-4 self-center bg-black text-white text-[10px] font-bold font-mono uppercase tracking-widest rounded hover:bg-gray-800 transition-colors">Generate Bundle Links</button>`;
+                        affinityContainer.innerHTML = html;
+                    } else if (affinityContainer) {
+                        affinityContainer.innerHTML = `<p class="text-xs text-gray-500 mt-2 font-mono">Insufficient data to generate bundles.</p>`;
+                    }
+
+                    // --- 6. Live Terminal Simulator ---
+                    const terminal = document.getElementById('terminal-feed');
+                    let eventIndex = 0;
+                    terminal.innerHTML = '<div class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-[#09090b] to-transparent z-10"></div>';
+
+                    if (data.terminal && data.terminal.length > 0) {
+                        setInterval(() => {
+                            const event = data.terminal[eventIndex % data.terminal.length];
+                            const newDiv = document.createElement('div');
+                            newDiv.className = event.wrapper || 'text-gray-400';
+                            newDiv.innerHTML = `<span class="${event.color}">[${event.type}]</span> ${event.msg}`;
+                            
+                            terminal.insertBefore(newDiv, terminal.children[1]); 
+                            if(terminal.children.length > 6) { terminal.removeChild(terminal.lastChild); }
+                            eventIndex++;
+                        }, 2800);
+                    }
+
+                }
+            } catch (err) {
+                console.error("Failed to fetch analytics:", err);
+            }
+
+            // ----------------------------------------------------
+            // Static UI Elements (Heatmap & Device Chart)
+            // ----------------------------------------------------
+            const heatmapGrid = document.getElementById('hourly-heatmap');
+            if (heatmapGrid) {
+                for(let i=0; i<49; i++) {
+                    const block = document.createElement('div');
+                    block.className = 'heatmap-cell';
+                    let heatLevel = Math.floor(Math.random() * 3); 
+                    if (i === 37 || i === 38) heatLevel = 5; 
+                    if (i === 30 || i === 44) heatLevel = 4;
+                    block.classList.add(`heat-${heatLevel}`);
+                    heatmapGrid.appendChild(block);
+                }
+            }
+
+            const ctxDevice = document.getElementById('deviceChart');
+            if (ctxDevice) {
+                new Chart(ctxDevice.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Mobile', 'Desktop', 'Tablet'],
+                        datasets: [{
+                            data: [72, 21, 7],
+                            backgroundColor: ['#3b82f6', '#34d399', '#cbd5e1'],
+                            borderWidth: 0, hoverOffset: 4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '75%', animation: { animateRotate: true } }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

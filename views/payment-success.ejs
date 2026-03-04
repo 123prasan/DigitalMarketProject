@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed | Vidyari</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .success-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 60px 40px;
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: scaleIn 0.6s ease-out;
+        }
+
+        .success-icon i {
+            color: white;
+            font-size: 40px;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .order-details {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #888;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .cta-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .support-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .support-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .support-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .support-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .support-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .success-container {
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .cta-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .support-options {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .checkmark {
+            animation: checkmark 0.8s ease-out forwards;
+        }
+
+        @keyframes checkmark {
+            0% {
+                stroke-dashoffset: 100;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">
+            <i class="fas fa-check"></i>
+        </div>
+
+        <h1>Order Confirmed! ✨</h1>
+        <p class="subtitle">
+            Your purchase has been successfully processed. You now have instant access to your digital content.
+        </p>
+
+        <div class="order-details">
+            <div class="detail-row">
+                <span class="detail-label">Order ID</span>
+                <span class="detail-value">#<%= order_id.substring(0, 12).toUpperCase() %></span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status</span>
+                <span class="detail-value" style="color: #4caf50;">✓ Completed</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Confirmation</span>
+                <span class="detail-value">Check your email for details</span>
+            </div>
+        </div>
+
+        <div class="cta-buttons">
+            <% if(download) { %>
+                <a href="<%= download %>" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download Now
+                </a>
+            <% } %>
+            <a href="/dashboard" class="btn <%= download ? 'btn-secondary' : 'btn-primary' %>">
+                <i class="fas fa-th-large"></i> My Content
+            </a>
+        </div>
+
+        <div class="support-section">
+            <div class="support-title">
+                <i class="fas fa-headset"></i> Need Help?
+            </div>
+            <div class="support-options">
+                <a href="mailto:support@vidyari.com" class="support-link">
+                    <i class="fas fa-envelope"></i> Email Support
+                </a>
+                <a href="https://wa.me/919999999999" target="_blank" class="support-link">
+                    <i class="fas fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="/contact" class="support-link">
+                    <i class="fas fa-comment"></i> Contact Us
+                </a>
+            </div>
+        </div>
+
+        <p style="margin-top: 30px; color: #999; font-size: 12px;">
+            A confirmation has been sent to your registered email. Your content is available immediately.
+        </p>
+    </div>
+
+    <script>
+        // Celebrate with confetti (optional)
+        function launchConfetti() {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = '-10px';
+                confetti.style.borderRadius = '50%';
+                confetti.style.zIndex = '999';
+                confetti.style.opacity = '1';
+                document.body.appendChild(confetti);
+
+                let top = -10;
+                let opacity = 1;
+                const interval = setInterval(() => {
+                    top += 3;
+                    opacity -= 0.01;
+                    confetti.style.top = top + 'px';
+                    confetti.style.opacity = opacity;
+                    if (opacity <= 0) {
+                        clearInterval(interval);
+                        confetti.remove();
+                    }
+                }, 30);
+            }
+        }
+
+        // Launch confetti on page load
+        window.addEventListener('load', launchConfetti);
+    </script>
+</body>
+</html>

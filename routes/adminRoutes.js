@@ -9,9 +9,13 @@ const UserPurchase = require('../models/userPerchase');
 const UserDownload = require('../models/userDownloads');
 const Account = require('../models/Account');
 const dayjs = require('dayjs');
+const { EmailService } = require('../test');
 
 // Middleware to check if user is authenticated admin
 const authenticateAdmin = require('./authentication/reaquireAuth');
+
+// Initialize email service for real Nodemailer sending
+const emailService = new EmailService();
 
 // ============================================
 // DASHBOARD STATS API ROUTES
@@ -300,7 +304,24 @@ router.get('/chart-data', authenticateAdmin, async (req, res) => {
 });
 
 /**
- * DELETE /api/admin/orders/:id
+ * GET /api/admin/orders/:orderId
+ * Retrieve a single order's details (used by admin UI)
+ */
+router.get('/orders/:orderId', authenticateAdmin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+    res.json({ success: true, order });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * DELETE /api/admin/orders/:orderId
  * Delete an order
  */
 router.delete('/orders/:orderId', authenticateAdmin, async (req, res) => {
@@ -485,6 +506,141 @@ router.delete('/users/:userId', authenticateAdmin, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================
+// SELLERS API ROUTE (added 2026-03-03)
+// ============================================
+
+/**
+ * GET /api/admin/sellers
+ * Returns list of sellers with counts and revenue placeholders
+ */
+router.get('/sellers', authenticateAdmin, async (req, res) => {
+  try {
+    // find users marked as seller (case-insensitive)
+    const sellers = await User.find({ role: { $regex: /^seller$/i } }).lean();
+
+    const sellersData = await Promise.all(
+      sellers.map(async (s) => {
+        const productCount = await File.countDocuments({ user: s._id });
+        // revenue calculation requires more detailed order model; placeholder 0 for now
+        const revenue = 0;
+        return {
+          _id: s._id,
+          username: s.username,
+          email: s.email,
+          name: s.name || s.username,
+          productCount,
+          revenue,
+          rating: s.rating || 0,
+          status: s.isBanned ? 'Banned' : s.isSuspended ? 'Suspended' : 'Active',
+        };
+      })
+    );
+
+    res.json({ success: true, sellers: sellersData });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ============================================
+// EMAIL & NOTIFICATIONS API ROUTES
+// ============================================
+
+/**
+ * GET /api/admin/email-templates
+ * Returns list of available email templates from emails/templates folder
+ */
+router.get('/email-templates', authenticateAdmin, async (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    
+    const templatesPath = path.join(__dirname, '../emails/templates');
+    const templates = {};
+    
+    // Read all template categories (auth, marketing, seller, system, transaction)
+    const categories = fs.readdirSync(templatesPath);
+    
+    for (const category of categories) {
+      const categoryPath = path.join(templatesPath, category);
+      if (fs.statSync(categoryPath).isDirectory()) {
+        templates[category] = [];
+        
+        const files = fs.readdirSync(categoryPath);
+        for (const file of files) {
+          if (file.endsWith('.html') || file.endsWith('.js')) {
+            const filePath = path.join(categoryPath, file);
+            const content = fs.readFileSync(filePath, 'utf8');
+            templates[category].push({
+              name: file.replace('.html', '').replace('.js', ''),
+              category,
+              content: content,
+              size: content.length
+            });
+          }
+        }
+      }
+    }
+    
+    res.json({
+      success: true,
+      templates: templates
+    });
+  } catch (error) {
+    console.error('Error loading templates:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * POST /api/admin/send-email
+ * Send bulk or individual emails with template support
+ * Body: { subject, content, recipients: [{email, username}, ...] }
+ * Uses real Nodemailer SMTP for actual email delivery
+ */
+router.post('/send-email', authenticateAdmin, async (req, res) => {
+  try {
+    const { subject, content, recipients } = req.body;
+
+    if (!subject || !content || !recipients || recipients.length === 0) {
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
+    }
+
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('⚠️ Email credentials not configured in .env');
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email service not configured. Please set EMAIL_USER and EMAIL_PASS in .env' 
+      });
+    }
+
+    console.log(`📧 Sending real emails to ${recipients.length} recipients via Nodemailer...`);
+
+    // Send emails using real EmailService with content as-is from frontend
+    // Frontend sends either HTML or plain text - emailService will handle it
+    const emailResults = await emailService.sendEmailBulk(recipients, subject, content);
+
+    console.log(`✅ Successfully sent ${emailResults.sent} email(s)`);
+
+    res.json({
+      success: true,
+      message: `Email successfully sent to ${emailResults.sent} recipient(s)`,
+      sent: emailResults.sent,
+      failed: emailResults.failed,
+      results: emailResults.results
+    });
+
+  } catch (error) {
+    console.error('❌ Email sending error:', error.message);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to send email: ' + error.message,
+      error: error.message 
+    });
   }
 });
 

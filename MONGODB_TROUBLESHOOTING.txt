@@ -1,0 +1,109 @@
+╔════════════════════════════════════════════════════════════════╗
+║                 MONGODB CONNECTION TROUBLESHOOTING              ║
+║                      Quick Reference Guide                      ║
+╚════════════════════════════════════════════════════════════════╝
+
+ERROR: querySrv ECONNREFUSED _mongodb._tcp.cluster0.0ytfuyz.mongodb.net
+
+┌─ STEP 1: Check MongoDB Atlas Status ─────────────────────────────┐
+│ 1. Open https://cloud.mongodb.com                                │
+│ 2. Log in with your account                                      │
+│ 3. Find "cluster0" in your projects                              │
+│ 4. If status shows "PAUSED" → Click "Resume"                    │
+│ 5. Wait 2-3 minutes for cluster to fully start                  │
+│ ✅ Status should show "RUNNING" (green dot)                      │
+└────────────────────────────────────────────────────────────────────┘
+
+┌─ STEP 2: Configure IP Whitelist ────────────────────────────────┐
+│ 1. In MongoDB Atlas, click "Network Access" (left sidebar)       │
+│ 2. Click "+Add IP Address" button                                │
+│ 3. Choose one option:                                            │
+│    ▪ "Add My Current IP" (recommended for single user)          │
+│    ▪ Type custom IP (e.g., your public IP)                      │
+│    ▪ Use "0.0.0.0/0" (allow all - testing only)                 │
+│ 4. Click "Confirm"                                               │
+│ 5. Status: "Pending" → Wait 5-10 minutes → "Active"             │
+│ ✅ Your IP should appear in the whitelist                        │
+└────────────────────────────────────────────────────────────────────┘
+
+┌─ STEP 3: Verify Database Credentials ───────────────────────────┐
+│ 1. In MongoDB Atlas, click "Database Access" (left sidebar)      │
+│ 2. Find user "prasannaprasanna35521"                            │
+│ 3. Check password is correct                                     │
+│ 4. If needed, click "..." menu → "Edit Password"                 │
+│ 5. Generate new password (copy it)                               │
+│ 6. Update .env file:                                             │
+│    MONGODB_URI=mongodb+srv://prasannaprasanna35521:NEW_PASS@... │
+│ ✅ Special characters should be URL-encoded                      │
+└────────────────────────────────────────────────────────────────────┘
+
+┌─ STEP 4: Test Connection ──────────────────────────────────────┐
+│ Run diagnostic tool:                                             │
+│                                                                  │
+│   node mongodb-fix.js                                            │
+│                                                                  │
+│ Expected output:                                                 │
+│   ✅ SUCCESS: MongoDB connection established!                    │
+│                                                                  │
+│ If still failing:                                                │
+│   ❌ Check internet connection                                   │
+│   ❌ Make sure all 4 steps above are completed                  │
+│   ❌ Wait longer (changes take time to propagate)               │
+└────────────────────────────────────────────────────────────────────┘
+
+┌─ ALTERNATIVE: Use Local MongoDB (Development) ───────────────┐
+│ For temporary development while fixing Atlas:                   │
+│                                                                  │
+│ 1. Download MongoDB Community:                                  │
+│    https://www.mongodb.com/try/download/community               │
+│                                                                  │
+│ 2. Install (Windows installer recommended)                      │
+│                                                                  │
+│ 3. Update .env file:                                            │
+│    MONGODB_URI=mongodb://localhost:27017/documents              │
+│                                                                  │
+│ 4. Start MongoDB service (Windows):                             │
+│    net start MongoDB                                             │
+│                                                                  │
+│ 5. Switch back to Atlas when fixed:                             │
+│    MONGODB_URI=mongodb+srv://prasannaprasanna35521:...@...     │
+└────────────────────────────────────────────────────────────────────┘
+
+┌─ VERIFICATION CHECKLIST ───────────────────────────────────────┐
+│ ☐ MongoDB Atlas cluster is RUNNING (not paused)                │
+│ ☐ My IP address is whitelisted                                 │
+│ ☐ Database user credentials are correct                        │
+│ ☐ MONGODB_URI in .env is properly formatted                    │
+│ ☐ Special characters in password are URL encoded               │
+│ ☐ Internet connection is stable                                │
+│ ☐ Waited 5-10 minutes after making changes                     │
+└────────────────────────────────────────────────────────────────────┘
+
+╔ COMMON ERRORS & SOLUTIONS ═════════════════════════════════════╗
+
+ERROR: ECONNREFUSED
+├─ Cluster is paused - Resume it in MongoDB Atlas
+├─ IP not whitelisted - Add your IP to Network Access
+├─ Internet down - Check your connection
+└─ Firewall blocked - Check firewall/antivirus settings
+
+ERROR: ENOTFOUND
+├─ Wrong cluster name in connection string
+├─ DNS resolution issue - Check internet
+└─ MongoDB Atlas temporarily down
+
+ERROR: Authentication Failed
+├─ Wrong username/password
+├─ Password contains special chars not URL encoded
+│  Fix: Use encodeURIComponent() in connection string
+└─ Database user doesn't exist - Create new user
+
+╠═══════════════════════════════════════════════════════════════╣
+
+📞 Need More Help?
+├─ MongoDB Atlas Support: https://support.mongodb.com
+├─ Connection String Helper: https://www.mongodb.com/docs/drivers/node/current/tutorials/connection-string/
+└─ This guide: Read MONGODB_SETUP.md
+
+✅ All fixed? Start your server:
+   npm start

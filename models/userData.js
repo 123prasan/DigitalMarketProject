@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema(
     isEmailVerified: { type: Boolean, default: false },
     profilePicUrl: { type: String },
 
-    ISVERIFIED: { type: Boolean, default: false },
+    ISVERIFIED: { type: Boolean, default: false }, // Manual/Follower verification
 
     isSuspended: { type: Boolean, default: false },
     isBanned: { type: Boolean, default: false },
@@ -35,23 +35,37 @@ const userSchema = new mongoose.Schema(
 
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    
-    // 👇 New property for formatted date
+
+    // 👇 Subscription & Revenue Fields
+    isPro: {
+      type: Boolean,
+      default: false
+    },
+    pendingSubscriptionFee: {
+      type: Number,
+      default: 0 // Debt for the "Pay via Wallet" model
+    },
+   
+    proBillingCycleStart: {
+      type: Date
+    },
+    proBillingCycleEnd: {
+      type: Date
+    },
+
     joinedOn: { type: String },
   },
   { timestamps: true }
 );
 
-// Remove spaces from username and set joinedOn
+// Pre-save middleware
 userSchema.pre("save", function (next) {
+  // 1. Remove spaces from username
   if (this.username) {
     this.username = this.username.replace(/\s+/g, "");
   }
 
-  // Auto set ISVERIFIED if followers >= 1000
- 
-
-  // Set joinedOn only when creating a new document
+  // 2. Set joinedOn only when creating a new document
   if (this.isNew) {
     const d = new Date();
     this.joinedOn = d.toLocaleDateString("en-US", {
@@ -61,20 +75,33 @@ userSchema.pre("save", function (next) {
     });
   }
 
+  // 3. Auto-verify based on follower count (Initial Save)
+  if (this.followers && this.followers.length >= 1000) {
+    this.ISVERIFIED = true;
+  }
+
   next();
 });
 
-// Also handle updates (findOneAndUpdate, updateOne, etc.)
+// Middleware for updates to handle verification based on follower count
 userSchema.pre("findOneAndUpdate", function (next) {
   const update = this.getUpdate();
 
+  // Check if followers are being updated
   if (update.$push?.followers || update.$addToSet?.followers || update.followers) {
     this.model.findOne(this.getQuery()).then((doc) => {
-      const followersCount =
-        update.followers?.length ??
-        (update.$push?.followers ? doc.followers.length + 1 : doc.followers.length);
+      if (!doc) return next();
 
-      if (followersCount >= 1000) {
+      const currentCount = doc.followers ? doc.followers.length : 0;
+      let newCount = currentCount;
+
+      if (update.$push?.followers || update.$addToSet?.followers) {
+        newCount += 1;
+      } else if (update.followers) {
+        newCount = update.followers.length;
+      }
+
+      if (newCount >= 1000) {
         this.set({ ISVERIFIED: true });
       } else {
         this.set({ ISVERIFIED: false });
@@ -87,5 +114,4 @@ userSchema.pre("findOneAndUpdate", function (next) {
   }
 });
 
-// const User = mongoose.model("User", userSchema);
 module.exports = mongoose.models.User || mongoose.model("User", userSchema);

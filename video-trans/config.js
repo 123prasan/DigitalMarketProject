@@ -4,7 +4,7 @@ module.exports = {
   region: "ap-south-1",
 
   // SQS configuration
-  sqsUrl: "https://sqs.ap-south-1.amazonaws.com/582626475255/video-upload-queue",
+  sqsUrl: "https://sqs.ap-south-1.amazonaws.com/718383533207/vidyarisqs",
   waitTimeSeconds: 5,   // Long polling
   maxMessages: 5,       // Number of messages to receive per poll
 

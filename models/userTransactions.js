@@ -9,4 +9,4 @@ const userTran=new mongoose.Schema({
     transactionId:{type:String,required:true},
     purchaserId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true}
 },{ timestamps: true });
-module.exports=mongoose.model("UserTransaction",userTran);
+module.exports = mongoose.models.UserTransaction || mongoose.model("UserTransaction", userTran);

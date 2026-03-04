@@ -23,6 +23,7 @@ const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+
 // require("dotenv").config();
 // const useLocalStorage = process.env.USE_LOCAL_STORAGE === 'true';
 const mongoose = require("mongoose");
@@ -114,7 +115,7 @@ function notifyUser(userId, payload) {
   }
 
 }
-
+console.log("Mongo URI:", process.env.MONGODB_URI);
 
 
 // --- WebSocket Logic (REPLACE THIS ENTIRE SECTION) ---
@@ -334,8 +335,12 @@ app.use(cors());
 
 app.use("/api/courses", courseRoutes);
 app.use("/api/progress", progressRoutes);
-app.use("/api/admin", adminRoutes);
+// apply JWT authentication to all admin API routes so req.user is populated
+// and unauthorized calls respond with JSON instead of HTML
+app.use("/api/admin", authenticateJWT, adminRoutes);
+const apiRoutes = require('./routes/Adanalytics.js');
 
+app.use('/api/creator', apiRoutes);
 // app.use(cookieParser())
 function getcategories() {
   return categories.find({}).then((cats) => cats.map((cat) => cat.name));
@@ -391,17 +396,40 @@ app.post("/save-location", async (req, res) => {
 
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Connect to MongoDB with error handling
+// Ensure DNS can resolve SRV records (some networks/VPNs block them)
+require('dns').setServers(['1.1.1.1','8.8.8.8']);
+
+// Connect to MongoDB with enhanced error handling
 mongoose
   .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    family:4,
+    serverSelectionTimeoutMS: 10000,
+    socketTimeoutMS: 45000,
+    retryWrites: true,
   })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .then(() => {
+    console.log("\n✅ MongoDB connected successfully!");
+    console.log(`📊 Database: ${mongoose.connection.name}`);
+    console.log(`🔗 Host: ${mongoose.connection.host}\n`);
+  })
+  .catch((err) => {
+    console.error("\n❌ MongoDB connection error:");
+    console.error(`Error Code: ${err.code}`);
+    console.error(`Message: ${err.message}\n`);
+    console.error("📋 TROUBLESHOOTING GUIDE:");
+    console.error("1. Check MONGODB_URI in .env file");
+    console.error("2. Verify MongoDB Atlas cluster is running (not paused)");
+    console.error("3. Add your IP to Network Access in MongoDB Atlas");
+    console.error("4. Check database user credentials");
+    console.error("5. See MONGODB_TROUBLESHOOTING.txt for detailed steps\n");
+    console.error("Full error:", err);
+    // Don't exit - allow app to start but warn user
+    console.warn("\n⚠️  Starting server WITHOUT database connection...\n");
+  });
 
 // Middlewares
 require("./routes/bots/cleanUpAcc.js");
+require("./routes/bots/cleanUpsub.js")
 require("./video-trans/sql.js");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // Parse JSON bodies
@@ -443,21 +471,28 @@ const supabase = createClient(
 // Middleware for JWT authentication
 function authenticateJWT(req, res, next) {
   const token = req.cookies.jwt; // Get token from HTTP-only cookie
+  const isApi = req.originalUrl && req.originalUrl.startsWith('/api/');
 
   if (!token) {
+    if (isApi) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
     // No token provided, redirect to login
-    return res.render("login", { error: "Access denied. Please log in." });
+    return res.render('login', { error: 'Access denied. Please log in.' });
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      // Token is invalid or expired, clear the cookie and redirect
-      res.clearCookie("jwt");
-      return res.render("login", {
-        error: "Session expired or invalid. Please log in again.",
+      // Token is invalid or expired, clear the cookie
+      res.clearCookie('jwt');
+      if (isApi) {
+        return res.status(401).json({ message: 'Session expired or invalid. Please log in again.' });
+      }
+      return res.render('login', {
+        error: 'Session expired or invalid. Please log in again.',
       });
     }
-    // Token is valid, attach user payload to request (e.g., req.user.isAdmin, req.user.username)
+    // Token is valid, attach user payload to request
     req.user = user;
     next();
   });
@@ -632,14 +667,49 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
       });
     }
 
-    // Fetch file
+    // Fetch file and Creator (User)
     const file = await File.findById(fileId);
     if (!file) {
       return res.status(404).json({ success: false, message: "File not found" });
     }
+    
+    // Fetch the creator to check Pro status
+    const creator = await User.findById(file.userId);
+    if (!creator) {
+      return res.status(404).json({ success: false, message: "Creator not found" });
+    }
 
-    const platformCut = totalprice * 0.3;
-    const sellerShare = totalprice - platformCut;
+    // --- VIDYARI PRO LOGIC STARTS HERE ---
+    
+    // 1. Determine base split based on Pro status (10% vs 30% fee)
+    const platformFeePercentage = creator.isPro ? 0.10 : 0.30;
+    let platformCut = totalprice * platformFeePercentage;
+    let sellerShare = totalprice - platformCut;
+
+    let subscriptionFeeDeducted = 0; // Track this for admin records if needed
+
+    // 2. Handle "Pay via Wallet" Pending Fees
+    if (creator.isPro && creator.pendingSubscriptionFee > 0) {
+        if (sellerShare >= creator.pendingSubscriptionFee) {
+            // Seller made enough to clear the whole debt
+            subscriptionFeeDeducted = creator.pendingSubscriptionFee;
+            sellerShare -= creator.pendingSubscriptionFee;
+            platformCut += creator.pendingSubscriptionFee; // Admin keeps the sub fee
+            creator.pendingSubscriptionFee = 0; // Debt cleared
+        } else {
+            // Seller didn't make enough, take all earnings toward debt
+            subscriptionFeeDeducted = sellerShare;
+            creator.pendingSubscriptionFee -= sellerShare;
+            platformCut += sellerShare; // Admin takes what they made
+            sellerShare = 0; // Seller gets 0 this time
+        }
+        
+        // Save the creator's updated pending fee
+        await creator.save(); 
+    }
+    // --- VIDYARI PRO LOGIC ENDS HERE ---
+
+
     const discount =
       req.body.CouponData?.priceDetails?.discountedPrice
         ? file.price - req.body.CouponData.priceDetails.discountedPrice
@@ -661,7 +731,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
         {
           userId: file.userId,
           ProductId: file._id,
-          totalAmount: sellerShare,
+          totalAmount: sellerShare, // Now uses the dynamically calculated share
           ProductName: file.filename,
           purchaserId: req.user._id,
           transactionId: razorpay_payment_id,
@@ -670,17 +740,17 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
         { upsert: true, new: true }
       ),
 
-      // Seller balance
+      // Seller balance update
       userbal.findOneAndUpdate(
         { UserId: file.userId },
-        { $inc: { Balance: sellerShare } },
+        { $inc: { Balance: sellerShare } }, // Add calculated share to their balance
         { upsert: true, new: true }
       ),
 
-      // Admin balance
+      // Admin balance update
       Adminbal.findOneAndUpdate(
         {},
-        { $inc: { totalAmount: platformCut, cutOffbal: sellerShare } },
+        { $inc: { totalAmount: platformCut, cutOffbal: sellerShare } }, // Now accurately tracks admin revenue
         { upsert: true, new: true }
       ),
 
@@ -738,6 +808,13 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
 
     // Fire-and-forget push notification
     (async () => {
+      
+      // Determine what to tell the creator
+      let sellerMessage = `🤑 You Earned Amount of ₹ ${sellerShare.toFixed(2)}`;
+      if (subscriptionFeeDeducted > 0) {
+          sellerMessage += ` (₹${subscriptionFeeDeducted.toFixed(2)} automatically applied to your Pro Subscription fee).`;
+      }
+
       const notifications = [
         sendNotification({
           userId: req.user._id,
@@ -750,7 +827,7 @@ app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
         sendNotification({
           userId: file.userId,
           title: `Someone Bought Your Product ${file.filename}`,
-          body: `🤑 You Earned Amount of ₹ ${sellerShare}`,
+          body: sellerMessage, // Send the dynamic message regarding their earnings/debt
           image: imageUrl,
           target_link: "/dashboard",
           notification_type: "transaction",
@@ -1329,6 +1406,8 @@ app.get("/admin", authenticateJWT, async (req, res) => {
   const bannedUsers = allUsers.filter(u => u.isBanned).length;
   
   res.render("admin", {
+    // include the authenticated admin's username for display in the header
+    username: req.user?.username || "Admin",
     orders: await Order.find({}).sort({ dateTime: -1 }), // Ensure orders are sorted for "Recent Orders"
     uploadedFiles: filesWithUrls,
     totalOrders: totalOrders || 0,
@@ -2592,7 +2671,199 @@ app.get("/check/coupon", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+app.get("/vidyariPro",authenticateJWT_user,requireAuth, async (req,res)=>{
+    try {
+        // Fetch the latest user data to ensure 'isPro' and 'pendingSubscriptionFee' are accurate
+        const user = await User.findById(req.user._id);
 
+        res.render('subscription', {
+            user: user,
+            pageTitle: 'Upgrade to Vidyari Pro'
+        });
+    } catch (err) {
+        console.error("Error loading subscription page:", err);
+        res.status(500).send('Internal Server Error');
+    }
+
+})
+// app.post('/upgrade-to-pro',authenticateJWT_user, requireAuth,async (req, res) => {
+//   try {
+//     const userId = req.user._id; // Assuming you have user auth middleware
+
+//     await User.findByIdAndUpdate(userId, {
+//       isPro: true,
+//       pendingSubscriptionFee: 499, // Set the initial debt
+//       proBillingCycleStart: new Date()
+//     });
+
+//     res.status(200).json({ 
+//       success: true, 
+//       message: "Welcome to Vidyari Pro! ₹499 will be deducted from your next sales." 
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: "Upgrade failed" });
+//   }
+// });
+app.post('/subscription/pay-now', authenticateJWT_user, requireAuth,async (req, res) => {
+    try {
+        const amount = 499 * 100; // Razorpay works in paise (499 INR = 49900 paise)
+        
+        const options = {
+            amount: amount,
+            currency: "INR",
+            receipt: `rec_pro_${req.user._id}_${Date.now().toString().slice(-6)}`,
+        };
+
+        const order = await razorpayInstance.orders.create(options);
+
+        // Send this data to your EJS to trigger the Razorpay Modal
+        res.json({
+            success: true,
+            order_id: order.id,
+            amount: order.amount,
+            key_id: process.env.RAZORPAY_KEY_ID,
+            user: {
+                name: req.user.fullName,
+                email: req.user.email,
+                contact: req.user.ph
+            }
+        });
+    } catch (error) {
+        console.error("Razorpay Order Error:", error);
+        res.status(500).json({ success: false, message: "Could not create order" });
+    }
+});
+/**
+ * @route   POST /subscription/pay-later
+ * @desc    Instant upgrade to Pro, fee deducted from future sales
+ */
+app.post('/subscription/pay-later', authenticateJWT_user, async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // 1. Prevent double subscription
+        if (user.isPro) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "You are already a Vidyari Pro member!" 
+            });
+        }
+
+        // 2. Set Pro status and the "Wallet Debt"
+        user.isPro = true;
+        user.pendingSubscriptionFee = 499; // This will be checked in /verify-payment
+        user.proBillingCycleStart = new Date();
+        
+        // 3. Set expiration for 30 days from now
+        let expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 30);
+        user.proBillingCycleEnd = expiryDate;
+
+        // 4. Update role to seller if they were just a buyer
+        if (user.role === "Buyer") {
+            user.role = "seller";
+        }
+
+        await user.save();
+
+        // 5. Send a system notification to the user
+        // Assuming your Usernotifications model is available
+        /* await Usernotifications.create({
+            userId: userId,
+            type: "system",
+            message: "Welcome to Vidyari Pro! You now keep 90% of your sales. The ₹499 subscription fee will be deducted from your next earnings.",
+        });
+        */
+
+        // 6. Return success (Frontend will redirect to dashboard)
+        return res.json({ 
+            success: true, 
+            message: "Welcome to Pro! Your earnings share is now 90%." 
+        });
+
+    } catch (err) {
+        console.error("Error in /pay-later:", err);
+        return res.status(500).json({ 
+            success: false, 
+            message: "Internal server error. Please try again later." 
+        });
+    }
+});
+app.post('/subscription/verify-payment',authenticateJWT_user, requireAuth,async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+        // Verify Signature
+        const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
+        hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+        const generated_signature = hmac.digest('hex');
+
+        if (generated_signature === razorpay_signature) {
+            // PAYMENT SUCCESSFUL - Update User to Pro
+            let expiry = new Date();
+            expiry.setDate(expiry.getDate() + 30);
+
+            await User.findByIdAndUpdate(req.user._id, {
+                isPro: true,
+                pendingSubscriptionFee: 0, 
+                proBillingCycleStart: new Date(),
+                proBillingCycleEnd: expiry
+            });
+
+            res.json({ success: true, message: "Subscription activated!" });
+        } else {
+            res.status(400).json({ success: false, message: "Invalid signature, payment failed" });
+        }
+    } catch (error) {
+        console.error("Verification Error:", error);
+        res.status(500).json({ success: false });
+    }
+});
+
+/**
+ * @route   POST /subscription/cancel
+ * @desc    Cancel Vidyari Pro and return to Standard tier
+ */
+app.post("/subscription/cancel", authenticateJWT_user, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (!user.isPro) {
+            return res.status(400).json({ success: false, message: "No active subscription found." });
+        }
+
+        // Revert to Basic
+        user.isPro = false;
+        user.pendingSubscriptionFee = 0; // Clear any remaining debt
+        user.proBillingCycleStart = null;
+        user.proBillingCycleEnd = null;
+
+        await user.save();
+
+        // Create a notification for the user
+        await Usernotifications.create({
+            userId: req.user._id,
+            type: "system",
+            message: "Your Vidyari Pro subscription has been cancelled. You are now on the Standard (70/30) plan.",
+        });
+
+        return res.json({ 
+            success: true, 
+            message: "Subscription cancelled successfully. You are now a Standard Creator." 
+        });
+    } catch (err) {
+        console.error("Cancellation Error:", err);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+});
+app.get("/analytics",(req,res)=>{
+    res.render("analytics")
+})
 // Price generator
 function GenCheckOutPrice(price, options = {}) {
   const { discountPercent = 0, shippingFee = 0, rounding = "ceil" } = options;

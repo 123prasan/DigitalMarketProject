@@ -375,6 +375,7 @@ const userTransactions = await UserTransactions.find({
       useremail: user?.email || null,
       files,
       userwithreq,
+      user,
       Ubalance:Ubalance.Balance?Ubalance.Balance:0,
     });
   }

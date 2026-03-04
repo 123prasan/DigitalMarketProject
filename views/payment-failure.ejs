@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Could Not Be Completed | Vidyari</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .failure-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 60px 40px;
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .failure-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: shake 0.5s ease-out;
+        }
+
+        .failure-icon i {
+            color: white;
+            font-size: 40px;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .error-details {
+            background: #fff5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #f5576c;
+            text-align: left;
+        }
+
+        .error-message {
+            color: #c53030;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .error-message i {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .error-reason {
+            color: #c53030;
+            margin-top: 10px;
+            font-size: 13px;
+            padding-top: 10px;
+            border-top: 1px solid #fed7d7;
+        }
+
+        .cta-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a1a;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .support-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 25px;
+        }
+
+        .support-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .support-text {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .support-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .support-link {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px 16px;
+            border-radius: 6px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .support-link:hover {
+            background: #f5f5f5;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .tips {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .tips-title {
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .tip-item {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .tip-item i {
+            color: #667eea;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 600px) {
+            .failure-container {
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .cta-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .support-options {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .support-link {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="failure-container">
+        <div class="failure-icon">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+
+        <h1>Order Not Completed</h1>
+        <p class="subtitle">
+            We couldn't complete your purchase at this time. Your payment method was not charged. Please try again.
+        </p>
+
+        <div class="error-details">
+            <div class="error-message">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <div>What happened?</div>
+                    <div class="error-reason">
+                        <% 
+                            let reasonText = "Your order couldn't be completed";
+                            if (reason === 'invalid') reasonText = "Invalid payment link. Please try again.";
+                            else if (reason === 'file_not_found') reasonText = "The product is no longer available.";
+                            else if (reason === 'not_completed') reasonText = "Payment was not completed or was cancelled.";
+                            else if (reason === 'verification_error') reasonText = "A verification error occurred. Please try again.";
+                        %>
+                        <%= reasonText %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tips">
+            <div class="tips-title"><i class="fas fa-lightbulb"></i> Try these steps</div>
+            <div class="tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Ensure you have a stable internet connection</span>
+            </div>
+            <div class="tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Try a different payment method</span>
+            </div>
+            <div class="tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Contact your bank if the issue persists</span>
+            </div>
+            <div class="tip-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Reach out to Vidyari Support for assistance</span>
+            </div>
+        </div>
+
+        <div class="cta-buttons">
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+            <a href="javascript:history.back()" class="btn btn-primary">
+                <i class="fas fa-redo"></i> Try Again
+            </a>
+        </div>
+
+        <div class="support-section">
+            <div class="support-title">
+                <i class="fas fa-headset"></i> Vidyari Support
+            </div>
+            <p class="support-text">
+                We're here to help! If you continue to experience issues, our support team will assist you immediately.
+            </p>
+            <div class="support-options">
+                <a href="mailto:support@vidyari.com?subject=Payment%20Issue" class="support-link">
+                    <i class="fas fa-envelope"></i> Email
+                </a>
+                <a href="https://wa.me/919999999999?text=I%20am%20having%20payment%20issues" target="_blank" class="support-link">
+                    <i class="fas fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="/contact" class="support-link">
+                    <i class="fas fa-headset"></i> Live Chat
+                </a>
+            </div>
+        </div>
+
+        <p style="margin-top: 25px; color: #999; font-size: 12px;">
+            Your payment information is secure and encrypted. No charges have been made to your account.
+        </p>
+    </div>
+</body>
+</html>
