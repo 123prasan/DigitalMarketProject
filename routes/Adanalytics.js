@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const User = require('../models/UserData'); 
-const Usertransaction = require('../models/UserTransactions'); 
-const authenticateJWT_user = require('./authentication/jwtAuth'); 
+const User = require('../models/UserData.js'); 
+const Usertransaction = require('../models/UserTransactions.js'); 
+const authenticateJWT_user = require('./authentication/jwtAuth.js'); 
 
 /**
  * @route   GET /api/creator/analytics
