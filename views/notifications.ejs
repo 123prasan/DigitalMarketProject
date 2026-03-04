@@ -1,245 +1,290 @@
 <%-include("header")%>
 <!DOCTYPE html>
-
 <html lang="en">
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications</title>
+    <title>Notifications | Vidyari</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
+
     <style>
-        /* --- UNIFIED "RETRO-BRUTALIST" THEME --- */
-        :root {
-            --font-main: 'Montserrat', sans-serif;
-            --color-bg: #fff;
-            --color-black: #000000;
-            --color-primary: #ff66a3; /* Pink */
-            --color-secondary: #4ade80; /* Green */
-            --color-accent: #ffd60a;   /* Yellow */
-            --color-focus: #1ac2ff;   /* Blue */
+        /* ==========================================================================
+           VIDYARI NOTIFICATIONS: FULL-PAGE MATERIAL 3 THEME
+           ========================================================================== */
+        
+        .v-notifications-page {
+            --v-bg: #f0f4f9;           /* Gemini Soft Background */
+            --v-surface: #ffffff;      /* Clean White Cards */
+            
+            --v-text-main: #1f1f1f;
+            --v-text-muted: #444746;
+            
+            --v-primary: #0b57d0;      /* Google Blue */
+            --v-primary-hover: #1a73e8;
+            --v-primary-bg: #e8f0fe;
+            
+            --v-success: #146c2e;
+            --v-warning: #b38700;
+            
+            --v-border: #e3e3e3;
+            
+            --v-font-display: 'Outfit', sans-serif;
+            --v-font-sans: 'Inter', sans-serif;
+            
+            --v-radius-md: 16px;
+            --v-radius-lg: 24px;
+            --v-radius-pill: 9999px;
+            
+            --v-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            
+            --v-transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+
+            background-color: var(--v-bg);
+            color: var(--v-text-main);
+            font-family: var(--v-font-sans);
+            min-height: calc(100vh - 80px); /* Account for header */
+            padding: clamp(24px, 4vw, 40px) clamp(16px, 4vw, 32px);
+            -webkit-font-smoothing: antialiased;
         }
 
-        .vidyari-notifications-body {
-            font-family: var(--font-main);
-            background-color: var(--color-primary); /* Use theme color for page bg */
-            color: var(--color-black);
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
-            /* padding: 2rem 1rem; */
-        }
-
-        .vidyari-notifications-container * {
+        .v-notifications-page * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
-        /* --- Main Container --- */
+        /* --- Main Full-Width Container --- */
         .vidyari-notifications-container {
             width: 100%;
-            /* max-width: 800px; */
-            margin: auto;
-            height: 100%;
-            background-color: var(--color-bg);
-            border: 4px solid var(--color-black);
-            /* box-shadow: 12px 12px 0 var(--color-black); */
-            overflow: hidden;
+            max-width: 1400px; /* Expanding to utilize desktop space */
+            margin: 0 auto;
+            background-color: var(--v-surface);
+            border: 1px solid var(--v-border);
+            border-radius: var(--v-radius-lg);
+            box-shadow: var(--v-shadow-sm);
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* Contains the list items neatly */
         }
 
         /* --- Header --- */
         .vidyari-notifications-header {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 4px solid var(--color-black);
+            padding: 32px 32px 24px 32px;
+            background-color: var(--v-surface);
         }
 
         .vidyari-notifications-title {
-            font-size: 1.75rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: var(--color-black);
+            font-family: var(--v-font-display);
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--v-text-main);
+            letter-spacing: -0.5px;
         }
 
         /* --- Tab Navigation --- */
         .vidyari-notification-tabs {
             display: flex;
-            border-bottom: 4px solid var(--color-black);
-            padding: 0.5rem 1.5rem;
-            gap: 0.5rem;
+            border-bottom: 1px solid var(--v-border);
+            padding: 0 32px 16px 32px;
+            gap: 12px;
             overflow-x: auto;
+            scrollbar-width: none; 
+            background-color: var(--v-surface);
         }
-        .vidyari-notification-tabs::-webkit-scrollbar { height: 4px; }
-        .vidyari-notification-tabs::-webkit-scrollbar-thumb { background: var(--color-black); }
+        .vidyari-notification-tabs::-webkit-scrollbar { display: none; }
 
         .vidyari-notification-tab {
-            background: none;
-            border: 3px solid var(--color-black);
-            box-shadow: 3px 3px 0 var(--color-black);
-            color: var(--color-black);
-            font-family: var(--font-main);
-            font-weight: 700;
-            padding: 0.5rem 1rem;
+            background: var(--v-bg);
+            border: 1px solid transparent;
+            border-radius: var(--v-radius-pill);
+            color: var(--v-text-muted);
+            font-family: var(--v-font-sans);
+            font-weight: 500;
+            padding: 10px 20px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 1rem;
             display: flex;
-            gap: 0.5rem;
+            gap: 8px;
             align-items: center;
             white-space: nowrap;
-            transition: all 0.2s ease;
+            transition: var(--v-transition);
         }
         .vidyari-notification-tab:hover {
-            background-color: var(--color-accent);
+            background-color: #e4e8ee;
+            color: var(--v-text-main);
         }
         .vidyari-notification-tab.active {
-            background-color: var(--color-black);
-            color: #fff;
-            transform: translate(3px, 3px);
-            box-shadow: 0 0 0 var(--color-black);
+            background-color: var(--v-primary-bg);
+            color: var(--v-primary);
+            border-color: transparent;
         }
 
         .vidyari-tab-count {
-            background-color: var(--color-primary);
-            color: var(--color-black);
-            font-size: 0.75rem;
-            font-weight: 900;
-            padding: 0.1rem 0.5rem;
-            border-radius: 4px;
+            background-color: var(--v-border);
+            color: var(--v-text-muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--v-radius-pill);
+            transition: var(--v-transition);
         }
         .vidyari-notification-tab.active .vidyari-tab-count {
-            background-color: var(--color-bg);
-            color: var(--color-black);
+            background-color: var(--v-primary);
+            color: white;
         }
         
-        /* --- Notification List --- */
+        /* --- Notification List (Natural Scrolling) --- */
         .vidyari-notification-lists-wrapper {
-            overflow-y: auto;
-            flex-grow: 1;
-            max-height: 600px;
+            /* Removed restricted height and overflow to allow natural page scrolling */
+            width: 100%;
+            background-color: var(--v-surface);
         }
+        
         .vidyari-notification-list { list-style: none; }
         
         .vidyari-notification-item {
             display: flex;
-            gap: 1rem;
-            padding: 1.25rem 1.5rem;
-            border-bottom: 2px solid #ddd;
+            gap: 20px;
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--v-border);
             transition: background-color 0.2s ease-in-out;
             position: relative;
         }
-        .vidyari-notification-item-link { text-decoration: none; display: contents; }
+        .vidyari-notification-item-link { text-decoration: none; display: flex; width: 100%; gap: 20px; align-items: flex-start;}
         .vidyari-notification-list:last-child .vidyari-notification-item:last-child { border-bottom: none; }
-        .vidyari-notification-item:hover { background-color: #f0f0f0; }
+        .vidyari-notification-item:hover { background-color: var(--v-bg); }
 
         .vidyari-notification-item.unread {
-            background-color: #fffbe6; /* Light yellow for unread */
-            font-weight: 700;
+            background-color: #f8fbff; /* Very light blue for unread */
         }
         .vidyari-notification-item.unread:hover {
-            background-color: #fff8d4;
+            background-color: var(--v-primary-bg);
         }
 
         /* --- Notification Icons --- */
         .vidyari-notification-icon {
-            width: 40px; height: 40px; border-radius: 50%;
+            width: 52px; height: 52px; border-radius: 50%;
             flex-shrink: 0; display: flex; align-items: center;
-            justify-content: center; font-size: 1rem;
-            border: 3px solid var(--color-black);
+            justify-content: center; font-size: 1.3rem;
         }
-        .vidyari-icon-system { background-color: var(--color-focus); color: var(--color-black); }
-        .vidyari-icon-purchase { background-color: var(--color-secondary); color: var(--color-black); }
-        .vidyari-icon-report { background-color: var(--color-primary); color: var(--color-black); }
-        .vidyari-icon-comment { background-color: var(--color-accent); color: var(--color-black); }
-        .vidyari-icon-follow { background-color: #c4b5fd; color: var(--color-black); }
+        
+        /* Material Color Mapping for Icons */
+        .vidyari-icon-system { background-color: #e8f0fe; color: #1a73e8; }
+        .vidyari-icon-purchase { background-color: #e6f4ea; color: #137333; }
+        .vidyari-icon-report { background-color: #fce8e6; color: #c5221f; }
+        .vidyari-icon-comment { background-color: #fef7e0; color: #b38700; }
+        .vidyari-icon-follow { background-color: #f3e8fd; color: #673ab7; }
 
         /* --- Notification Content --- */
-        .vidyari-notification-content { flex-grow: 1; }
+        .vidyari-notification-content { flex-grow: 1; padding-right: 32px;}
         .vidyari-notification-text {
-            font-size: 0.95rem; line-height: 1.5; color: #333;
+            font-size: 1.05rem; line-height: 1.6; color: var(--v-text-muted);
         }
         .vidyari-notification-text strong {
-            font-weight: 900; color: var(--color-black);
+            font-weight: 600; color: var(--v-text-main);
         }
         .vidyari-notification-item.unread .vidyari-notification-text {
-            color: var(--color-black);
+            color: var(--v-text-main);
+            font-weight: 500;
         }
         .vidyari-notification-timestamp {
-            font-size: 0.8rem; color: #666;
-            margin-top: 0.25rem; display: block;
+            font-size: 0.9rem; color: #80868b;
+            margin-top: 8px; display: block;
         }
+        
         .vidyari-unread-dot {
-            width: 12px; height: 12px; background-color: var(--color-primary);
-            border: 2px solid var(--color-black);
-            position: absolute; top: 1.25rem; right: 1.5rem;
+            width: 12px; height: 12px; background-color: var(--v-primary);
+            border-radius: 50%;
+            position: absolute; top: 32px; right: 32px;
+            box-shadow: 0 0 0 4px var(--v-primary-bg);
         }
 
         /* --- Empty State --- */
         .vidyari-empty-state {
-            padding: 4rem 2rem; text-align: center;
+            padding: 100px 32px; text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--v-text-muted);
         }
         .vidyari-empty-state i {
-            font-size: 3rem; margin-bottom: 1rem;
-            color: var(--color-black);
+            font-size: 3.5rem; margin-bottom: 20px;
+            color: var(--v-border);
         }
         .vidyari-empty-state p {
-            font-size: 1.25rem; font-weight: 700;
-            color: var(--color-black);
+            font-size: 1.2rem; font-weight: 500;
+            font-family: var(--v-font-display);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .v-notifications-page { padding: 16px; }
+            .vidyari-notifications-container { border-radius: var(--v-radius-md); }
+            .vidyari-notifications-header { padding: 24px 20px 16px; }
+            .vidyari-notification-title { font-size: 1.75rem; }
+            .vidyari-notification-tabs { padding: 0 20px 16px; }
+            .vidyari-notification-item { padding: 16px 20px; gap: 16px; }
+            .vidyari-notification-icon { width: 44px; height: 44px; font-size: 1.1rem; }
+            .vidyari-unread-dot { right: 20px; top: 24px; }
+            .vidyari-notification-content { padding-right: 16px; }
+            .vidyari-notification-text { font-size: 1rem; }
         }
     </style>
 </head>
 
-<body class="vidyari-notifications-body">
-    <div class="vidyari-notifications-container">
-        <header class="vidyari-notifications-header">
-            <h1 class="vidyari-notifications-title">Notifications</h1>
-        </header>
+<body>
+    <div class="v-notifications-page">
+        <div class="vidyari-notifications-container">
+            <header class="vidyari-notifications-header">
+                <h1 class="vidyari-notifications-title">Notifications</h1>
+            </header>
 
-        <div class="vidyari-notification-tabs">
-            <button class="vidyari-notification-tab active" data-tab="all">All <span class="vidyari-tab-count" id="vidyari-count-all">0</span></button>
-            <button class="vidyari-notification-tab" data-tab="comment">Comments <span class="vidyari-tab-count" id="vidyari-count-comment">0</span></button>
-            <button class="vidyari-notification-tab" data-tab="purchase">Purchases <span class="vidyari-tab-count" id="vidyari-count-purchase">0</span></button>
-            <button class="vidyari-notification-tab" data-tab="report">Reports <span class="vidyari-tab-count" id="vidyari-count-report">0</span></button>
-            <button class="vidyari-notification-tab" data-tab="system">System <span class="vidyari-tab-count" id="vidyari-count-system">0</span></button>
-        </div>
+            <div class="vidyari-notification-tabs">
+                <button class="vidyari-notification-tab active" data-tab="all">All <span class="vidyari-tab-count" id="vidyari-count-all">0</span></button>
+                <button class="vidyari-notification-tab" data-tab="comment">Comments <span class="vidyari-tab-count" id="vidyari-count-comment">0</span></button>
+                <button class="vidyari-notification-tab" data-tab="purchase">Purchases <span class="vidyari-tab-count" id="vidyari-count-purchase">0</span></button>
+                <button class="vidyari-notification-tab" data-tab="report">Reports <span class="vidyari-tab-count" id="vidyari-count-report">0</span></button>
+                <button class="vidyari-notification-tab" data-tab="system">System <span class="vidyari-tab-count" id="vidyari-count-system">0</span></button>
+            </div>
 
-        <div class="vidyari-notification-lists-wrapper">
-            <% const renderNotification = (notification) => { %>
-            <li class="vidyari-notification-item <%= !notification.isRead ? 'unread' : '' %>" data-type="<%= notification.type %>" data-id="<%= notification._id %>">
-                <a href="<%= notification.link || '#' %>" class="vidyari-notification-item-link">
-                    <div class="vidyari-notification-icon vidyari-icon-<%= notification.type %>">
-                        <% if (notification.type === 'system') { %> <i class="fas fa-bell"></i> <% } %>
-                        <% if (notification.type === 'purchase') { %> <i class="fas fa-shopping-cart"></i> <% } %>
-                        <% if (notification.type === 'report') { %> <i class="fas fa-flag"></i> <% } %>
-                        <% if (notification.type === 'comment') { %> <i class="fas fa-comment"></i> <% } %>
-                        <% if (notification.type === 'follow') { %> <i class="fas fa-user-plus"></i> <% } %>
-                    </div>
-                    <div class="vidyari-notification-content">
-                        <p class="vidyari-notification-text"><%- notification.message %></p>
-                        <span class="vidyari-notification-timestamp" data-timestamp="<%= notification.createdAt %>"></span>
-                    </div>
-                    <% if (!notification.isRead) { %>
-                    <div class="vidyari-unread-dot"></div>
+            <div class="vidyari-notification-lists-wrapper">
+                <% const renderNotification = (notification) => { %>
+                <li class="vidyari-notification-item <%= !notification.isRead ? 'unread' : '' %>" data-type="<%= notification.type %>" data-id="<%= notification._id %>">
+                    <a href="<%= notification.link || '#' %>" class="vidyari-notification-item-link">
+                        <div class="vidyari-notification-icon vidyari-icon-<%= notification.type %>">
+                            <% if (notification.type === 'system') { %> <i class="fa-regular fa-bell"></i> <% } %>
+                            <% if (notification.type === 'purchase') { %> <i class="fa-solid fa-receipt"></i> <% } %>
+                            <% if (notification.type === 'report') { %> <i class="fa-regular fa-flag"></i> <% } %>
+                            <% if (notification.type === 'comment') { %> <i class="fa-regular fa-comment"></i> <% } %>
+                            <% if (notification.type === 'follow') { %> <i class="fa-solid fa-user-plus"></i> <% } %>
+                        </div>
+                        <div class="vidyari-notification-content">
+                            <p class="vidyari-notification-text"><%- notification.message %></p>
+                            <span class="vidyari-notification-timestamp" data-timestamp="<%= notification.createdAt %>"></span>
+                        </div>
+                        <% if (!notification.isRead) { %>
+                        <div class="vidyari-unread-dot"></div>
+                        <% } %>
+                    </a>
+                </li>
+                <% }; %>
+
+                <ul class="vidyari-notification-list">
+                    <% if (notifications && notifications.length > 0) { %>
+                        <% notifications.forEach(renderNotification) %>
+                    <% } else { %>
+                        <li class="vidyari-empty-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <p>You're all caught up!</p>
+                        </li>
                     <% } %>
-                </a>
-            </li>
-            <% }; %>
-
-            <ul class="vidyari-notification-list">
-                <% if (notifications && notifications.length > 0) { %>
-                    <% notifications.forEach(renderNotification) %>
-                <% } else { %>
-                    <li class="vidyari-empty-state">
-                        <i class="fas fa-check-circle"></i>
-                        <p>All caught up!</p>
-                    </li>
-                <% } %>
-            </ul>
+                </ul>
+            </div>
         </div>
     </div>
     
@@ -281,7 +326,7 @@
                         }
                     });
                     if (emptyState) {
-                       emptyState.style.display = hasVisibleItems ? 'none' : 'block';
+                       emptyState.style.display = hasVisibleItems ? 'none' : 'flex';
                     }
                 });
             });
@@ -330,6 +375,4 @@
     </script>
 </body>
 </html>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
-     crossorigin="anonymous"></script>
 <%-include("footer")%>

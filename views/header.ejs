@@ -11,7 +11,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;800;900&family=Space+Grotesk:wght@700;900&family=Inter:wght@400;600;700;800&family=Poppins:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
     <link rel="alternate icon" type="image/png" href="/images/logo.png">
@@ -24,32 +24,36 @@
     <meta property="og:site_name" content="Vidyari">
 
     <style>
-/* ------------------------------------------------------------------- */
-/* ------------------- BEAUTIFIED NEO-BRUTALIST CSS ------------------ */
-/* ------------------------------------------------------------------- */
+        /* ------------------------------------------------------------------- */
+        /* ------------------- GEMINI / MATERIAL 3 THEME --------------------- */
+        /* ------------------------------------------------------------------- */
 
         :root {
-            --font-main: 'Inter', sans-serif;
-            --font-logo: 'Poppins', sans-serif; 
-            --font-display: 'Montserrat', sans-serif;
-            --color-bg: #fdfdfc; /* Slightly warmer white for premium feel */
-            --color-black: #09090b;
-            --color-primary: #ff66a3; /* Vibrant Pink */
-            --color-secondary: #4ade80; /* Punchy Green */
-            --color-accent: #ffd60a;   /* Electric Yellow */
-            --color-focus: #1ac2ff;   
-            --color-purple: #c4b5fd;
-            --color-error: #ff3333;  
-            /* Spring physics for beautiful bounce effects */
-            --bounce-fast: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            --border-width: 3px;
+            --font-main: 'Outfit', 'Inter', sans-serif;
+            --bg-main: #f0f4f9;        /* Gemini Soft Gray/Blue Background */
+            --bg-surface: #ffffff;     /* Clean White for Cards/Header */
+            
+            --primary: #0b57d0;        /* Google/Gemini Blue */
+            --primary-bg: #e8f0fe;     /* Light Blue Hover Background */
+            --primary-hover: #1a73e8;
+            
+            --text-main: #1f1f1f;
+            --text-muted: #444746;
+            --border: #e3e3e3;
+            
+            --radius-pill: 9999px;
+            --radius-card: 24px;
+            --radius-sm: 12px;
+            
+            --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-float: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition-smooth: 0.2s cubic-bezier(0.2, 0, 0, 1);
         }
 
         body {
-            background-color: var(--color-bg);
+            background-color: var(--bg-main);
             font-family: var(--font-main);
-            color: var(--color-black);
+            color: var(--text-main);
             line-height: 1.6;
             margin: 0;
             padding: 0;
@@ -61,148 +65,109 @@
         /* HEADER STYLES                                             */
         /* ========================================================= */
         .site-header {
-            background-color: var(--color-bg);
-            border-bottom: 2px solid rgba(0,0,0,0.03); 
+            background-color: var(--bg-surface);
             position: sticky;
             top: 0;
             z-index: 1020;
-            padding: 1.25rem 2.5rem; 
+            padding: 16px 32px; 
             transition: all var(--transition-smooth); 
+            border-bottom: 1px solid var(--border);
         }
         .site-header.scrolled {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-            padding: 0.85rem 2.5rem; 
-            background-color: rgba(253, 253, 252, 0.95);
-            backdrop-filter: blur(8px);
+            box-shadow: var(--shadow-subtle);
+            padding: 12px 32px; 
         }
         
-        /* Logo - Glowing & Bouncy */
+        /* Logo */
         .brand-name { 
-            font-family: var(--font-logo); 
-            font-size: 2.8rem; 
-            font-weight: 900; 
-            color: var(--color-black); 
-            line-height: 1;
-            text-shadow: 3px 3px 0 var(--color-primary), 0px 0px 12px rgba(255,102,163,0.5); 
-            letter-spacing: -1.5px;
-            transition: all var(--bounce-fast);
-            cursor: pointer;
+            font-family: var(--font-main); 
+            font-size: 1.75rem; 
+            font-weight: 600; 
+            color: var(--text-main); 
             text-decoration: none;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
         }
-        .brand-name:hover {
-            transform: scale(1.05) rotate(-1deg);
-            text-shadow: 4px 4px 0 var(--color-accent), 0px 0px 16px rgba(255,214,10,0.6);
-            color: var(--color-black);
-        }
+        .brand-name:hover { color: var(--primary); }
 
-        /* Highlighter Nav Links */
+        /* Main Navigation */
         .main-nav {
             display: flex;
-            gap: 2.5rem;
+            gap: 8px;
             align-items: center;
         }
         .main-nav a {
-            color: var(--color-black); 
-            font-weight: 800; 
-            font-size: 1.05rem; 
+            color: var(--text-muted); 
+            font-weight: 500; 
+            font-size: 15px; 
             text-decoration: none;
-            font-family: var(--font-display);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-            padding: 4px 8px;
-            z-index: 1;
-            transition: color var(--transition-smooth);
+            padding: 10px 20px;
+            border-radius: var(--radius-pill);
+            transition: var(--transition-smooth);
         }
-        .main-nav a::before {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 35%;
-            background-color: var(--color-accent);
-            z-index: -1;
-            transform: scaleY(0);
-            transform-origin: bottom;
-            transition: transform var(--bounce-fast);
-            border-radius: 2px;
+        .main-nav a:hover {
+            color: var(--text-main);
+            background-color: rgba(31, 31, 31, 0.04);
         }
-        .main-nav a:hover::before {
-            transform: scaleY(1.2);
+        .main-nav a.active {
+            color: var(--primary);
+            background-color: var(--primary-bg);
         }
         
-        /* The Pill Buttons (Bell, Chat, Apps) */
+        /* Action Buttons (Icons) */
         .header-actions-group { 
             display: flex;
             align-items: center;
-            gap: 1.2rem; 
+            gap: 12px; 
         }
         
-        .neo-pill-btn {
+        .icon-btn {
+            width: 44px;
+            height: 44px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border: var(--border-width) solid var(--color-black);
-            border-radius: 16px; /* Smooth pill */
-            padding: 10px 26px; 
-            font-size: 1.3rem;
-            color: var(--color-black);
-            box-shadow: 4px 4px 0 var(--color-black); 
-            transition: all var(--bounce-fast);
+            border: none;
+            background: transparent;
+            border-radius: 50%; 
+            font-size: 20px;
+            color: var(--text-muted);
+            transition: var(--transition-smooth);
             cursor: pointer;
             text-decoration: none;
-            height: 52px; /* Fixed height for perfect alignment */
         }
-        
-        .neo-pill-btn:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 var(--color-black);
+        .icon-btn:hover {
+            background-color: rgba(31, 31, 31, 0.08);
+            color: var(--text-main);
         }
-        .neo-pill-btn:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0 0 0 var(--color-black);
-        }
-        
-        /* Playful icon hover animations */
-        .neo-pill-btn:hover i.fa-bell { animation: ring 0.4s ease-in-out; }
-        .neo-pill-btn:hover i.fa-comments { transform: scale(1.1); transition: transform 0.2s; }
-        
-        @keyframes ring {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(15deg); }
-            50% { transform: rotate(-15deg); }
-            75% { transform: rotate(10deg); }
-            100% { transform: rotate(0deg); }
+        .icon-btn.active-state {
+            background-color: var(--primary-bg);
+            color: var(--primary);
         }
 
-        .pill-pink { background-color: var(--color-primary); }
-        .pill-white { background-color: #ffffff; }
-        .pill-yellow { background-color: var(--color-accent); }
-
-        /* Premium Avatar Ring */
+        /* Avatar Container */
         .header-avatar-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 3px; 
+            padding: 2px; 
             border-radius: 50%;
-            border: 3px solid var(--color-primary); 
-            box-shadow: 0 0 0 4px rgba(255,102,163,0.1); 
-            margin-left: 0.5rem;
+            border: 2px solid transparent; 
+            margin-left: 8px;
             cursor: pointer;
-            transition: all var(--bounce-fast);
+            transition: var(--transition-smooth);
         }
         .header-avatar-container:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 0 6px rgba(255,102,163,0.2); 
-            border-color: var(--color-accent);
+            border-color: var(--border);
+            background-color: rgba(31, 31, 31, 0.04);
         }
         .user-avatar { 
-            width: 44px; 
-            height: 44px; 
+            width: 40px; 
+            height: 40px; 
             border-radius: 50%; 
             object-fit: cover;
-            border: 2px solid var(--color-black);
         } 
 
         /* ========================================================= */
@@ -210,117 +175,146 @@
         /* ========================================================= */
         
         .dropdown-menu {
-            border: 4px solid var(--color-black) !important;
-            box-shadow: 8px 8px 0 var(--color-black) !important;
-            border-radius: 16px !important;
-            padding: 0 !important;
-            overflow: hidden;
-            margin-top: 18px !important;
-            transform-origin: top right;
-            animation: popIn var(--bounce-fast) forwards;
+            border: 1px solid var(--border) !important;
+            box-shadow: var(--shadow-float) !important;
+            border-radius: var(--radius-card) !important;
+            padding: 12px 0 !important;
+            margin-top: 12px !important;
+            background: var(--bg-surface) !important;
+            animation: fadeIn 0.2s ease-out forwards;
+            min-width: 240px;
         }
         
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.9) translateY(-10px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .dropdown-item {
-            font-family: var(--font-display);
-            font-weight: 800 !important;
-            text-transform: uppercase;
-            font-size: 0.9rem !important;
-            padding: 14px 24px !important;
-            border-bottom: 2px solid #f0f0f0;
-            transition: all var(--transition-smooth);
+            font-family: var(--font-main);
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 12px 24px !important;
+            color: var(--text-muted) !important;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
         }
         .dropdown-item:hover {
-            background-color: var(--color-accent) !important;
-            color: var(--color-black) !important;
-            padding-left: 30px !important; /* Slide arrow effect */
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
         }
+        .dropdown-item i { margin-right: 12px; font-size: 16px; }
 
         /* Apps Grid Dropdown */
         .apps-dropdown { 
-            width: 340px; background: #ffffff; border: 4px solid #000; 
-            border-radius: 18px; padding: 24px; box-shadow: 8px 8px 0 #000; 
-            display: none; position: absolute; top: calc(100% + 15px); right: 0; z-index: 1021; 
-            transform-origin: top right;
+            width: 320px; 
+            background: var(--bg-surface); 
+            border: 1px solid var(--border); 
+            border-radius: var(--radius-card); 
+            padding: 24px; 
+            box-shadow: var(--shadow-float); 
+            display: none; 
+            position: absolute; 
+            top: calc(100% + 12px); 
+            right: 0; 
+            z-index: 1021; 
         }
-        .apps-dropdown.is-open { display: block; animation: popIn var(--bounce-fast) forwards; }
+        .apps-dropdown.is-open { display: block; animation: fadeIn 0.2s ease-out forwards; }
 
-        .apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .app-item { 
-            text-decoration: none; color: #000; background: #fff; 
-            border: 3px solid #000; border-radius: 14px; padding: 16px 10px; 
-            display: flex; flex-direction: column; align-items: center; gap: 10px; 
-            transition: all var(--bounce-fast); 
-            box-shadow: 3px 3px 0 #000;
+            text-decoration: none; 
+            color: var(--text-main); 
+            border-radius: var(--radius-sm); 
+            padding: 12px 8px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 8px; 
+            transition: var(--transition-smooth); 
         }
-        .app-item:hover { 
-            transform: translate(-3px, -3px); box-shadow: 6px 6px 0 #000; 
-            background: var(--color-bg); 
-        }
+        .app-item:hover { background: var(--bg-main); }
         .app-icon { 
-            width: 44px; height: 44px; border: 3px solid #000; border-radius: 12px;
-            display: grid; place-items: center; font-size: 20px; background: #fff; 
+            width: 48px; height: 48px; border-radius: 50%;
+            display: grid; place-items: center; font-size: 20px; 
+            background: var(--bg-main); color: var(--primary);
         }
-        .app-label { font-size: 11px; font-weight: 900; font-family: var(--font-display); text-transform: uppercase; text-align: center; }
-        
-        .app-icon.dashboard { background: var(--color-yellow); }
-        .app-icon.downloads { background: var(--color-focus); }
-        .app-icon.transactions { background: var(--color-primary); }
+        .app-item:hover .app-icon { background: white; box-shadow: var(--shadow-subtle); }
+        .app-label { font-size: 12px; font-weight: 500; text-align: center; }
 
-        /* Standard chunky button for Login states */
-        .chunky-btn {
-            border: 3px solid var(--color-black); 
-            box-shadow: 4px 4px 0 var(--color-black);
-            border-radius: 12px; font-weight: 900; font-family: var(--font-display); text-transform: uppercase;
-            transition: all var(--bounce-fast); 
-            cursor: pointer; padding: 12px 28px; 
-            background-color: var(--color-primary); color: var(--color-black); 
-            text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+        /* Standard Buttons */
+        .btn-custom {
+            padding: 10px 24px; 
+            border-radius: var(--radius-pill); 
+            font-weight: 500; 
+            font-size: 14px;
+            transition: var(--transition-smooth); 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            border: 1px solid transparent;
         }
-        .chunky-btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--color-black); }
-        .chunky-btn.secondary { background-color: var(--color-secondary); }
+        .btn-primary-custom { 
+            background-color: var(--primary); 
+            color: white; 
+        }
+        .btn-primary-custom:hover { 
+            background-color: var(--primary-hover); 
+            color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .btn-secondary-custom { 
+            background-color: white; 
+            color: var(--text-main); 
+            border-color: var(--border);
+        }
+        .btn-secondary-custom:hover { 
+            background-color: var(--bg-main); 
+        }
 
         /* Mobile Hamburger */
         .hamburger-btn { 
-            width: 52px; height: 52px; font-size: 2rem; border: none; background: transparent; cursor: pointer; color: var(--color-black);
+            width: 44px; height: 44px; font-size: 24px; border: none; background: transparent; cursor: pointer; color: var(--text-main); border-radius: 50%;
         }
-        .hamburger-btn i { transition: transform 0.4s var(--bounce-fast), opacity 0.3s ease; position: relative; }
+        .hamburger-btn:hover { background-color: rgba(31, 31, 31, 0.08); }
+        .hamburger-btn i { transition: transform 0.3s ease, opacity 0.2s ease; position: relative; }
         .hamburger-btn.is-open .fa-bars { transform: rotate(180deg) scale(0); opacity: 0; }
         .hamburger-btn.is-open .fa-xmark { transform: rotate(0deg) scale(1); opacity: 1; }
-        .hamburger-btn .fa-xmark { position: absolute; transform: rotate(-180deg) scale(0); opacity: 0; left: 12px;}
+        .hamburger-btn .fa-xmark { position: absolute; transform: rotate(-180deg) scale(0); opacity: 0; left: 10px;}
 
         /* Mobile Nav Panel */
         .mobile-nav-panel { 
-            width: 320px; background-color: #fff; border-right: 6px solid var(--color-black); 
-            z-index: 1045; transform: translateX(-100%); will-change: transform; transition: transform 0.4s var(--bounce-fast); 
+            width: 300px; background-color: var(--bg-surface); 
+            z-index: 1045; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; height: 100vh; 
         }
-        .mobile-nav-panel.is-open { transform: translateX(0); box-shadow: 20px 0 0 rgba(0,0,0,1); }
+        .mobile-nav-panel.is-open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.1); }
         
-        .nav-overlay { background-color: rgba(0, 0, 0, 0.6); transition: opacity 0.3s ease; position: fixed; inset: 0; opacity: 0; pointer-events: none; z-index: 1040; backdrop-filter: blur(4px); }
+        .nav-overlay { background-color: rgba(0, 0, 0, 0.4); transition: opacity 0.3s ease; position: fixed; inset: 0; opacity: 0; pointer-events: none; z-index: 1040; backdrop-filter: blur(2px); }
         .nav-overlay.is-open { opacity: 1; pointer-events: auto; }
 
-        @keyframes slide-in-stagger { 0% { opacity: 0; transform: translateX(-30px); } 100% { opacity: 1; transform: translateX(0); } }
-        .panel-link-stagger { opacity: 0; transform: translateX(-30px); position: relative; z-index: 2;}
-
-        .panel-header { padding: 1.5rem; border-bottom: 4px solid var(--color-black); flex-shrink: 0; background: #fff; position: relative; z-index: 2;}
-        .panel-body { padding: 1.5rem; flex-grow: 1; overflow-y: auto; position: relative; z-index: 2;}
-        .panel-footer { padding: 1.5rem; border-top: 4px solid var(--color-black); flex-shrink: 0; background: #fff; position: relative; z-index: 2;}
+        .panel-header { padding: 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg-surface); }
+        .panel-body { padding: 16px; flex-grow: 1; overflow-y: auto; background: var(--bg-surface); }
+        .panel-footer { padding: 24px; border-top: 1px solid var(--border); flex-shrink: 0; background: var(--bg-main); }
         
-        .panel-link { display: flex; align-items: center; gap: 1.2rem; padding: 1rem 1.2rem; margin-bottom: 0.85rem; border-radius: 12px; color: var(--color-black); text-decoration: none; font-weight: 900; font-family: var(--font-display); text-transform: uppercase; font-size: 1.1rem; border: 3px solid var(--color-black); background: #fff; transition: all var(--bounce-fast); box-shadow: 4px 4px 0 #000;}
-        .panel-link:hover { background-color: var(--color-accent); box-shadow: 6px 6px 0 var(--color-black); transform: translate(-2px, -2px); color: var(--color-black);}
-        
-        .icon-wrapper { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 1.2rem; color: var(--color-black); border: 3px solid #000;}
-        .icon-docs { background-color: #fde68a; }
-        .icon-courses { background-color: #bfdbfe; }
-        .icon-focus { background-color: #1ac2ff; }
+        .panel-link { 
+            display: flex; align-items: center; gap: 16px; padding: 12px 16px; margin-bottom: 4px; border-radius: var(--radius-pill); 
+            color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 15px; transition: var(--transition-smooth);
+        }
+        .panel-link:hover, .panel-link.active { background-color: var(--primary-bg); color: var(--primary); }
+        .panel-link i { font-size: 18px; width: 24px; text-align: center; }
 
-        /* Notifications */
-        .notification-modal-content { border: 4px solid var(--color-black) !important; box-shadow: 10px 10px 0 var(--color-black) !important; border-radius: 24px !important; background-color: #fff; overflow: hidden; }
+        /* Notifications Modal */
+        .notification-modal-content { 
+            border: none !important; 
+            box-shadow: var(--shadow-float) !important; 
+            border-radius: var(--radius-card) !important; 
+            background-color: var(--bg-surface); 
+            overflow: hidden; 
+        }
 
     </style>
 </head>
@@ -329,7 +323,10 @@
     <header class="site-header" id="siteHeader">
         <div class="container-fluid d-flex align-items-center justify-content-between">
             
-            <a href="/" class="brand-name">Vidyari</a>
+            <a href="/" class="brand-name">
+                <img src="/images/logo.svg" alt="Vidyari Logo" height="32" onerror="this.style.display='none'">
+                Vidyari
+            </a>
 
             <div class="d-none d-lg-flex align-items-center justify-content-center flex-grow-1">
                 <nav class="main-nav"> 
@@ -343,32 +340,32 @@
             <div class="d-flex align-items-center header-actions-group">
                 
                 <% if(isLoggedin) { %>
-                    <button onclick="window.location.href='/user-notifications'" type="button" class="neo-pill-btn pill-pink d-none d-md-flex" aria-label="Notifications">
+                    <button onclick="window.location.href='/user-notifications'" type="button" class="icon-btn d-none d-md-flex" aria-label="Notifications">
                         <i class="fa-regular fa-bell"></i>
                     </button>
                     
                     <div class="chat-popup-wrapper">
-                        <a href="/chats" id="chat-icon-btn" class="neo-pill-btn pill-white d-none d-md-flex" aria-label="Chats">
-                            <i class="fa-solid fa-comments"></i>
+                        <a href="/chats" id="chat-icon-btn" class="icon-btn d-none d-md-flex" aria-label="Chats">
+                            <i class="fa-regular fa-comments"></i>
                         </a>
                     </div>
 
                     <div class="position-relative d-none d-md-block" id="grip-container">
-                        <button id="grip-button" type="button" class="neo-pill-btn pill-yellow" aria-label="Quick Links">
-                            <i class="fas fa-grip"></i>
+                        <button id="grip-button" type="button" class="icon-btn" aria-label="Quick Links">
+                            <i class="fa-solid fa-shapes"></i>
                         </button>
                         <div class="apps-dropdown" id="grip-menu">
                           <div class="apps-grid">
                             <a href="/dashboard" class="app-item">
-                              <span class="app-icon dashboard"><i class="fas fa-table-columns"></i></span>
+                              <span class="app-icon"><i class="fa-solid fa-store"></i></span>
                               <span class="app-label">Dashboard</span>
                             </a>
                             <a href="/downloads" class="app-item">
-                              <span class="app-icon downloads"><i class="fas fa-cloud-arrow-down"></i></span>
+                              <span class="app-icon"><i class="fa-solid fa-cloud-arrow-down"></i></span>
                               <span class="app-label">Downloads</span>
                             </a>
                             <a href="/transactions" class="app-item">
-                              <span class="app-icon transactions"><i class="fas fa-receipt"></i></span>
+                              <span class="app-icon"><i class="fa-solid fa-receipt"></i></span>
                               <span class="app-label">Receipts</span>
                             </a>
                           </div>
@@ -390,22 +387,23 @@
                         </div>
 
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li class="px-4 pt-3 pb-3 border-bottom border-dark" style="border-width: 3px !important; background: #fafafa;">
-                                <p class="fw-bold mb-0" style="font-family: var(--font-display); text-transform: uppercase; font-size: 1.1rem;"><%= username %></p>
-                                <p class="small text-muted mb-0 fw-bold"><%= useremail %></p>
+                            <li class="px-4 pt-2 pb-3 border-bottom mb-2" style="background: var(--bg-surface);">
+                                <p class="fw-bold mb-0" style="font-size: 15px; color: var(--text-main);"><%= username %></p>
+                                <p class="mb-0" style="font-size: 13px; color: var(--text-muted);"><%= useremail %></p>
                             </li>
-                            <li><a class="dropdown-item mt-2" href="/user-profile"><i class="fa-solid fa-user-gear fa-fw me-3 text-secondary"></i> Profile</a></li>
-                            <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-store fa-fw me-3 text-warning"></i> Seller Dashboard</a></li>
-                            <li><a class="dropdown-item text-danger mb-2" style="border-bottom:none;" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-3"></i> Logout</a></li>
+                            <li><a class="dropdown-item" href="/user-profile"><i class="fa-regular fa-user"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="/dashboard"><i class="fa-solid fa-store text-muted"></i> Seller Dashboard</a></li>
+                            <li><hr class="dropdown-divider my-2"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
                         </ul>
                     </div>
 
                 <% } else { %>
-                    <button onclick="window.location.href='/dashboard'" class="chunky-btn d-none d-md-block secondary">Become Seller</button>
-                    <button onclick="window.location.href='/user-login'" class="chunky-btn primary">Login</button>
+                    <button onclick="window.location.href='/dashboard'" class="btn-custom btn-secondary-custom d-none d-md-block">Become Seller</button>
+                    <button onclick="window.location.href='/user-login'" class="btn-custom btn-primary-custom">Login</button>
                 <% } %>
 
-                <button class="hamburger-btn d-lg-none ms-3" id="hamburgerBtn" type="button" aria-label="Toggle navigation">
+                <button class="hamburger-btn d-lg-none ms-2" id="hamburgerBtn" type="button" aria-label="Toggle navigation">
                     <i class="fa-solid fa-bars"></i>
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -415,54 +413,51 @@
     
 
     <div class="mobile-nav-panel" id="mobileNavPanel">
-        <div class="panel-header">
-            <a href="/" class="brand-name text-decoration-none">Vidyari</a> 
+        <div class="panel-header d-flex align-items-center justify-content-between">
+            <a href="/" class="brand-name">Vidyari</a> 
         </div>
 
         <div class="panel-body" id="mobilePanelBody">
             <% if(isLoggedin) { %>
-                <div class="panel-section mb-4 panel-link-stagger">
-                    <div style="display: flex; align-items: center; gap: 1rem; background: var(--color-bg); padding: 12px; border: 3px solid #000; border-radius: 16px; box-shadow: 4px 4px 0 #000;">
-                        <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" style="width: 50px; height: 50px; border-radius: 12px; border: 2px solid #000; object-fit: cover;" onerror="this.onerror=null; this.src='/images/avatar.jpg';">
+                <div class="mb-4 p-3 rounded" style="background: var(--bg-main);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <img src="<%= profileUrl || '/images/avatar.jpg' %>" alt="User Avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;" onerror="this.onerror=null; this.src='/images/avatar.jpg';">
                         <div>
-                            <p style="font-weight: 900; font-family: var(--font-display); text-transform: uppercase; margin: 0; line-height: 1.2;"><%= username %></p>
-                            <p style="font-size: 0.85rem; color: #666; margin: 0; font-weight: 600;"><%= useremail %></p>
+                            <p style="font-weight: 600; font-size: 16px; margin: 0; color: var(--text-main);"><%= username %></p>
+                            <p style="font-size: 13px; color: var(--text-muted); margin: 0;"><%= useremail %></p>
                         </div>
                     </div>
                 </div>
             <% } %>
 
             <div class="panel-section">
-                <a href="/documents" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-docs"><i class="fa-solid fa-file-lines"></i></span><span>Documents</span></a>
-                <a href="/courses" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-courses"><i class="fa-solid fa-book-open-reader"></i></span><span>Courses</span></a>
-                <a href="/pricing" class="panel-link panel-link-stagger"><span style="background-color: var(--color-secondary);" class="icon-wrapper"><i class="fa-solid fa-hand-holding-dollar"></i></span><span>Pricing</span></a>
-                <a href="/about" class="panel-link panel-link-stagger"><span style="background-color: var(--color-primary);" class="icon-wrapper"><i class="fa-solid fa-users"></i></span><span>About Us</span></a>
+                <a href="/documents" class="panel-link"><i class="fa-regular fa-file-lines"></i> Documents</a>
+                <a href="/courses" class="panel-link"><i class="fa-solid fa-book-open-reader"></i> Courses</a>
+                <a href="/pricing" class="panel-link"><i class="fa-solid fa-tag"></i> Pricing</a>
+                <a href="/about" class="panel-link"><i class="fa-regular fa-circle-question"></i> About Us</a>
 
                 <% if(isLoggedin) { %>
-                    <a href="/chats" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-focus"><i class="fa-solid fa-comments"></i></span><span>Chats</span></a>
+                    <a href="/chats" class="panel-link"><i class="fa-regular fa-comments"></i> Chats</a>
                 <% } %>
             </div>
 
             <% if(isLoggedin) { %>
-                <div style="height: 4px; background: #000; margin: 2rem 0; opacity: 0.1;" class="panel-link-stagger"></div>
-                
+                <hr style="border-color: var(--border); margin: 16px 0;">
                 <div class="panel-section">
-                                        <a href="/transactions" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-transactions"><i class="fa-solid fa-receipt"></i></span><span>Transactions</span></a>
-
-                                        <a href="/downloads" class="panel-link panel-link-stagger"><span class="icon-wrapper icon-downloads"><i class="fa-solid fa-cloud-arrow-down"></i></span><span>My Downloads</span></a>
-
-                    <a href="/user-notifications" class="panel-link panel-link-stagger"><span class="icon-wrapper" style="background-color: var(--color-primary);"><i class="fa-regular fa-bell"></i></span><span>Notifications</span></a>
-                    <a href="/user-profile" class="panel-link panel-link-stagger"><span class="icon-wrapper" style="background-color: #d1d5db;"><i class="fa-solid fa-user-gear"></i></span><span>My Profile</span></a>
-                    <a href="/dashboard" class="panel-link panel-link-stagger"><span class="icon-wrapper" style="background-color: var(--color-yellow);"><i class="fa-solid fa-store"></i></span><span>Dashboard</span></a>
+                    <a href="/transactions" class="panel-link"><i class="fa-solid fa-receipt"></i> Transactions</a>
+                    <a href="/downloads" class="panel-link"><i class="fa-solid fa-cloud-arrow-down"></i> My Downloads</a>
+                    <a href="/user-notifications" class="panel-link"><i class="fa-regular fa-bell"></i> Notifications</a>
+                    <a href="/user-profile" class="panel-link"><i class="fa-regular fa-user"></i> My Profile</a>
+                    <a href="/dashboard" class="panel-link"><i class="fa-solid fa-store"></i> Dashboard</a>
                 </div>
             <% } %>
         </div>
         
-        <div class="panel-footer panel-link-stagger">
+        <div class="panel-footer">
             <% if(isLoggedin) { %>
-                <a href="/logout" class="chunky-btn w-100 text-center" style="background-color: var(--color-error); color: white;"><i class="fa-solid fa-arrow-right-from-bracket fa-fw me-2"></i>Logout</a>
+                <a href="/logout" class="btn-custom w-100" style="background-color: var(--bg-surface); color: var(--danger); border: 1px solid var(--border);"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Logout</a>
             <% } else { %>
-                <button onclick="window.location.href='/user-login'" class="chunky-btn w-100 primary">Login / Sign Up</button>
+                <button onclick="window.location.href='/user-login'" class="btn-custom btn-primary-custom w-100">Login / Sign Up</button>
             <% } %>
         </div>
     </div>
@@ -490,9 +485,13 @@
             gripButton.addEventListener('click', (e) => {
                 e.stopPropagation();
                 gripMenu.classList.toggle('is-open');
+                gripButton.classList.toggle('active-state');
             });
             document.addEventListener('click', (e) => {
-                if (gripContainer && !gripContainer.contains(e.target)) gripMenu.classList.remove('is-open');
+                if (gripContainer && !gripContainer.contains(e.target)) {
+                    gripMenu.classList.remove('is-open');
+                    gripButton.classList.remove('active-state');
+                }
             });
         }
 
@@ -500,22 +499,12 @@
         const mobileNavPanel = document.getElementById('mobileNavPanel');
         const navOverlay = document.getElementById('navOverlay');
         const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const panelStaggerLinks = document.querySelectorAll('.panel-link-stagger'); 
 
         const toggleMobileNav = () => {
             const isOpen = mobileNavPanel.classList.toggle('is-open');
             navOverlay.classList.toggle('is-open');
             hamburgerBtn.classList.toggle('is-open'); 
             document.body.style.overflow = isOpen ? 'hidden' : ''; 
-
-            if (isOpen) {
-                panelStaggerLinks.forEach((el, index) => {
-                    const delay = index * 40; 
-                    el.style.animation = `slide-in-stagger 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards ${delay}ms`;
-                });
-            } else {
-                panelStaggerLinks.forEach(el => { el.style.animation = 'none'; el.offsetHeight; });
-            }
         };
 
         if (hamburgerBtn) hamburgerBtn.addEventListener('click', toggleMobileNav);
@@ -546,20 +535,20 @@
     <div id="notifyModal" class="modal fade" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content notification-modal-content">
-                <div class="modal-header text-center justify-content-center p-4" style="background-color: var(--color-yellow); border-bottom: 4px solid #000;">
-                    <div class="notify-gif-wrapper" style="border: 4px solid #000; box-shadow: 6px 6px 0 #000;">
-                        <img src="/kiss.gif" alt="Excited notification" class="animated-notification-gif">
+                <div class="modal-header border-0 text-center justify-content-center p-4 pb-0">
+                    <div style="width: 64px; height: 64px; background-color: var(--primary-bg); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px;">
+                        <i class="fa-regular fa-bell"></i>
                     </div>
                 </div>
-                <div class="modal-body text-center p-4 pt-4">
-                    <h5 class="modal-title-custom mb-3">Don't Miss a Beat!</h5>
-                    <p class="mb-3 text-dark font-weight-bold" style="font-size: 1rem; font-family: var(--font-main);">
-                        Be the first to know about new content, exclusive offers, and important news!
+                <div class="modal-body text-center p-4">
+                    <h5 class="mb-2" style="font-weight: 600; color: var(--text-main);">Stay Updated!</h5>
+                    <p class="mb-0 text-muted" style="font-size: 14px;">
+                        Enable notifications to be the first to know about new content, exclusive offers, and important updates.
                     </p>
                 </div>
-                <div class="modal-footer justify-content-center border-top-0 pt-0 pb-4">
-                    <button type="button" id="allowNotifications" class="chunky-btn primary w-100 mb-2">Enable</button>
-                    <button type="button" class="btn btn-sm btn-link text-muted font-weight-bold" data-bs-dismiss="modal" style="font-size: 0.85rem; text-decoration: underline;">No thanks</button>
+                <div class="modal-footer justify-content-center border-top-0 pt-0 pb-4 px-4 flex-column gap-2">
+                    <button type="button" id="allowNotifications" class="btn-custom btn-primary-custom w-100 m-0">Enable Notifications</button>
+                    <button type="button" class="btn-custom btn-secondary-custom w-100 m-0 border-0" data-bs-dismiss="modal">Not right now</button>
                 </div>
             </div>
         </div>

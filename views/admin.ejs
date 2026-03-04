@@ -1,2453 +1,2083 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - DigitalMarket</title>
-  <link rel="icon" href="/images/logo.svg" type="image/png" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js"></script>
-  <script>
-    // ensure cookies (JWT) are sent with every request so authenticateAdmin middleware works
-    axios.defaults.withCredentials = true;
-  </script>
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary: #4F46E5;
-      --primary-light: #6366F1;
-      --primary-dark: #4338CA;
-      --secondary: #06B6D4;
-      --danger: #EF4444;
-      --success: #10B981;
-      --warning: #F59E0B;
-      --bg-dark: #0F172A;
-      --bg-light: #F8FAFC;
-      --text-dark: #1E293B;
-      --text-light: #64748B;
-      --border: #E2E8F0;
-      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-light);
-      color: var(--text-dark);
-      overflow: hidden;
-    }
-
-    .admin-container {
-      display: flex;
-      height: 100vh;
-      background: var(--bg-light);
-    }
-
-    /* ============= SIDEBAR ============= */
-    .sidebar {
-      width: 260px;
-      background: var(--bg-dark);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-      overflow-y: auto;
-      z-index: 900;
-    }
-
-    .sidebar-header {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      font-size: 18px;
-    }j
-
-    .sidebar-logo {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 18px;
-    }
-
-    .sidebar-menu {
-      flex: 1;
-      padding: 12px 0;
-    }
-
-    .menu-section {
-      padding: 12px 0;
-    }
-
-    .menu-section-title {
-      padding: 0 16px;
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 0.5px;
-      margin-bottom: 8px;
-    }
-
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      color: rgba(255, 255, 255, 0.7);
-      cursor: pointer;
-      transition: var(--transition);
-      border-left: 3px solid transparent;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .menu-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-    }
-
-    .menu-item.active {
-      background: rgba(79, 70, 229, 0.2);
-      color: var(--primary-light);
-      border-left-color: var(--primary-light);
-    }
-
-    .menu-item i {
-      width: 18px;
-      text-align: center;
-    }
-
-    .sidebar-footer {
-      padding: 16px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      gap: 8px;
-    }
-
-    .logout-btn {
-      flex: 1;
-      padding: 10px 16px;
-      background: var(--danger);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-      transition: var(--transition);
-    }
-
-    .logout-btn:hover {
-      background: #DC2626;
-      transform: translateY(-1px);
-    }
-
-    /* ============= MAIN CONTENT ============= */
-    .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      background: var(--bg-light);
-    }
-
-    .top-bar {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      padding: 16px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: var(--shadow);
-    }
-
-    .top-bar-title {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-dark);
-    }
-
-    .top-bar-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 8px 16px;
-      background: var(--bg-light);
-      border-radius: 8px;
-    }
-
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    /* ============= CONTENT AREA ============= */
-    .content-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 32px;
-    }
-
-    .page-header {
-      margin-bottom: 32px;
-    }
-
-    .page-title {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--text-dark);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .page-subtitle {
-      font-size: 14px;
-      color: var(--text-light);
-    }
-
-    /* ============= CARDS & GRIDS ============= */
-    .card {
-      background: white;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      transition: var(--transition);
-    }
-
-    .card:hover {
-      box-shadow: var(--shadow-lg);
-      transform: translateY(-2px);
-    }
-
-    .card-small {
-      padding: 20px;
-    }
-
-    .card-medium {
-      padding: 24px;
-    }
-
-    .card-large {
-      padding: 28px;
-    }
-
-    .stat-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .stat-content h3 {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-    }
-
-    .stat-value {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--text-dark);
-    }
-
-    .stat-icon {
-      width: 48px;
-      height: 48px;
-      background: var(--bg-light);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-      margin-bottom: 32px;
-    }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    /* ============= TABLES ============= */
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    thead tr {
-      background: var(--bg-light);
-      border-bottom: 2px solid var(--border);
-    }
-
-    th {
-      padding: 14px 16px;
-      text-align: left;
-      font-weight: 700;
-      color: var(--text-dark);
-    }
-
-    td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      color: var(--text-dark);
-    }
-
-    tr:hover {
-      background: var(--bg-light);
-    }
-
-    /* ============= BADGES & TAGS ============= */
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .badge-success {
-      background: #D1FAE5;
-      color: #047857;
-    }
-
-    .badge-danger {
-      background: #FEE2E2;
-      color: #991B1B;
-    }
-
-    .badge-warning {
-      background: #FEF3C7;
-      color: #92400E;
-    }
-
-    .badge-info {
-      background: #DBEAFE;
-      color: #0C4A6E;
-    }
-
-    .badge-primary {
-      background: #E0E7FF;
-      color: #3730A3;
-    }
-
-    /* ============= BUTTONS ============= */
-    .btn {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-      background: var(--secondary);
-      color: white;
-    }
-
-    .btn-secondary:hover {
-      background: #0891B2;
-    }
-
-    .btn-success {
-      background: var(--success);
-      color: white;
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: #DC2626;
-    }
-
-    .btn-warning {
-      background: var(--warning);
-      color: white;
-    }
-
-    .btn-small {
-      padding: 6px 12px;
-      font-size: 12px;
-    }
-
-    .btn-icon {
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ============= FORMS ============= */
-    .form-group {
-      margin-bottom: 16px;
-      display: flex;
-      gap: 12px;
-    }
-
-    .form-group label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-dark);
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="number"],
-    input[type="date"],
-    select,
-    textarea {
-      flex: 1;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 13px;
-      font-family: 'Inter', sans-serif;
-      background: white;
-      transition: var(--transition);
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    }
-
-    /* ============= MODALS ============= */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-      width: 90%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateY(-50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .modal-header {
-      padding: 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-header h2 {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text-dark);
-      margin: 0;
-    }
-
-    .modal-close {
-      background: none;
-      border: none;
-      font-size: 24px;
-      color: var(--text-light);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .modal-close:hover {
-      color: var(--text-dark);
-    }
-
-    .modal-body {
-      padding: 24px;
-    }
-
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-
-    /* ============= SEARCH & FILTER ============= */
-    .search-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .search-input {
-      flex: 1;
-      min-width: 250px;
-    }
-
-    /* ============= LOADING ============= */
-    .loading {
-      display: inline-block;
-      text-align: center;
-      padding: 40px;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 4px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* ============= UTILITY ============= */
-    .mb-16 { margin-bottom: 16px; }
-    .mb-24 { margin-bottom: 24px; }
-    .mt-16 { margin-top: 16px; }
-
-    /* ============= RESPONSIVE ============= */
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 240px;
-      }
-
-      .content-area {
-        padding: 16px;
-      }
-
-      .page-title {
-        font-size: 24px;
-      }
-
-      .grid-2,
-      .grid-4 {
-        grid-template-columns: 1fr;
-      }
-
-      .stat-card {
-        flex-direction: column;
-      }
-    }
-
-    /* ============= SCROLLBAR ============= */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #CBD5E1;
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94A3B8;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - DigitalMarket</title>
+    
+    <link rel="icon" href="/images/logo.svg" type="image/png" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js"></script>
+    
+    <script>
+        axios.defaults.withCredentials = true;
+        // categories passed from server for use in upload/edit forms
+        // use JSON.parse on a string so raw  tag doesn't confuse the JS parser
+        const CATEGORIES = JSON.parse('<%-JSON.stringify(categories || [])%>');
+    </script>
+      
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Gemini / Material 3 Color Palette */
+            --bg-main: #f0f4f9;
+            --bg-surface: #ffffff;
+            --primary: #0b57d0;
+            --primary-bg: #e8f0fe;
+            --primary-hover: #1a73e8;
+            --text-main: #1f1f1f;
+            --text-muted: #444746;
+            --border: #e3e3e3;
+            
+            /* Status Colors */
+            --success: #146c2e;
+            --success-bg: #e6f4ea;
+            --danger: #b3261e;
+            --danger-bg: #fce8e6;
+            --warning: #b38700;
+            --warning-bg: #fef7e0;
+            
+            /* Shapes & Shadows */
+            --radius-pill: 9999px;
+            --radius-card: 24px;
+            --radius-sm: 12px;
+            --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+            --transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        body {
+            font-family: 'Outfit', 'Inter', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .admin-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* ============= SIDEBAR ============= */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 900;
+            transition: transform 0.3s ease;
+            padding: 16px;
+        }
+
+        .sidebar-header {
+            padding: 12px 16px 24px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 20px;
+            color: var(--text-main);
+        }
+
+        .sidebar-logo {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .menu-section-title {
+            padding: 16px 16px 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: var(--radius-pill);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .menu-item:hover {
+            background: rgba(31, 31, 31, 0.08);
+        }
+
+        .menu-item.active {
+            background: var(--primary-bg);
+            color: var(--primary);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 16px;
+        }
+
+        /* ============= MAIN CONTENT ============= */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-main);
+        }
+
+        .top-bar {
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+        }
+
+        .top-bar-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 16px 6px 6px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-pill);
+            border: 1px solid var(--border);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* ============= CONTENT AREA ============= */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 32px 32px 32px;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+        }
+
+        /* ============= CARDS & GRIDS ============= */
+        .card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-subtle);
+            transition: var(--transition);
+        }
+
+        .card-small { padding: 24px; }
+        .card-medium { padding: 32px; }
+
+        .stat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-content h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--bg-main);
+            border-radius: var(--radius-pill);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* ============= TABLES ============= */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background: rgba(31, 31, 31, 0.02);
+        }
+
+        /* ============= BADGES ============= */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .badge-success { background: var(--success-bg); color: var(--success); }
+        .badge-danger { background: var(--danger-bg); color: var(--danger); }
+        .badge-warning { background: var(--warning-bg); color: var(--warning); }
+        .badge-info { background: var(--primary-bg); color: var(--primary); }
+        .badge-primary { background: var(--primary-bg); color: var(--primary); }
+
+        /* ============= BUTTONS ============= */
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        
+        .btn-secondary { background: white; color: var(--text-main); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--bg-main); }
+        
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #9c2018; }
+        
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #0f5424; }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn-icon-only {
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        /* ============= FORMS ============= */
+        .form-group {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--bg-surface);
+            transition: var(--transition);
+            color: var(--text-main);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        /* ============= SEARCH BAR ============= */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23444746'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 12px center;
+            background-size: 20px;
+            padding-left: 40px !important;
+            border-radius: var(--radius-pill) !important;
+        }
+
+        /* ============= MODALS ============= */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: var(--bg-surface);
+            border-radius: var(--radius-card);
+            box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14);
+            width: 100%;
+            max-width: 400px;
+            animation: slideIn 0.3s cubic-bezier(0.2, 0, 0, 1);
+            overflow: hidden;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 24px 24px 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover { background: var(--bg-main); color: var(--text-main); }
+
+        .modal-body {
+            padding: 0 24px 24px 24px;
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--bg-main);
+        }
+
+        /* ============= SPINNER ============= */
+        .loading { text-align: center; padding: 40px; }
+        .spinner {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ============= SCROLLBAR ============= */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bdc1c6; }
+
+        /* ============= RESPONSIVE ============= */
+        @media (max-width: 1024px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -300px;
+                top: 0;
+                height: 100vh;
+                box-shadow: 4px 0 16px rgba(0,0,0,0.1);
+            }
+            .sidebar.show {
+                transform: translateX(300px);
+            }
+            .menu-toggle { display: block; }
+            .top-bar-title span { display: none; }
+            .content-area { padding: 0 16px 16px 16px; }
+            .top-bar { padding: 16px; }
+            .page-title { font-size: 24px; }
+            .grid-4 { grid-template-columns: 1fr; }
+            .stat-card { flex-direction: column-reverse; align-items: flex-start; gap: 16px; }
+            .stat-icon { align-self: flex-start; }
+            .search-bar { flex-direction: column; align-items: stretch; }
+            .search-input { min-width: 100%; }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="admin-container">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">📊</div>
-        <span>Admin</span>
-      </div>
-
-      <div class="sidebar-menu">
-        <div class="menu-section">
-          <div class="menu-section-title">Overview</div>
-          <div class="menu-item active" onclick="switchView('dashboard')">
-            <i class="fas fa-home"></i>
-            <span>Dashboard</span>
-          </div>
-          <div class="menu-item" onclick="switchView('analytics')">
-            <i class="fas fa-chart-line"></i>
-            <span>Analytics</span>
-          </div>
-        </div>
-
-        <div class="menu-section">
-          <div class="menu-section-title">Management</div>
-          <div class="menu-item" onclick="switchView('orders')">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Orders</span>
-          </div>
-          <div class="menu-item" onclick="switchView('users')">
-            <i class="fas fa-users"></i>
-            <span>Users</span>
-          </div>
-          <div class="menu-item" onclick="switchView('files')">
-            <i class="fas fa-file"></i>
-            <span>Files</span>
-          </div>
-          <div class="menu-item" onclick="switchView('sellers')">
-            <i class="fas fa-store"></i>
-            <span>Sellers</span>
-          </div>
-        </div>
-
-        <div class="menu-section">
-          <div class="menu-section-title">Communications</div>
-          <div class="menu-item" onclick="switchView('communications')">
-            <i class="fas fa-envelope"></i>
-            <span>Email & Notifications</span>
-          </div>
-        </div>
-
-        <div class="menu-section">
-          <div class="menu-section-title">Finance</div>
-          <div class="menu-item" onclick="switchView('revenue')">
-            <i class="fas fa-dollar-sign"></i>
-            <span>Revenue</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="sidebar-footer">
-        <button class="logout-btn" onclick="handleLogout()">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-      </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-      <!-- TOP BAR -->
-      <div class="top-bar">
-        <div class="top-bar-title" id="topBarTitle">Dashboard</div>
-        <div class="top-bar-right">
-          <div class="user-info">
-            <div class="user-avatar"><%= username ? username.charAt(0).toUpperCase() : 'A' %></div>
-            <span><%= username || 'Admin' %></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- CONTENT AREA -->
-      <div class="content-area">
-        <!-- ========== DASHBOARD VIEW ========== -->
-        <div id="dashboardView" class="view-container">
-          <div class="page-header">
-            <h1 class="page-title">
-              <i class="fas fa-home"></i> Dashboard
-            </h1>
-            <p class="page-subtitle">Real-time business performance overview</p>
-          </div>
-
-          <div class="grid-4">
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Total Revenue</h3>
-                <div class="stat-value" id="totalRevenue">₹0</div>
-              </div>
-              <div class="stat-icon" style="color: var(--primary);">
-                <i class="fas fa-wallet"></i>
-              </div>
+    <div class="admin-container">
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">✨</div>
+                <span>Admin Console</span>
             </div>
 
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Total Orders</h3>
-                <div class="stat-value" id="totalOrders">0</div>
-              </div>
-              <div class="stat-icon" style="color: var(--secondary);">
-                <i class="fas fa-shopping-cart"></i>
-              </div>
-            </div>
-
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Successful Orders</h3>
-                <div class="stat-value" id="successOrders" style="color: var(--success);">0</div>
-              </div>
-              <div class="stat-icon" style="color: var(--success);">
-                <i class="fas fa-check-circle"></i>
-              </div>
-            </div>
-
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Failed Orders</h3>
-                <div class="stat-value" id="failOrders" style="color: var(--danger);">0</div>
-              </div>
-              <div class="stat-icon" style="color: var(--danger);">
-                <i class="fas fa-times-circle"></i>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="card card-medium">
-              <h3 class="mb-16" style="font-size: 16px; font-weight: 700;">Revenue Chart</h3>
-              <canvas id="revenueChart"></canvas>
-            </div>
-
-            <div class="card card-medium">
-              <h3 class="mb-16" style="font-size: 16px; font-weight: 700;">Order Status</h3>
-              <canvas id="statusChart"></canvas>
-            </div>
-          </div>
-
-          <div class="card card-medium">
-            <h3 class="mb-16" style="font-size: 16px; font-weight: 700;">Recent Orders</h3>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="recentOrdersBody">
-                  <tr>
-                    <td colspan="6" style="text-align: center; padding: 40px;">
-                      <div class="loading">
-                        <div class="spinner"></div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== ORDERS VIEW ========== -->
-        <div id="ordersView" class="view-container" style="display: none;">
-          <div class="page-header">
-            <h1 class="page-title">
-              <i class="fas fa-shopping-cart"></i> Orders Management
-            </h1>
-            <p class="page-subtitle">Manage and track all customer orders</p>
-          </div>
-
-          <div class="card card-medium">
-            <div class="search-bar">
-              <input type="text" id="orderSearch" class="form-group search-input" placeholder="Search order ID or customer...">
-              <select id="orderStatusFilter" class="form-group">
-                <option value="">All Status</option>
-                <option value="successful">Successful</option>
-                <option value="unsuccessful">Failed</option>
-              </select>
-              <button class="btn btn-secondary btn-small" onclick="exportOrders('csv')">
-                <i class="fas fa-download"></i> CSV
-              </button>
-            </div>
-
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Customer</th>
-                    <th>Amount</th>
-                    <th>Items</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="ordersTableBody">
-                  <tr>
-                    <td colspan="7" style="text-align: center; padding: 40px;">
-                      <div class="loading">
-                        <div class="spinner"></div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== USERS VIEW ========== -->
-        <div id="usersView" class="view-container" style="display: none;">
-          <div class="page-header">
-            <h1 class="page-title">
-              <i class="fas fa-users"></i> Users Management
-            </h1>
-            <p class="page-subtitle">Manage user accounts and permissions</p>
-          </div>
-
-          <div class="grid-4">
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Total Users</h3>
-                <div class="stat-value" id="totalUsersCount">0</div>
-              </div>
-            </div>
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Verified</h3>
-                <div class="stat-value" style="color: var(--success);" id="verifiedCount">0</div>
-              </div>
-            </div>
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Suspended</h3>
-                <div class="stat-value" style="color: var(--warning);" id="suspendedCount">0</div>
-              </div>
-            </div>
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Banned</h3>
-                <div class="stat-value" style="color: var(--danger);" id="bannedCount">0</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card card-medium">
-            <div class="search-bar">
-              <input type="text" id="userSearch" class="form-group search-input" placeholder="Search username, email...">
-              <select id="userRoleFilter" class="form-group">
-                <option value="">All Roles</option>
-                <option value="buyer">Buyer</option>
-                <option value="seller">Seller</option>
-                <option value="admin">Admin</option>
-              </select>
-              <select id="userStatusFilter" class="form-group">
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="verified">Verified</option>
-                <option value="suspended">Suspended</option>
-                <option value="banned">Banned</option>
-              </select>
-            </div>
-
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Followers</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                  <tr>
-                    <td colspan="6" style="text-align: center; padding: 40px;">
-                      <div class="loading">
-                        <div class="spinner"></div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== FILES VIEW ========== -->
-        <div id="filesView" class="view-container" style="display: none;">
-          <div class="page-header">
-            <h1 class="page-title">
-              <i class="fas fa-file"></i> Files Management
-            </h1>
-            <p class="page-subtitle">Manage uploaded digital files and content</p>
-          </div>
-
-          <div class="card card-medium">
-            <div class="search-bar">
-              <input type="text" id="fileSearch" class="form-group search-input" placeholder="Search filename...">
-              <button class="btn btn-success btn-small" onclick="openUploadModal()">
-                <i class="fas fa-cloud-upload-alt"></i> Upload
-              </button>
-              <button class="btn btn-danger btn-small" onclick="bulkDeleteFiles()">
-                <i class="fas fa-trash"></i> Delete
-              </button>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;" id="filesGrid">
-              <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                <div class="loading">
-                  <div class="spinner"></div>
+            <div class="sidebar-menu">
+                <div class="menu-section-title">Overview</div>
+                <div class="menu-item active" onclick="switchView('dashboard')">
+                    <i class="fas fa-layer-group"></i> <span>Dashboard</span>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== COMMUNICATIONS VIEW ========== -->
-        <div id="communicationsView" class="view-container" style="display: none;">
-          <div class="page-header">
-            <h1 class="page-title">
-              <i class="fas fa-envelope"></i> Email & Notifications
-            </h1>
-            <p class="page-subtitle">Professional email campaigns with templates and customization</p>
-          </div>
-
-          <div class="grid-2" style="margin-bottom: 24px;">
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Emails Sent</h3>
-                <div class="stat-value" id="emailsSent">0</div>
-              </div>
-            </div>
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Open Rate</h3>
-                <div class="stat-value" id="emailOpenRate">0%</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Main Editor Section -->
-          <div class="card card-medium">
-            <h3 class="mb-16" style="font-size: 16px; font-weight: 700; display: flex; gap: 8px; align-items: center;">
-              <i class="fas fa-pen-fancy"></i> Email Campaign Builder
-            </h3>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-              <!-- Left: Editing Panel -->
-              <div>
-                <!-- Template Selection -->
-                <div style="margin-bottom: 20px;">
-                  <label style="font-weight: 600; margin-bottom: 10px; display: block; color: var(--text-dark);">
-                    <i class="fas fa-cube"></i> Choose Template
-                  </label>
-                  <select id="templateButtonsContainer" class="btn btn-primary" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;" onchange="onTemplateSelect(this)">
-                    <option value="">-- Select Template --</option>
-                  </select>
-                  <small style="color: var(--text-light); display: block; margin-top: 6px;">
-                    <i class="fas fa-info-circle"></i> Select a pre-built template or start with blank
-                  </small>
+                <div class="menu-item" onclick="switchView('analytics')">
+                    <i class="fas fa-chart-line"></i> <span>Analytics</span>
                 </div>
 
-                <!-- Subject & Branding -->
-                <div style="margin-bottom: 16px;">
-                  <label style="font-weight: 600; margin-bottom: 6px; display: block; color: var(--text-dark);">
-                    Subject Line
-                  </label>
-                  <input type="text" id="emailSubject" placeholder="Your email subject (e.g., Welcome to DigitalMarket!)" style="width: 100%; padding: 10px;">
-                  <small style="color: var(--text-light); display: block; margin-top: 4px;">📊 Subject length: <span id="subjectLength">0</span>/50 characters</small>
+                <div class="menu-section-title">Management</div>
+                <div class="menu-item" onclick="switchView('orders')">
+                    <i class="fas fa-shopping-bag"></i> <span>Orders</span>
+                </div>
+                <div class="menu-item" onclick="switchView('users')">
+                    <i class="fas fa-user-friends"></i> <span>Users</span>
+                </div>
+                <div class="menu-item" onclick="switchView('files')">
+                    <i class="fas fa-folder-open"></i> <span>Files</span>
+                </div>
+                <div class="menu-item" onclick="switchView('sellers')">
+                    <i class="fas fa-store"></i> <span>Sellers</span>
                 </div>
 
-                <!-- Branding Options -->
-                <div style="background: var(--bg-light); padding: 15px; border-radius: 6px; margin-bottom: 16px;">
-                  <label style="font-weight: 600; display: block; margin-bottom: 10px; color: var(--text-dark);">
-                    <i class="fas fa-palette"></i> Branding
-                  </label>
-                  <div style="display: flex; gap: 10px;">
-                    <div style="flex: 1;">
-                      <label style="font-size: 12px; color: var(--text-light); display: block; margin-bottom: 4px;">Brand Color</label>
-                      <input type="color" id="brandColor" value="#667eea">
-                    </div>
-                    <div style="flex: 1;">
-                      <label style="font-size: 12px; color: var(--text-light); display: block; margin-bottom: 4px;">Company Name</label>
-                      <input type="text" id="companyName" value="DigitalMarket" placeholder="Your company name">
-                    </div>
-                  </div>
+                <div class="menu-section-title">Tools</div>
+                <div class="menu-item" onclick="switchView('communications')">
+                    <i class="fas fa-paper-plane"></i> <span>Campaigns</span>
                 </div>
-
-                <!-- Rich Text Editor -->
-                <div style="margin-bottom: 16px;">
-                  <label style="font-weight: 600; margin-bottom: 8px; display: block; color: var(--text-dark);">Email Content</label>
-                  <div style="background: white; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
-                    <div style="background: var(--bg-light); border-bottom: 1px solid var(--border); padding: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-                      <button type="button" class="btn btn-small" style="background: white; border: 1px solid var(--border);" onclick="formatText('bold')" title="Bold"><i class="fas fa-bold"></i></button>
-                      <button type="button" class="btn btn-small" style="background: white; border: 1px solid var(--border);" onclick="formatText('italic')" title="Italic"><i class="fas fa-italic"></i></button>
-                      <button type="button" class="btn btn-small" style="background: white; border: 1px solid var(--border);" onclick="formatText('underline')" title="Underline"><i class="fas fa-underline"></i></button>
-                      <div style="width: 1px; background: var(--border); margin: 0 5px;"></div>
-                      <button type="button" class="btn btn-small" style="background: white; border: 1px solid var(--border);" onclick="insertTag('{username}')" title="Insert Username">{user}</button>
-                      <button type="button" class="btn btn-small" style="background: white; border: 1px solid var(--border);" onclick="insertTag('{email}')" title="Insert Email">{email}</button>
-                      <button type="button" class="btn btn-small" style="background: white; border: 1px solid var(--border);" onclick="insertLink()" title="Insert Link"><i class="fas fa-link"></i></button>
-                    </div>
-                    <textarea id="emailContent" placeholder="Write your email content here...\n\nTips:\n- Use {username} for personalization\n- Keep it concise and engaging\n- Include a clear call-to-action" style="width: 100%; height: 250px; padding: 15px; border: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px;" onkeyup="updateSubjectLength()"></textarea>
-                  </div>
+                <div class="menu-item" onclick="switchView('revenue')">
+                    <i class="fas fa-wallet"></i> <span>Revenue</span>
                 </div>
-
-                <!-- Recipients -->
-                <div style="background: var(--bg-light); padding: 15px; border-radius: 6px; margin-bottom: 16px;">
-                  <label style="font-weight: 600; display: block; margin-bottom: 10px; color: var(--text-dark);">
-                    <i class="fas fa-users"></i> Recipients
-                  </label>
-                  <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <label style="font-size: 13px;"><input type="radio" name="recipientType" value="all" checked onchange="updateRecipientCount()"> All Users (<span id="countAll">0</span>)</label>
-                    <label style="font-size: 13px;"><input type="radio" name="recipientType" value="verified" onchange="updateRecipientCount()"> Verified Users (<span id="countVerified">0</span>)</label>
-                    <label style="font-size: 13px;"><input type="radio" name="recipientType" value="sellers" onchange="updateRecipientCount()"> Sellers Only (<span id="countSellers">0</span>)</label>
-                    <label style="font-size: 13px;"><input type="radio" name="recipientType" value="individual" onchange="updateRecipientCount()"> Individual Email</label>
-                  </div>
-                  <input type="email" id="individualEmail" placeholder="Enter email address" style="margin-top: 10px; display: none; width: 100%;">
-                  <div style="margin-top: 12px; padding: 10px; background: white; border-radius: 4px; border-left: 3px solid var(--primary);">
-                    <strong>Total Recipients:</strong> <span id="recipientCount" style="color: var(--primary); font-size: 16px;">0</span>
-                  </div>
-                </div>
-
-                <!-- Advanced Options -->
-                <div style="background: #f0f4ff; padding: 15px; border-radius: 6px; border-left: 4px solid var(--primary); margin-bottom: 16px;">
-                  <label style="font-weight: 600; display: block; margin-bottom: 10px; color: var(--text-dark);">
-                    <i class="fas fa-sliders-h"></i> Advanced Options
-                  </label>
-                  <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
-                    <label><input type="checkbox" id="scheduleEmail"> Schedule this email</label>
-                    <label><input type="checkbox" id="trackOpens"> Track opens & clicks</label>
-                    <label><input type="checkbox" id="abTest"> Enable A/B testing</label>
-                  </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div style="display: flex; gap: 10px;">
-                  <button class="btn btn-secondary" onclick="previewEmail()" style="flex: 1;">
-                    <i class="fas fa-eye"></i> Preview
-                  </button>
-                  <button class="btn btn-success" onclick="sendEmails()" style="flex: 1;">
-                    <i class="fas fa-paper-plane"></i> Send Now
-                  </button>
-                </div>
-              </div>
-
-              <!-- Right: Live Preview -->
-              <div>
-                <label style="font-weight: 600; margin-bottom: 10px; display: block; color: var(--text-dark);">
-                  <i class="fas fa-desktop"></i> Live Preview
-                </label>
-                <div style="background: white; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                  <div style="background: #f9f9f9; padding: 15px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-                    <small style="color: var(--text-light);"><i class="fas fa-envelope"></i> Desktop Preview</small>
-                    <span style="background: var(--primary); color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px;">LIVE</span>
-                  </div>
-                  <div id="emailPreview" style="height: 450px; overflow-y: auto; background: #f5f5f5; padding: 20px;">
-                    <div style="text-align: center; color: var(--text-light); padding: 100px 20px;">
-                      <p>Preview will appear here</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Email History -->
-          <div class="card card-medium">
-            <h3 class="mb-16" style="font-size: 16px; font-weight: 700;">
-              <i class="fas fa-history"></i> Email History
-            </h3>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Subject</th>
-                    <th>Recipient Group</th>
-                    <th>Count</th>
-                    <th>Status</th>
-                    <th>Open Rate</th>
-                  </tr>
-                </thead>
-                <tbody id="emailHistoryBody">
-                  <tr>
-                    <td colspan="6" style="text-align: center; padding: 20px; color: var(--text-light);">No emails sent yet</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== ANALYTICS VIEW ========== -->
-        <div id="analyticsView" class="view-container" style="display: none;">
-          <div class="page-header">
-            <h1 class="page-title">
-              <i class="fas fa-chart-line"></i> Analytics
-            </h1>
-            <p class="page-subtitle">Detailed business analytics and metrics</p>
-          </div>
-
-          <div class="grid-2">
-            <div class="card card-medium">
-              <h3 class="mb-16" style="font-size: 16px; font-weight: 700;">Monthly Revenue</h3>
-              <canvas id="monthlyRevenueChart"></canvas>
             </div>
 
-            <div class="card card-medium">
-              <h3 class="mb-16" style="font-size: 16px; font-weight: 700;">User Growth</h3>
-              <canvas id="userGrowthChart"></canvas>
-            </div>
-          </div>
-
-          <div class="card card-medium">
-            <h3 class="mb-16" style="font-size: 16px; font-weight: 700;">Platform Metrics</h3>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Metric</th>
-                    <th>Value</th>
-                    <th>Change</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody id="metricsTableBody">
-                  <tr>
-                    <td colspan="4" style="text-align: center; padding: 40px;">
-                      <div class="loading">
-                        <div class="spinner"></div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- ========== REVENUE VIEW ========== -->
-        <div id="revenueView" class="view-container" style="display: none;">
-          <div class="page-header">
-            <h1 class="page-title">
-              <i class="fas fa-dollar-sign"></i> Revenue Management
-            </h1>
-            <p class="page-subtitle">Track income streams and financial performance</p>
-          </div>
-
-          <div class="grid-4">
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>This Month</h3>
-                <div class="stat-value" id="monthRevenue">₹0</div>
-              </div>
-            </div>
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>This Year</h3>
-                <div class="stat-value" id="yearRevenue">₹0</div>
-              </div>
-            </div>
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Avg Order Value</h3>
-                <div class="stat-value" id="avgOrderValue">₹0</div>
-              </div>
-            </div>
-            <div class="card card-small stat-card">
-              <div class="stat-content">
-                <h3>Conversion Rate</h3>
-                <div class="stat-value" id="conversionRate">0%</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card card-medium">
-            <h3 class="mb-16" style="font-size: 16px; font-weight: 700;">Revenue Breakdown</h3>
-            <canvas id="revenueBreakdownChart"></canvas>
-          </div>
-        </div>
-
-        <!-- ========== SELLERS VIEW ========== -->
-        <div id="sellersView" class="view-container" style="display: none;">
-          <div class="page-header">
-            <h1 class="page-title">
-              <i class="fas fa-store"></i> Sellers Management
-            </h1>
-            <p class="page-subtitle">Manage seller accounts and performance</p>
-          </div>
-
-          <div class="card card-medium">
-            <div class="search-bar">
-              <input type="text" id="sellerSearch" class="form-group search-input" placeholder="Search seller...">
-              <select id="sellerStatusFilter" class="form-group">
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
-
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Seller Name</th>
-                    <th>Email</th>
-                    <th>Products</th>
-                    <th>Revenue</th>
-                    <th>Rating</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="sellersTableBody">
-                  <tr>
-                    <td colspan="7" style="text-align: center; padding: 40px;">
-                      <div class="loading">
-                        <div class="spinner"></div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODALS -->
-  <div id="confirmModal" class="modal">
-    <div class="modal-content" style="max-width: 400px;">
-      <div class="modal-header">
-        <h2 id="confirmTitle">Confirm Action</h2>
-        <button class="modal-close" onclick="closeModal('confirmModal')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p id="confirmMessage" style="color: var(--text-light);"></p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" style="background: var(--text-light); color: white; border: none;" onclick="closeModal('confirmModal')">Cancel</button>
-        <button class="btn btn-primary" id="confirmBtn" onclick="executeConfirmAction()">Confirm</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const API_BASE = '/api/admin';
-    let currentView = 'dashboard';
-    let currentOrderId = null;
-    let currentUserId = null;
-    let pendingAction = null;
-    let charts = {};
-
-    function showModal(modalId) {
-      document.getElementById(modalId).classList.add('active');
-    }
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('active');
-    }
-
-    function showConfirm(title, message, action) {
-      document.getElementById('confirmTitle').textContent = title;
-      document.getElementById('confirmMessage').textContent = message;
-      pendingAction = action;
-      showModal('confirmModal');
-    }
-
-    function executeConfirmAction() {
-      if (pendingAction && typeof pendingAction === 'function') {
-        pendingAction();
-      }
-      closeModal('confirmModal');
-    }
-
-    function formatCurrency(value) {
-      return '₹' + (value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
-    }
-
-    function formatDate(date) {
-      return new Date(date).toLocaleDateString('en-IN');
-    }
-
-    function getStatusBadge(status) {
-      if (status && status.toLowerCase().includes('successfull')) {
-        return '<span class="badge badge-success">Successful</span>';
-      } else if (status && status.toLowerCase().includes('unsuccessfull')) {
-        return '<span class="badge badge-danger">Failed</span>';
-      }
-      return '<span class="badge badge-warning">Pending</span>';
-    }
-
-    function switchView(viewName) {
-      console.log('switchView to', viewName);
-      document.querySelectorAll('.view-container').forEach(v => v.style.display = 'none');
-      document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-      
-      document.getElementById(viewName + 'View').style.display = 'block';
-      if (event && event.target) {
-        event.target.closest('.menu-item').classList.add('active');
-      }
-      
-      const titles = {
-        dashboard: 'Dashboard', orders: 'Orders', users: 'Users', files: 'Files',
-        communications: 'Email & Notifications', analytics: 'Analytics', revenue: 'Revenue', sellers: 'Sellers'
-      };
-      document.getElementById('topBarTitle').textContent = titles[viewName] || 'Dashboard';
-      
-      currentView = viewName;
-      loadViewData(viewName);
-    }
-
-    async function loadViewData(viewName) {
-      try {
-        if (viewName === 'dashboard') loadDashboardData();
-        else if (viewName === 'orders') loadOrdersData();
-        else if (viewName === 'users') loadUsersData();
-        else if (viewName === 'files') loadFilesData();
-        else if (viewName === 'communications') loadCommunicationsData();
-        else if (viewName === 'analytics') loadAnalyticsData();
-        else if (viewName === 'revenue') loadRevenueData();
-        else if (viewName === 'sellers') loadSellersData();
-      } catch (error) {
-        console.error('Error loading view:', error);
-      }
-    }
-
-    async function loadDashboardData() {
-      try {
-        const response = await axios.get(`${API_BASE}/stats`);
-        if (response.data && response.data.success === false) {
-          console.error('Dashboard API responded with failure', response.data);
-          if (response.data.message === 'Unauthorized') {
-            window.location.href = '/admin-login';
-          }
-          return;
-        }
-        const stats = response.data && response.data.stats;
-        if (!stats) {
-          console.error('Dashboard error: stats object missing', response.data);
-          return;
-        }
-
-        document.getElementById('totalRevenue').textContent = formatCurrency(stats.totalAmount);
-        document.getElementById('totalOrders').textContent = stats.totalOrders || 0;
-        document.getElementById('successOrders').textContent = stats.successfulOrders || 0;
-        document.getElementById('failOrders').textContent = stats.failedOrders || 0;
-
-        initRevenueChart();
-        initStatusChart();
-        await loadRecentOrders();
-      } catch (error) {
-        console.error('Dashboard error:', error);
-      }
-    }
-
-    async function loadRecentOrders() {
-      try {
-        const response = await axios.get(`${API_BASE}/orders`, { params: { limit: 5 }, timeout: 10000 });
-        const orders = response.data.orders || [];
-        const tbody = document.getElementById('recentOrdersBody');
-        tbody.innerHTML = '';
-
-        if (orders.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No orders found</td></tr>';
-          return;
-        }
-
-        orders.forEach(order => {
-          tbody.innerHTML += `<tr>
-            <td><strong>${order.orderId || order._id}</strong></td>
-            <td>${order.customer || 'N/A'}</td>
-            <td>${formatCurrency(order.total)}</td>
-            <td>${getStatusBadge(order.status)}</td>
-            <td>${formatDate(order.dateTime)}</td>
-            <td><button class="btn btn-primary btn-small" onclick="viewOrderDetail('${order._id}')"><i class="fas fa-eye"></i></button></td>
-          </tr>`;
-        });
-      } catch (error) {
-        console.error('Error loading recent orders:', error);
-      }
-    }
-
-    async function loadOrdersData() {
-      console.log('loadOrdersData: starting request');
-      const tbody = document.getElementById('ordersTableBody');
-      
-      try {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;"><span>Loading orders...</span></td></tr>';
-        
-        console.log('loadOrdersData: fetching from', `${API_BASE}/orders`);
-        const response = await axios.get(`${API_BASE}/orders`, { timeout: 10000 });
-        console.log('loadOrdersData: response status', response.status, 'data keys:', Object.keys(response.data));
-        
-        if (!response.data) {
-          throw new Error('No response data');
-        }
-        
-        if (response.data.success === false) {
-          console.error('API returned success:false', response.data);
-          if (response.data.message === 'Unauthorized') {
-            window.location.href = '/admin-login';
-            return;
-          }
-          throw new Error(response.data.message || 'API error');
-        }
-        
-        const orders = response.data.orders || [];
-        console.log('loadOrdersData: got', orders.length, 'orders');
-        
-        // Use DocumentFragment for efficient DOM building
-        const fragment = document.createDocumentFragment();
-        
-        if (orders.length === 0) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = '<td colspan="7" style="padding: 20px; text-align: center;">No orders found</td>';
-          fragment.appendChild(tr);
-        } else {
-          orders.forEach((order, idx) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td><strong>${String(order.orderId || order._id || '').substring(0, 12)}</strong></td>
-              <td>${formatDate(order.dateTime)}</td>
-              <td>${String(order.customer || 'N/A').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
-              <td>${formatCurrency(order.total)}</td>
-              <td>${order.items ? order.items.length : 0}</td>
-              <td>${getStatusBadge(order.status)}</td>
-              <td>
-                <button class="btn btn-primary btn-small" onclick="viewOrderDetail('${order._id}')"><i class="fas fa-eye"></i></button>
-                <button class="btn btn-danger btn-small" onclick="deleteOrder('${order._id}')"><i class="fas fa-trash"></i></button>
-              </td>
-            `;
-            fragment.appendChild(tr);
-            
-            if (idx % 50 === 0) console.log('loadOrdersData: processed', idx, 'rows');
-          });
-        }
-        
-        tbody.innerHTML = '';
-        tbody.appendChild(fragment);
-        allOrders = orders;
-        setupFilterListeners();
-        console.log('loadOrdersData: table populated successfully');
-        
-      } catch (error) {
-        console.error('loadOrdersData error:', error.message, error);
-        
-        if (error.response?.status === 401) {
-          console.log('loadOrdersData: 401 detected, redirecting to login');
-          window.location.href = '/admin-login';
-          return;
-        }
-        
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="7" style="padding: 20px; text-align: center; color: var(--danger);">
-              <strong>Error loading orders</strong><br/>
-              <small>${String(error.message).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</small>
-            </td>
-          </tr>
-        `;
-        console.log('loadOrdersData: error display updated');
-      }
-    }
-
-    async function loadUsersData() {
-      console.log('loadUsersData: starting request');
-      const tbody = document.getElementById('usersTableBody');
-      
-      try {
-        // Show loading state
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;"><span>Loading users...</span></td></tr>';
-        
-        console.log('loadUsersData: fetching from', `${API_BASE}/users`);
-        const response = await axios.get(`${API_BASE}/users`, { timeout: 10000 });
-        console.log('loadUsersData: response status', response.status, 'data:', response.data);
-        
-        if (!response.data) {
-          throw new Error('No response data');
-        }
-        
-        if (response.data.success === false) {
-          console.error('API returned success:false', response.data);
-          if (response.data.message === 'Unauthorized') {
-            window.location.href = '/admin-login';
-            return;
-          }
-          throw new Error(response.data.message || 'API error');
-        }
-
-        const users = response.data.allUsers || [];
-        console.log('loadUsersData: got', users.length, 'users');
-
-        // Update counters
-        document.getElementById('totalUsersCount').textContent = users.length;
-        let verifiedCount = 0, suspendedCount = 0, bannedCount = 0;
-        
-        users.forEach(user => {
-          if (user.ISVERIFIED || user.isVerified) verifiedCount++;
-          if (user.isSuspended) suspendedCount++;
-          if (user.isBanned) bannedCount++;
-        });
-
-        document.getElementById('verifiedCount').textContent = verifiedCount;
-        document.getElementById('suspendedCount').textContent = suspendedCount;
-        document.getElementById('bannedCount').textContent = bannedCount;
-
-        // Use DocumentFragment for efficient DOM building
-        const fragment = document.createDocumentFragment();
-
-        if (users.length === 0) {
-          const tr = document.createElement('tr');
-          tr.innerHTML = '<td colspan="6" style="padding: 20px; text-align: center;">No users found</td>';
-          fragment.appendChild(tr);
-        } else {
-          users.forEach((user, idx) => {
-            let statusBadge = 'badge-info', statusText = 'Active';
-            if (user.isBanned) {
-              statusBadge = 'badge-danger';
-              statusText = 'Banned';
-            } else if (user.isSuspended) {
-              statusBadge = 'badge-warning';
-              statusText = 'Suspended';
-            } else if (user.ISVERIFIED || user.isVerified) {
-              statusBadge = 'badge-success';
-              statusText = 'Verified';
-            }
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td><strong>${String(user.username || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</strong></td>
-              <td>${String(user.email || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
-              <td><span class="badge badge-primary">${user.role || 'User'}</span></td>
-              <td>${user.followers ? user.followers.length : 0}</td>
-              <td><span class="badge ${statusBadge}">${statusText}</span></td>
-              <td>
-                <button class="btn btn-primary btn-small" onclick="viewUserDetail('${user._id}')"><i class="fas fa-eye"></i></button>
-                <button class="btn btn-warning btn-small" onclick="toggleUserSuspend('${user._id}', ${user.isSuspended})">
-                  ${user.isSuspended ? '<i class="fas fa-check"></i>' : '<i class="fas fa-ban"></i>'}
+            <div class="sidebar-footer">
+                <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start; padding-left: 20px; border:none; background: transparent; color: var(--text-muted);" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
-              </td>
-            `;
-            fragment.appendChild(tr);
-            
-            if (idx % 50 === 0) console.log('loadUsersData: processed', idx, 'rows');
-          });
-        }
-        
-        // Clear and append all at once
-        tbody.innerHTML = '';
-        tbody.appendChild(fragment);
-        allUsers = users;
-        setupFilterListeners();
-        console.log('loadUsersData: table populated successfully');
-        
-      } catch (error) {
-        console.error('loadUsersData error:', error.message, error);
-        
-        if (error.response?.status === 401) {
-          console.log('loadUsersData: 401 detected, redirecting to login');
-          window.location.href = '/admin-login';
-          return;
-        }
-        
-        // Show error in table
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6" style="padding: 20px; text-align: center; color: var(--danger);">
-              <strong>Error loading users</strong><br/>
-              <small>${String(error.message).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</small>
-            </td>
-          </tr>
-        `;
-        console.log('loadUsersData: error display updated');
-      }
-    }
-
-    async function loadFilesData() {
-      try {
-        const response = await axios.get('/api/admin/files');
-        const files = response.data.files || [];
-        allFiles = files;
-        setupFilterListeners();
-        const grid = document.getElementById('filesGrid');
-        grid.innerHTML = '';
-
-        if (files.length === 0) {
-          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">No files found</div>';
-          return;
-        }
-
-        files.forEach(file => {
-          grid.innerHTML += `<div class="card card-small">
-            <div style="margin-bottom: 12px;">
-              <strong style="word-break: break-word;">${file.filename}</strong>
-              <p style="font-size: 12px; color: var(--text-light); margin: 4px 0;">${file.filedescription || 'No description'}</p>
             </div>
-            <div style="font-size: 11px; color: var(--text-light); margin-bottom: 12px;">
-              <p style="margin: 4px 0;"><strong>Price:</strong> ${formatCurrency(file.price)}</p>
-              <p style="margin: 4px 0;"><strong>Uploaded:</strong> ${formatDate(file.uploadedAt)}</p>
+        </aside>
+
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="top-bar-title">
+                    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                    <span id="topBarTitle">Dashboard</span>
+                </div>
+                
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <%= username ? username.charAt(0).toUpperCase() : 'A' %>
+                    </div>
+                    <span><%= username || 'Admin' %></span>
+                </div>
             </div>
-            <button class="btn btn-danger btn-small" style="width: 100%;" onclick="deleteFile('${file._id}')">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-          </div>`;
-        });
-      } catch (error) {
-        console.error('Files error:', error);
-      }
-    }
 
-    async function loadAnalyticsData() {
-      try {
-        const response = await axios.get(`${API_BASE}/stats`);
-        initMonthlyRevenueChart();
-        initUserGrowthChart();
-        loadMetricsTable();
-      } catch (error) {
-        console.error('Analytics error:', error);
-      }
-    }
+            <div class="content-area">
+                
+                <div id="dashboardView" class="view-container">
+                    <div class="page-header">
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Real-time business performance overview</p>
+                    </div>
 
-    async function loadRevenueData() {
-      try {
-        const response = await axios.get(`${API_BASE}/stats`);
-        if (response.data && response.data.success === false) {
-          console.error('Revenue API responded with failure', response.data);
-          if (response.data.message === 'Unauthorized') {
-            window.location.href = '/admin-login';
-          }
-          return;
-        }
-        const stats = response.data && response.data.stats;
-        if (!stats) {
-          console.error('Revenue error: stats object missing', response.data);
-          return;
-        }
+                    <div class="grid-4">
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Total Revenue</h3>
+                                <div class="stat-value" id="totalRevenue">₹0</div>
+                            </div>
+                            <div class="stat-icon" style="color: var(--primary); background: var(--primary-bg);">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                        </div>
 
-        const monthRevenue = Math.floor(stats.totalAmount / 30);
-        const yearRevenue = stats.totalAmount * 12;
-        const avgOrder = stats.totalOrders > 0 ? stats.totalAmount / stats.totalOrders : 0;
-        const conversionRate = stats.totalOrders > 0 ? ((stats.successfulOrders / stats.totalOrders) * 100).toFixed(1) : 0;
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Total Orders</h3>
+                                <div class="stat-value" id="totalOrders">0</div>
+                            </div>
+                            <div class="stat-icon" style="color: #06b6d4; background: #e0f2fe;">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                        </div>
 
-        document.getElementById('monthRevenue').textContent = formatCurrency(monthRevenue);
-        document.getElementById('yearRevenue').textContent = formatCurrency(yearRevenue);
-        document.getElementById('avgOrderValue').textContent = formatCurrency(avgOrder);
-        document.getElementById('conversionRate').textContent = conversionRate + '%';
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Successful</h3>
+                                <div class="stat-value" id="successOrders" style="color: var(--success);">0</div>
+                            </div>
+                            <div class="stat-icon" style="color: var(--success); background: var(--success-bg);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
 
-        initRevenueBreakdownChart();
-      } catch (error) {
-        console.error('Revenue error:', error);
-      }
-    }
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Failed</h3>
+                                <div class="stat-value" id="failOrders" style="color: var(--danger);">0</div>
+                            </div>
+                            <div class="stat-icon" style="color: var(--danger); background: var(--danger-bg);">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                        </div>
+                    </div>
 
-    async function loadSellersData() {
-      try {
-        const response = await axios.get('/api/admin/sellers');
-        const sellers = response.data.sellers || [];
-        allSellers = sellers;
-        setupFilterListeners();
-        const tbody = document.getElementById('sellersTableBody');
-        tbody.innerHTML = '';
+                    <div class="grid-2">
+                      <div class="card card-medium">
+    <h3 style="margin-bottom: 24px; font-weight: 500;">Revenue Overview</h3>
+    <div style="height: 300px; position: relative; width: 100%;">
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>
 
-        if (sellers.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px;">No sellers found</td></tr>';
-          return;
-        }
+                        <div class="card card-medium">
+                            <h3 style="margin-bottom: 24px; font-weight: 500;">Order Status</h3>
+                            <div style="height: 250px; display: flex; justify-content: center;">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
 
-        sellers.forEach(seller => {
-          tbody.innerHTML += `<tr>
-            <td><strong>${seller.name || seller.username}</strong></td>
-            <td>${seller.email}</td>
-            <td>${seller.productCount || 0}</td>
-            <td>${formatCurrency(seller.revenue || 0)}</td>
-            <td>${seller.rating ? seller.rating.toFixed(1) : 'N/A'} ⭐</td>
-            <td><span class="badge badge-success">${seller.status || 'Active'}</span></td>
-            <td><button class="btn btn-primary btn-small"><i class="fas fa-eye"></i></button></td>
-          </tr>`;
-        });
-      } catch (error) {
-        console.error('Sellers error:', error);
-      }
-    }
+                    <div class="card card-medium">
+                        <h3 style="margin-bottom: 16px; font-weight: 500;">Recent Orders</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrdersBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 40px;">
+                                            <div class="loading"><div class="spinner"></div></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-    function loadCommunicationsData() {
-      // Load existing email history from backend or local storage
-      loadEmailHistory();
-      // Initialize recipient count display
-      updateRecipientCount();
-      // Load templates from backend
-      loadEmailTemplates();
-    }
+                <div id="ordersView" class="view-container" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Orders Management</h1>
+                        <p class="page-subtitle">Manage and track all customer orders</p>
+                    </div>
 
-    // ============= PROFESSIONAL EMAIL SYSTEM - DYNAMIC TEMPLATES =============
-    let availableTemplates = {};
-    let emailHistory = [];
+                    <div class="card card-medium">
+                        <div class="search-bar">
+                            <input type="text" id="orderSearch" class="search-input" placeholder="Search order ID or customer...">
+                            <select id="orderStatusFilter" class="form-group" style="margin-bottom: 0;">
+                                <option value="">All Statuses</option>
+                                <option value="successful">Successful</option>
+                                <option value="unsuccessful">Failed</option>
+                            </select>
+                            <button class="btn btn-secondary" onclick="exportOrders('csv')">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                        </div>
 
-    // Load templates from backend
-    async function loadEmailTemplates() {
-      try {
-        const response = await axios.get('/api/admin/email-templates');
-        if (response.data.success) {
-          availableTemplates = response.data.templates;
-          renderTemplateButtons();
-        }
-      } catch (error) {
-        console.error('Failed to load templates:', error);
-      }
-    }
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Items</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 40px;">
+                                            <div class="loading"><div class="spinner"></div></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-    // Render template buttons dynamically
-    function renderTemplateButtons() {
-      const container = document.getElementById('templateButtonsContainer');
-      if (!container) return;
+                <div id="usersView" class="view-container" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Users Management</h1>
+                        <p class="page-subtitle">Manage user accounts and permissions</p>
+                    </div>
 
-      let html = '';
-      for (const [category, templates] of Object.entries(availableTemplates)) {
-        if (templates.length > 0) {
-          html += `<optgroup label="${category.toUpperCase()}">`;
-          templates.forEach(template => {
-            html += `<option value="${category}/${template.name}" title="${template.name}">
-              ${category} - ${template.name}
-            </option>`;
-          });
-          html += `</optgroup>`;
-        }
-      }
-      
-      if (container.tagName === 'SELECT') {
-        container.innerHTML = '<option value="">-- Select Template --</option>' + html;
-      }
-    }
+                    <div class="grid-4">
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Total Users</h3>
+                                <div class="stat-value" id="totalUsersCount">0</div>
+                            </div>
+                        </div>
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Verified</h3>
+                                <div class="stat-value" style="color: var(--success);" id="verifiedCount">0</div>
+                            </div>
+                        </div>
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Suspended</h3>
+                                <div class="stat-value" style="color: var(--warning);" id="suspendedCount">0</div>
+                            </div>
+                        </div>
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Banned</h3>
+                                <div class="stat-value" style="color: var(--danger);" id="bannedCount">0</div>
+                            </div>
+                        </div>
+                    </div>
 
-    // Select and load template content
-    function selectTemplate(templatePath) {
-      if (!templatePath) {
-        document.getElementById('emailSubject').value = '';
-        document.getElementById('emailContent').value = '';
-        updateLivePreview();
-        return;
-      }
+                    <div class="card card-medium">
+                        <div class="search-bar">
+                            <input type="text" id="userSearch" class="search-input" placeholder="Search username, email...">
+                            <select id="userRoleFilter" class="form-group" style="margin-bottom: 0;">
+                                <option value="">All Roles</option>
+                                <option value="buyer">Buyer</option>
+                                <option value="seller">Seller</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <select id="userStatusFilter" class="form-group" style="margin-bottom: 0;">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="verified">Verified</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="banned">Banned</option>
+                            </select>
+                        </div>
 
-      const [category, templateName] = templatePath.split('/');
-      const templates = availableTemplates[category];
-      if (templates) {
-        const template = templates.find(t => t.name === templateName);
-        if (template) {
-          // Extract subject from HTML if possible, otherwise use template name
-          let subject = templateName.replace(/([A-Z])/g, ' $1').trim();
-          document.getElementById('emailSubject').value = subject;
-          // Use raw HTML content from template
-          document.getElementById('emailContent').value = template.content;
-          updateLivePreview();
-        }
-      }
-    }
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Followers</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 40px;">
+                                            <div class="loading"><div class="spinner"></div></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-    // Update from dropdown select
-    function onTemplateSelect(selectElement) {
-      selectTemplate(selectElement.value);
-    }
+                <div id="filesView" class="view-container" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Files Management</h1>
+                        <p class="page-subtitle">Manage uploaded digital files and content</p>
+                    </div>
 
-    function updateSubjectLength() {
-      const length = document.getElementById('emailSubject').value.length;
-      document.getElementById('subjectLength').textContent = length;
-      updateLivePreview();
-    }
+                    <div class="card card-medium">
+                        <div class="search-bar">
+                            <input type="text" id="fileSearch" class="search-input" placeholder="Search filename...">
+                            <button class="btn btn-primary" onclick="openUploadModal()">
+                                <i class="fas fa-cloud-upload-alt"></i> Upload New
+                            </button>
+                            <button class="btn btn-danger" onclick="bulkDeleteFiles()">
+                                <i class="fas fa-trash"></i> Bulk Delete
+                            </button>
+                        </div>
 
-    function formatText(command) {
-      document.execCommand(command, false, null);
-      document.getElementById('emailContent').focus();
-    }
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;" id="filesGrid">
+                            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                                <div class="loading"><div class="spinner"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    function insertTag(tag) {
-      const textarea = document.getElementById('emailContent');
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const text = textarea.value;
-      textarea.value = text.substring(0, start) + tag + text.substring(end);
-      textarea.selectionStart = textarea.selectionEnd = start + tag.length;
-      textarea.focus();
-      updateLivePreview();
-    }
+                <div id="communicationsView" class="view-container" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Campaigns</h1>
+                        <p class="page-subtitle">Professional email campaigns with templates and customization</p>
+                    </div>
 
-    function insertLink() {
-      const url = prompt('Enter URL:', 'https://www.vidyari.com');
-      if (url) insertTag(url);
-    }
+                    <div class="grid-2" style="margin-bottom: 24px;">
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Emails Sent</h3>
+                                <div class="stat-value" id="emailsSent">0</div>
+                            </div>
+                        </div>
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Average Open Rate</h3>
+                                <div class="stat-value" id="emailOpenRate">0%</div>
+                            </div>
+                        </div>
+                    </div>
 
-    function updateRecipientCount() {
-      const recipientType = document.querySelector('input[name="recipientType"]:checked').value;
-      const individualEmailInput = document.getElementById('individualEmail');
-      
-      if (recipientType === 'individual') {
-        individualEmailInput.style.display = 'block';
-        document.getElementById('recipientCount').textContent = '1';
-      } else {
-        individualEmailInput.style.display = 'none';
-        let countAll = allUsers.length;
-        let countVerified = allUsers.filter(u => u.ISVERIFIED || u.isVerified).length;
-        let countSellers = allUsers.filter(u => u.role === 'seller').length;
-        
-        document.getElementById('countAll').textContent = countAll;
-        document.getElementById('countVerified').textContent = countVerified;
-        document.getElementById('countSellers').textContent = countSellers;
-        
-        let count = 0;
-        if (recipientType === 'all') {
-          count = countAll;
-        } else if (recipientType === 'verified') {
-          count = countVerified;
-        } else if (recipientType === 'sellers') {
-          count = countSellers;
-        }
-        document.getElementById('recipientCount').textContent = count;
-      }
-    }
+                    <div class="card card-medium">
+                        <h3 style="margin-bottom: 24px; font-weight: 500;">Email Campaign Builder</h3>
 
-    function updateLivePreview() {
-      const subject = document.getElementById('emailSubject').value || 'Your Email Subject';
-      const content = document.getElementById('emailContent').value || 'Email content will appear here...';
-      const brandColor = document.getElementById('brandColor')?.value || '#667eea';
-      const companyName = document.getElementById('companyName')?.value || 'DigitalMarket';
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; margin-bottom: 24px;">
+                            <div>
+                                <div style="margin-bottom: 24px;">
+                                    <label style="font-weight: 500; margin-bottom: 8px; display: block; font-size: 14px;">Choose Template</label>
+                                    <select id="templateButtonsContainer" onchange="onTemplateSelect(this)" style="width: 100%;">
+                                        <option value="">-- Blank Template --</option>
+                                    </select>
+                                </div>
 
-      const previewHtml = `
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px;">
-          <div style="background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <!-- Header -->
-            <div style="background: linear-gradient(135deg, ${brandColor} 0%, ${brandColor}dd 100%); color: white; padding: 40px 20px; text-align: center;">
-              <h1 style="margin: 0; font-size: 24px; font-weight: 700;">${subject}</h1>
+                                <div style="margin-bottom: 24px;">
+                                    <label style="font-weight: 500; margin-bottom: 8px; display: block; font-size: 14px;">Subject Line</label>
+                                    <input type="text" id="emailSubject" placeholder="e.g., Welcome to DigitalMarket!" style="width: 100%;" onkeyup="updateSubjectLength()">
+                                    <small style="color: var(--text-muted); display: block; margin-top: 8px;">Length: <span id="subjectLength">0</span>/50 characters</small>
+                                </div>
+
+                                <div style="background: var(--bg-main); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 24px;">
+                                    <label style="font-weight: 500; display: block; margin-bottom: 12px; font-size: 14px;">Branding</label>
+                                    <div style="display: flex; gap: 16px;">
+                                        <div style="flex: 1;">
+                                            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 8px;">Brand Color</label>
+                                            <input type="color" id="brandColor" value="#0b57d0" style="height: 40px; width: 100%; padding: 4px; cursor: pointer;">
+                                        </div>
+                                        <div style="flex: 2;">
+                                            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 8px;">Company Name</label>
+                                            <input type="text" id="companyName" value="DigitalMarket" style="width: 100%;">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 24px;">
+                                    <label style="font-weight: 500; margin-bottom: 8px; display: block; font-size: 14px;">Email Content</label>
+                                    <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;">
+                                        <div style="background: var(--bg-main); border-bottom: 1px solid var(--border); padding: 8px; display: flex; gap: 4px; flex-wrap: wrap;">
+                                            <button type="button" class="btn btn-secondary btn-icon-only" onclick="formatText('bold')" title="Bold"><i class="fas fa-bold"></i></button>
+                                            <button type="button" class="btn btn-secondary btn-icon-only" onclick="formatText('italic')" title="Italic"><i class="fas fa-italic"></i></button>
+                                            <button type="button" class="btn btn-secondary btn-icon-only" onclick="formatText('underline')" title="Underline"><i class="fas fa-underline"></i></button>
+                                            <div style="width: 1px; background: var(--border); margin: 0 8px;"></div>
+                                            <button type="button" class="btn btn-secondary btn-small" onclick="insertTag('{username}')">{user}</button>
+                                            <button type="button" class="btn btn-secondary btn-small" onclick="insertTag('{email}')">{email}</button>
+                                            <button type="button" class="btn btn-secondary btn-icon-only" onclick="insertLink()" title="Insert Link"><i class="fas fa-link"></i></button>
+                                        </div>
+                                        <textarea id="emailContent" placeholder="Write your email content here..." style="width: 100%; height: 200px; border: none; border-radius: 0;" onkeyup="updateLivePreview()"></textarea>
+                                    </div>
+                                </div>
+
+                                <div style="background: var(--bg-main); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 24px;">
+                                    <label style="font-weight: 500; display: block; margin-bottom: 12px; font-size: 14px;">Recipients</label>
+                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                        <label style="font-size: 14px; display: flex; align-items: center; gap: 8px;"><input type="radio" name="recipientType" value="all" checked onchange="updateRecipientCount()"> All Users (<span id="countAll">0</span>)</label>
+                                        <label style="font-size: 14px; display: flex; align-items: center; gap: 8px;"><input type="radio" name="recipientType" value="verified" onchange="updateRecipientCount()"> Verified Users (<span id="countVerified">0</span>)</label>
+                                        <label style="font-size: 14px; display: flex; align-items: center; gap: 8px;"><input type="radio" name="recipientType" value="sellers" onchange="updateRecipientCount()"> Sellers Only (<span id="countSellers">0</span>)</label>
+                                        <label style="font-size: 14px; display: flex; align-items: center; gap: 8px;"><input type="radio" name="recipientType" value="individual" onchange="updateRecipientCount()"> Individual Email</label>
+                                    </div>
+                                    <input type="email" id="individualEmail" placeholder="Enter email address" style="margin-top: 16px; display: none; width: 100%;">
+                                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                                        <strong>Total Recipients:</strong> <span id="recipientCount" style="color: var(--primary); font-weight: 600;">0</span>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 12px;">
+                                    <button class="btn btn-secondary" onclick="previewEmail()" style="flex: 1;">Preview</button>
+                                    <button class="btn btn-primary" onclick="sendEmails()" style="flex: 2;">Send Campaign</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="font-weight: 500; margin-bottom: 12px; display: block; font-size: 14px;">Live Preview</label>
+                                <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--bg-surface);">
+                                    <div style="background: var(--bg-main); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                                        <small style="color: var(--text-muted); font-weight: 500;">Desktop View</small>
+                                        <span class="badge badge-info" style="font-size: 10px;">LIVE</span>
+                                    </div>
+                                    <div id="emailPreview" style="height: 600px; overflow-y: auto; background: var(--bg-main); padding: 32px;">
+                                        <div style="text-align: center; color: var(--text-muted); padding-top: 100px;">
+                                            Start typing to see preview
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-medium">
+                        <h3 style="margin-bottom: 16px; font-weight: 500;">Campaign History</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Subject</th>
+                                        <th>Group</th>
+                                        <th>Count</th>
+                                        <th>Status</th>
+                                        <th>Open Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="emailHistoryBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px; color: var(--text-muted);">No campaigns sent yet</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="analyticsView" class="view-container" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Analytics</h1>
+                        <p class="page-subtitle">Detailed business analytics and metrics</p>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card card-medium">
+                            <h3 style="margin-bottom: 24px; font-weight: 500;">Monthly Revenue</h3>
+                            <canvas id="monthlyRevenueChart"></canvas>
+                        </div>
+                        <div class="card card-medium">
+                            <h3 style="margin-bottom: 24px; font-weight: 500;">User Growth</h3>
+                            <canvas id="userGrowthChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card card-medium">
+                        <h3 style="margin-bottom: 16px; font-weight: 500;">Platform Metrics</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Value</th>
+                                        <th>Change</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="metricsTableBody">
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; padding: 40px;">
+                                            <div class="loading"><div class="spinner"></div></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="revenueView" class="view-container" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Revenue Management</h1>
+                        <p class="page-subtitle">Track income streams and financial performance</p>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>This Month</h3>
+                                <div class="stat-value" id="monthRevenue">₹0</div>
+                            </div>
+                        </div>
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>This Year</h3>
+                                <div class="stat-value" id="yearRevenue">₹0</div>
+                            </div>
+                        </div>
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Avg Order Value</h3>
+                                <div class="stat-value" id="avgOrderValue">₹0</div>
+                            </div>
+                        </div>
+                        <div class="card card-small stat-card">
+                            <div class="stat-content">
+                                <h3>Conversion Rate</h3>
+                                <div class="stat-value" id="conversionRate">0%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-medium">
+                        <h3 style="margin-bottom: 24px; font-weight: 500;">Revenue Breakdown</h3>
+                        <div style="height: 300px; display: flex; justify-content: center;">
+                            <canvas id="revenueBreakdownChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sellersView" class="view-container" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Sellers Management</h1>
+                        <p class="page-subtitle">Manage seller accounts and performance</p>
+                    </div>
+
+                    <div class="card card-medium">
+                        <div class="search-bar">
+                            <input type="text" id="sellerSearch" class="search-input" placeholder="Search seller...">
+                            <select id="sellerStatusFilter" class="form-group" style="margin-bottom: 0;">
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Seller Name</th>
+                                        <th>Email</th>
+                                        <th>Products</th>
+                                        <th>Revenue</th>
+                                        <th>Rating</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sellersTableBody">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 40px;">
+                                            <div class="loading"><div class="spinner"></div></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- Body -->
-            <div style="padding: 30px 20px; color: #333; line-height: 1.6;">
-              <div style="white-space: pre-wrap; font-size: 14px; color: #555;">
-                ${content
-                  .replace(/</g, '&lt;')
-                  .replace(/>/g, '&gt;')
-                  .replace(/\n/g, '<br>')
-                  .replace(/http[s]?:\/\/[^\s]+/g, url => `<span style="color: ${brandColor}; font-weight: bold; text-decoration: underline;">${url}</span>`)
-                }
-              </div>
-            </div>
-            <!-- Footer -->
-            <div style="background: #f9f9f9; border-top: 1px solid #eee; padding: 20px; text-align: center; color: #999; font-size: 12px;">
-              <p style="margin: 0;">&copy; 2026 ${companyName}. All rights reserved.</p>
-            </div>
-          </div>
         </div>
-      `;
+    </div>
 
-      document.getElementById('emailPreview').innerHTML = previewHtml;
-    }
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="confirmTitle">Confirm Action</h2>
+                <button class="modal-close" onclick="closeModal('confirmModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('confirmModal')">Cancel</button>
+                <button class="btn btn-primary" id="confirmBtn" onclick="executeConfirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
 
-    function previewEmail() {
-      updateLivePreview();
-      showConfirm('Email Preview', 'This is how your email will look to recipients. Looks good?', () => {
-        console.log('Preview confirmed');
-      });
-    }
+    <!-- Edit File Modal -->
+    <div id="editFileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit File</h2>
+                <button class="modal-close" onclick="closeEditFileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editFileForm">
+                    <input type="hidden" id="editFileId">
+                    <div class="form-group">
+                        <label for="editFileName">Filename</label>
+                        <input type="text" id="editFileName" name="filename">
+                    </div>
+                    <div class="form-group">
+                        <label for="editFileDescription">Description</label>
+                        <textarea id="editFileDescription" name="filedescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editFilePrice">Price</label>
+                        <input type="number" id="editFilePrice" name="price" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="editFileCoupon">Coupon Code</label>
+                        <input type="text" id="editFileCoupon" name="couponCode">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditFileModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveFileChanges()">Save</button>
+            </div>
+        </div>
+    </div>
 
-    async function sendEmails() {
-      const subject = document.getElementById('emailSubject').value;
-      const content = document.getElementById('emailContent').value;
-      const recipientType = document.querySelector('input[name="recipientType"]:checked').value;
-      const individualEmail = document.getElementById('individualEmail').value;
-      const scheduleEmail = document.getElementById('scheduleEmail')?.checked;
-      const trackOpens = document.getElementById('trackOpens')?.checked;
-      const abTest = document.getElementById('abTest')?.checked;
+    <!-- Upload File Modal -->
+    <div id="uploadFileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload File</h2>
+                <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadFileForm" method="POST" action="/upload-file" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="uploadFileInput">PDF File</label>
+                        <input type="file" id="uploadFileInput" name="file" accept="application/pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="uploadFileImage">Preview Image</label>
+                        <input type="file" id="uploadFileImage" name="previewImage" accept="image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="uploadFileName">Filename</label>
+                        <input type="text" id="uploadFileName" name="filename" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="uploadFileDescription">Description</label>
+                        <textarea id="uploadFileDescription" name="filedescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="uploadFileCategory">Category</label>
+                        <select id="uploadFileCategory" name="category" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="uploadFilePrice">Price</label>
+                        <input type="number" id="uploadFilePrice" name="price" step="0.01">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="document.getElementById('uploadFileForm').submit()">Upload</button>
+            </div>
+        </div>
+    </div>
 
-      if (!subject || !content) {
-        alert('❌ Please enter subject and content');
-        return;
-      }
+<script>
+        const API_BASE = '/api/admin';
+        let currentView = 'dashboard';
+        let currentOrderId = null;
+        let currentUserId = null;
+        let pendingAction = null;
+        let charts = {};
 
-      let recipients = [];
-
-      if (recipientType === 'individual') {
-        if (!individualEmail) {
-          alert('❌ Please enter an email address');
-          return;
+        // ============= UI & UTILITY FUNCTIONS =============
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
         }
-        recipients = [{ email: individualEmail, username: 'User' }];
-      } else if (recipientType === 'all') {
-        recipients = allUsers;
-      } else if (recipientType === 'verified') {
-        recipients = allUsers.filter(u => u.ISVERIFIED || u.isVerified);
-      } else if (recipientType === 'sellers') {
-        recipients = allUsers.filter(u => u.role === 'seller');
-      }
 
-      if (recipients.length === 0) {
-        alert('❌ No recipients found for the selected criteria');
-        return;
-      }
-
-      showConfirm(
-        '📧 Send Email Campaign',
-        `Send to ${recipients.length} recipient(s)?\n\n${scheduleEmail ? '⏰ Scheduled' : ''}\n${trackOpens ? '📊 Track Opens: Enabled' : ''}\n${abTest ? '🧪 A/B Testing: Enabled' : ''}`,
-        async () => {
-          try {
-            const response = await axios.post('/api/admin/send-email', {
-              subject: subject,
-              content: content,
-              recipients: recipients.map(r => ({ 
-                email: r.email, 
-                username: r.username 
-              })),
-              options: {
-                scheduled: scheduleEmail,
-                trackOpens: trackOpens,
-                abTest: abTest
-              }
-            }, { timeout: 30000 });
-
-            if (response.data.success) {
-              const entry = {
-                date: new Date().toLocaleString(),
-                subject: subject,
-                recipientType: recipientType,
-                recipientCount: recipients.length,
-                status: scheduleEmail ? '⏳ Scheduled' : '✅ Sent',
-                openRate: '0%',
-                clickRate: trackOpens ? 'tracking...' : '-'
-              };
-              emailHistory.unshift(entry);
-              loadEmailHistory();
-              
-              document.getElementById('emailSubject').value = '';
-              document.getElementById('emailContent').value = '';
-              document.getElementById('emailPreview').innerHTML = '<div style="text-align: center; color: var(--text-light); padding: 100px 20px;"><p>Preview will appear here</p></div>';
-              
-              document.getElementById('emailsSent').textContent = parseInt(document.getElementById('emailsSent').textContent || 0) + recipients.length;
-              
-              alert(`✅ Email campaign sent successfully to ${recipients.length} recipient(s)!${scheduleEmail ? '\n\n⏰ Scheduled for delivery' : ''}`);
-            } else {
-              alert('❌ Error: ' + (response.data.message || 'Unknown error'));
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.querySelector('.menu-toggle');
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggleBtn.contains(event.target) && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                }
             }
-          } catch (error) {
-            console.error('Email send error:', error);
-            alert('❌ Error: ' + error.message);
-          }
-        }
-      );
-    }
-
-    function loadEmailHistory() {
-      const tbody = document.getElementById('emailHistoryBody');
-      
-      if (emailHistory.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text-light);">No emails sent yet</td></tr>';
-        return;
-      }
-
-      const fragment = document.createDocumentFragment();
-      emailHistory.slice(0, 20).forEach(entry => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><small>${entry.date}</small></td>
-          <td><strong>${entry.subject.substring(0, 40)}...</strong></td>
-          <td><span class="badge badge-primary">${entry.recipientType}</span></td>
-          <td><strong>${entry.recipientCount}</strong></td>
-          <td>${entry.status}</td>
-          <td>${entry.openRate}</td>
-        `;
-        fragment.appendChild(tr);
-      });
-
-      tbody.innerHTML = '';
-      tbody.appendChild(fragment);
-    }
-
-
-    // CHARTS
-    function initRevenueChart() {
-      const ctx = document.getElementById('revenueChart');
-      if (charts.revenue) charts.revenue.destroy();
-      charts.revenue = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-          datasets: [{
-            label: 'Revenue (₹)',
-            data: [12000, 15000, 13500, 18000],
-            borderColor: 'var(--primary)',
-            backgroundColor: 'rgba(79, 70, 229, 0.05)',
-            tension: 0.4,
-            borderWidth: 2,
-            fill: true,
-            pointRadius: 4
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-      });
-    }
-
-    function initStatusChart() {
-      const ctx = document.getElementById('statusChart');
-      if (charts.status) charts.status.destroy();
-      charts.status = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Successful', 'Failed'],
-          datasets: [{ data: [75, 25], backgroundColor: ['var(--success)', 'var(--danger)'], borderColor: 'white', borderWidth: 2 }]
-        },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-      });
-    }
-
-    function initMonthlyRevenueChart() {
-      const ctx = document.getElementById('monthlyRevenueChart');
-      if (charts.monthlyRevenue) charts.monthlyRevenue.destroy();
-      charts.monthlyRevenue = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          datasets: [{ label: 'Revenue (₹)', data: [10000, 12000, 15000, 14000, 16000, 18000, 17000, 19000, 21000, 20000, 22000, 25000], backgroundColor: 'var(--primary)', borderRadius: 6 }]
-        },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-      });
-    }
-
-    function initUserGrowthChart() {
-      const ctx = document.getElementById('userGrowthChart');
-      if (charts.userGrowth) charts.userGrowth.destroy();
-      charts.userGrowth = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          datasets: [{ label: 'New Users', data: [100, 150, 200, 250, 300, 350], borderColor: 'var(--secondary)', backgroundColor: 'rgba(6, 182, 212, 0.05)', tension: 0.4, borderWidth: 2, fill: true }]
-        },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-      });
-    }
-
-    function initRevenueBreakdownChart() {
-      const ctx = document.getElementById('revenueBreakdownChart');
-      if (charts.revenueBreakdown) charts.revenueBreakdown.destroy();
-      charts.revenueBreakdown = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Sales', 'Commissions', 'Refunds'],
-          datasets: [{ data: [65, 25, 10], backgroundColor: ['var(--primary)', 'var(--secondary)', 'var(--warning)'], borderColor: 'white', borderWidth: 2 }]
-        },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
-      });
-    }
-
-    function loadMetricsTable() {
-      const tbody = document.getElementById('metricsTableBody');
-      tbody.innerHTML = `
-        <tr><td>Total Users</td><td>0</td><td style="color: var(--success);">+12%</td><td><span class="badge badge-success">Positive</span></td></tr>
-        <tr><td>Conversion Rate</td><td>0%</td><td style="color: var(--danger);">-3%</td><td><span class="badge badge-danger">Negative</span></td></tr>
-        <tr><td>Avg Order Value</td><td>₹0</td><td style="color: var(--success);">+8%</td><td><span class="badge badge-success">Positive</span></td></tr>
-        <tr><td>Customer Retention</td><td>85%</td><td style="color: var(--success);">+5%</td><td><span class="badge badge-success">Positive</span></td></tr>
-      `;
-    }
-
-    // ACTIONS
-    async function viewOrderDetail(orderId) {
-      try {
-        const response = await axios.get(`${API_BASE}/orders/${orderId}`);
-        const order = response.data.order;
-        alert(`Order: ${order.orderId}\nCustomer: ${order.customer}\nAmount: ${formatCurrency(order.total)}\nStatus: ${order.status}`);
-      } catch (error) {
-        alert('Error loading order details');
-      }
-    }
-
-    async function viewUserDetail(userId) {
-      try {
-        const response = await axios.get(`/api/admin/users/${userId}`);
-        const user = response.data.user;
-        alert(`User: ${user.username}\nEmail: ${user.email}\nRole: ${user.role}`);
-      } catch (error) {
-        alert('Error loading user details');
-      }
-    }
-
-    async function deleteOrder(orderId) {
-      showConfirm('Delete Order', 'Are you sure?', async () => {
-        try {
-          await axios.delete(`${API_BASE}/orders/${orderId}`);
-          alert('Order deleted');
-          await loadOrdersData();
-        } catch (error) {
-          alert('Error deleting order');
-        }
-      });
-    }
-
-    async function deleteFile(fileId) {
-      showConfirm('Delete File', 'Are you sure?', async () => {
-        try {
-          await axios.post('/delete-file', { fileId });
-          alert('File deleted');
-          await loadFilesData();
-        } catch (error) {
-          alert('Error deleting file');
-        }
-      });
-    }
-
-    async function toggleUserSuspend(userId, isSuspended) {
-      showConfirm('User Action', `${isSuspended ? 'Unsuspend' : 'Suspend'} user?`, async () => {
-        try {
-          const endpoint = isSuspended ? 'unsuspend' : 'suspend';
-          await axios.patch(`/api/admin/users/${userId}/${endpoint}`);
-          alert('User updated');
-          await loadUsersData();
-        } catch (error) {
-          alert('Error updating user');
-        }
-      });
-    }
-
-    function bulkDeleteFiles() {
-      alert('Bulk delete functionality');
-    }
-
-    function openUploadModal() {
-      alert('Upload file functionality');
-    }
-
-    function exportOrders(format) {
-      alert(`Exporting orders as ${format.toUpperCase()}`);
-    }
-
-    async function handleLogout() {
-      showConfirm('Logout', 'Are you sure?', async () => {
-        try {
-          await axios.get('/logout');
-          window.location.href = '/admin-login';
-        } catch (error) {
-          window.location.href = '/admin-login';
-        }
-      });
-    }
-
-    // ============= SEARCH & FILTER STORAGE =============
-    let allOrders = [];
-    let allUsers = [];
-    let allFiles = [];
-    let allSellers = [];
-
-    // ORDERS FILTERS
-    function filterAndRenderOrders() {
-      const searchTerm = (document.getElementById('orderSearch')?.value || '').toLowerCase();
-      const statusFilter = document.getElementById('orderStatusFilter')?.value || '';
-
-      const filtered = allOrders.filter(order => {
-        const matchesSearch = !searchTerm || 
-          String(order.orderId || order._id || '').toLowerCase().includes(searchTerm) ||
-          String(order.customer || '').toLowerCase().includes(searchTerm);
-        
-        const matchesStatus = !statusFilter || 
-          String(order.status || '').toLowerCase().includes(statusFilter.toLowerCase());
-        
-        return matchesSearch && matchesStatus;
-      });
-
-      renderOrdersTable(filtered);
-    }
-
-    function renderOrdersTable(orders) {
-      const tbody = document.getElementById('ordersTableBody');
-      const fragment = document.createDocumentFragment();
-
-      if (orders.length === 0) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = '<td colspan="7" style="padding: 20px; text-align: center;">No orders found</td>';
-        fragment.appendChild(tr);
-      } else {
-        orders.forEach(order => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${String(order.orderId || order._id || '').substring(0, 12)}</strong></td>
-            <td>${formatDate(order.dateTime)}</td>
-            <td>${String(order.customer || 'N/A').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
-            <td>${formatCurrency(order.total)}</td>
-            <td>${order.items ? order.items.length : 0}</td>
-            <td>${getStatusBadge(order.status)}</td>
-            <td>
-              <button class="btn btn-primary btn-small" onclick="viewOrderDetail('${order._id}')"><i class="fas fa-eye"></i></button>
-              <button class="btn btn-danger btn-small" onclick="deleteOrder('${order._id}')"><i class="fas fa-trash"></i></button>
-            </td>
-          `;
-          fragment.appendChild(tr);
         });
-      }
 
-      tbody.innerHTML = '';
-      tbody.appendChild(fragment);
-    }
+        function showModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
 
-    // USERS FILTERS
-    function filterAndRenderUsers() {
-      const searchTerm = (document.getElementById('userSearch')?.value || '').toLowerCase();
-      const roleFilter = document.getElementById('userRoleFilter')?.value || '';
-      const statusFilter = document.getElementById('userStatusFilter')?.value || '';
-
-      const filtered = allUsers.filter(user => {
-        const matchesSearch = !searchTerm || 
-          String(user.username || '').toLowerCase().includes(searchTerm) ||
-          String(user.email || '').toLowerCase().includes(searchTerm);
-        
-        const matchesRole = !roleFilter || 
-          String(user.role || '').toLowerCase() === roleFilter.toLowerCase();
-        
-        let matchesStatus = true;
-        if (statusFilter) {
-          if (statusFilter === 'active') {
-            matchesStatus = !user.isBanned && !user.isSuspended;
-          } else if (statusFilter === 'verified') {
-            matchesStatus = user.ISVERIFIED || user.isVerified;
-          } else if (statusFilter === 'suspended') {
-            matchesStatus = user.isSuspended;
-          } else if (statusFilter === 'banned') {
-            matchesStatus = user.isBanned;
-          }
+        function showConfirm(title, message, action) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            pendingAction = action;
+            showModal('confirmModal');
         }
+
+        function executeConfirmAction() {
+            if (pendingAction && typeof pendingAction === 'function') pendingAction();
+            closeModal('confirmModal');
+        }
+
+        function formatCurrency(value) {
+            return '₹' + (value || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function getStatusBadge(status) {
+            if (status && status.toLowerCase().includes('successfull')) return '<span class="badge badge-success">Successful</span>';
+            if (status && status.toLowerCase().includes('unsuccessfull')) return '<span class="badge badge-danger">Failed</span>';
+            return '<span class="badge badge-warning">Pending</span>';
+        }
+
+        // ============= VIEW SWITCHING =============
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-container').forEach(v => v.style.display = 'none');
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+
+            document.getElementById(viewName + 'View').style.display = 'block';
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+
+            const titles = {
+                dashboard: 'Dashboard', orders: 'Orders Management', users: 'Users Management', files: 'Files Management',
+                communications: 'Campaigns', analytics: 'Analytics', revenue: 'Revenue Management', sellers: 'Sellers Management'
+            };
+            document.getElementById('topBarTitle').innerHTML = `<button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button> <span>${titles[viewName] || 'Dashboard'}</span>`;
+
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('show');
+            }
+
+            currentView = viewName;
+            loadViewData(viewName);
+        }
+
+        async function loadViewData(viewName) {
+            try {
+                if (viewName === 'dashboard') loadDashboardData();
+                else if (viewName === 'orders') loadOrdersData();
+                else if (viewName === 'users') loadUsersData();
+                else if (viewName === 'files') loadFilesData();
+                else if (viewName === 'communications') loadCommunicationsData();
+                else if (viewName === 'analytics') loadAnalyticsData();
+                else if (viewName === 'revenue') loadRevenueData();
+                else if (viewName === 'sellers') loadSellersData();
+            } catch (error) {
+                console.error('Error loading view:', error);
+            }
+        }
+
+        // ============= DATA LOADING FUNCTIONS =============
+
+async function loadDashboardData() {
+            try {
+                console.log("Fetching dashboard stats from /api/admin/stats...");
+                const response = await axios.get(`${API_BASE}/stats`);
+                
+                // 1. Log exactly what the backend sent back
+                console.log("Backend Response:", response.data);
+
+                if (response.data && response.data.success === false) {
+                    if (response.data.message === 'Unauthorized') window.location.href = '/admin-login';
+                    return;
+                }
+
+                // 2. Safely handle the data whether it's nested in 'stats' or not
+                const stats = response.data.stats || response.data; 
+
+                if (!stats || Object.keys(stats).length === 0) {
+                    console.warn("No stats data found in the response!");
+                    return; 
+                }
+
+                // 3. Update the UI
+                document.getElementById('totalRevenue').textContent = formatCurrency(stats.totalAmount || stats.revenue || 0);
+                // prefer lifetime totals when available, but fall back to weekly numbers for backwards compatibility
+                document.getElementById('totalOrders').textContent =
+                    stats.totalOrders || stats.weeklyTotalOrders || stats.orders || 0;
+                document.getElementById('successOrders').textContent =
+                    stats.successfulOrders || stats.weeklySuccessfulOrders || stats.success || 0;
+                document.getElementById('failOrders').textContent =
+                    stats.failedOrders || stats.weeklyFailedOrders || stats.failed || 0;
+
+                initRevenueChart();
+                initStatusChart();
+                await loadRecentOrders();
+                
+            } catch (error) {
+                console.error('Dashboard error details:', error.response?.data || error.message);
+            }
+        }
+
+        async function loadRecentOrders() {
+            try {
+                const response = await axios.get(`${API_BASE}/orders`, { params: { limit: 5 }, timeout: 10000 });
+                const orders = response.data.orders || [];
+                const tbody = document.getElementById('recentOrdersBody');
+                tbody.innerHTML = '';
+
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">No orders found</td></tr>';
+                    return;
+                }
+
+                orders.forEach(order => {
+                    tbody.innerHTML += `<tr>
+                        <td><strong>${order.orderId || order._id}</strong></td>
+                        <td>${order.customer || 'N/A'}</td>
+                        <td>${formatCurrency(order.total)}</td>
+                        <td>${getStatusBadge(order.status)}</td>
+                        <td>${formatDate(order.dateTime)}</td>
+                        <td><button class="btn btn-primary btn-small" onclick="viewOrderDetail('${order._id}')"><i class="fas fa-eye"></i></button></td>
+                    </tr>`;
+                });
+            } catch (error) {
+                console.error('Error loading recent orders:', error);
+            }
+        }
+
+        async function loadOrdersData() {
+            const tbody = document.getElementById('ordersTableBody');
+            try {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;"><div class="loading"><div class="spinner"></div></div></td></tr>';
+                const response = await axios.get(`${API_BASE}/orders`, { timeout: 10000 });
+
+                if (response.data.success === false) {
+                    if (response.data.message === 'Unauthorized') window.location.href = '/admin-login';
+                    throw new Error(response.data.message || 'API error');
+                }
+
+                allOrders = response.data.orders || [];
+                renderOrdersTable(allOrders);
+                setupFilterListeners();
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--danger);"><strong>Error loading orders</strong><br/><small>${error.message}</small></td></tr>`;
+            }
+        }
+
+        async function loadUsersData() {
+            const tbody = document.getElementById('usersTableBody');
+            try {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;"><div class="loading"><div class="spinner"></div></div></td></tr>';
+                const response = await axios.get(`${API_BASE}/users`, { timeout: 10000 });
+
+                if (response.data.success === false) {
+                    if (response.data.message === 'Unauthorized') window.location.href = '/admin-login';
+                    throw new Error(response.data.message || 'API error');
+                }
+
+                allUsers = response.data.allUsers || [];
+                
+                document.getElementById('totalUsersCount').textContent = allUsers.length;
+                let verifiedCount = 0, suspendedCount = 0, bannedCount = 0;
+                allUsers.forEach(user => {
+                    if (user.ISVERIFIED || user.isVerified) verifiedCount++;
+                    if (user.isSuspended) suspendedCount++;
+                    if (user.isBanned) bannedCount++;
+                });
+
+                document.getElementById('verifiedCount').textContent = verifiedCount;
+                document.getElementById('suspendedCount').textContent = suspendedCount;
+                document.getElementById('bannedCount').textContent = bannedCount;
+
+                renderUsersTable(allUsers);
+                setupFilterListeners();
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--danger);"><strong>Error loading users</strong><br/><small>${error.message}</small></td></tr>`;
+            }
+        }
+
+        async function loadFilesData() {
+            try {
+                const response = await axios.get('/api/admin/files?limit=500');
+                allFiles = response.data.files || [];
+                console.log('📁 Loaded files:', allFiles.length, 'Total available:', response.data.pagination?.total);
+                renderFilesGrid(allFiles);
+                setupFilterListeners();
+            } catch (error) {
+                console.error('Files error:', error);
+            }
+        }
+
+        async function loadAnalyticsData() {
+            try {
+                await axios.get(`${API_BASE}/stats`);
+                initMonthlyRevenueChart();
+                initUserGrowthChart();
+                loadMetricsTable();
+            } catch (error) {
+                console.error('Analytics error:', error);
+            }
+        }
+
+        async function loadRevenueData() {
+            try {
+                const response = await axios.get(`${API_BASE}/stats`);
+                if (response.data && response.data.success === false) {
+                    if (response.data.message === 'Unauthorized') window.location.href = '/admin-login';
+                    return;
+                }
+                const stats = response.data && response.data.stats;
+                if (!stats) return;
+
+                const monthRevenue = Math.floor(stats.totalAmount / 30);
+                const yearRevenue = stats.totalAmount * 12;
+                const avgOrder = stats.totalOrders > 0 ? stats.totalAmount / stats.totalOrders : 0;
+                const conversionRate = stats.totalOrders > 0 ? ((stats.successfulOrders / stats.totalOrders) * 100).toFixed(1) : 0;
+
+                document.getElementById('monthRevenue').textContent = formatCurrency(monthRevenue);
+                document.getElementById('yearRevenue').textContent = formatCurrency(yearRevenue);
+                document.getElementById('avgOrderValue').textContent = formatCurrency(avgOrder);
+                document.getElementById('conversionRate').textContent = conversionRate + '%';
+
+                initRevenueBreakdownChart();
+            } catch (error) {
+                console.error('Revenue error:', error);
+            }
+        }
+
+        async function loadSellersData() {
+            try {
+                const response = await axios.get('/api/admin/sellers');
+                allSellers = response.data.sellers || [];
+                renderSellersTable(allSellers);
+                setupFilterListeners();
+            } catch (error) {
+                console.error('Sellers error:', error);
+            }
+        }
+
+        // ============= CHARTS (GEMINI THEMED) =============
+
+        function initRevenueChart() {
+            const ctx = document.getElementById('revenueChart');
+            if (charts.revenue) charts.revenue.destroy();
+            charts.revenue = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [12000, 15000, 13500, 18000],
+                        borderColor: '#0b57d0',
+                        backgroundColor: 'rgba(11, 87, 208, 0.05)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
+            });
+        }
+
+        function initStatusChart() {
+            const ctx = document.getElementById('statusChart');
+            if (charts.status) charts.status.destroy();
+            charts.status = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Successful', 'Failed'],
+                    datasets: [{ data: [75, 25], backgroundColor: ['#146c2e', '#b3261e'], borderWidth: 0, cutout: '75%' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function initMonthlyRevenueChart() {
+            const ctx = document.getElementById('monthlyRevenueChart');
+            if (charts.monthlyRevenue) charts.monthlyRevenue.destroy();
+            charts.monthlyRevenue = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{ label: 'Revenue (₹)', data: [10000, 12000, 15000, 14000, 16000, 18000, 17000, 19000, 21000, 20000, 22000, 25000], backgroundColor: '#0b57d0', borderRadius: 6 }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function initUserGrowthChart() {
+            const ctx = document.getElementById('userGrowthChart');
+            if (charts.userGrowth) charts.userGrowth.destroy();
+            charts.userGrowth = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{ label: 'New Users', data: [100, 150, 200, 250, 300, 350], borderColor: '#06b6d4', backgroundColor: 'rgba(6, 182, 212, 0.05)', tension: 0.4, borderWidth: 2, fill: true }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function initRevenueBreakdownChart() {
+            const ctx = document.getElementById('revenueBreakdownChart');
+            if (charts.revenueBreakdown) charts.revenueBreakdown.destroy();
+            charts.revenueBreakdown = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sales', 'Commissions', 'Refunds'],
+                    datasets: [{ data: [65, 25, 10], backgroundColor: ['#0b57d0', '#06b6d4', '#b38700'], borderWidth: 0, cutout: '75%' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function loadMetricsTable() {
+            const tbody = document.getElementById('metricsTableBody');
+            tbody.innerHTML = `
+                <tr><td>Total Users</td><td>0</td><td style="color: var(--success);">+12%</td><td><span class="badge badge-success">Positive</span></td></tr>
+                <tr><td>Conversion Rate</td><td>0%</td><td style="color: var(--danger);">-3%</td><td><span class="badge badge-danger">Negative</span></td></tr>
+                <tr><td>Avg Order Value</td><td>₹0</td><td style="color: var(--success);">+8%</td><td><span class="badge badge-success">Positive</span></td></tr>
+                <tr><td>Customer Retention</td><td>85%</td><td style="color: var(--success);">+5%</td><td><span class="badge badge-success">Positive</span></td></tr>
+            `;
+        }
+
+        // ============= COMMUNICATIONS & EMAILS =============
+
+        let availableTemplates = {};
+        let emailHistory = [];
+
+        function loadCommunicationsData() {
+            loadEmailHistory();
+            updateRecipientCount();
+            loadEmailTemplates();
+        }
+
+        async function loadEmailTemplates() {
+            try {
+                const response = await axios.get('/api/admin/email-templates');
+                if (response.data.success) {
+                    availableTemplates = response.data.templates;
+                    renderTemplateButtons();
+                }
+            } catch (error) {
+                console.error('Failed to load templates:', error);
+            }
+        }
+
+        function renderTemplateButtons() {
+            const container = document.getElementById('templateButtonsContainer');
+            if (!container) return;
+            let html = '';
+            for (const [category, templates] of Object.entries(availableTemplates)) {
+                if (templates.length > 0) {
+                    html += `<optgroup label="${category.toUpperCase()}">`;
+                    templates.forEach(template => {
+                        html += `<option value="${category}/${template.name}" title="${template.name}">${category} - ${template.name}</option>`;
+                    });
+                    html += `</optgroup>`;
+                }
+            }
+            if (container.tagName === 'SELECT') container.innerHTML = '<option value="">-- Blank Template --</option>' + html;
+        }
+
+        function selectTemplate(templatePath) {
+            if (!templatePath) {
+                document.getElementById('emailSubject').value = '';
+                document.getElementById('emailContent').value = '';
+                updateLivePreview();
+                return;
+            }
+            const [category, templateName] = templatePath.split('/');
+            const templates = availableTemplates[category];
+            if (templates) {
+                const template = templates.find(t => t.name === templateName);
+                if (template) {
+                    document.getElementById('emailSubject').value = templateName.replace(/([A-Z])/g, ' $1').trim();
+                    document.getElementById('emailContent').value = template.content;
+                    updateLivePreview();
+                }
+            }
+        }
+
+        function onTemplateSelect(selectElement) { selectTemplate(selectElement.value); }
+
+        function updateSubjectLength() {
+            const length = document.getElementById('emailSubject').value.length;
+            document.getElementById('subjectLength').textContent = length;
+            updateLivePreview();
+        }
+
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('emailContent').focus();
+            updateLivePreview();
+        }
+
+        function insertTag(tag) {
+            const textarea = document.getElementById('emailContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            textarea.value = text.substring(0, start) + tag + text.substring(end);
+            textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+            textarea.focus();
+            updateLivePreview();
+        }
+
+        function insertLink() {
+            const url = prompt('Enter URL:', 'https://www.vidyari.com');
+            if (url) insertTag(url);
+        }
+
+        function updateRecipientCount() {
+            const recipientType = document.querySelector('input[name="recipientType"]:checked').value;
+            const individualEmailInput = document.getElementById('individualEmail');
+
+            if (recipientType === 'individual') {
+                individualEmailInput.style.display = 'block';
+                document.getElementById('recipientCount').textContent = '1';
+            } else {
+                individualEmailInput.style.display = 'none';
+                let countAll = allUsers.length;
+                let countVerified = allUsers.filter(u => u.ISVERIFIED || u.isVerified).length;
+                let countSellers = allUsers.filter(u => u.role === 'seller').length;
+
+                document.getElementById('countAll').textContent = countAll;
+                document.getElementById('countVerified').textContent = countVerified;
+                document.getElementById('countSellers').textContent = countSellers;
+
+                let count = 0;
+                if (recipientType === 'all') count = countAll;
+                else if (recipientType === 'verified') count = countVerified;
+                else if (recipientType === 'sellers') count = countSellers;
+                document.getElementById('recipientCount').textContent = count;
+            }
+        }
+
+        function updateLivePreview() {
+            const subject = document.getElementById('emailSubject')?.value || 'Your Email Subject';
+            const content = document.getElementById('emailContent')?.value || 'Email content will appear here...';
+            const brandColor = document.getElementById('brandColor')?.value || '#0b57d0';
+            const companyName = document.getElementById('companyName')?.value || 'DigitalMarket';
+
+            const previewHtml = `
+            <div style="font-family: 'Outfit', 'Inter', sans-serif; padding: 20px 0;">
+                <div style="background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <div style="background: ${brandColor}; color: white; padding: 40px 32px; text-align: center;">
+                        <h1 style="margin: 0; font-size: 24px; font-weight: 600;">${subject}</h1>
+                    </div>
+                    <div style="padding: 32px; color: #1f1f1f; line-height: 1.6; font-size: 15px;">
+                        <div style="white-space: pre-wrap;">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>').replace(/http[s]?:\/\/[^\s]+/g, url => `<span style="color: ${brandColor}; font-weight: bold; text-decoration: underline;">${url}</span>`)}</div>
+                    </div>
+                    <div style="background: #f0f4f9; padding: 24px; text-align: center; color: #444746; font-size: 13px;">
+                        <p style="margin: 0;">&copy; 2026 ${companyName}. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>`;
+            
+            const previewContainer = document.getElementById('emailPreview');
+            if(previewContainer) previewContainer.innerHTML = previewHtml;
+        }
+
+        function previewEmail() {
+            updateLivePreview();
+            showConfirm('Email Preview', 'This is how your email will look to recipients. Looks good?', () => {
+                console.log('Preview confirmed');
+            });
+        }
+
+        async function sendEmails() {
+            const subject = document.getElementById('emailSubject').value;
+            const content = document.getElementById('emailContent').value;
+            const recipientType = document.querySelector('input[name="recipientType"]:checked').value;
+            const individualEmail = document.getElementById('individualEmail').value;
+
+            if (!subject || !content) { alert('❌ Please enter subject and content'); return; }
+
+            let recipients = [];
+            if (recipientType === 'individual') {
+                if (!individualEmail) { alert('❌ Please enter an email address'); return; }
+                recipients = [{ email: individualEmail, username: 'User' }];
+            } else if (recipientType === 'all') {
+                recipients = allUsers;
+            } else if (recipientType === 'verified') {
+                recipients = allUsers.filter(u => u.ISVERIFIED || u.isVerified);
+            } else if (recipientType === 'sellers') {
+                recipients = allUsers.filter(u => u.role === 'seller');
+            }
+
+            if (recipients.length === 0) { alert('❌ No recipients found for the selected criteria'); return; }
+
+            showConfirm('📧 Send Email Campaign', `Send to ${recipients.length} recipient(s)?`, async () => {
+                try {
+                    const response = await axios.post('/api/admin/send-email', {
+                        subject: subject,
+                        content: content,
+                        recipients: recipients.map(r => ({ email: r.email, username: r.username }))
+                    }, { timeout: 30000 });
+
+                    if (response.data.success) {
+                        emailHistory.unshift({
+                            date: new Date().toLocaleString(),
+                            subject: subject,
+                            recipientType: recipientType,
+                            recipientCount: recipients.length,
+                            status: '✅ Sent',
+                            openRate: '0%'
+                        });
+                        loadEmailHistory();
+                        document.getElementById('emailSubject').value = '';
+                        document.getElementById('emailContent').value = '';
+                        document.getElementById('emailPreview').innerHTML = '<div style="text-align: center; color: var(--text-muted); padding-top: 100px;">Start typing to see preview</div>';
+                        alert(`✅ Email campaign sent successfully to ${recipients.length} recipient(s)!`);
+                    } else {
+                        alert('❌ Error: ' + (response.data.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    alert('❌ Error: ' + error.message);
+                }
+            });
+        }
+
+        function loadEmailHistory() {
+            const tbody = document.getElementById('emailHistoryBody');
+            if (emailHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: var(--text-muted);">No campaigns sent yet</td></tr>';
+                return;
+            }
+            const fragment = document.createDocumentFragment();
+            emailHistory.slice(0, 20).forEach(entry => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><small>${entry.date}</small></td><td><strong>${entry.subject.substring(0, 40)}...</strong></td><td><span class="badge badge-primary">${entry.recipientType}</span></td><td><strong>${entry.recipientCount}</strong></td><td>${entry.status}</td><td>${entry.openRate}</td>`;
+                fragment.appendChild(tr);
+            });
+            tbody.innerHTML = '';
+            tbody.appendChild(fragment);
+        }
+
+        // ============= ACTIONS & EXPORTS =============
+
+        async function viewOrderDetail(orderId) {
+            try {
+                const response = await axios.get(`${API_BASE}/orders/${orderId}`);
+                const order = response.data.order;
+                alert(`Order: ${order.orderId}\nCustomer: ${order.customer}\nAmount: ${formatCurrency(order.total)}\nStatus: ${order.status}`);
+            } catch (error) { alert('Error loading order details'); }
+        }
+
+        async function viewUserDetail(userId) {
+            try {
+                const response = await axios.get(`/api/admin/users/${userId}`);
+                const user = response.data.user;
+                alert(`User: ${user.username}\nEmail: ${user.email}\nRole: ${user.role}`);
+            } catch (error) { alert('Error loading user details'); }
+        }
+
+        async function deleteOrder(orderId) {
+            showConfirm('Delete Order', 'Are you sure?', async () => {
+                try {
+                    await axios.delete(`${API_BASE}/orders/${orderId}`);
+                    alert('Order deleted');
+                    await loadOrdersData();
+                } catch (error) { alert('Error deleting order'); }
+            });
+        }
+
+        async function downloadFile(fileId, filename, fileUrl) {
+            try {
+                // Construct the download URL - pass the S3 key
+                const url = `/api/admin/download-file?fileId=${encodeURIComponent(fileId)}&filename=${encodeURIComponent(filename)}`;
+                // Open in new tab or trigger download
+                window.open(url, '_blank');
+            } catch (err) {
+                console.error(err);
+                alert('Error downloading file');
+            }
+        }
+        async function deleteFile(fileId) {
+            showConfirm('Delete File', 'Are you sure?', async () => {
+                try {
+                    await axios.post('/delete-file', { fileId });
+                    alert('File deleted');
+                    await loadFilesData();
+                } catch (error) { alert('Error deleting file'); }
+            });
         
-        return matchesSearch && matchesRole && matchesStatus;
-      });
+        }
+        async function toggleUserSuspend(userId, isSuspended) {
+            showConfirm('User Action', `${isSuspended ? 'Unsuspend' : 'Suspend'} user?`, async () => {
+                try {
+                    const endpoint = isSuspended ? 'unsuspend' : 'suspend';
+                    await axios.patch(`/api/admin/users/${userId}/${endpoint}`);
+                    alert('User updated');
+                    await loadUsersData();
+                } catch (error) { alert('Error updating user'); }
+            });
+        }
 
-      renderUsersTable(filtered);
-    }
+        function openUploadModal() {
+            // populate category dropdown every time
+            const sel = document.getElementById('uploadFileCategory');
+            if (sel) {
+                sel.innerHTML = '<option value="">Select Category</option>' +
+                    CATEGORIES.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            }
+            document.getElementById('uploadFileModal').classList.add('active');
+        }
 
-    function renderUsersTable(users) {
-      const tbody = document.getElementById('usersTableBody');
-      const fragment = document.createDocumentFragment();
+        function closeUploadModal() {
+            document.getElementById('uploadFileModal').classList.remove('active');
+        }
 
-      if (users.length === 0) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = '<td colspan="6" style="padding: 20px; text-align: center;">No users found</td>';
-        fragment.appendChild(tr);
-      } else {
-        users.forEach(user => {
-          let statusBadge = 'badge-info', statusText = 'Active';
-          if (user.isBanned) {
-            statusBadge = 'badge-danger';
-            statusText = 'Banned';
-          } else if (user.isSuspended) {
-            statusBadge = 'badge-warning';
-            statusText = 'Suspended';
-          } else if (user.ISVERIFIED || user.isVerified) {
-            statusBadge = 'badge-success';
-            statusText = 'Verified';
-          }
+        function bulkDeleteFiles() {
+            const checked = Array.from(document.querySelectorAll('.file-checkbox:checked'));
+            if (checked.length === 0) { alert('Select at least one file to delete'); return; }
+            if (!confirm(`Delete ${checked.length} files?`)) return;
+            const ids = checked.map(cb => cb.dataset.id);
+            // delete one by one so that /delete-file (which removes from storage) is used
+            Promise.all(ids.map(id => axios.post('/delete-file', { fileId: id })))
+                .then(() => {
+                    loadFilesData();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error deleting some files');
+                    loadFilesData();
+                });
+        }
 
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${String(user.username || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</strong></td>
-            <td>${String(user.email || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
-            <td><span class="badge badge-primary">${user.role || 'User'}</span></td>
-            <td>${user.followers ? user.followers.length : 0}</td>
-            <td><span class="badge ${statusBadge}">${statusText}</span></td>
-            <td>
-              <button class="btn btn-primary btn-small" onclick="viewUserDetail('${user._id}')"><i class="fas fa-eye"></i></button>
-              <button class="btn btn-warning btn-small" onclick="toggleUserSuspend('${user._id}', ${user.isSuspended})">
-                ${user.isSuspended ? '<i class="fas fa-check"></i>' : '<i class="fas fa-ban"></i>'}
-              </button>
-            </td>
-          `;
-          fragment.appendChild(tr);
-        });
-      }
+        function openEditFileModal(id, name, desc, price, coupon) {
+            document.getElementById('editFileId').value = id;
+            document.getElementById('editFileName').value = name;
+            document.getElementById('editFileDescription').value = desc;
+            document.getElementById('editFilePrice').value = price;
+            document.getElementById('editFileCoupon').value = coupon || '';
+            document.getElementById('editFileModal').classList.add('active');
+        }
 
-      tbody.innerHTML = '';
-      tbody.appendChild(fragment);
-    }
+        function closeEditFileModal() {
+            document.getElementById('editFileModal').classList.remove('active');
+        }
 
-    // FILES FILTERS
-    function filterAndRenderFiles() {
-      const searchTerm = (document.getElementById('fileSearch')?.value || '').toLowerCase();
+        async function saveFileChanges() {
+            const id = document.getElementById('editFileId').value;
+            const data = {
+                fileId: id,
+                filename: document.getElementById('editFileName').value,
+                filedescription: document.getElementById('editFileDescription').value,
+                price: document.getElementById('editFilePrice').value,
+                couponCode: document.getElementById('editFileCoupon').value,
+            };
+            try {
+                const res = await axios.post('/edit-file', data);
+                if (res.data.success) {
+                    closeEditFileModal();
+                    loadFilesData();
+                } else {
+                    alert('Save failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error saving changes');
+            }
+        }
+        function exportOrders(format) { alert(`Exporting orders as ${format.toUpperCase()}`); }
 
-      const filtered = allFiles.filter(file => {
-        return !searchTerm || String(file.filename || '').toLowerCase().includes(searchTerm);
-      });
+        async function handleLogout() {
+            showConfirm('Logout', 'Are you sure?', async () => {
+                try {
+                    await axios.get('/logout');
+                    window.location.href = '/admin-login';
+                } catch (error) { window.location.href = '/admin-login'; }
+            });
+        }
 
-      renderFilesGrid(filtered);
-    }
+        // ============= STORAGE & FILTERING =============
 
-    function renderFilesGrid(files) {
-      const grid = document.getElementById('filesGrid');
-      grid.innerHTML = '';
+        let allOrders = [], allUsers = [], allFiles = [], allSellers = [];
 
-      if (files.length === 0) {
-        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">No files found</div>';
-        return;
-      }
+        function renderOrdersTable(orders) {
+            const tbody = document.getElementById('ordersTableBody');
+            const fragment = document.createDocumentFragment();
+            if (orders.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="7" style="padding: 20px; text-align: center;">No orders found</td>';
+                fragment.appendChild(tr);
+            } else {
+                orders.forEach(order => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><strong>${String(order.orderId || order._id || '').substring(0, 12)}</strong></td><td>${formatDate(order.dateTime)}</td><td>${String(order.customer || 'N/A').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td><td>${formatCurrency(order.total)}</td><td>${order.items ? order.items.length : 0}</td><td>${getStatusBadge(order.status)}</td><td><button class="btn btn-primary btn-small" onclick="viewOrderDetail('${order._id}')"><i class="fas fa-eye"></i></button> <button class="btn btn-danger btn-small" onclick="deleteOrder('${order._id}')"><i class="fas fa-trash"></i></button></td>`;
+                    fragment.appendChild(tr);
+                });
+            }
+            tbody.innerHTML = ''; tbody.appendChild(fragment);
+        }
 
-      files.forEach(file => {
-        grid.innerHTML += `<div class="card card-small">
-          <div style="margin-bottom: 12px;">
-            <strong style="word-break: break-word;">${file.filename}</strong>
-            <p style="font-size: 12px; color: var(--text-light); margin: 4px 0;">${file.filedescription || 'No description'}</p>
-          </div>
-          <div style="font-size: 11px; color: var(--text-light); margin-bottom: 12px;">
-            <p style="margin: 4px 0;"><strong>Price:</strong> ${formatCurrency(file.price)}</p>
-            <p style="margin: 4px 0;"><strong>Uploaded:</strong> ${formatDate(file.uploadedAt)}</p>
-          </div>
-          <button class="btn btn-danger btn-small" style="width: 100%;" onclick="deleteFile('${file._id}')">
-            <i class="fas fa-trash"></i> Delete
-          </button>
-        </div>`;
-      });
-    }
+        function filterAndRenderOrders() {
+            const searchTerm = (document.getElementById('orderSearch')?.value || '').toLowerCase();
+            const statusFilter = document.getElementById('orderStatusFilter')?.value || '';
+            const filtered = allOrders.filter(order => {
+                const matchesSearch = !searchTerm || String(order.orderId || order._id || '').toLowerCase().includes(searchTerm) || String(order.customer || '').toLowerCase().includes(searchTerm);
+                const matchesStatus = !statusFilter || String(order.status || '').toLowerCase().includes(statusFilter.toLowerCase());
+                return matchesSearch && matchesStatus;
+            });
+            renderOrdersTable(filtered);
+        }
 
-    // SELLERS FILTERS
-    function filterAndRenderSellers() {
-      const searchTerm = (document.getElementById('sellerSearch')?.value || '').toLowerCase();
-      const statusFilter = document.getElementById('sellerStatusFilter')?.value || '';
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+            const fragment = document.createDocumentFragment();
+            if (users.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="6" style="padding: 20px; text-align: center;">No users found</td>';
+                fragment.appendChild(tr);
+            } else {
+                users.forEach(user => {
+                    let statusBadge = 'badge-info', statusText = 'Active';
+                    if (user.isBanned) { statusBadge = 'badge-danger'; statusText = 'Banned'; }
+                    else if (user.isSuspended) { statusBadge = 'badge-warning'; statusText = 'Suspended'; }
+                    else if (user.ISVERIFIED || user.isVerified) { statusBadge = 'badge-success'; statusText = 'Verified'; }
 
-      const filtered = allSellers.filter(seller => {
-        const matchesSearch = !searchTerm || 
-          String(seller.name || seller.username || '').toLowerCase().includes(searchTerm) ||
-          String(seller.email || '').toLowerCase().includes(searchTerm);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><strong>${String(user.username || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</strong></td><td>${String(user.email || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td><td><span class="badge badge-primary">${user.role || 'User'}</span></td><td>${user.followers ? user.followers.length : 0}</td><td><span class="badge ${statusBadge}">${statusText}</span></td><td><button class="btn btn-primary btn-small" onclick="viewUserDetail('${user._id}')"><i class="fas fa-eye"></i></button> <button class="btn btn-warning btn-small" onclick="toggleUserSuspend('${user._id}', ${user.isSuspended})">${user.isSuspended ? '<i class="fas fa-check"></i>' : '<i class="fas fa-ban"></i>'}</button></td>`;
+                    fragment.appendChild(tr);
+                });
+            }
+            tbody.innerHTML = ''; tbody.appendChild(fragment);
+        }
+
+        function filterAndRenderUsers() {
+            const searchTerm = (document.getElementById('userSearch')?.value || '').toLowerCase();
+            const roleFilter = document.getElementById('userRoleFilter')?.value || '';
+            const statusFilter = document.getElementById('userStatusFilter')?.value || '';
+
+            const filtered = allUsers.filter(user => {
+                const matchesSearch = !searchTerm || String(user.username || '').toLowerCase().includes(searchTerm) || String(user.email || '').toLowerCase().includes(searchTerm);
+                const matchesRole = !roleFilter || String(user.role || '').toLowerCase() === roleFilter.toLowerCase();
+                let matchesStatus = true;
+                if (statusFilter === 'active') matchesStatus = !user.isBanned && !user.isSuspended;
+                else if (statusFilter === 'verified') matchesStatus = user.ISVERIFIED || user.isVerified;
+                else if (statusFilter === 'suspended') matchesStatus = user.isSuspended;
+                else if (statusFilter === 'banned') matchesStatus = user.isBanned;
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+            renderUsersTable(filtered);
+        }
+
+        function renderFilesGrid(files) {
+            const grid = document.getElementById('filesGrid');
+            grid.innerHTML = '';
+            console.log('Rendering', files.length, 'files to grid');
+            if (files.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">No files found</div>';
+                return;
+            }
+            
+            let html = '';
+            files.forEach(file => {
+                html += `
+                    <div class="card card-small" style="position:relative;">
+                        <input type="checkbox" class="file-checkbox" data-id="${file._id}" style="position:absolute;top:8px;left:8px;" />
+                        <div style="margin-bottom: 12px;"><strong style="word-break: break-word;">${file.filename}</strong><p style="font-size: 12px; color: var(--text-muted); margin: 4px 0;">${file.filedescription || 'No description'}</p></div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;"><p style="margin: 4px 0;"><strong>Price:</strong> ${formatCurrency(file.price)}</p><p style="margin: 4px 0;"><strong>Uploaded:</strong> ${formatDate(file.uploadedAt)}</p>${file.couponCode ? `<p style="margin:4px 0;"><strong>Coupon:</strong> ${file.couponCode}</p>` : ''}</div>
+                        <button class="btn btn-primary btn-small" style="width: 100%; margin-bottom:4px;" onclick="downloadFile('${file._id}', '${(file.filename || '').replace(/'/g,"\'")}', '${(file.fileUrl || '').replace(/'/g,"\'")}') "><i class="fas fa-download"></i> Download</button>
+                        <button class="btn btn-secondary btn-small" style="width: 100%; margin-bottom:4px;" onclick="openEditFileModal('${file._id}','${(file.filename || '').replace(/'/g,"\'")}','${(file.filedescription||'').replace(/'/g,"\'")}','${file.price||0}','${file.couponCode||''}')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-danger btn-small" style="width: 100%;" onclick="deleteFile('${file._id}')"><i class="fas fa-trash"></i> Delete</button>
+                    </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        function filterAndRenderFiles() {
+            const searchTerm = (document.getElementById('fileSearch')?.value || '').toLowerCase();
+            const filtered = allFiles.filter(file => !searchTerm || String(file.filename || '').toLowerCase().includes(searchTerm));
+            renderFilesGrid(filtered);
+        }
+
+        function renderSellersTable(sellers) {
+            const tbody = document.getElementById('sellersTableBody');
+            const fragment = document.createDocumentFragment();
+            if (sellers.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="7" style="padding: 20px; text-align: center;">No sellers found</td>';
+                fragment.appendChild(tr);
+            } else {
+                sellers.forEach(seller => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><strong>${seller.name || seller.username}</strong></td><td>${seller.email}</td><td>${seller.productCount || 0}</td><td>${formatCurrency(seller.revenue || 0)}</td><td>${seller.rating ? seller.rating.toFixed(1) : 'N/A'} ⭐</td><td><span class="badge badge-success">${seller.status || 'Active'}</span></td><td><button class="btn btn-primary btn-small"><i class="fas fa-eye"></i></button></td>`;
+                    fragment.appendChild(tr);
+                });
+            }
+            tbody.innerHTML = ''; tbody.appendChild(fragment);
+        }
+
+        function filterAndRenderSellers() {
+            const searchTerm = (document.getElementById('sellerSearch')?.value || '').toLowerCase();
+            const statusFilter = document.getElementById('sellerStatusFilter')?.value || '';
+            const filtered = allSellers.filter(seller => {
+                const matchesSearch = !searchTerm || String(seller.name || seller.username || '').toLowerCase().includes(searchTerm) || String(seller.email || '').toLowerCase().includes(searchTerm);
+                const matchesStatus = !statusFilter || String(seller.status || 'active').toLowerCase() === statusFilter.toLowerCase();
+                return matchesSearch && matchesStatus;
+            });
+            renderSellersTable(filtered);
+        }
+
+        function setupFilterListeners() {
+            document.getElementById('orderSearch')?.addEventListener('input', filterAndRenderOrders);
+            document.getElementById('orderStatusFilter')?.addEventListener('change', filterAndRenderOrders);
+            document.getElementById('userSearch')?.addEventListener('input', filterAndRenderUsers);
+            document.getElementById('userRoleFilter')?.addEventListener('change', filterAndRenderUsers);
+            document.getElementById('userStatusFilter')?.addEventListener('change', filterAndRenderUsers);
+            document.getElementById('fileSearch')?.addEventListener('input', filterAndRenderFiles);
+            document.getElementById('sellerSearch')?.addEventListener('input', filterAndRenderSellers);
+            document.getElementById('sellerStatusFilter')?.addEventListener('change', filterAndRenderSellers);
+        }
+
+        // ============= INITIALIZATION =============
         
-        const matchesStatus = !statusFilter || String(seller.status || 'active').toLowerCase() === statusFilter.toLowerCase();
-        
-        return matchesSearch && matchesStatus;
-      });
-
-      renderSellersTable(filtered);
-    }
-
-    function renderSellersTable(sellers) {
-      const tbody = document.getElementById('sellersTableBody');
-      const fragment = document.createDocumentFragment();
-
-      if (sellers.length === 0) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = '<td colspan="7" style="padding: 20px; text-align: center;">No sellers found</td>';
-        fragment.appendChild(tr);
-      } else {
-        sellers.forEach(seller => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>${seller.name || seller.username}</strong></td>
-            <td>${seller.email}</td>
-            <td>${seller.productCount || 0}</td>
-            <td>${formatCurrency(seller.revenue || 0)}</td>
-            <td>${seller.rating ? seller.rating.toFixed(1) : 'N/A'} ⭐</td>
-            <td><span class="badge badge-success">${seller.status || 'Active'}</span></td>
-            <td><button class="btn btn-primary btn-small"><i class="fas fa-eye"></i></button></td>
-          `;
-          fragment.appendChild(tr);
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDashboardData();
+            setupFilterListeners();
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.classList.remove('active');
+                });
+            });
+            // check query params for upload/update success
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('fileUploaded') === '1' || params.get('fileUpdated') === '1') {
+                alert('✅ File saved successfully');
+                params.delete('fileUploaded');
+                params.delete('fileUpdated');
+                window.history.replaceState({}, '', window.location.pathname);
+            }
         });
-      }
-
-      tbody.innerHTML = '';
-      tbody.appendChild(fragment);
-    }
-
-    // INIT EVENT LISTENERS
-    function setupFilterListeners() {
-      // Orders filters
-      document.getElementById('orderSearch')?.addEventListener('input', filterAndRenderOrders);
-      document.getElementById('orderStatusFilter')?.addEventListener('change', filterAndRenderOrders);
-
-      // Users filters
-      document.getElementById('userSearch')?.addEventListener('input', filterAndRenderUsers);
-      document.getElementById('userRoleFilter')?.addEventListener('change', filterAndRenderUsers);
-      document.getElementById('userStatusFilter')?.addEventListener('change', filterAndRenderUsers);
-
-      // Files filters
-      document.getElementById('fileSearch')?.addEventListener('input', filterAndRenderFiles);
-
-      // Sellers filters
-      document.getElementById('sellerSearch')?.addEventListener('input', filterAndRenderSellers);
-      document.getElementById('sellerStatusFilter')?.addEventListener('change', filterAndRenderSellers);
-    }
-
-    // INIT
-    window.addEventListener('DOMContentLoaded', () => {
-      loadDashboardData();
-      setupFilterListeners();
-      document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) modal.classList.remove('active');
-        });
-      });
-    });
-  </script>
+    </script>
 </body>
 </html>

@@ -9,7 +9,7 @@ const fileSchema = new mongoose.Schema({
   storedFilename: String,
   price: {type: Number, required: true, default: 0},
   uploadedAt: { type: Date, default: Date.now },
-  category: { type: String, required: true },
+  category: { type: String, default: 'Uncategorized' },
   imageType:{type:String},
   fileSize: Number,
   downloadCount: { type: Number, default: 0 },
@@ -23,17 +23,19 @@ const fileSchema = new mongoose.Schema({
   },
 },{timestamps:true});
 
-// 2. ADD THIS FUNCTION to automatically create a slug before saving
-// This will work for all NEW files you upload in the future.
-fileSchema.pre("save", function (next) {
+// Pre-save hook to auto-generate slug
+fileSchema.pre("save", async function() {
   if (this.isModified("filename") || this.isNew) {
-    // Create the slug from the filename and add a unique suffix
     const randomSuffix = (Math.random() + 1).toString(36).substring(7);
     this.slug = `${slugify(this.filename)}-${randomSuffix}`;
   }
-  next();
 });
 
-const File = mongoose.models.doccollection || mongoose.model("doccollection", fileSchema);
+let File;
+if (mongoose.models.doccollection) {
+  File = mongoose.models.doccollection;
+} else {
+  File = mongoose.model("doccollection", fileSchema);
+}
 
 module.exports = File;

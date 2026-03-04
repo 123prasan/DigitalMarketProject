@@ -1,242 +1,354 @@
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717"
-     crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
 <%-include("header")%>
-<div class="downloads-component-scope-xyz">
-    
-    <div class="downloads-component__container">
-        <div class="downloads-component__card">
-            <div class="downloads-component__header">
-                <h1 class="downloads-component__title">My Downloads</h1>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<div class="downloads-master-v">
+    <div class="v-container">
+        
+        <div class="v-page-header">
+            <h1 class="v-page-title">My Downloads</h1>
+            <p class="v-page-subtitle">Access and redownload your purchased files and resources.</p>
+        </div>
+
+        <div class="v-controls-card">
+            
+            <div class="v-search-bar">
+                <i class="fa-solid fa-search v-search-icon"></i>
+                <input type="search" id="downloadsSearchInput" class="v-search-input" placeholder="Search your downloads...">
             </div>
 
-            <div class="downloads-component__search-bar">
-                <i class="fa-solid fa-search downloads-component__search-icon"></i>
-                <input type="search" id="downloadsSearchInput" class="downloads-component__search-input"
-                    placeholder="Search by filename...">
-            </div>
-
-            <div class="downloads-component__filter-bar">
-                <div class="downloads-component__filter-group">
-                    <label for="fileTypeFilter" class="downloads-component__filter-label">File Type</label>
-                    <select id="downloadsFileTypeFilter" class="downloads-component__filter-select">
+            <div class="v-filters-row">
+                <div class="v-filter-group type-group">
+                    <label for="downloadsFileTypeFilter" class="v-filter-label">File Type</label>
+                    <select id="downloadsFileTypeFilter" class="v-filter-input">
                         <option value="all">All Types</option>
                     </select>
                 </div>
-                 <div class="downloads-component__filter-group">
-                    <label for="startDateFilter" class="downloads-component__filter-label">Start Date</label>
-                    <input type="date" id="downloadsStartDateFilter" class="downloads-component__filter-input">
+                <div class="v-filter-group date-group">
+                    <label for="downloadsStartDateFilter" class="v-filter-label">Start Date</label>
+                    <input type="date" id="downloadsStartDateFilter" class="v-filter-input">
                 </div>
-                 <div class="downloads-component__filter-group">
-                    <label for="endDateFilter" class="downloads-component__filter-label">End Date</label>
-                    <input type="date" id="downloadsEndDateFilter" class="downloads-component__filter-input">
+                <div class="v-filter-group date-group">
+                    <label for="downloadsEndDateFilter" class="v-filter-label">End Date</label>
+                    <input type="date" id="downloadsEndDateFilter" class="v-filter-input">
                 </div>
             </div>
+            
+        </div>
 
-            <ul class="downloads-component__list" id="downloadsListComponent">
+        <div class="v-list-card">
+            <ul class="v-downloads-list" id="downloadsListComponent">
                 <%# The content of this list will be rendered by client-side JavaScript %>
             </ul>
         </div>
-    </div>
 
+    </div>
 </div>
 
 <style>
-    /* --- UNIFIED "RETRO-BRUTALIST" THEME --- */
-    .downloads-component-scope-xyz {
-        --font-main: 'Montserrat', sans-serif;
-        --color-bg: #fff;
-        --color-black: #000000;
-        --color-primary: #ff66a3; /* Pink */
-        --color-secondary: #4ade80; /* Green */
-        --color-accent: #ffd60a;   /* Yellow */
-        --color-focus: #1ac2ff;   /* Blue */
-        --transition-fast: 0.2s ease;
+    /* ==========================================================================
+       MY DOWNLOADS: GEMINI / MATERIAL 3 THEME
+       ========================================================================== */
+    .downloads-master-v {
+        --v-bg: #f0f4f9;           /* Gemini Soft Background */
+        --v-surface: #ffffff;      /* Clean White Cards */
+        --v-text-main: #1f1f1f;
+        --v-text-muted: #444746;
+        
+        --v-primary: #0b57d0;      /* Google Blue */
+        --v-primary-hover: #1a73e8;
+        --v-primary-bg: #e8f0fe;
+        
+        --v-border: #dadce0;
+        
+        --v-font-display: 'Outfit', sans-serif;
+        --v-font-sans: 'Inter', sans-serif;
+        
+        --v-radius-sm: 8px;
+        --v-radius-md: 12px;
+        --v-radius-lg: 24px;
+        --v-radius-pill: 9999px;
+        
+        --v-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --v-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+        
+        --v-transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 
-        font-family: var(--font-main);
-        background-color: var(--color-accent); /* Use a theme color for the page background */
-        color: var(--color-black);
-        display: flex;
-        flex-direction: column;
+        font-family: var(--v-font-sans);
+        background-color: var(--v-bg);
+        color: var(--v-text-main);
         min-height: 100vh;
-        /* padding: 2rem; */
+        padding-top: clamp(24px, 4vw, 48px);
+        padding-bottom: 80px;
+        -webkit-font-smoothing: antialiased;
     }
 
-    .downloads-component-scope-xyz * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+    .downloads-master-v * { box-sizing: border-box; }
+
+    /* Desktop Structure */
+    .v-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 clamp(16px, 4vw, 32px);
     }
 
-    .downloads-component-scope-xyz .downloads-component__container {
-        width: 100%;
-        flex-grow: 1;
-        /* display: flex; */
-        /* align-items: center;
-        justify-content: center; */
+    /* Page Header */
+    .v-page-header { margin-bottom: 32px; }
+    .v-page-title {
+        font-family: var(--v-font-display);
+        font-size: clamp(2rem, 4vw, 2.5rem);
+        font-weight: 600;
+        color: var(--v-text-main);
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
     }
+    .v-page-subtitle { font-size: 1.05rem; color: var(--v-text-muted); margin: 0; }
 
-    .downloads-component-scope-xyz .downloads-component__card {
-        background: var(--color-bg);
-        border: 4px solid var(--color-black);
-        box-shadow: 12px 12px 0 var(--color-black);
-        padding: 40px;
-        width: 100%;
-        max-width:100%;
+    /* Controls Card */
+    .v-controls-card {
+        background: var(--v-surface);
+        border: 1px solid var(--v-border);
+        border-radius: var(--v-radius-lg);
+        padding: clamp(16px, 3vw, 24px);
+        box-shadow: var(--v-shadow-sm);
+        margin-bottom: 24px;
         display: flex;
         flex-direction: column;
-        gap: 24px;
-        height:100%;
-        /* max-height: calc(100vh - 4rem); */
+        gap: 20px;
     }
 
-    .downloads-component-scope-xyz .downloads-component__header {
-        padding-bottom: 24px;
-        border-bottom: 4px solid var(--color-black);
-        flex-shrink: 0;
-    }
-
-    .downloads-component-scope-xyz .downloads-component__title {
-        font-size: 2rem;
-        font-weight: 900;
-        text-transform: uppercase;
-    }
-
-    .downloads-component-scope-xyz .downloads-component__search-bar {
-        position: relative;
-        width: 100%;
-        flex-shrink: 0;
-    }
-    .downloads-component-scope-xyz .downloads-component__search-icon {
+    /* Search Bar */
+    .v-search-bar { position: relative; width: 100%; }
+    .v-search-icon {
         position: absolute;
-        left: 16px;
+        left: 20px;
         top: 50%;
         transform: translateY(-50%);
-        color: var(--color-black);
+        color: var(--v-text-muted);
+        font-size: 1.1rem;
     }
-    .downloads-component-scope-xyz .downloads-component__search-input {
+    .v-search-input {
         width: 100%;
-        padding: 14px 16px 14px 44px;
-        background-color: var(--color-bg);
-        border: 3px solid var(--color-black);
-        box-shadow: 4px 4px 0 var(--color-black);
-        color: var(--color-black);
-        font-size: 16px;
-        font-weight: 600;
+        padding: 16px 20px 16px 52px;
+        background-color: var(--v-bg);
+        border: 1px solid transparent;
+        border-radius: var(--v-radius-pill);
+        color: var(--v-text-main);
+        font-size: 1.05rem;
+        font-family: var(--v-font-sans);
         outline: none;
-        transition: var(--transition-fast);
+        transition: var(--v-transition);
     }
-    .downloads-component-scope-xyz .downloads-component__search-input:focus {
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 var(--color-black);
+    .v-search-input:focus {
+        background-color: var(--v-surface);
+        border-color: var(--v-primary);
+        box-shadow: 0 0 0 4px var(--v-primary-bg);
     }
+    .v-search-input::placeholder { color: #80868b; }
 
-    .downloads-component-scope-xyz .downloads-component__filter-bar {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 16px;
-        flex-shrink: 0;
-    }
-    .downloads-component-scope-xyz .downloads-component__filter-group {
-        display: flex;
-        flex-direction: column;
-    }
-    .downloads-component-scope-xyz .downloads-component__filter-label {
-        font-size: 12px;
-        color: #555;
-        margin-bottom: 8px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-    .downloads-component-scope-xyz .downloads-component__filter-select, 
-    .downloads-component-scope-xyz .downloads-component__filter-input {
-        padding: 10px;
-        background-color: var(--color-bg);
-        border: 3px solid var(--color-black);
-        color: var(--color-black);
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .downloads-component-scope-xyz .downloads-component__list {
-        list-style: none;
-        overflow-y: auto;
-        padding-right: 12px;
-        flex-grow: 1;
-    }
-    .downloads-component-scope-xyz .downloads-component__list::-webkit-scrollbar { width: 8px; }
-    .downloads-component-scope-xyz .downloads-component__list::-webkit-scrollbar-track { background: #eee; }
-    .downloads-component-scope-xyz .downloads-component__list::-webkit-scrollbar-thumb { background: var(--color-black); }
-
-    .downloads-component-scope-xyz .downloads-component__list-message {
-        text-align: center;
-        padding: 60px 20px;
-        color: var(--color-black);
-        font-weight: 700;
-    }
-    .downloads-component-scope-xyz .downloads-component__list-message-icon {
-        font-size: 48px;
-        margin-bottom: 16px;
-        display: block;
-    }
-
-    .downloads-component-scope-xyz .downloads-component__item {
+    /* Filters Desktop */
+    .v-filters-row {
         display: flex;
         align-items: center;
-        padding: 16px 8px;
-        transition: background-color var(--transition-fast);
         gap: 16px;
-        border-bottom: 2px solid #ddd;
+        flex-wrap: wrap;
     }
-    .downloads-component-scope-xyz .downloads-component__item:hover {
-        background-color: #f0f0f0;
+    .v-filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+        min-width: 200px;
+    }
+    .v-filter-label {
+        font-size: 0.85rem;
+        color: var(--v-text-muted);
+        font-weight: 500;
+        padding-left: 4px;
+    }
+    .v-filter-input {
+        padding: 12px 16px;
+        background-color: var(--v-surface);
+        border: 1px solid var(--v-border);
+        border-radius: var(--v-radius-md);
+        color: var(--v-text-main);
+        font-size: 0.95rem;
+        font-family: var(--v-font-sans);
+        outline: none;
+        transition: var(--v-transition);
+        cursor: pointer;
+    }
+    .v-filter-input:focus, .v-filter-input:hover {
+        border-color: var(--v-text-muted);
+        background-color: var(--v-bg);
     }
 
-    .downloads-component-scope-xyz .downloads-component__file-icon-wrapper {
+    /* List Card */
+    .v-list-card {
+        background: var(--v-surface);
+        border: 1px solid var(--v-border);
+        border-radius: var(--v-radius-lg);
+        box-shadow: var(--v-shadow-sm);
+        overflow: hidden;
+    }
+    .v-downloads-list { list-style: none; margin: 0; padding: 0; }
+
+    /* Empty State */
+    .v-list-message {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--v-text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+    .v-list-message-icon { font-size: 40px; color: var(--v-border); }
+    .v-list-message-text { font-size: 1.1rem; font-weight: 500; }
+
+    /* List Items Desktop */
+    .v-list-item {
+        display: flex;
+        align-items: center;
+        padding: 20px 24px;
+        gap: 20px;
+        border-bottom: 1px solid var(--v-border);
+        transition: var(--v-transition);
+        background: var(--v-surface);
+    }
+    .v-list-item:last-child { border-bottom: none; }
+    .v-list-item:hover { background-color: var(--v-bg); }
+
+    /* Item Icon */
+    .v-item-icon-wrapper {
         flex-shrink: 0;
-        width: 48px; height: 48px;
-        background-color: var(--color-primary);
-        border: 3px solid var(--color-black);
+        width: 52px; 
+        height: 52px;
+        background-color: var(--v-primary-bg);
+        color: var(--v-primary);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 22px;
-        color: var(--color-black);
     }
-    .downloads-component-scope-xyz .downloads-component__file-info { flex-grow: 1; min-width: 0; }
-    .downloads-component-scope-xyz .downloads-component__file-name {
-        font-weight: 700;
-        color: var(--color-black);
-        margin-bottom: 4px;
+
+    /* Item Info */
+    .v-item-info { 
+        flex-grow: 1; 
+        min-width: 0; 
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .v-item-name {
+        font-family: var(--v-font-display);
+        font-weight: 500;
+        color: var(--v-text-main);
+        font-size: 1.15rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: 16px;
     }
-    .downloads-component-scope-xyz .downloads-component__download-date { font-size: 13px; color: #555; }
+    .v-item-date { font-size: 0.9rem; color: var(--v-text-muted); }
 
-    .downloads-component-scope-xyz .downloads-component__redownload-btn {
+    /* Action Button */
+    .v-btn-redownload {
         flex-shrink: 0;
-        padding: 8px 16px;
-        background-color: var(--color-accent);
-        color: var(--color-black);
-        border: 3px solid var(--color-black);
-        box-shadow: 3px 3px 0 var(--color-black);
-        font-size: 14px;
-        font-weight: 700;
+        padding: 10px 20px;
+        background-color: var(--v-surface);
+        color: var(--v-primary);
+        border: 1px solid var(--v-border);
+        border-radius: var(--v-radius-pill);
+        font-size: 0.95rem;
+        font-weight: 500;
+        font-family: var(--v-font-sans);
         cursor: pointer;
-        transition: var(--transition-fast);
+        transition: var(--v-transition);
         text-decoration: none;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
     }
+    .v-btn-redownload:hover {
+        background-color: var(--v-primary-bg);
+        border-color: transparent;
+        color: var(--v-primary-hover);
+    }
 
-    .downloads-component-scope-xyz .downloads-component__redownload-btn:hover {
-        background-color: var(--color-focus);
-        transform: translate(1.5px, 1.5px);
-        box-shadow: 1.5px 1.5px 0 var(--color-black);
+    /* ==========================================================================
+       MOBILE OPTIMIZATION
+       ========================================================================== */
+    @media (max-width: 768px) {
+        /* Optimize Controls for Mobile Grid */
+        .v-controls-card {
+            border-radius: var(--v-radius-md);
+        }
+        .v-search-input {
+            padding: 14px 16px 14px 44px;
+            font-size: 1rem;
+        }
+        .v-filters-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns for dates */
+            gap: 12px;
+        }
+        .v-filter-group {
+            min-width: 0; /* Reset flex min-width for grid */
+        }
+        .v-filter-group.type-group {
+            grid-column: 1 / -1; /* File Type takes full width */
+        }
+        .v-filter-input {
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+
+        /* Optimize List Items for Mobile */
+        .v-list-card {
+            border-radius: var(--v-radius-md);
+        }
+        .v-list-item {
+            padding: 16px;
+            gap: 12px;
+        }
+        .v-item-icon-wrapper {
+            width: 44px;
+            height: 44px;
+            font-size: 18px;
+        }
+        .v-item-name {
+            font-size: 1rem;
+            white-space: normal; /* Allow wrapping on very small screens */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .v-item-date {
+            font-size: 0.8rem;
+        }
+
+        /* Shrink Button to Icon-only to save horizontal space */
+        .v-btn-redownload {
+            padding: 10px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+        }
+        .v-btn-text {
+            display: none; /* Hide the word "Redownload" */
+        }
+        .v-btn-icon {
+            font-size: 1.1rem;
+            margin: 0;
+        }
     }
 </style>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- DOM ELEMENTS ---
@@ -266,8 +378,8 @@
                 case 'xlsx': case 'csv': return 'fa-solid fa-file-excel';
                 case 'ppt': case 'pptx': return 'fa-solid fa-file-powerpoint';
                 case 'doc': case 'docx': return 'fa-solid fa-file-word';
-                case 'jpg': case 'jpeg': case 'png': case 'gif': return 'fa-solid fa-file-image';
-                default: return 'fa-solid fa-file';
+                case 'jpg': case 'jpeg': case 'png': case 'gif': return 'fa-solid fa-image';
+                default: return 'fa-regular fa-file-lines';
             }
         };
 
@@ -283,39 +395,35 @@
         const renderDownloads = (files) => {
             downloadsList.innerHTML = '';
             if (files.length === 0) {
-                downloadsList.innerHTML = `<li class="downloads-component__list-message"><i class="fa-solid fa-box-open downloads-component__list-message-icon"></i>No files match your filters.</li>`;
+                downloadsList.innerHTML = `
+                    <li class="v-list-message">
+                        <i class="fa-solid fa-folder-open v-list-message-icon"></i>
+                        <span class="v-list-message-text">No files match your search.</span>
+                    </li>`;
                 return;
             }
 
             const fragment = document.createDocumentFragment();
             files.forEach((file, index) => {
                 const item = document.createElement('li');
-                // **UPDATED** to use unique class
-                item.className = 'downloads-component__item';
-                item.style.animationDelay = `${index * 50}ms`;
+                item.className = 'v-list-item';
                 
                 const downloadDate = new Date(file.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-                // **UPDATED** to use unique classes
                 item.innerHTML = `
-                    <div class="downloads-component__file-icon-wrapper"><i class="${getFileIconClass(file.filename)}"></i></div>
-                    <div class="downloads-component__file-info">
-                        <div class="downloads-component__file-name" title="${file.filename}">${file.filename}</div>
-                        <div class="downloads-component__download-date">Downloaded on: ${downloadDate}</div>
+                    <div class="v-item-icon-wrapper"><i class="${getFileIconClass(file.filename)}"></i></div>
+                    <div class="v-item-info">
+                        <div class="v-item-name" title="${file.filename}">${file.filename}</div>
+                        <div class="v-item-date">Downloaded: ${downloadDate}</div>
                     </div>
-                    <a href="/download/?file_id=${file.fileId}" class="downloads-component__redownload-btn">
-                        <i class="fa-solid fa-download downloads-component__redownload-btn-icon"></i>
-                        <span class="downloads-component__redownload-btn-text">Redownload</span>
+                    <a href="/download/?file_id=${file.fileId}" class="v-btn-redownload" title="Redownload">
+                        <i class="fa-solid fa-cloud-arrow-down v-btn-icon"></i>
+                        <span class="v-btn-text">Redownload</span>
                     </a>
                 `;
                 fragment.appendChild(item);
             });
             downloadsList.appendChild(fragment);
-
-            setTimeout(() => {
-                const items = downloadsList.querySelectorAll('.downloads-component__item');
-                items.forEach(item => item.classList.add('animate-in'));
-            }, 10);
         };
 
         // --- FILTERING LOGIC ---
@@ -386,7 +494,11 @@
             populateFileTypeFilter();
             renderDownloads(allDownloads);
         } else {
-            downloadsList.innerHTML = `<li class="downloads-component__list-message"><i class="fa-solid fa-cloud-download downloads-component__list-message-icon"></i>You have not downloaded any files yet.</li>`;
+            downloadsList.innerHTML = `
+                <li class="v-list-message">
+                    <i class="fa-solid fa-cloud-arrow-down v-list-message-icon"></i>
+                    <span class="v-list-message-text">You haven't downloaded any files yet.</span>
+                </li>`;
         }
     });
 </script>

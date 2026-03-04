@@ -8,8 +8,33 @@ const Usertransaction = require('../models/userTransactions');
 const UserPurchase = require('../models/userPerchase');
 const UserDownload = require('../models/userDownloads');
 const Account = require('../models/Account');
+const Coupon = require('../models/couponschema.js');
 const dayjs = require('dayjs');
+const AWS = require('aws-sdk');
 const { EmailService } = require('../test');
+const path = require('path');
+const fs = require('fs');
+const { getSignedUrl: getCloudfrontSignedUrl } = require('@aws-sdk/cloudfront-signer');
+
+// CloudFront config (optional - set via env)
+const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN || 'd2q25uqlym20sh.cloudfront.net';
+const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID || process.env.CLOUDFRONT_KEYPAIR_ID;
+let CLOUDFRONT_PRIVATE_KEY = null;
+try {
+  const privateKeyPath = path.join(__dirname, '..', 'private_keys', 'cloudfront-private-key.pem');
+  if (fs.existsSync(privateKeyPath)) {
+    CLOUDFRONT_PRIVATE_KEY = fs.readFileSync(privateKeyPath, 'utf8');
+  }
+} catch (e) {
+  console.warn('CloudFront private key not loaded:', e.message || e);
+}
+
+// Configure S3
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION || 'ap-south-1',
+});
 
 // Middleware to check if user is authenticated admin
 const authenticateAdmin = require('./authentication/reaquireAuth');
@@ -42,7 +67,7 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
       dateTime: { $gte: startPrev, $lte: endPrev },
     });
 
-    // Calculate metrics
+    // Calculate metrics for the current 7‑day window
     const totalOrders = ordersCurrent.length;
     const failedOrders = ordersCurrent.filter((o) =>
       o.status.toLowerCase().includes('unsuccessfull')
@@ -51,7 +76,12 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
       o.status.toLowerCase().includes('successfull')
     ).length;
 
-    // Calculate trends
+    // Also compute all-time totals so the dashboard can show lifetime numbers
+    const totalOrdersAll = await Order.countDocuments({});
+    const failedOrdersAll = await Order.countDocuments({ status: /unsuccessfull/i });
+    const successfulOrdersAll = await Order.countDocuments({ status: /successfull/i });
+
+    // Calculate trends for weekly comparison
     const calcTrend = (current, prev) => {
       if (prev === 0) return current === 0 ? 0 : 100;
       return (((current - prev) / prev) * 100).toFixed(1);
@@ -75,12 +105,17 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
     res.json({
       success: true,
       stats: {
-        totalOrders,
+        // lifetime figures
+        totalOrders: totalOrdersAll,
+        failedOrders: failedOrdersAll,
+        successfulOrders: successfulOrdersAll,
+        // weekly figures (used for trends/charts)
+        weeklyTotalOrders: totalOrders,
+        weeklyFailedOrders: failedOrders,
+        weeklySuccessfulOrders: successfulOrders,
         totalOrdersTrend: calcTrend(totalOrders, ordersPrev.length),
-        failedOrders,
         failedOrdersTrend: calcTrend(failedOrders, 
           ordersPrev.filter(o => o.status.toLowerCase().includes('unsuccessfull')).length),
-        successfulOrders,
         successfulOrdersTrend: calcTrend(successfulOrders,
           ordersPrev.filter(o => o.status.toLowerCase().includes('successfull')).length),
         totalAmount,
@@ -161,10 +196,23 @@ router.get('/files', authenticateAdmin, async (req, res) => {
       .sort({ uploadedAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
+    
+    // Debug logging
+    console.log(`📁 Files API - Total: ${total}, Page: ${page}, Limit: ${parseInt(limit)}, Returned: ${files.length}`);
+
+    // attach coupon code if available
+    const filesWithCoupon = await Promise.all(
+      files.map(async (f) => {
+        const coupon = await Coupon.findOne({ file: f._id });
+        const obj = f.toObject();
+        obj.couponCode = coupon ? coupon.code : '';
+        return obj;
+      })
+    );
 
     res.json({
       success: true,
-      files,
+      files: filesWithCoupon,
       pagination: {
         total,
         page: parseInt(page),
@@ -343,10 +391,13 @@ router.delete('/orders/:orderId', authenticateAdmin, async (req, res) => {
  * DELETE /api/admin/files/:id
  * Delete a file
  */
+// delete a single file
 router.delete('/files/:fileId', authenticateAdmin, async (req, res) => {
   try {
     const { fileId } = req.params;
     const result = await File.findByIdAndDelete(fileId);
+    // also remove any coupon linked
+    await Coupon.deleteMany({ file: fileId });
     
     if (!result) {
       return res.status(404).json({ success: false, message: 'File not found' });
@@ -354,6 +405,86 @@ router.delete('/files/:fileId', authenticateAdmin, async (req, res) => {
 
     res.json({ success: true, message: 'File deleted successfully' });
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// bulk delete files
+router.delete('/files', authenticateAdmin, async (req, res) => {
+  try {
+    const { fileIds } = req.body;
+    if (!Array.isArray(fileIds)) {
+      return res.status(400).json({ success: false, message: 'fileIds array required' });
+    }
+    const result = await File.deleteMany({ _id: { $in: fileIds } });
+    await Coupon.deleteMany({ file: { $in: fileIds } });
+    res.json({ success: true, deletedCount: result.deletedCount });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+/**
+ * GET /api/admin/download-file
+ * Download a file from S3 by fileId
+ */
+router.get('/download-file', authenticateAdmin, async (req, res) => {
+  try {
+    const { fileId, filename } = req.query;
+    
+    // Get file from MongoDB to get the S3 key
+    const file = await File.findById(fileId);
+    if (!file) {
+      return res.status(404).json({ success: false, message: 'File not found' });
+    }
+
+    // fileUrl contains the S3 key for the main file - normalize to avoid double-prefix
+    let s3Key = String(file.fileUrl || '').trim();
+    if (!s3Key) return res.status(404).json({ success: false, message: 'File has no S3 key' });
+    if (!s3Key.startsWith('main-files/')) s3Key = `main-files/${s3Key}`;
+
+    // Determine proper download filename with extension
+    const ext = path.extname(s3Key) || '';
+    const rawName = String(filename || '').trim();
+    const hasExt = rawName && path.extname(rawName);
+    const safeBase = rawName
+      ? rawName.replace(/[^a-zA-Z0-9 _.-]/g, '_')
+      : `file_${file._id}`;
+    const finalFilename = hasExt ? safeBase : `${safeBase}${ext}`;
+
+    // Try CloudFront signed URL first (if private key + key pair id available)
+    let signedUrl;
+    try {
+      if (CLOUDFRONT_PRIVATE_KEY && CLOUDFRONT_KEY_PAIR_ID) {
+        // Include response-content-disposition as query param so S3 will set Content-Disposition
+        const disposition = `attachment; filename="${finalFilename}"`;
+        const unsignedUrl = `https://${CLOUDFRONT_DOMAIN}/${encodeURIComponent(s3Key).replace(/%2F/g, '/')}` + `?response-content-disposition=${encodeURIComponent(disposition)}`;
+
+        signedUrl = getCloudfrontSignedUrl({
+          url: unsignedUrl,
+          keyPairId: CLOUDFRONT_KEY_PAIR_ID,
+          privateKey: CLOUDFRONT_PRIVATE_KEY,
+          dateLessThan: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        console.log(`Using CloudFront signed URL for ${s3Key}`);
+        return res.redirect(signedUrl);
+      }
+    } catch (cfErr) {
+      console.error('CloudFront signing failed, falling back to S3 signed URL:', cfErr);
+    }
+
+    // Fallback: S3 signed URL with Content-Disposition
+    signedUrl = s3.getSignedUrl('getObject', {
+      Bucket: 'vidyarimain2',
+      Key: s3Key,
+      Expires: 15 * 60, // 15 minutes
+      ResponseContentDisposition: `attachment; filename="${finalFilename}"`,
+    });
+
+    // Redirect to the signed URL for download
+    res.redirect(signedUrl);
+  } catch (error) {
+    console.error('Download error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

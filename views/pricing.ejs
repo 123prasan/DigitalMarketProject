@@ -4,254 +4,448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pricing | Vidyari Marketplace</title>
     
+    <title>Pricing & Creator Fees | Sell Study Materials on Vidyari</title>
+    <meta name="description" content="Simple, transparent pricing for creators on Vidyari. Keep 70% of every sale with no monthly fees, hidden costs, or setup charges. Start selling your knowledge today!">
+    <meta name="keywords" content="Vidyari pricing, creator fees, sell study notes, make money selling courses, digital product marketplace fees, online learning platform">
+    <meta name="author" content="Vidyari">
+    <link rel="canonical" href="https://www.vidyari.com/pricing" />
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
+    <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU" />
+    
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <link rel="alternate icon" type="image/png" href="/images/logo.png">
+
+    <meta property="og:title" content="Vidyari Creator Pricing - Keep 70% of Your Sales">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.vidyari.com/pricing">
+    <meta property="og:image" content="https://www.vidyari.com/images/logo.svg">
+    <meta property="og:description" content="Simple, transparent pricing for creators. No monthly fees. No hidden costs. We only make money when you do.">
+    <meta property="og:site_name" content="Vidyari">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Vidyari Creator Pricing">
+    <meta name="twitter:description" content="Simple, transparent pricing for creators. Keep 70% of your sales.">
+    <meta name="twitter:image" content="https://www.vidyari.com/images/logo.svg">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "How do I get paid on Vidyari?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Once you reach the threshold amount of ₹1000, you can send a withdrawal request. Your total earnings will be credited directly to your connected UPI ID or bank account."
+        }
+      }, {
+        "@type": "Question",
+        "name": "What can I sell on Vidyari?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "If it's digital, you can sell it. Study guides, video lectures, source code, research papers, and complete online courses."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Are there any hidden fees or monthly subscriptions?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Vidyari charges a simple, flat 30% fee on each sale. This covers all processing fees, file hosting, and customer support. There are no monthly subscriptions to use the platform."
+        }
+      }]
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            pink: '#ff66a3',
-                            green: '#4ade80',
-                            yellow: '#ffd60a',
-                            blue: '#1ac2ff',
-                            purple: '#b1a1ff',
-                            orange: '#ff90e8'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { -webkit-font-smoothing: antialiased; }
-        /* Custom border thickness for brutalist look */
-        .brutal-border { border: 3px solid #000; }
-        .brutal-border-b { border-bottom: 3px solid #000; }
-        .brutal-border-t { border-top: 3px solid #000; }
-        .brutal-border-r { border-right: 3px solid #000; }
+        /* ==========================================================================
+           VIDYARI PRICING: GEMINI / MATERIAL 3 THEME
+           ========================================================================== */
         
-        /* Accordion transition */
-        .accordion-content { transition: max-height 0.3s ease-in-out; }
+        :root {
+            --v-bg: #f0f4f9;           
+            --v-surface: #ffffff;      
+            
+            --v-text-main: #1f1f1f;
+            --v-text-muted: #444746;
+            
+            --v-primary: #0b57d0;      
+            --v-primary-hover: #1a73e8;
+            --v-primary-bg: #e8f0fe;
+            
+            --v-success: #146c2e;
+            --v-success-bg: #e6f4ea;
+            
+            --v-border: #e3e3e3;
+            
+            --v-font-display: 'Outfit', sans-serif;
+            --v-font-sans: 'Inter', sans-serif;
+            
+            --v-radius-sm: 12px;
+            --v-radius-md: 16px;
+            --v-radius-lg: 24px;
+            --v-radius-pill: 9999px;
+            
+            --v-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --v-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --v-shadow-hover: 0 8px 24px rgba(11, 87, 208, 0.08);
+            
+            --v-transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .v-pricing-master {
+            background-color: var(--v-bg);
+            color: var(--v-text-main);
+            font-family: var(--v-font-sans);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .v-pricing-master *, .v-pricing-master *::before, .v-pricing-master *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .v-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Typography */
+        .v-heading-xl {
+            font-family: var(--v-font-display);
+            font-size: clamp(3rem, 6vw, 4.5rem);
+            font-weight: 700;
+            color: var(--v-text-main);
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 24px;
+        }
+        .v-heading-lg {
+            font-family: var(--v-font-display);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            color: var(--v-text-main);
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+        .v-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: var(--v-text-muted);
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .v-hero {
+            text-align: center;
+            padding: clamp(60px, 10vw, 100px) 20px;
+            position: relative;
+        }
+        .v-eyebrow {
+            display: inline-block;
+            background: var(--v-primary-bg);
+            color: var(--v-primary);
+            padding: 6px 16px;
+            border-radius: var(--v-radius-pill);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+
+        /* Split Pricing Grid */
+        .v-pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: -20px;
+            margin-bottom: 80px;
+        }
+        @media (max-width: 768px) {
+            .v-pricing-grid { grid-template-columns: 1fr; }
+        }
+
+        .v-price-card {
+            background: var(--v-surface);
+            border: 1px solid var(--v-border);
+            border-radius: var(--v-radius-lg);
+            padding: 48px 32px;
+            text-align: center;
+            box-shadow: var(--v-shadow-sm);
+            transition: var(--v-transition);
+        }
+        .v-price-card:hover {
+            box-shadow: var(--v-shadow-md);
+            transform: translateY(-4px);
+        }
+        .v-price-card.highlight {
+            background: var(--v-primary-bg);
+            border-color: var(--v-primary);
+            box-shadow: var(--v-shadow-md);
+        }
+
+        .v-price-percent {
+            font-family: var(--v-font-display);
+            font-size: clamp(4rem, 8vw, 6rem);
+            font-weight: 800;
+            color: var(--v-text-main);
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+        .v-price-card.highlight .v-price-percent { color: var(--v-primary); }
+        
+        .v-price-label {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--v-text-main);
+            margin-bottom: 16px;
+        }
+        .v-price-desc {
+            color: var(--v-text-muted);
+            font-size: 1.1rem;
+            line-height: 1.5;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Features Section */
+        .v-features-section {
+            background: var(--v-surface);
+            border-radius: var(--v-radius-lg);
+            padding: clamp(40px, 8vw, 80px) clamp(24px, 5vw, 60px);
+            margin-bottom: 80px;
+            box-shadow: var(--v-shadow-sm);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        @media (max-width: 992px) {
+            .v-features-section { grid-template-columns: 1fr; gap: 40px; }
+        }
+        
+        .v-feature-list { list-style: none; display: flex; flex-direction: column; gap: 24px; }
+        .v-feature-item { display: flex; align-items: flex-start; gap: 16px; }
+        .v-feature-icon {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--v-success-bg); color: var(--v-success);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0; margin-top: 4px;
+        }
+        .v-feature-text h4 { font-size: 1.2rem; font-weight: 600; margin-bottom: 4px; }
+        .v-feature-text p { color: var(--v-text-muted); font-size: 1rem; }
+
+        /* FAQ Section */
+        .v-faq-section {
+            max-width: 800px;
+            margin: 0 auto 100px;
+        }
+        .v-faq-item {
+            background: var(--v-surface);
+            border: 1px solid var(--v-border);
+            border-radius: var(--v-radius-md);
+            margin-bottom: 16px;
+            transition: var(--v-transition);
+            overflow: hidden;
+        }
+        .v-faq-item:hover { border-color: #d2e3fc; box-shadow: var(--v-shadow-sm); }
+        .v-faq-trigger {
+            padding: 24px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; width: 100%; text-align: left;
+            font-family: var(--v-font-display); font-size: 1.2rem; font-weight: 500;
+            color: var(--v-text-main); background: transparent; border: none; outline: none;
+        }
+        .v-faq-icon {
+            color: var(--v-text-muted); transition: transform 0.3s ease;
+        }
+        .v-faq-item.active .v-faq-icon {
+            transform: rotate(45deg); color: var(--v-primary);
+        }
+        .v-faq-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .v-faq-content-inner {
+            padding: 0 24px 24px;
+            color: var(--v-text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .v-cta-section {
+            background: var(--v-surface);
+            border-radius: var(--v-radius-lg);
+            padding: clamp(60px, 10vw, 100px) 20px;
+            text-align: center;
+            box-shadow: var(--v-shadow-sm);
+            margin-bottom: 60px;
+        }
+        .v-btn-primary {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--v-primary); color: white;
+            padding: 18px 40px; border-radius: var(--v-radius-pill);
+            font-family: var(--v-font-sans); font-size: 1.15rem; font-weight: 500;
+            text-decoration: none; transition: var(--v-transition);
+            margin-top: 32px;
+        }
+        .v-btn-primary:hover {
+            background: var(--v-primary-hover);
+            box-shadow: var(--v-shadow-hover);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
-<body class="bg-white text-black font-sans text-base font-normal leading-relaxed tracking-tight">
+<body>
 
-    <div class="flex flex-col lg:flex-row min-h-screen">
-        <main class="flex-1 flex flex-col lg:h-screen overflow-y-auto">
-            <div class="flex-1 flex flex-col">
-
-                <header class="relative flex flex-col items-center justify-center h-auto brutal-border-b bg-brand-yellow text-center gap-12 px-8 pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-28 lg:pb-36 overflow-hidden">
-                    <div class="flex flex-col max-w-2xl gap-8 lg:gap-10 lg:max-w-4xl relative z-10">
-                        <div class="text-xl md:text-2xl font-bold uppercase tracking-widest">Pricing</div>
-                        <h1 class="text-5xl font-black md:text-6xl md:leading-[1.1] lg:text-8xl">Simple, transparent pricing.</h1>
-                        <div class="text-xl md:text-2xl font-medium">We only make money when you do. No monthly fees, no hidden costs.</div>
-                    </div>
-                    
-                    <div class="absolute -left-10 top-10 w-32 h-32 bg-brand-pink rounded-full brutal-border z-0 hidden lg:block"></div>
-                    <div class="absolute right-10 bottom-10 w-24 h-24 bg-brand-blue brutal-border rotate-12 z-0 hidden lg:block"></div>
-                </header>
-
-                <div class="flex flex-col brutal-border-b overflow-hidden lg:flex-row">
-                    <div class="bg-brand-pink flex items-center justify-center text-center lg:w-1/2 px-4 py-16 md:p-24 xl:p-32 border-b-3 border-black lg:border-b-0 lg:brutal-border-r">
-                        <div class="max-w-xl space-y-12 md:space-y-8">
-                            <div class="space-y-8">
-                                <h3 class="font-black text-6xl lg:text-7xl">70%</h3>
-                                <p class="text-xl lg:text-3xl font-bold uppercase tracking-wide">You Keep</p>
-                                <p class="text-lg lg:text-xl font-medium mt-4">
-                                    Per transaction on every lecture note, video course, or digital asset you sell.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-brand-green flex items-center justify-center text-center lg:w-1/2 px-4 py-16 md:p-16 xl:p-32">
-                        <div class="max-w-xl space-y-12 md:space-y-8">
-                            <div class="space-y-8">
-                                <h3 class="font-black text-6xl lg:text-7xl">30%</h3>
-                                <p class="text-xl lg:text-3xl font-bold uppercase tracking-wide">Platform Fee</p>
-                                <p class="text-lg lg:text-xl font-medium mt-4">
-                                    Covers secure file hosting, global payment processing, and bandwidth.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="px-8 pb-24 pt-20 md:px-12 md:pb-32 md:pt-24 bg-white">
-                    <div class="mx-auto max-w-5xl">
-                        <div class="flex flex-col items-start gap-7 text-left md:items-center md:text-center">
-                            <div class="text-lg font-bold uppercase lg:text-xl text-brand-blue">All-In-One Infrastructure</div>
-                            <h2 class="text-5xl font-black md:text-6xl lg:text-7xl xl:text-8xl">Focus on creating.</h2>
-                            <div class="max-w-3xl text-lg md:text-2xl lg:leading-10 xl:text-3xl font-medium">Whether you're selling course videos, e-books, or robust code templates, we handle the heavy lifting of delivery and security so you can scale your audience.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="brutal-border-b"></div>
-
-                <div class="flex flex-col brutal-border-b overflow-hidden lg:flex-row">
-                    <div class="bg-brand-purple h-auto lg:w-1/2 lg:brutal-border-r border-b-3 border-black lg:border-b-0 flex items-center justify-center p-12">
-                        <div class="w-full max-w-sm aspect-square bg-white brutal-border shadow-[12px_12px_0px_rgba(0,0,0,1)] flex items-center justify-center rounded-xl rotate-3">
-                            <i class="fas fa-server text-8xl"></i>
-                        </div>
-                    </div>
-                    <div class="bg-black text-white py-16 px-8 flex items-center justify-center sm:p-12 md:p-16 lg:w-1/2 xl:p-24">
-                        <div class="max-w-2xl space-y-12 md:space-y-8 w-full">
-                            <div class="space-y-4">
-                                <h3 class="font-black text-4xl lg:text-5xl xl:text-6xl text-brand-yellow">
-                                    Everything included
-                                </h3>
-                            </div>
-                            <ul class="grid grid-cols-1 gap-6 pl-0 text-xl font-medium">
-                                <li class="flex items-start gap-4">
-                                    <span class="text-brand-green text-2xl">→</span>
-                                    Instant storefront creation upon upload
-                                </li>
-                                <li class="flex items-start gap-4">
-                                    <span class="text-brand-green text-2xl">→</span>
-                                    Support for massive files up to 8GB
-                                </li>
-                                <li class="flex items-start gap-4">
-                                    <span class="text-brand-green text-2xl">→</span>
-                                    Built-in video player for your courses
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mx-auto my-16 max-w-6xl px-8 md:my-24 md:px-28 md:text-center lg:my-32">
-                    <h2 class="text-5xl font-black md:text-6xl lg:text-7xl">
-                        Frequently asked questions
-                    </h2>
-                </div>
-
-                <div class="mx-auto mb-16 px-8 md:px-28 w-full max-w-6xl">
-                    
-                    <div class="accordion-item">
-                        <div class="flex justify-between items-center py-6 sm:py-12 md:py-12 brutal-border-t cursor-pointer" data-accordion-trigger>
-                            <div class="flex items-center w-full gap-[4vw] md:gap-[8vw]">
-                                <div class="w-12 h-12 shrink-0 flex items-center justify-center">
-                                    <svg width="48" height="48" viewBox="0 0 32 32">
-                                        <line x1="8" y1="16" x2="24" y2="16" stroke="black" stroke-width="4"></line>
-                                        <line x1="16" y1="8" x2="16" y2="24" stroke="black" stroke-width="4" class="icon-line transition-transform duration-300"></line>
-                                    </svg>
-                                </div>
-                                <h3 class="text-2xl md:text-4xl font-bold">How do I get paid?</h3>
-                            </div>
-                        </div>
-                        <div class="accordion-content overflow-hidden max-h-0" data-accordion-content>
-                            <div class="pl-[calc(3rem+4vw)] md:pl-[calc(3rem+8vw)] pb-12">
-                                <p class="text-xl md:text-2xl font-medium max-w-4xl">
-                                    Once you reach the threshold amount of ₹1000, you can send a withdrawal request. Your total earnings will be credited directly to your connected UPI ID.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <div class="flex justify-between items-center py-6 sm:py-12 md:py-12 brutal-border-t cursor-pointer" data-accordion-trigger>
-                            <div class="flex items-center w-full gap-[4vw] md:gap-[8vw]">
-                                <div class="w-12 h-12 shrink-0 flex items-center justify-center">
-                                    <svg width="48" height="48" viewBox="0 0 32 32">
-                                        <line x1="8" y1="16" x2="24" y2="16" stroke="black" stroke-width="4"></line>
-                                        <line x1="16" y1="8" x2="16" y2="24" stroke="black" stroke-width="4" class="icon-line transition-transform duration-300"></line>
-                                    </svg>
-                                </div>
-                                <h3 class="text-2xl md:text-4xl font-bold">What can I sell?</h3>
-                            </div>
-                        </div>
-                        <div class="accordion-content overflow-hidden max-h-0" data-accordion-content>
-                            <div class="pl-[calc(3rem+4vw)] md:pl-[calc(3rem+8vw)] pb-12">
-                                <p class="text-xl md:text-2xl font-medium max-w-4xl">
-                                    If it's digital, you can sell it. Study guides, video lectures, source code, research papers, and complete online courses. 
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <div class="flex justify-between items-center py-6 sm:py-12 md:py-12 brutal-border-t cursor-pointer" data-accordion-trigger>
-                            <div class="flex items-center w-full gap-[4vw] md:gap-[8vw]">
-                                <div class="w-12 h-12 shrink-0 flex items-center justify-center">
-                                    <svg width="48" height="48" viewBox="0 0 32 32">
-                                        <line x1="8" y1="16" x2="24" y2="16" stroke="black" stroke-width="4"></line>
-                                        <line x1="16" y1="8" x2="16" y2="24" stroke="black" stroke-width="4" class="icon-line transition-transform duration-300"></line>
-                                    </svg>
-                                </div>
-                                <h3 class="text-2xl md:text-4xl font-bold">Are there any hidden fees?</h3>
-                            </div>
-                        </div>
-                        <div class="accordion-content overflow-hidden max-h-0" data-accordion-content>
-                            <div class="pl-[calc(3rem+4vw)] md:pl-[calc(3rem+8vw)] pb-12">
-                                <p class="text-xl md:text-2xl font-medium max-w-4xl">
-                                    No. Vidyari charges a simple, flat 30% fee on each sale. This covers all processing fees, file hosting, and customer support. No monthly subscriptions to use the platform.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="flex flex-col items-center justify-center text-center brutal-border-t bg-brand-blue gap-8 px-8 py-16 lg:px-[4vw] lg:py-24 lg:gap-16">
-                    <h2 class="text-5xl font-black sm:text-6xl lg:text-8xl max-w-5xl">
-                        Your Knowledge.<br>Your Currency.
-                    </h2>
-                    
-                    <div class="relative inline-block group mt-4">
-                        <div class="absolute inset-0 bg-brand-yellow brutal-border transition-transform duration-150 z-0"></div>
-                        <div class="absolute inset-0 bg-brand-pink brutal-border transition-transform duration-150 group-hover:translate-x-2 group-hover:translate-y-2 z-10"></div>
-                        <a href="/register" class="relative inline-flex no-underline items-center justify-center brutal-border transition-all duration-150 group-hover:-translate-x-2 group-hover:-translate-y-2 z-20 w-full lg:w-auto cursor-pointer h-16 px-10 text-xl lg:h-20 lg:px-14 lg:text-2xl font-black bg-black text-white uppercase tracking-wider">
-                            Start Selling Now
-                        </a>
-                    </div>
-                </div>
-
+    <div class="v-pricing-master">
+        
+        <header class="v-hero">
+            <div class="v-container">
+                <span class="v-eyebrow">Pricing</span>
+                <h1 class="v-heading-xl">Simple, transparent pricing.</h1>
+                <p class="v-subtitle">We only make money when you do. No monthly subscriptions, no setup fees, and absolutely no hidden costs.</p>
             </div>
-        </main>
+        </header>
+
+        <div class="v-container">
+            
+            <div class="v-pricing-grid">
+                <div class="v-price-card highlight">
+                    <div class="v-price-percent">70%</div>
+                    <div class="v-price-label">You Keep</div>
+                    <p class="v-price-desc">Your earnings on every lecture note, video course, or digital asset you sell.</p>
+                </div>
+                <div class="v-price-card">
+                    <div class="v-price-percent">30%</div>
+                    <div class="v-price-label">Platform Fee</div>
+                    <p class="v-price-desc">Covers secure file hosting, global payment processing, and high-speed bandwidth.</p>
+                </div>
+            </div>
+
+            <div class="v-features-section">
+                <div>
+                    <span class="v-eyebrow" style="background: var(--v-success-bg); color: var(--v-success);">All-In-One Infrastructure</span>
+                    <h2 class="v-heading-lg" style="margin-bottom: 24px; text-align: left;">Focus on creating.</h2>
+                    <p class="v-subtitle" style="margin: 0; text-align: left; max-width: 100%;">Whether you're selling course videos, e-books, or robust code templates, we handle the heavy lifting of delivery and security so you can focus entirely on scaling your audience.</p>
+                </div>
+                
+                <ul class="v-feature-list">
+                    <li class="v-feature-item">
+                        <div class="v-feature-icon"><i class="fas fa-check"></i></div>
+                        <div class="v-feature-text">
+                            <h4>Instant Storefront</h4>
+                            <p>Beautiful product pages generated automatically upon file upload.</p>
+                        </div>
+                    </li>
+                    <li class="v-feature-item">
+                        <div class="v-feature-icon"><i class="fas fa-check"></i></div>
+                        <div class="v-feature-text">
+                            <h4>Massive File Support</h4>
+                            <p>Upload and sell large resource bundles and files up to 8GB seamlessly.</p>
+                        </div>
+                    </li>
+                    <li class="v-feature-item">
+                        <div class="v-feature-icon"><i class="fas fa-check"></i></div>
+                        <div class="v-feature-text">
+                            <h4>Built-in Video Player</h4>
+                            <p>Native, secure streaming integration for your premium video courses.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="v-faq-section">
+                <h2 class="v-heading-lg" style="text-align: center; margin-bottom: 48px;">Frequently asked questions</h2>
+                
+                <div class="v-faq-item">
+                    <button class="v-faq-trigger">
+                        How do I get paid?
+                        <i class="fas fa-plus v-faq-icon"></i>
+                    </button>
+                    <div class="v-faq-content">
+                        <div class="v-faq-content-inner">
+                            Once your earnings reach the threshold amount of ₹1000, you can request a withdrawal. Your total earnings will be credited directly to your connected UPI ID or bank account.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="v-faq-item">
+                    <button class="v-faq-trigger">
+                        What can I sell?
+                        <i class="fas fa-plus v-faq-icon"></i>
+                    </button>
+                    <div class="v-faq-content">
+                        <div class="v-faq-content-inner">
+                            If it's digital, you can sell it. Our creators successfully sell study guides, video lectures, software source code, research papers, design templates, and complete online courses.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="v-faq-item">
+                    <button class="v-faq-trigger">
+                        Are there any hidden fees?
+                        <i class="fas fa-plus v-faq-icon"></i>
+                    </button>
+                    <div class="v-faq-content">
+                        <div class="v-faq-content-inner">
+                            No. Vidyari charges a simple, flat 30% fee on each sale. This single fee covers all payment gateway processing charges, file hosting, bandwidth, and customer support. There are zero monthly subscription fees to use the platform.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="v-cta-section">
+                <h2 class="v-heading-xl" style="margin-bottom: 16px;">Your Knowledge.<br>Your Currency.</h2>
+                <p class="v-subtitle">Join thousands of creators earning money doing what they love.</p>
+                <a href="/dashboard" class="v-btn-primary">
+                    Start Selling Now <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const accordions = document.querySelectorAll('.accordion-item');
+            const faqItems = document.querySelectorAll('.v-faq-item');
             
-            accordions.forEach(item => {
-                const trigger = item.querySelector('[data-accordion-trigger]');
-                const content = item.querySelector('[data-accordion-content]');
-                const icon = item.querySelector('.icon-line');
+            faqItems.forEach(item => {
+                const trigger = item.querySelector('.v-faq-trigger');
+                const content = item.querySelector('.v-faq-content');
                 
                 trigger.addEventListener('click', () => {
-                    const isOpen = content.style.maxHeight !== '0px' && content.style.maxHeight !== '';
+                    const isOpen = item.classList.contains('active');
                     
-                    // Close all others
-                    accordions.forEach(otherItem => {
-                        const otherContent = otherItem.querySelector('[data-accordion-content]');
-                        const otherIcon = otherItem.querySelector('.icon-line');
-                        otherContent.style.maxHeight = '0px';
-                        otherIcon.style.transform = 'rotate(0deg)';
+                    // Close all other accordions
+                    faqItems.forEach(otherItem => {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.v-faq-content').style.maxHeight = null;
                     });
 
                     // Open clicked if it wasn't already open
                     if (!isOpen) {
+                        item.classList.add('active');
                         content.style.maxHeight = content.scrollHeight + 'px';
-                        icon.style.transform = 'rotate(-90deg)';
-                        icon.style.transformOrigin = 'center';
                     }
                 });
             });
         });
     </script>
 
-    </body>
+</body>
 </html>
 <%-include("footer")%>

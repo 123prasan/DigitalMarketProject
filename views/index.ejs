@@ -10,7 +10,7 @@
     <meta name="keywords" content="study materials, academic notes, research papers, educational resources, online learning, course marketplace, student notes, Vidyari, digital products">
     <meta name="author" content="Vidyari Inc.">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="theme-color" content="#ff66a3">
+    <meta name="theme-color" content="#f0f4f9">
     
     <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU" />
     
@@ -66,7 +66,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;800;900&family=Space+Grotesk:wght@700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -75,100 +75,81 @@
 
     <style>
         /* ==========================================================================
-           VIDYARI LIBRARY: ADVANCED SCOPED NEO-BRUTALIST ARCHITECTURE
-           STRICT ISOLATION: No :root. 100% Scoped to .vidyari-library-master
+           VIDYARI LIBRARY: GEMINI / MATERIAL 3 ARCHITECTURE
            ========================================================================== */
         
         .vidyari-library-master {
             /* 1. Design Tokens & Core Variables */
-            --v-bg: #fdfdfc; 
-            --v-black: #09090b;
-            --v-white: #ffffff;
-            --v-pink: #ff66a3; 
-            --v-green: #4ade80; 
-            --v-yellow: #ffd60a; 
-            --v-blue: #1ac2ff; 
-            --v-purple: #c4b5fd;
-            --v-error: #ff3333;
+            --v-bg: #f0f4f9;           /* Gemini Soft Gray/Blue */
+            --v-surface: #ffffff;      /* Clean White */
+            --v-text-main: #1f1f1f;
+            --v-text-muted: #444746;
             
-            --v-gray-50: #fafafa;
-            --v-gray-100: #f4f4f5;
-            --v-gray-200: #e4e4e7;
-            --v-gray-300: #d4d4d8;
-            --v-gray-600: #52525b;
-            --v-gray-800: #27272a;
+            --v-primary: #0b57d0;      /* Google Blue */
+            --v-primary-hover: #1a73e8;
+            --v-primary-bg: #e8f0fe;
+            
+            --v-border: #e3e3e3;
+            --v-success: #146c2e;
+            --v-success-bg: #e6f4ea;
             
             --v-font-sans: 'Inter', sans-serif;
-            --v-font-head: 'Montserrat', sans-serif;
-            --v-font-loud: 'Space Grotesk', sans-serif;
+            --v-font-display: 'Outfit', sans-serif;
             
-            --v-radius-sm: 8px;
+            --v-radius-sm: 12px;
             --v-radius-md: 16px;
             --v-radius-lg: 24px;
-            --v-radius-xl: 32px;
             --v-radius-pill: 9999px;
             
-            --v-border-thin: 2px solid var(--v-black);
-            --v-border-thick: 4px solid var(--v-black);
-            --v-border-heavy: 6px solid var(--v-black);
+            --v-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --v-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --v-shadow-float: 0 8px 24px rgba(11, 87, 208, 0.08);
             
-            --v-shadow-sm: 4px 4px 0 var(--v-black);
-            --v-shadow-md: 8px 8px 0 var(--v-black);
-            --v-shadow-lg: 12px 12px 0 var(--v-black);
-            --v-shadow-hover: 16px 16px 0 var(--v-black);
-            
-            --v-ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --v-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-            --v-transition: 0.25s var(--v-ease-smooth);
+            --v-transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 
             background-color: var(--v-bg);
-            color: var(--v-black);
+            color: var(--v-text-main);
             font-family: var(--v-font-sans);
             min-height: 100vh;
             position: relative;
             z-index: 1;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            
-            /* FIX: Prevent horizontal scrolling layout breaks */
             overflow-x: hidden; 
         }
 
         /* 2. Base Resets within Scope */
         .vidyari-library-master *, .vidyari-library-master *::before, .vidyari-library-master *::after { box-sizing: border-box; }
-        .vidyari-library-master h1, .vidyari-library-master h2, .vidyari-library-master h3, .vidyari-library-master h4, .vidyari-library-master h5 { font-family: var(--v-font-head); font-weight: 900; margin: 0; color: var(--v-black); line-height: 1.2; }
+        .vidyari-library-master h1, .vidyari-library-master h2, .vidyari-library-master h3 { font-family: var(--v-font-display); font-weight: 600; margin: 0; color: var(--v-text-main); line-height: 1.2; }
         .vidyari-library-master p { margin: 0; line-height: 1.6; }
-        .vidyari-library-master a { text-decoration: none; color: inherit; cursor: pointer; transition: all var(--v-transition); }
+        .vidyari-library-master a { text-decoration: none; color: inherit; cursor: pointer; transition: var(--v-transition); }
         .vidyari-library-master button { font-family: inherit; cursor: pointer; outline: none; border: none; background: none; }
         .vidyari-library-master ul, .vidyari-library-master ol { margin: 0; padding: 0; list-style: none; }
 
-        /* Custom Scrollbar for Master Container */
-        .vidyari-library-master ::-webkit-scrollbar { width: 10px; height: 10px; }
-        .vidyari-library-master ::-webkit-scrollbar-track { background: var(--v-gray-100); border-left: var(--v-border-thin); }
-        .vidyari-library-master ::-webkit-scrollbar-thumb { background: var(--v-black); border-radius: var(--v-radius-pill); border: 2px solid var(--v-gray-100); }
-        .vidyari-library-master ::-webkit-scrollbar-thumb:hover { background: var(--v-pink); }
+        /* Custom Scrollbar */
+        .vidyari-library-master ::-webkit-scrollbar { width: 8px; height: 8px; }
+        .vidyari-library-master ::-webkit-scrollbar-track { background: transparent; }
+        .vidyari-library-master ::-webkit-scrollbar-thumb { background: #dadce0; border-radius: 10px; }
+        .vidyari-library-master ::-webkit-scrollbar-thumb:hover { background: #bdc1c6; }
 
-        /* 3. Typography & Utility Classes */
-        .v-text-loud { font-family: var(--v-font-loud); font-size: clamp(2.5rem, 5vw, 4.5rem); letter-spacing: -2px; text-transform: uppercase; text-shadow: 4px 4px 0 var(--v-pink); margin-bottom: 0.5rem; }
-        .v-text-sub { font-size: 1.15rem; font-weight: 700; color: var(--v-gray-800); margin-bottom: 2rem; }
-        .v-text-outline { color: transparent; -webkit-text-stroke: 2px var(--v-black); }
-        .v-font-bold { font-weight: 800; }
-        .v-uppercase { text-transform: uppercase; }
+        /* 3. Typography */
+        .v-text-loud { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -1px; margin-bottom: 0.5rem; }
+        .v-text-sub { font-size: 1.1rem; color: var(--v-text-muted); margin-bottom: 2rem; }
 
         /* 4. Core Layout Architecture */
         .v-layout { display: flex; max-width: 1600px; margin: 0 auto; align-items: flex-start; }
         
         .v-sidebar { 
-            width: 340px; background: var(--v-white); border-right: var(--v-border-heavy); 
-            padding: 32px 24px; ; position: sticky; top: 80px; 
+            width: 320px; background: var(--v-bg);
+            padding: 32px; position: sticky; top: 80px; 
             overflow-y: auto; flex-shrink: 0; z-index: 100; 
-            display: flex; flex-direction: column; gap: 32px;
+            display: flex; flex-direction: column; gap: 24px;
+            height: calc(100vh - 80px);
         }
         
         .v-main { flex: 1; padding: 40px; min-width: 0; position: relative; }
         
         .v-overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); 
             z-index: 2000; opacity: 0; visibility: hidden; transition: opacity var(--v-transition); 
         }
         .v-overlay.is-active { opacity: 1; visibility: visible; }
@@ -176,319 +157,250 @@
         /* 5. Mobile Responsive Overrides */
         @media (max-width: 1024px) {
             .v-sidebar { 
-                position: fixed; top: 0; left: -25px; width: 100%; max-width: 350px; height: 100vh; 
-                z-index: 2010; transform: translateX(-100%); transition: transform 0.4s var(--v-ease-bounce); 
-                box-shadow: 20px 0 0 rgba(0,0,0,0.8); border-right: none;
+                position: fixed; top: 0; left: 0; width: 300px; height: 100vh; 
+                z-index: 2010; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+                box-shadow: var(--v-shadow-float); background: var(--v-surface); padding: 24px;
             }
             .v-sidebar.is-open { transform: translateX(0); }
-            .v-main { padding: 24px 16px 140px 16px; }
-            .v-text-loud { text-shadow: 3px 3px 0 var(--v-pink); letter-spacing: -1px; }
+            .v-main { padding: 24px 16px 100px 16px; }
         }
 
         /* 6. Intelligent Search Engine UI */
-        .v-search-container { position: relative; margin-bottom: 32px; z-index: 50; width: 100%; }
+        .v-search-container { position: relative; margin-bottom: 24px; z-index: 50; width: 100%; max-width: 800px; }
         
         .v-search-box { 
-            display: flex; background: var(--v-white); border: var(--v-border-heavy); 
-            border-radius: var(--v-radius-lg); box-shadow: var(--v-shadow-md); 
-            transition: all var(--v-transition); align-items: center; padding-left: 20px; 
+            display: flex; background: var(--v-surface); border: 1px solid var(--v-border); 
+            border-radius: var(--v-radius-pill); box-shadow: var(--v-shadow-sm); 
+            transition: var(--v-transition); align-items: center; padding-left: 24px; 
         }
-        .v-search-box.is-focused { transform: translate(-2px, -2px); box-shadow: var(--v-shadow-hover); border-color: var(--v-blue); }
+        .v-search-box.is-focused { box-shadow: var(--v-shadow-md); border-color: var(--v-primary); }
         
-        .v-search-icon { font-size: 1.5rem; color: var(--v-gray-800); }
+        .v-search-icon { font-size: 1.2rem; color: var(--v-text-muted); }
         .v-search-input { 
-            flex: 1; border: none; outline: none; padding: 24px 20px; 
-            font-size: 1.25rem; font-weight: 800; background: transparent; color: var(--v-black); 
-            font-family: var(--v-font-sans);
-            /* FIX: Prevent flex children from expanding infinitely on small screens */
-            min-width: 0; 
+            flex: 1; border: none; outline: none; padding: 18px 16px; 
+            font-size: 1.1rem; background: transparent; color: var(--v-text-main); 
+            font-family: var(--v-font-sans); min-width: 0; 
         }
-        .v-search-input::placeholder { color: var(--v-gray-300); font-weight: 600; }
+        .v-search-input::placeholder { color: #9aa0a6; }
         
         .v-search-btn { 
-            background: var(--v-yellow); border-left: var(--v-border-heavy); 
-            border-radius: 0 18px 18px 0; padding: 0 40px; font-size: 1.2rem; font-weight: 900; 
-            font-family: var(--v-font-display); text-transform: uppercase; align-self: stretch; 
-            transition: background var(--v-transition); 
+            background: var(--v-primary); border-radius: var(--v-radius-pill); padding: 0 32px; font-size: 1rem; font-weight: 500; 
+            font-family: var(--v-font-sans); color: white; margin: 6px 6px 6px 0;
+            transition: var(--v-transition); height: 44px;
         }
-        .v-search-btn:hover { background: var(--v-pink); }
-        .v-search-btn:active { background: var(--v-blue); }
+        .v-search-btn:hover { background: var(--v-primary-hover); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
         /* 7. Real-Time Search Suggestions Dropdown */
         .v-suggest-dropdown { 
-            position: absolute; top: calc(100% + 12px); left: 0; right: 0; 
-            background: var(--v-white); border: var(--v-border-heavy); border-radius: var(--v-radius-lg); 
-            box-shadow: var(--v-shadow-lg); opacity: 0; visibility: hidden; transform: translateY(-10px); 
-            transition: all 0.3s var(--v-ease-bounce); overflow: hidden; z-index: 1000;
+            position: absolute; top: calc(100% + 8px); left: 0; right: 0; 
+            background: var(--v-surface); border: 1px solid var(--v-border); border-radius: var(--v-radius-lg); 
+            box-shadow: var(--v-shadow-float); opacity: 0; visibility: hidden; transform: translateY(-10px); 
+            transition: all 0.2s ease-out; overflow: hidden; z-index: 1000;
         }
         .v-suggest-dropdown.is-active { opacity: 1; visibility: visible; transform: translateY(0); }
         
         .v-suggest-header { 
-            padding: 16px 24px; background: var(--v-gray-100); border-bottom: var(--v-border-thin); 
-            font-size: 0.85rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; 
-            color: var(--v-gray-800); display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px; background: var(--v-bg); border-bottom: 1px solid var(--v-border); 
+            font-size: 0.85rem; font-weight: 600; color: var(--v-text-muted); display: flex; justify-content: space-between; align-items: center;
         }
         
-        .v-suggest-clear { color: var(--v-error); cursor: pointer; transition: all 0.2s; }
-        .v-suggest-clear:hover { transform: scale(1.05); text-decoration: underline; }
+        .v-suggest-clear { color: var(--v-primary); cursor: pointer; transition: var(--v-transition); }
+        .v-suggest-clear:hover { color: var(--v-primary-hover); }
         
         .v-suggest-list { max-height: 400px; overflow-y: auto; }
         
         .v-suggest-item { 
-            padding: 16px 24px; display: flex; align-items: center; gap: 16px; 
-            border-bottom: 2px solid var(--v-gray-200); cursor: pointer; 
-            transition: all 0.1s; 
+            padding: 12px 24px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: var(--v-transition); 
         }
-        .v-suggest-item:last-child { border-bottom: none; }
-        .v-suggest-item:hover, .v-suggest-item.is-selected { background: var(--v-yellow); padding-left: 32px; }
+        .v-suggest-item:hover, .v-suggest-item.is-selected { background: var(--v-bg); }
         
         .v-suggest-icon { 
-            width: 44px; height: 44px; border: var(--v-border-thin); border-radius: var(--v-radius-sm); 
-            display: grid; place-items: center; font-size: 1.2rem; background: var(--v-white); flex-shrink: 0;
+            width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 1rem; background: var(--v-surface); color: var(--v-text-muted); flex-shrink: 0;
         }
-        .v-suggest-text { flex: 1; font-size: 1.15rem; font-weight: 600; color: var(--v-gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .v-suggest-match { font-weight: 900; color: var(--v-black); text-decoration: underline; text-decoration-color: var(--v-pink); text-decoration-thickness: 3px; }
-        .v-suggest-type { font-size: 0.75rem; font-weight: 900; padding: 4px 10px; border: var(--v-border-thin); border-radius: var(--v-radius-pill); text-transform: uppercase; background: var(--v-white);}
+        .v-suggest-text { flex: 1; font-size: 1rem; color: var(--v-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .v-suggest-match { font-weight: 600; color: var(--v-primary); }
+        .v-suggest-type { font-size: 0.75rem; font-weight: 500; padding: 4px 10px; border-radius: var(--v-radius-pill); background: var(--v-bg); color: var(--v-text-muted);}
 
-        /* 8. Loading Spinner inside Search */
+        /* 8. Loading Spinner */
         .v-search-spinner { 
-            display: none; width: 28px; height: 28px; border: 4px solid var(--v-gray-200); 
-            border-top-color: var(--v-blue); border-radius: 50%; animation: v-spin 0.8s linear infinite; 
-            margin-right: 20px; 
+            display: none; width: 24px; height: 24px; border: 3px solid var(--v-border); 
+            border-top-color: var(--v-primary); border-radius: 50%; animation: v-spin 0.8s linear infinite; 
+            margin-right: 16px; 
         }
         .v-search-box.is-loading .v-search-spinner { display: block; }
         .v-search-box.is-loading .v-search-icon { display: none; }
         @keyframes v-spin { to { transform: rotate(360deg); } }
 
-        /* 9. Top Control Bar (Sort, Count, View Modes) */
+        /* 9. Top Control Bar */
         .v-controls { 
-            display: flex; justify-content: space-between; align-items: center; background: var(--v-white); 
-            border: var(--v-border-thick); border-radius: var(--v-radius-md); padding: 16px 24px; 
-            box-shadow: var(--v-shadow-sm); margin-bottom: 32px; flex-wrap: wrap; gap: 16px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 24px; flex-wrap: wrap; gap: 16px; 
         }
-        .v-controls-meta { font-size: 1.25rem; font-weight: 900; font-family: var(--v-font-display); text-transform: uppercase; }
-        .v-controls-meta span { color: var(--v-blue); font-size: 1.5rem; text-shadow: 1px 1px 0 var(--v-black); }
+        .v-controls-meta { font-size: 1rem; color: var(--v-text-muted); font-weight: 500; }
+        .v-controls-meta span { color: var(--v-text-main); font-weight: 600; }
         
-        .v-controls-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; width: 100%; justify-content: space-between; }
+        .v-controls-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
         
         .v-sort-select { 
-            border: var(--v-border-thin); border-radius: var(--v-radius-sm); padding: 12px 48px 12px 20px; 
-            font-size: 1.05rem; font-weight: 800; cursor: pointer; outline: none; appearance: none; 
-            background: var(--v-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23000000' d='M4 6l4 4 4-4z'/%3E%3C/svg%3E") no-repeat right 16px center; 
-            box-shadow: 2px 2px 0 var(--v-black); transition: all 0.1s; font-family: var(--v-font-sans);
+            border: 1px solid var(--v-border); border-radius: var(--v-radius-pill); padding: 10px 40px 10px 20px; 
+            font-size: 0.95rem; font-weight: 500; cursor: pointer; outline: none; appearance: none; color: var(--v-text-main);
+            background: var(--v-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23444746' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 16px center; 
+            transition: var(--v-transition); font-family: var(--v-font-sans);
         }
-        .v-sort-select:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--v-black); }
+        .v-sort-select:hover { background-color: var(--v-bg); }
 
-        .v-view-toggles { display: flex; gap: 8px; border-left: 3px solid var(--v-gray-200); padding-left: 20px; }
+        .v-view-toggles { display: flex; gap: 4px; background: var(--v-surface); border: 1px solid var(--v-border); border-radius: var(--v-radius-pill); padding: 4px; }
         .v-view-btn { 
-            width: 48px; height: 48px; border: var(--v-border-thin); border-radius: var(--v-radius-sm); 
-            background: var(--v-white); display: grid; place-items: center; font-size: 1.3rem; 
-            box-shadow: 2px 2px 0 var(--v-black); transition: all 0.1s; color: var(--v-gray-600);
+            width: 36px; height: 36px; border-radius: 50%; background: transparent; display: grid; place-items: center; font-size: 1.1rem; color: var(--v-text-muted); transition: var(--v-transition);
         }
-        .v-view-btn:hover { color: var(--v-black); background: var(--v-gray-100); }
-        .v-view-btn.is-active { background: var(--v-black); color: var(--v-white); box-shadow: none; transform: translate(2px, 2px); }
+        .v-view-btn:hover { color: var(--v-text-main); background: var(--v-bg); }
+        .v-view-btn.is-active { background: var(--v-primary-bg); color: var(--v-primary); }
 
         /* 10. Active Filters Pills */
-        .v-active-filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 24px; min-height: 40px;}
+        .v-active-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 24px; min-height: 36px;}
         .v-filter-pill { 
-            display: inline-flex; align-items: center; gap: 10px; background: var(--v-white); 
-            border: var(--v-border-thin); border-radius: var(--v-radius-pill); padding: 8px 20px; 
-            font-weight: 800; font-size: 0.95rem; box-shadow: 3px 3px 0 var(--v-black); 
-            animation: popIn 0.4s var(--v-ease-bounce) forwards; transform-origin: center;
+            display: inline-flex; align-items: center; gap: 8px; background: var(--v-primary-bg); color: var(--v-primary);
+            border-radius: var(--v-radius-pill); padding: 6px 16px; font-weight: 500; font-size: 0.9rem; 
+            animation: fadeIn 0.2s ease-out forwards;
         }
-        .v-filter-remove { color: var(--v-error); font-size: 1.2rem; cursor: pointer; transition: transform 0.2s; border-left: 2px solid var(--v-gray-200); padding-left: 10px; margin-left: 4px; }
-        .v-filter-remove:hover { transform: scale(1.3) rotate(90deg); }
+        .v-filter-remove { cursor: pointer; transition: var(--v-transition); opacity: 0.7; }
+        .v-filter-remove:hover { opacity: 1; transform: scale(1.2); }
 
         /* 11. Advanced File Grid System */
-        .v-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 32px; transition: all var(--v-transition); }
-        .v-grid.is-list-view { grid-template-columns: 1fr; gap: 24px; }
+        .v-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; transition: var(--v-transition); }
+        .v-grid.is-list-view { grid-template-columns: 1fr; }
         
         .v-card { 
-            background: var(--v-white); border: var(--v-border-thick); border-radius: var(--v-radius-lg); 
-            box-shadow: var(--v-shadow-md); display: flex; flex-direction: column; overflow: hidden; 
-            transition: all 0.3s var(--v-ease-bounce); position: relative; text-decoration: none; color: inherit;
+            background: var(--v-surface); border: 1px solid var(--v-border); border-radius: var(--v-radius-lg); 
+            box-shadow: var(--v-shadow-sm); display: flex; flex-direction: column; overflow: hidden; 
+            transition: var(--v-transition); position: relative; text-decoration: none; color: inherit;
         }
-        .v-card:hover { transform: translate(-6px, -6px); box-shadow: var(--v-shadow-hover); }
+        .v-card:hover { box-shadow: var(--v-shadow-md); transform: translateY(-4px); border-color: #d2e3fc; }
         
-        .v-grid.is-list-view .v-card { flex-direction: row; align-items: stretch; border-radius: var(--v-radius-md); }
+        .v-grid.is-list-view .v-card { flex-direction: row; align-items: stretch; }
         
-        .v-card-img-box { aspect-ratio: 4/3; border-bottom: var(--v-border-thick); overflow: hidden; position: relative; background: var(--v-gray-100); }
-        .v-grid.is-list-view .v-card-img-box { width: 280px; border-bottom: none; border-right: var(--v-border-thick); aspect-ratio: 16/9; flex-shrink: 0; }
+        .v-card-img-box { aspect-ratio: 16/10; border-bottom: 1px solid var(--v-border); overflow: hidden; position: relative; background: var(--v-bg); }
+        .v-grid.is-list-view .v-card-img-box { width: 280px; border-bottom: none; border-right: 1px solid var(--v-border); flex-shrink: 0; }
         
-        .v-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
-        .v-card:hover .v-card-img { transform: scale(1.08) rotate(1deg); }
+        .v-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .v-card:hover .v-card-img { transform: scale(1.05); }
         
         .v-badge { 
-            position: absolute; top: 16px; left: 16px; background: var(--v-yellow); 
-            border: var(--v-border-thin); border-radius: var(--v-radius-sm); padding: 6px 14px; 
-            font-size: 0.8rem; font-weight: 900; text-transform: uppercase; font-family: var(--v-font-display);
-            box-shadow: 2px 2px 0 var(--v-black); z-index: 10;
+            position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px);
+            border-radius: var(--v-radius-pill); padding: 4px 12px; font-size: 0.75rem; font-weight: 500; color: var(--v-text-main);
+            z-index: 10;
         }
         
-        /* Copy Link (Share) Button */
         .v-share-btn { 
-            position: absolute; top: 16px; right: 16px; width: 42px; height: 42px; 
-            background: var(--v-white); border: var(--v-border-thin); border-radius: 50%; 
-            display: grid; place-items: center; font-size: 1.1rem; color: var(--v-black); 
-            box-shadow: 2px 2px 0 var(--v-black); z-index: 20; transition: all 0.2s var(--v-ease-bounce); 
+            position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; 
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); border-radius: 50%; 
+            display: grid; place-items: center; font-size: 0.9rem; color: var(--v-text-muted); 
+            z-index: 20; transition: var(--v-transition); 
         }
-        .v-share-btn:hover { background: var(--v-blue); transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--v-black); color: var(--v-white); }
-        .v-share-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--v-black); }
+        .v-share-btn:hover { background: var(--v-primary); color: white; }
 
-        .v-card-content { padding: 24px; flex: 1; display: flex; flex-direction: column; justify-content: center;}
-        .v-card-title { font-size: 1.5rem; line-height: 1.3; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .v-card-author { font-size: 1rem; font-weight: 700; color: var(--v-gray-600); display: flex; align-items: center; gap: 8px; margin-top: auto; }
-        .v-grid.is-list-view .v-card-author { margin-top: 12px; }
+        .v-card-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .v-card-title { font-size: 1.15rem; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-card-author { font-size: 0.9rem; color: var(--v-text-muted); display: flex; align-items: center; gap: 8px; margin-top: auto; }
         
         .v-card-footer { 
-            padding: 20px 24px; border-top: var(--v-border-thick); background: var(--v-gray-50); 
+            padding: 16px 20px; border-top: 1px solid var(--v-border); background: var(--v-surface); 
             display: flex; justify-content: space-between; align-items: center; 
         }
-        .v-grid.is-list-view .v-card-footer { border-top: none; border-left: var(--v-border-thick); flex-direction: column; justify-content: center; min-width: 200px; gap: 16px; background: var(--v-white); }
+        .v-grid.is-list-view .v-card-footer { border-top: none; border-left: 1px solid var(--v-border); flex-direction: column; justify-content: center; min-width: 180px; gap: 16px; }
         
-        .v-price { font-size: 1.3rem; font-weight: 900; padding: 8px 20px; border: var(--v-border-thin); border-radius: var(--v-radius-sm); box-shadow: 3px 3px 0 var(--v-black); font-family: var(--v-font-display);}
-        .v-price.is-free { background: var(--v-green); }
-        .v-price.is-paid { background: var(--v-pink); }
+        .v-price { font-size: 1.1rem; font-weight: 600; font-family: var(--v-font-display); color: var(--v-text-main); }
+        .v-price.is-free { color: var(--v-success); background: var(--v-success-bg); padding: 4px 12px; border-radius: var(--v-radius-pill); font-size: 0.9rem;}
         
-        .v-card-action { width: 44px; height: 44px; border: var(--v-border-thin); border-radius: 50%; display: grid; place-items: center; font-size: 1.25rem; background: var(--v-white); box-shadow: 2px 2px 0 var(--v-black); transition: all 0.2s var(--v-ease-bounce); }
-        .v-card:hover .v-card-action { background: var(--v-black); color: var(--v-white); transform: rotate(-45deg) scale(1.1); box-shadow: 4px 4px 0 var(--v-primary); }
+        .v-card-action { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 1rem; background: var(--v-bg); color: var(--v-text-main); transition: var(--v-transition); }
+        .v-card:hover .v-card-action { background: var(--v-primary-bg); color: var(--v-primary); }
 
         /* 12. Sidebar Filters System */
-        .v-filter-wrap { margin-bottom: 32px; }
+        .v-filter-wrap { margin-bottom: 24px; }
         .v-filter-head { 
-            font-family: var(--v-font-display); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; 
-            margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; 
-            border-bottom: var(--v-border-thick); padding-bottom: 12px; 
+            font-family: var(--v-font-sans); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 16px; color: var(--v-text-muted); display: flex; justify-content: space-between; align-items: center; 
         }
         
-        .v-check-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; cursor: pointer; font-weight: 700; font-size: 1.1rem; transition: transform 0.1s; }
-        .v-check-row:hover { transform: translateX(4px); }
+        .v-check-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer; font-size: 0.95rem; color: var(--v-text-main); transition: var(--v-transition); }
+        .v-check-row:hover { background: rgba(31,31,31,0.04); border-radius: var(--v-radius-sm); padding: 4px 8px; margin-left: -8px; }
         
         .v-checkbox { 
-            appearance: none; width: 28px; height: 28px; border: var(--v-border-thin); border-radius: 8px; 
-            background: var(--v-white); position: relative; cursor: pointer; transition: all 0.1s; box-shadow: 2px 2px 0 var(--v-gray-300);
+            appearance: none; width: 20px; height: 20px; border: 2px solid var(--v-text-muted); border-radius: 4px; 
+            background: transparent; position: relative; cursor: pointer; transition: var(--v-transition); flex-shrink: 0;
         }
-        .v-checkbox:checked { background: var(--v-blue); box-shadow: 3px 3px 0 var(--v-black); border-color: var(--v-black); }
-        .v-checkbox:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; color: var(--v-black); font-size: 1.1rem;}
+        .v-checkbox[type="radio"] { border-radius: 50%; }
+        .v-checkbox:checked { background: var(--v-primary); border-color: var(--v-primary); }
+        .v-checkbox[type="checkbox"]:checked::after { content: ''; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        .v-checkbox[type="radio"]:checked::after { content: ''; position: absolute; left: 5px; top: 5px; width: 6px; height: 6px; background: white; border-radius: 50%; }
 
         .v-btn-block { 
-            width: 100%; border: var(--v-border-thick); border-radius: var(--v-radius-md); padding: 18px; 
-            font-family: var(--v-font-display); font-weight: 900; font-size: 1.2rem; text-transform: uppercase; 
-            cursor: pointer; box-shadow: var(--v-shadow-sm); transition: all 0.2s var(--v-ease-bounce); margin-bottom: 16px; display: flex; justify-content: center; gap: 10px; align-items: center;
+            width: 100%; border-radius: var(--v-radius-pill); padding: 12px; 
+            font-family: var(--v-font-sans); font-weight: 500; font-size: 0.95rem; 
+            cursor: pointer; transition: var(--v-transition); margin-bottom: 12px; display: flex; justify-content: center; gap: 8px; align-items: center;
         }
-        .v-btn-block.primary { background: var(--v-green); color: var(--v-black); }
-        .v-btn-block.secondary { background: var(--v-white); color: var(--v-black); }
-        .v-btn-block:hover { transform: translate(-4px, -4px); box-shadow: var(--v-shadow-md); }
-        .v-btn-block.primary:hover { background: var(--v-yellow); }
-        .v-btn-block:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--v-black); }
+        .v-btn-block.primary { background: var(--v-primary); color: white; border: none; }
+        .v-btn-block.primary:hover { background: var(--v-primary-hover); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .v-btn-block.secondary { background: transparent; color: var(--v-text-main); border: 1px solid var(--v-border); }
+        .v-btn-block.secondary:hover { background: var(--v-bg); }
 
         /* 13. Mobile Bottom Action Bar */
         .v-mobile-actions { 
-            display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            z-index: 1000; background: var(--v-white); border: var(--v-border-heavy); border-radius: var(--v-radius-pill); 
-            padding: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2), var(--v-shadow-md); gap: 12px; align-items: center;
+            display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); 
+            z-index: 1000; background: var(--v-surface); border: 1px solid var(--v-border); border-radius: var(--v-radius-pill); 
+            padding: 6px; box-shadow: var(--v-shadow-float); gap: 8px; align-items: center;
         }
         .v-mobile-btn { 
-            background: var(--v-yellow); border: var(--v-border-thin); border-radius: var(--v-radius-pill); 
-            padding: 14px 32px; font-weight: 900; font-family: var(--v-font-display); font-size: 1.1rem; text-transform: uppercase; 
-            cursor: pointer; display: flex; align-items: center; gap: 12px; transition: transform 0.1s;
+            background: var(--v-primary-bg); color: var(--v-primary); border-radius: var(--v-radius-pill); 
+            padding: 12px 24px; font-weight: 500; font-size: 0.95rem; 
+            cursor: pointer; display: flex; align-items: center; gap: 8px; border: none;
         }
-        .v-mobile-btn:active { transform: scale(0.95); }
-        .v-mobile-badge { background: var(--v-white); border: 2px solid var(--v-black); padding: 2px 10px; border-radius: 12px; font-size: 0.9rem;}
+        .v-mobile-badge { background: var(--v-primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;}
         @media (max-width: 1024px) { .v-mobile-actions { display: flex; } }
 
-        /* 14. Advanced Skeleton Loaders */
-        .v-skeleton-card { border: var(--v-border-thick); border-radius: var(--v-radius-lg); overflow: hidden; background: var(--v-white); display: flex; flex-direction: column; box-shadow: var(--v-shadow-sm); }
-        .v-skeleton-img { aspect-ratio: 4/3; border-bottom: var(--v-border-thick); background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; }
-        .v-skeleton-body { padding: 30px; flex: 1; display: flex; flex-direction: column; gap: 16px;}
-        .v-skeleton-line { height: 28px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 6px; }
+        /* 14. Skeletons */
+        .v-skeleton-card { border: 1px solid var(--v-border); border-radius: var(--v-radius-lg); overflow: hidden; background: var(--v-surface); display: flex; flex-direction: column; }
+        .v-skeleton-img { aspect-ratio: 16/10; background: linear-gradient(90deg, #f0f4f9 25%, #e8f0fe 50%, #f0f4f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; }
+        .v-skeleton-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 12px;}
+        .v-skeleton-line { height: 20px; background: linear-gradient(90deg, #f0f4f9 25%, #e8f0fe 50%, #f0f4f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 4px; }
         .v-skeleton-line.short { width: 60%; }
-        .v-skeleton-line.price { width: 40%; height: 40px; margin-top: auto; border-radius: 12px;}
-        
-        .v-grid.is-list-view .v-skeleton-card { flex-direction: row; }
-        .v-grid.is-list-view .v-skeleton-img { width: 280px; aspect-ratio: 16/9; border-bottom: none; border-right: var(--v-border-thick); }
-        
+        .v-skeleton-line.price { width: 30%; height: 24px; margin-top: auto; border-radius: 12px;}
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* 15. Pagination Component (Robust version) */
-        .v-pagination-wrap { display: flex; justify-content: center; gap: 10px; margin-top: 60px; flex-wrap: wrap; }
+        /* 15. Pagination */
+        .v-pagination-wrap { display: flex; justify-content: center; gap: 8px; margin-top: 48px; flex-wrap: wrap; }
         .v-page-btn {
-            border: var(--v-border-thin); border-radius: var(--v-radius-sm); padding: 12px 20px;
-            background: var(--v-white); font-weight: 900; font-family: var(--v-font-display);
-            font-size: 1.1rem; box-shadow: 3px 3px 0 var(--v-black); cursor: pointer; transition: all 0.2s var(--v-ease-bounce); 
+            border: 1px solid var(--v-border); border-radius: var(--v-radius-pill); padding: 8px 16px; min-width: 40px;
+            background: var(--v-surface); font-weight: 500; color: var(--v-text-main); cursor: pointer; transition: var(--v-transition); 
         }
-        .v-page-btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--v-black); background: var(--v-yellow); }
-        .v-page-btn.is-active { background: var(--v-black); color: var(--v-white); box-shadow: none; transform: translate(3px, 3px); }
-        .v-page-btn:disabled { background: var(--v-gray-200); color: var(--v-gray-600); box-shadow: none; transform: none; cursor: not-allowed; border-color: var(--v-gray-300); }
-        .v-page-nav { text-transform: uppercase; letter-spacing: 1px; }
-        .v-page-ellipsis { display: flex; align-items: end; justify-content: center; font-weight: 900; font-size: 1.5rem; letter-spacing: 2px; padding: 0 10px; color: var(--v-gray-800); }
+        .v-page-btn:hover:not(:disabled) { background: var(--v-bg); }
+        .v-page-btn.is-active { background: var(--v-primary-bg); color: var(--v-primary); border-color: transparent; }
+        .v-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* 16. Toast Notification System */
-        .v-toast-container { position: fixed; bottom: 32px; right: 32px; z-index: 9999; display: flex; flex-direction: column; gap: 16px; pointer-events: none;}
+        /* 16. Toasts */
+        .v-toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; pointer-events: none;}
         .v-toast { 
-            background: var(--v-white); border: var(--v-border-thick); border-radius: var(--v-radius-md); 
-            padding: 20px 28px; box-shadow: var(--v-shadow-md); display: flex; align-items: center; gap: 16px; 
-            font-weight: 800; font-size: 1.1rem; animation: slideLeft 0.4s var(--v-ease-bounce); pointer-events: auto;
+            background: var(--v-surface); border-radius: var(--v-radius-sm); border: 1px solid var(--v-border);
+            padding: 16px 24px; box-shadow: var(--v-shadow-float); display: flex; align-items: center; gap: 12px; 
+            font-weight: 500; font-size: 0.95rem; animation: slideUp 0.3s ease-out; pointer-events: auto; color: var(--v-text-main);
         }
-        .v-toast.success { border-left: 12px solid var(--v-green); }
-        .v-toast.error { border-left: 12px solid var(--v-error); }
-        .v-toast.info { border-left: 12px solid var(--v-blue); }
-        .v-toast i { font-size: 1.5rem; }
-        @keyframes slideLeft { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        /* 17. Empty State */
-        .v-empty-state { grid-column: 1/-1; text-align:center; padding: 100px 20px; border: 6px dashed var(--v-gray-300); border-radius: var(--v-radius-lg); background: var(--v-white); display: flex; flex-direction: column; align-items: center;}
-        .v-empty-icon { font-size: 6rem; color: var(--v-gray-300); margin-bottom: 2rem; transition: all 0.3s; }
-        .v-empty-state:hover .v-empty-icon { color: var(--v-pink); transform: scale(1.1) rotate(10deg); text-shadow: 4px 4px 0 var(--v-black);}
+        .v-toast.success i { color: var(--v-success); }
+        .v-toast.error i { color: #b3261e; }
+        .v-toast.info i { color: var(--v-primary); }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* ==========================================================================
-           FIX: MOBILE RESPONSIVE OVERRIDES FOR SEARCH BAR AND CONTROLS
-           ========================================================================== */
+        /* 17. Empty State */
+        .v-empty-state { grid-column: 1/-1; text-align:center; padding: 80px 20px; background: transparent; display: flex; flex-direction: column; align-items: center;}
+        .v-empty-icon { font-size: 4rem; color: var(--v-border); margin-bottom: 1.5rem; }
+
+        /* Mobile specific adjustments */
         @media (max-width: 768px) {
-            /* Fix Search Bar Spilling Over */
-            .v-search-box {
-                padding-left: 12px;
-                border-radius: var(--v-radius-md);
-            }
-            .v-search-icon {
-                font-size: 1.2rem;
-            }
-            .v-search-input {
-                padding: 16px 12px;
-                font-size: 1rem;
-                min-width: 0; /* Crucial: Stops the flex item from breaking parent bounds */
-            }
-            .v-search-btn {
-                padding: 0 20px;
-                font-size: 1rem;
-                border-radius: 0 12px 12px 0;
-            }
-            
-            /* Fix Suggestion Dropdown text overflowing */
-            .v-suggest-header {
-                padding: 12px 16px;
-            }
-            .v-suggest-item {
-                padding: 12px 16px;
-                gap: 12px;
-            }
-            .v-suggest-text {
-                font-size: 1rem;
-            }
-            
-            /* Stack controls vertically on phone */
-            .v-controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .v-controls-actions {
-                width: 100%;
-                justify-content: flex-start;
-            }
-            .v-sort-select {
-                width: 100%; /* Take full width on mobile for easier tapping */
-            }
+            .v-search-box { padding-left: 16px; }
+            .v-search-input { padding: 16px 12px; font-size: 1rem; }
+            .v-search-btn { padding: 0 20px; }
+            .v-controls { flex-direction: column; align-items: flex-start; }
+            .v-controls-actions { width: 100%; justify-content: space-between; }
+            .v-sort-select { width: 100%; }
         }
     </style>
 </head>
@@ -501,59 +413,48 @@
         <div class="v-layout">
             
             <aside class="v-sidebar" id="vSidebar">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="v-text-loud" style="font-size: 2.5rem; margin:0;">Filters</h2>
-                    <button class="d-lg-none" id="vCloseSidebarBtn" style="font-size: 2.5rem; color: var(--v-error);"><i class="fas fa-times-circle"></i></button>
+                <div class="d-flex justify-content-between align-items-center d-lg-none mb-2">
+                    <h2 style="font-size: 1.5rem;">Filters</h2>
+                    <button id="vCloseSidebarBtn" style="font-size: 1.5rem; color: var(--v-text-muted);"><i class="fas fa-times"></i></button>
                 </div>
 
-                <hr style="border: 2px solid var(--v-black); opacity: 1; margin: 0;">
-
-                <div class="v-filter-wrap" style="background: var(--v-yellow); padding: 20px; border: var(--v-border-thick); border-radius: var(--v-radius-md); box-shadow: var(--v-shadow-sm);">
-                    <label class="v-check-row m-0">
+                <div class="v-filter-wrap">
+                    <div class="v-filter-head">Pricing</div>
+                    <label class="v-check-row">
                         <input type="radio" name="priceTier" class="v-checkbox" value="all" checked id="vPriceAll">
-                        <span style="font-family: var(--v-font-display); text-transform: uppercase; font-weight: 900; font-size: 1.1rem;">All Resources</span>
+                        <span>All Resources</span>
                     </label>
-                    <div style="height: 12px;"></div>
-                    <label class="v-check-row m-0">
+                    <label class="v-check-row">
                         <input type="radio" name="priceTier" class="v-checkbox" value="free" id="vPriceFree">
-                        <span style="font-family: var(--v-font-display); text-transform: uppercase; font-weight: 900; font-size: 1.1rem;">Free Only</span>
+                        <span>Free Only</span>
                     </label>
-                    <div style="height: 12px;"></div>
-                    <label class="v-check-row m-0">
+                    <label class="v-check-row">
                         <input type="radio" name="priceTier" class="v-checkbox" value="paid" id="vPricePaid">
-                        <span style="font-family: var(--v-font-display); text-transform: uppercase; font-weight: 900; font-size: 1.1rem;">Premium Only</span>
+                        <span>Premium Only</span>
                     </label>
                 </div>
 
                 <div class="v-filter-wrap">
-                    <div class="v-filter-head">
-                        <span>Categories</span> <i class="fas fa-layer-group text-muted"></i>
-                    </div>
-                    <div id="vCategoryList" style="max-height: 300px; overflow-y: auto; padding-right: 12px; margin-bottom: 10px;">
-                        <div class="text-center font-weight-bold text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Loading filters...</div>
+                    <div class="v-filter-head">Categories</div>
+                    <div id="vCategoryList" style="max-height: 250px; overflow-y: auto;">
+                        <div class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i> Loading...</div>
                     </div>
                 </div>
                 
                 <div class="v-filter-wrap">
-                    <div class="v-filter-head">
-                        <span>File Types</span> <i class="fas fa-file-code text-muted"></i>
-                    </div>
-                    <div id="vFileTypeList" style="max-height: 200px; overflow-y: auto; padding-right: 12px; margin-bottom: 10px;">
-                        <div class="text-center font-weight-bold text-muted py-4"><i class="fas fa-spinner fa-spin me-2"></i> Loading types...</div>
+                    <div class="v-filter-head">File Types</div>
+                    <div id="vFileTypeList" style="max-height: 200px; overflow-y: auto;">
+                        <div class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i> Loading...</div>
                     </div>
                 </div>
 
-                <div style="position: sticky; bottom: -24px; background: var(--v-white); padding-top: 16px; border-top: 2px dashed var(--v-gray-200); z-index: 10;">
-                    <button class="v-btn-block primary" id="vApplyBtn"><i class="fas fa-bolt"></i> Apply Filters</button>
-                    <button class="v-btn-block secondary" id="vClearBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
+                <div style="position: sticky; bottom: -32px; background: var(--v-bg); padding-top: 16px; z-index: 10; border-top: 1px solid var(--v-border);">
+                    <button class="v-btn-block primary" id="vApplyBtn">Apply Filters</button>
+                    <button class="v-btn-block secondary" id="vClearBtn">Clear All</button>
                 </div>
             </aside>
 
             <main class="v-main">
-                
-                <div class="d-none d-xl-flex justify-content-center mb-5">
-                    
-                </div>
                 
                 <h1 class="v-text-loud">Library</h1>
                 <p class="v-text-sub">Explore thousands of premium academic resources, templates, and courses.</p>
@@ -569,15 +470,13 @@
                     <div class="v-suggest-dropdown" id="vSuggestPane">
                         <div class="v-suggest-header">
                             <span id="vSuggestTitle">Suggestions</span>
-                            <span class="v-suggest-clear" id="vClearHistoryBtn" style="display:none;"><i class="fas fa-trash me-1"></i> Clear</span>
+                            <span class="v-suggest-clear" id="vClearHistoryBtn" style="display:none;">Clear History</span>
                         </div>
-                        <div class="v-suggest-list" id="vSuggestList">
-                            </div>
+                        <div class="v-suggest-list" id="vSuggestList"></div>
                     </div>
                 </div>
 
-                <div class="v-active-filters" id="vActiveFilters">
-                    </div>
+                <div class="v-active-filters" id="vActiveFilters"></div>
 
                 <div class="v-controls">
                     <div class="v-controls-meta">
@@ -592,17 +491,15 @@
                         </select>
                         
                         <div class="v-view-toggles d-none d-lg-flex">
-                            <button class="v-view-btn is-active" data-view="grid" title="Grid View"><i class="fas fa-th-large"></i></button>
+                            <button class="v-view-btn is-active" data-view="grid" title="Grid View"><i class="fas fa-grid-2"></i></button>
                             <button class="v-view-btn" data-view="list" title="List View"><i class="fas fa-list"></i></button>
                         </div>
                     </div>
                 </div>
 
-                <div class="v-grid" id="vGrid">
-                    </div>
+                <div class="v-grid" id="vGrid"></div>
 
-                <div class="v-pagination-wrap" id="vPagination">
-                    </div>
+                <div class="v-pagination-wrap" id="vPagination"></div>
 
             </main>
         </div>
@@ -623,30 +520,26 @@
             
             /**
              * 1. CENTRAL STATE MANAGEMENT
-             * Strict single source of truth for the UI.
              */
             const State = {
                 query: '',
                 page: 1,
-                limit: 24, // Optimized for 3-col and 4-col grids
+                limit: 24, 
                 totalPages: 1,
                 totalItems: 0,
                 sort: 'popular',
                 filters: { priceTier: 'all', categories: [], fileTypes: [] },
                 
-                // Dynamic Data mapped from Backend
                 availableCategories: [],
                 availableFileTypes: [],
                 
                 viewMode: localStorage.getItem('v-view-mode') || 'grid',
                 recentSearches: JSON.parse(localStorage.getItem('v-recent-searches') || '[]'),
                 
-                // Network Controllers
                 isFetchingFiles: false,
                 fetchAbortController: null,
                 suggestAbortController: null,
                 
-                // Caching Engine (LRU implementation)
                 suggestionCache: new Map() 
             };
 
@@ -700,10 +593,10 @@
                 showToast: (msg, type = 'success') => {
                     const toast = document.createElement('div');
                     toast.className = `v-toast ${type}`;
-                    let icon = type === 'success' ? 'fa-check-circle text-success' : (type === 'error' ? 'fa-bomb text-danger' : 'fa-info-circle text-primary');
-                    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+                    let icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info');
+                    toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
                     DOM.toastBox.appendChild(toast);
-                    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 3000);
+                    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
                 },
                 copyToClipboard: async (text) => {
                     try {
@@ -727,14 +620,10 @@
             });
 
             /**
-             * 4. NETWORK MANAGER (REAL API CONNECTIVITY)
+             * 4. NETWORK MANAGER
              */
             const Network = {
                 
-                /**
-                 * FETCH SUGGESTIONS (REAL API)
-                 * Uses internal Map caching to prevent rapid duplicate network calls.
-                 */
                 fetchSuggestions: async (query) => {
                     const q = query.toLowerCase();
                     if(State.suggestionCache.has(q)) return State.suggestionCache.get(q);
@@ -743,7 +632,6 @@
                     State.suggestAbortController = new AbortController();
                     
                     try {
-                        // Fetching from your actual /files endpoint but limiting to 5 just to extract names
                         const res = await fetch(`/files?search=${encodeURIComponent(query)}&limit=5`, {
                             signal: State.suggestAbortController.signal
                         });
@@ -751,10 +639,8 @@
                         if(!res.ok) throw new Error('API Error');
                         const data = await res.json();
                         
-                        // Extract unique filenames from the files array
                         const suggestions = data.files ? data.files.map(f => ({ text: f.filename, category: f.category || 'Match' })) : [];
                         
-                        // Manage LRU Cache (max 20 items)
                         if(State.suggestionCache.size > 20) {
                             const firstKey = State.suggestionCache.keys().next().value;
                             State.suggestionCache.delete(firstKey);
@@ -770,9 +656,6 @@
                     }
                 },
 
-                /**
-                 * FETCH MAIN FILES (REAL API)
-                 */
                 fetchFiles: async (isInitial = false) => {
                     if(State.isFetchingFiles) return;
                     
@@ -783,7 +666,6 @@
                     Render.showSkeletons();
 
                     try {
-                        // Build Query Params exactly as your backend expects
                         const params = new URLSearchParams({ 
                             page: State.page, 
                             limit: State.limit, 
@@ -792,9 +674,8 @@
                         
                         if (State.query) params.append('search', State.query);
                         
-                        // Handle price radio buttons
                         if (State.filters.priceTier !== 'all') {
-                            params.append('price', State.filters.priceTier); // 'free' or 'paid'
+                            params.append('price', State.filters.priceTier);
                         }
                         
                         State.filters.categories.forEach(c => params.append('category', c));
@@ -807,18 +688,15 @@
                         if(!res.ok) throw new Error(`HTTP Error: ${res.status}`);
                         const data = await res.json();
 
-                        // Sync State with Backend Reality
                         State.totalItems = data.totalFiles || 0;
                         State.totalPages = data.totalPages || 1;
                         
-                        // Populate dynamic categories & types on first load
                         if(isInitial) {
                             if(data.allCategories) State.availableCategories = data.allCategories;
                             if(data.allFileTypes) State.availableFileTypes = data.allFileTypes;
                             Render.sidebarFilters();
                         }
 
-                        // Render
                         DOM.totalCount.textContent = State.totalItems;
                         if(data.files && data.files.length > 0) {
                             Render.grid(data.files);
@@ -852,18 +730,18 @@
                             </label>
                         `).join('');
                     } else {
-                        DOM.catList.innerHTML = `<div class="text-muted font-weight-bold p-2">No categories available.</div>`;
+                        DOM.catList.innerHTML = `<div class="text-muted p-2" style="font-size:0.9rem;">No categories available.</div>`;
                     }
 
                     if(State.availableFileTypes.length > 0) {
                         DOM.typeList.innerHTML = State.availableFileTypes.map(t => `
                             <label class="v-check-row">
                                 <input type="checkbox" class="v-checkbox type-check" value="${t}" ${State.filters.fileTypes.includes(t) ? 'checked' : ''}> 
-                                <span class="v-uppercase">${t}</span>
+                                <span style="text-transform: uppercase;">${t}</span>
                             </label>
                         `).join('');
                     } else {
-                        DOM.typeList.innerHTML = `<div class="text-muted font-weight-bold p-2">No file types available.</div>`;
+                        DOM.typeList.innerHTML = `<div class="text-muted p-2" style="font-size:0.9rem;">No file types available.</div>`;
                     }
                 },
 
@@ -871,11 +749,11 @@
                     let html = '';
                     let count = 0;
                     
-                    if(State.filters.priceTier === 'free') { html += `<div class="v-filter-pill">Free Only <i class="fas fa-times v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; count++; }
-                    else if(State.filters.priceTier === 'paid') { html += `<div class="v-filter-pill">Premium Only <i class="fas fa-times v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; count++; }
+                    if(State.filters.priceTier === 'free') { html += `<div class="v-filter-pill">Free Only <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; count++; }
+                    else if(State.filters.priceTier === 'paid') { html += `<div class="v-filter-pill">Premium Only <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; count++; }
                     
-                    State.filters.categories.forEach(c => { html += `<div class="v-filter-pill">${c} <i class="fas fa-times v-filter-remove" onclick="EventManager.removeFilter('cat', '${c}')"></i></div>`; count++; });
-                    State.filters.fileTypes.forEach(t => { html += `<div class="v-filter-pill v-uppercase">${t} <i class="fas fa-times v-filter-remove" onclick="EventManager.removeFilter('type', '${t}')"></i></div>`; count++; });
+                    State.filters.categories.forEach(c => { html += `<div class="v-filter-pill">${c} <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('cat', '${c}')"></i></div>`; count++; });
+                    State.filters.fileTypes.forEach(t => { html += `<div class="v-filter-pill" style="text-transform: uppercase;">${t} <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('type', '${t}')"></i></div>`; count++; });
                     
                     DOM.activeFilters.innerHTML = html;
                     DOM.mobileBadge.textContent = count;
@@ -899,10 +777,10 @@
                 emptyState: (msg = "No resources match your current filters.") => {
                     DOM.grid.innerHTML = `
                         <div class="v-empty-state">
-                            <i class="fas fa-ghost v-empty-icon"></i>
-                            <h2 class="v-text-loud" style="font-size: 3rem;">Nothing Found</h2>
-                            <p class="font-weight-bold text-muted mb-4" style="font-size: 1.25rem;">${msg}</p>
-                            <button class="v-btn-block secondary" style="max-width: 250px; border-radius: var(--v-radius-pill);" onclick="EventManager.clearFilters()">Clear Filters</button>
+                            <i class="fa-regular fa-folder-open v-empty-icon"></i>
+                            <h2 style="font-size: 1.5rem; margin-bottom: 8px;">No results found</h2>
+                            <p class="text-muted mb-4" style="font-size: 1rem;">${msg}</p>
+                            <button class="btn-pill btn-secondary" onclick="EventManager.clearFilters()">Clear Filters</button>
                         </div>`;
                 },
 
@@ -913,19 +791,19 @@
                         const fullLink = window.location.origin + link;
                         
                         return `
-                            <a href="${link}" class="v-card" style="animation: popIn 0.5s var(--v-ease-bounce) ${index * 0.05}s forwards; opacity: 0; transform: scale(0.9) translateY(20px);">
+                            <a href="${link}" class="v-card" style="animation: slideUp 0.4s ease-out ${index * 0.05}s forwards; opacity: 0; transform: translateY(20px);">
                                 <div class="v-card-img-box">
                                     <div class="v-badge">${file.category || 'Resource'}</div>
-                                    <button class="v-share-btn" data-share-link="${fullLink}" title="Copy Link"><i class="fas fa-link"></i></button>
+                                    <button class="v-share-btn" data-share-link="${fullLink}" title="Copy Link"><i class="fa-solid fa-link"></i></button>
                                     <img src="${file.previewUrl || '/images/File_Demo.svg'}" class="v-card-img" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
                                 </div>
                                 <div class="v-card-content">
                                     <h3 class="v-card-title">${file.filename}</h3>
-                                    ${file.author ? `<div class="v-card-author"><i class="fas fa-user-circle text-muted"></i> ${file.author}</div>` : ''}
+                                    ${file.author ? `<div class="v-card-author"><i class="fa-regular fa-circle-user"></i> ${file.author}</div>` : ''}
                                 </div>
                                 <div class="v-card-footer">
                                     <div class="v-price ${isFree ? 'is-free' : 'is-paid'}">${Utils.formatPrice(file.price)}</div>
-                                    <div class="v-card-action"><i class="fas fa-arrow-right"></i></div>
+                                    <div class="v-card-action"><i class="fa-solid fa-arrow-right"></i></div>
                                 </div>
                             </a>
                         `;
@@ -935,7 +813,7 @@
                 pagination: () => {
                     if (State.totalPages <= 1) { DOM.pagination.innerHTML = ''; return; }
                     
-                    let html = `<button class="v-page-btn v-page-nav" ${State.page === 1 ? 'disabled' : ''} data-p="${State.page - 1}"><i class="fas fa-chevron-left me-2"></i> Prev</button>`;
+                    let html = `<button class="v-page-btn" ${State.page === 1 ? 'disabled' : ''} data-p="${State.page - 1}"><i class="fa-solid fa-chevron-left"></i></button>`;
                     
                     let start = Math.max(1, State.page - 2);
                     let end = Math.min(State.totalPages, start + 4);
@@ -943,7 +821,7 @@
                     
                     if (start > 1) {
                         html += `<button class="v-page-btn" data-p="1">1</button>`;
-                        if (start > 2) html += `<span class="v-page-ellipsis">...</span>`;
+                        if (start > 2) html += `<span style="padding: 8px; color: var(--v-text-muted);">...</span>`;
                     }
                     
                     for (let i = start; i <= end; i++) {
@@ -951,15 +829,14 @@
                     }
                     
                     if (end < State.totalPages) {
-                        if (end < State.totalPages - 1) html += `<span class="v-page-ellipsis">...</span>`;
+                        if (end < State.totalPages - 1) html += `<span style="padding: 8px; color: var(--v-text-muted);">...</span>`;
                         html += `<button class="v-page-btn" data-p="${State.totalPages}">${State.totalPages}</button>`;
                     }
                     
-                    html += `<button class="v-page-btn v-page-nav" ${State.page === State.totalPages ? 'disabled' : ''} data-p="${State.page + 1}">Next <i class="fas fa-chevron-right ms-2"></i></button>`;
+                    html += `<button class="v-page-btn" ${State.page === State.totalPages ? 'disabled' : ''} data-p="${State.page + 1}"><i class="fa-solid fa-chevron-right"></i></button>`;
                     
                     DOM.pagination.innerHTML = html;
                     
-                    // Bind events to new buttons
                     DOM.pagination.querySelectorAll('.v-page-btn:not([disabled])').forEach(btn => {
                         btn.addEventListener('click', (e) => {
                             State.page = parseInt(e.currentTarget.dataset.p);
@@ -984,12 +861,12 @@
                     DOM.searchBox.classList.add('is-loading');
 
                     const suggestions = await Network.fetchSuggestions(query);
-                    if(!suggestions) return; // Aborted
+                    if(!suggestions) return; 
                     
                     DOM.searchBox.classList.remove('is-loading');
 
                     if(suggestions.length === 0) {
-                        DOM.suggestList.innerHTML = `<div class="p-4 text-center font-weight-bold text-muted">Press Enter to search for "${query}"</div>`;
+                        DOM.suggestList.innerHTML = `<div class="p-3 text-center text-muted" style="font-size:0.95rem;">Press Enter to search for "${query}"</div>`;
                     } else {
                         const regex = new RegExp(`(${query})`, 'gi');
                         let html = '';
@@ -999,7 +876,7 @@
                             const highlighted = text.replace(regex, '<span class="v-suggest-match">$1</span>');
                             
                             html += `<div class="v-suggest-item" data-val="${text}">
-                                        <div class="v-suggest-icon"><i class="fas fa-search"></i></div>
+                                        <div class="v-suggest-icon"><i class="fa-solid fa-search"></i></div>
                                         <div class="v-suggest-text">${highlighted}</div>
                                         <div class="v-suggest-type">${cat}</div>
                                      </div>`;
@@ -1023,7 +900,7 @@
 
                     DOM.suggestList.innerHTML = State.recentSearches.map(s => `
                         <div class="v-suggest-item" data-val="${s}">
-                            <div class="v-suggest-icon" style="border-radius: 50%;"><i class="fas fa-history text-muted"></i></div>
+                            <div class="v-suggest-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                             <div class="v-suggest-text">${s}</div>
                         </div>
                     `).join('');
@@ -1045,9 +922,8 @@
                     State.query = query;
                     State.page = 1;
                     DOM.suggestPane.classList.remove('is-active');
-                    DOM.input.blur(); // Dismiss keyboard on mobile
+                    DOM.input.blur(); 
                     
-                    // LRU Cache logic for recents
                     let recents = State.recentSearches.filter(s => s !== query);
                     recents.unshift(query);
                     if(recents.length > 5) recents.pop();
@@ -1055,7 +931,6 @@
                     localStorage.setItem('v-recent-searches', JSON.stringify(recents));
 
                     Network.fetchFiles();
-                    Utils.showToast(`Searching for "${query}"`, 'info');
                 }
             };
 
@@ -1064,13 +939,16 @@
              */
             const EventManager = {
                 init: () => {
-                    // Search Input
+                    
+                    DOM.searchBox.addEventListener('click', () => DOM.input.focus());
+                    DOM.input.addEventListener('focus', () => DOM.searchBox.classList.add('is-focused'));
+                    DOM.input.addEventListener('blur', () => DOM.searchBox.classList.remove('is-focused'));
+                    
                     DOM.input.addEventListener('input', Utils.debounce((e) => SearchEngine.handleInput(e.target.value.trim()), 350));
                     DOM.input.addEventListener('focus', () => { if(DOM.input.value.trim() === '') SearchEngine.showRecents(); else SearchEngine.handleInput(DOM.input.value.trim()); });
                     DOM.searchBtn.addEventListener('click', () => SearchEngine.execute(DOM.input.value.trim()));
-                    DOM.clearHistoryBtn.addEventListener('click', () => { State.recentSearches = []; localStorage.removeItem('v-recent-searches'); SearchEngine.showRecents(); Utils.showToast('History cleared', 'info'); });
+                    DOM.clearHistoryBtn.addEventListener('click', () => { State.recentSearches = []; localStorage.removeItem('v-recent-searches'); SearchEngine.showRecents(); });
 
-                    // Search Keyboard Navigation
                     DOM.input.addEventListener('keydown', (e) => {
                         const items = DOM.suggestList.querySelectorAll('.v-suggest-item');
                         if(!DOM.suggestPane.classList.contains('is-active') || items.length === 0) {
@@ -1082,10 +960,8 @@
                         else if (e.key === 'Enter') { e.preventDefault(); if (SearchEngine.currentFocus > -1) items[SearchEngine.currentFocus].click(); else SearchEngine.execute(DOM.input.value.trim()); }
                     });
 
-                    // Close Suggest Pane Outside Click
                     document.addEventListener('click', (e) => { if(!DOM.searchBox.parentElement.contains(e.target)) DOM.suggestPane.classList.remove('is-active'); });
 
-                    // Sidebar Mobile Toggles
                     const toggleSidebar = (open) => {
                         DOM.sidebar.classList.toggle('is-open', open);
                         DOM.overlay.classList.toggle('is-active', open);
@@ -1095,12 +971,10 @@
                     DOM.closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
                     DOM.overlay.addEventListener('click', () => toggleSidebar(false));
 
-                    // Filter Actions
-                    DOM.applyBtn.addEventListener('click', () => { EventManager.syncStateFromUI(); Network.fetchFiles(); toggleSidebar(false); });
+                    DOM.applyBtn.addEventListener('click', () => { EventManager.syncStateFromUI(); Network.fetchFiles(); toggleSidebar(false); window.scrollTo({ top: 0, behavior: 'smooth' }); });
                     DOM.clearBtn.addEventListener('click', () => { EventManager.clearFilters(); toggleSidebar(false); });
                     DOM.sortSelect.addEventListener('change', () => { State.sort = DOM.sortSelect.value; State.page = 1; Network.fetchFiles(); });
 
-                    // View Mode Toggles
                     DOM.viewBtns.forEach(btn => {
                         btn.addEventListener('click', (e) => {
                             const view = e.currentTarget.dataset.view;
@@ -1111,7 +985,6 @@
                         });
                     });
 
-                    // Expose to window for inline HTML onclicks (Filter Pills)
                     window.EventManager = EventManager;
                 },
 
@@ -1152,13 +1025,11 @@
             // --- 8. INITIALIZE APPLICATION ---
             EventManager.init();
             
-            // Set Initial View Mode from LocalStorage
             if(State.viewMode === 'list') {
                 DOM.grid.classList.add('is-list-view');
                 DOM.viewBtns.forEach(b => b.classList.toggle('is-active', b.dataset.view === 'list'));
             }
 
-            // Fetch initial data
             Network.fetchFiles(true);
 
         });

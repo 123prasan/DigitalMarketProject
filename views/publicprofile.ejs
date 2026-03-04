@@ -5,143 +5,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <title><%= userData.fullname || userData.username %> - Vidyari Profile</title>
+    
+    <title><%= userData.fullname || userData.username %> | Creator Profile on Vidyari</title>
+    
+    <meta name="description" content="Explore <%= userData.fullname || userData.username %>'s creator profile on Vidyari. Discover premium study materials, notes, video courses, and digital resources published by <%= userData.username %>." />
+    <meta name="keywords" content="<%= userData.username %>, <%= userData.fullname %>, Vidyari creator, study notes, buy courses, digital downloads, educational resources, peer-to-peer learning" />
+    <meta name="author" content="<%= userData.fullname || userData.username %>" />
+    <link rel="canonical" href="https://vidyari.com/profile/<%= userData.username %>" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content="<%= userData.fullname || userData.username %> on Vidyari" />
+    <meta property="og:description" content="<%- userData.bio ? userData.bio.replace(/"/g, '&quot;') : 'View ' + (userData.fullname || userData.username) + '\'s educational resources and courses on Vidyari.' %>" />
+    <meta property="og:url" content="https://vidyari.com/profile/<%= userData.username %>" />
+    <meta property="og:image" content="<%= userData.profilePicUrl || 'https://vidyari.com/images/default-avatar.png' %>" />
+    <meta property="og:site_name" content="Vidyari" />
+    <meta property="profile:username" content="<%= userData.username %>" />
 
-    <meta name="description" content="View <%= userData.fullname || userData.username %>'s profile on Vidyari. Access shared docs, courses, followers, and explore their content.">
-    <meta name="author" content="Vidyari">
-    <link rel="canonical" href="https://vidyari.com/profile/<%= userData.username %>">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="<%= userData.fullname || userData.username %> on Vidyari">
-    <meta property="og:description" content="<%- userData.bio || 'View ' + (userData.fullname || userData.username) + '\'s profile on Vidyari.' %>">
-    <meta property="og:url" content="https://vidyari.com/profile/<%= userData.username %>">
-    <meta property="og:image" content="<%= userData.profilePicUrl %>">
-    <meta property="og:type" content="profile">
-    <meta property="og:site_name" content="Vidyari">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= userData.fullname || userData.username %> on Vidyari">
-    <meta name="twitter:description" content="<%- userData.bio || 'View ' + (userData.fullname || userData.username) + '\'s profile on Vidyari.' %>">
-    <meta name="twitter:image" content="<%= userData.profilePicUrl %>">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="<%= userData.fullname || userData.username %> | Vidyari Creator" />
+    <meta name="twitter:description" content="<%- userData.bio ? userData.bio.replace(/"/g, '&quot;') : 'Check out my latest study materials and digital courses on Vidyari.' %>" />
+    <meta name="twitter:image" content="<%= userData.profilePicUrl || 'https://vidyari.com/images/default-avatar.png' %>" />
     
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "<%= userData.fullname || userData.username %>",
-      "alternateName": "<%= userData.username %>",
-      "url": "https://vidyari.com/profile/<%= userData.username %>",
-      "image": "<%= userData.profilePicUrl %>",
-      "description": "<%- JSON.stringify(userData.bio || 'Digital explorer navigating the vast realms of code and creativity.').slice(1, -1) %>",
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "https://vidyari.com/profile/<%= userData.username %>"
-      }
+      "@graph": [
+        {
+          "@type": "ProfilePage",
+          "@id": "https://vidyari.com/profile/<%= userData.username %>",
+          "url": "https://vidyari.com/profile/<%= userData.username %>",
+          "name": "<%= userData.fullname || userData.username %> - Vidyari Profile",
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://vidyari.com/#website",
+            "name": "Vidyari",
+            "url": "https://vidyari.com/"
+          },
+          "about": {
+            "@id": "https://vidyari.com/profile/<%= userData.username %>#person"
+          }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://vidyari.com/profile/<%= userData.username %>#person",
+          "name": "<%= userData.fullname || userData.username %>",
+          "alternateName": "<%= userData.username %>",
+          "description": "<%- userData.bio ? userData.bio.replace(/"/g, '&quot;').replace(/\n/g, ' ') : 'Digital creator on Vidyari.' %>",
+          "image": "<%= userData.profilePicUrl || 'https://vidyari.com/images/default-avatar.png' %>",
+          "url": "https://vidyari.com/profile/<%= userData.username %>",
+          "interactionStatistic": [
+            {
+              "@type": "InteractionCounter",
+              "interactionType": "https://schema.org/FollowAction",
+              "userInteractionCount": <%= userData.followers ? userData.followers.length : 0 %>
+            }
+          ],
+          "sameAs": [
+            "<%= userData.githubUrl || '' %>",
+            "<%= userData.instagramUrl || '' %>"
+          ]
+        }
+      ]
     }
     </script>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;800;900&family=Space+Grotesk:wght@700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         /* ==========================================================================
-           VIDYARI PUBLIC PROFILE: NEO-BRUTALIST ARCHITECTURE
+           VIDYARI PUBLIC PROFILE: GEMINI / MATERIAL 3 THEME
            ========================================================================== */
+        
         .vidyari-public-profile-master {
-            --v-bg: #fdfdfc; 
-            --v-black: #09090b;
-            --v-white: #ffffff;
-            --v-pink: #ff66a3; 
-            --v-green: #4ade80; 
-            --v-yellow: #ffd60a; 
-            --v-blue: #1ac2ff; 
-            --v-gray-50: #fafafa;
-            --v-gray-100: #f4f4f5;
-            --v-gray-200: #e4e4e7;
-            --v-gray-800: #27272a;
+            --v-bg: #f0f4f9;           /* Gemini Soft Background */
+            --v-surface: #ffffff;      /* Clean White Cards */
             
+            --v-text-main: #1f1f1f;
+            --v-text-muted: #444746;
+            
+            --v-primary: #0b57d0;      /* Google Blue */
+            --v-primary-hover: #1a73e8;
+            --v-primary-bg: #e8f0fe;
+            
+            --v-success: #146c2e;
+            --v-success-bg: #e6f4ea;
+            
+            --v-border: #e3e3e3;
+            
+            --v-font-display: 'Outfit', sans-serif;
             --v-font-sans: 'Inter', sans-serif;
-            --v-font-head: 'Montserrat', sans-serif;
-            --v-font-loud: 'Space Grotesk', sans-serif;
             
-            --v-radius-sm: 8px;
+            --v-radius-sm: 12px;
             --v-radius-md: 16px;
             --v-radius-lg: 24px;
+            --v-radius-pill: 9999px;
             
-            --v-border-thin: 2px solid var(--v-black);
-            --v-border-thick: 4px solid var(--v-black);
+            --v-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --v-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --v-shadow-hover: 0 8px 24px rgba(11, 87, 208, 0.08);
             
-            --v-shadow-sm: 4px 4px 0 var(--v-black);
-            --v-shadow-md: 8px 8px 0 var(--v-black);
-            --v-shadow-hover: 12px 12px 0 var(--v-black);
-            
-            --v-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --v-transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 
             font-family: var(--v-font-sans);
-            background-color: var(--v-gray-50);
-            background-image: radial-gradient(var(--v-gray-200) 2px, transparent 2px);
-            background-size: 24px 24px;
-            color: var(--v-black);
+            background-color: var(--v-bg);
+            color: var(--v-text-main);
             min-height: 100vh;
-            padding-top: clamp(30px, 5vw, 60px);
+            padding-top: clamp(24px, 4vw, 48px);
             padding-bottom: clamp(60px, 8vw, 100px);
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .vidyari-public-profile-master a { text-decoration: none; color: inherit; }
+        .vidyari-public-profile-master a { text-decoration: none; color: inherit; transition: var(--v-transition); }
         .vidyari-public-profile-master * { box-sizing: border-box; }
 
         /* Dashboard Layout Grid */
         .v-container {
             width: 100%;
-            max-width: 1300px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 clamp(16px, 4vw, 32px);
         }
         .profile-dashboard-grid {
             display: grid;
-            grid-template-columns: 360px 1fr;
-            gap: clamp(24px, 4vw, 40px);
+            grid-template-columns: 340px 1fr;
+            gap: clamp(24px, 4vw, 32px);
             align-items: start;
         }
 
         /* UI Boxes */
         .v-box {
-            background: var(--v-white);
-            border: var(--v-border-thick);
+            background: var(--v-surface);
+            border: 1px solid var(--v-border);
             border-radius: var(--v-radius-lg);
-            box-shadow: var(--v-shadow-md);
+            box-shadow: var(--v-shadow-sm);
             padding: clamp(24px, 4vw, 32px);
             margin-bottom: clamp(24px, 4vw, 32px);
         }
 
         /* Buttons */
         .v-btn {
-            background: var(--v-green);
-            border: var(--v-border-thick);
-            border-radius: var(--v-radius-sm);
-            box-shadow: var(--v-shadow-sm);
-            padding: 14px 24px;
-            font-family: var(--v-font-loud);
-            font-size: 1.1rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: var(--v-black);
+            border-radius: var(--v-radius-pill);
+            padding: 12px 24px;
+            font-family: var(--v-font-sans);
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: all var(--v-transition);
-            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            transition: var(--v-transition);
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             width: 100%;
+            border: 1px solid transparent;
         }
-        .v-btn:hover { transform: translate(-2px, -2px); box-shadow: var(--v-shadow-md); background: var(--v-yellow); }
-        .v-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--v-black); }
         
-        .v-btn.btn-chat { background: var(--v-blue); }
-        .v-btn.btn-chat:hover { background: var(--v-pink); color: var(--v-white); }
-        
-        .v-btn.is-following { background: var(--v-black); color: var(--v-white); }
-        .v-btn.is-following:hover { background: var(--v-gray-800); box-shadow: var(--v-shadow-sm); transform: none; }
+        .v-btn-primary {
+            background: var(--v-primary);
+            color: white;
+        }
+        .v-btn-primary:hover {
+            background: var(--v-primary-hover);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transform: translateY(-1px);
+        }
+
+        .v-btn-outlined {
+            background: transparent;
+            color: var(--v-text-main);
+            border-color: var(--v-border);
+        }
+        .v-btn-outlined:hover {
+            background: var(--v-bg);
+        }
+
+        .v-btn-secondary {
+            background: var(--v-bg);
+            color: var(--v-text-main);
+        }
+        .v-btn-secondary:hover {
+            background: #e4e8ee;
+        }
 
         /* --- LEFT COLUMN: Public ID Card --- */
         .sidebar-sticky {
@@ -155,59 +201,44 @@
             text-align: center;
         }
         .profile-avatar {
-            width: 180px; height: 180px;
+            width: 150px; height: 150px;
             border-radius: 50%;
-            border: var(--v-border-thick);
-            box-shadow: var(--v-shadow-sm);
+            border: 1px solid var(--v-border);
             object-fit: cover;
-            background: var(--v-white);
+            background: var(--v-bg);
             margin-bottom: 20px;
+            padding: 4px;
         }
         .profile-name {
-            font-family: var(--v-font-loud);
-            font-size: 2.2rem;
-            text-transform: uppercase;
-            line-height: 1.1;
+            font-family: var(--v-font-display);
+            font-size: 1.6rem;
+            font-weight: 600;
+            line-height: 1.2;
             margin-bottom: 4px;
-            text-shadow: 2px 2px 0 var(--v-pink);
+            color: var(--v-text-main);
+            letter-spacing: -0.5px;
         }
         .profile-username {
-            font-family: var(--v-font-head);
-            font-size: 1.2rem;
-            font-weight: 900;
-            color: var(--v-gray-600);
-            margin-bottom: 20px;
-            background: var(--v-gray-100);
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--v-text-muted);
+            margin-bottom: 24px;
+            background: var(--v-bg);
             padding: 4px 12px;
             border-radius: var(--v-radius-pill);
-            border: var(--v-border-thin);
         }
         .profile-bio {
-            font-size: 1.05rem;
-            font-weight: 600;
+            font-size: 0.95rem;
             line-height: 1.6;
-            color: var(--v-gray-800);
+            color: var(--v-text-muted);
             margin-bottom: 24px;
-            background: var(--v-yellow);
+            background: var(--v-bg);
             padding: 16px;
-            border-radius: var(--v-radius-sm);
-            border: var(--v-border-thick);
-            box-shadow: inset 4px 4px 0 rgba(0,0,0,0.05);
+            border-radius: var(--v-radius-md);
             width: 100%;
         }
 
-        .user-meta-info {
-            width: 100%;
-            text-align: left;
-            border-top: var(--v-border-thick);
-            padding-top: 20px;
-            margin-bottom: 24px;
-        }
-        .meta-row { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 8px; font-size: 0.95rem; }
-        .meta-row .lbl { color: var(--v-gray-600); text-transform: uppercase; font-weight: 900; font-family: var(--v-font-head); }
-        .meta-row .val { color: var(--v-black); }
-
-        /* Public Stats Mini-Grid */
+        /* Stats Grid Mini */
         .public-stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -216,15 +247,28 @@
             margin-bottom: 24px;
         }
         .stat-pill {
-            background: var(--v-white);
-            border: var(--v-border-thin);
-            border-radius: var(--v-radius-sm);
-            padding: 12px;
-            box-shadow: 2px 2px 0 var(--v-black);
+            background: var(--v-surface);
+            border: 1px solid var(--v-border);
+            border-radius: var(--v-radius-md);
+            padding: 16px 12px;
             display: flex; flex-direction: column; align-items: center;
+            transition: var(--v-transition);
         }
-        .stat-pill .count { font-family: var(--v-font-loud); font-size: 1.8rem; line-height: 1; margin-bottom: 4px;}
-        .stat-pill .lbl { font-family: var(--v-font-head); font-size: 0.8rem; font-weight: 900; text-transform: uppercase; color: var(--v-gray-600); }
+        .stat-pill:hover { background: var(--v-bg); }
+        .stat-pill .count { font-family: var(--v-font-display); font-size: 1.5rem; font-weight: 600; line-height: 1; margin-bottom: 4px; color: var(--v-text-main);}
+        .stat-pill .lbl { font-size: 0.8rem; font-weight: 500; text-transform: uppercase; color: var(--v-text-muted); letter-spacing: 0.5px; }
+
+        /* Meta Info */
+        .user-meta-info {
+            width: 100%;
+            text-align: left;
+            border-top: 1px solid var(--v-border);
+            padding-top: 20px;
+            margin-bottom: 24px;
+        }
+        .meta-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; }
+        .meta-row .lbl { color: var(--v-text-muted); font-weight: 500; }
+        .meta-row .val { color: var(--v-text-main); font-weight: 500; }
 
         .action-group {
             width: 100%;
@@ -235,60 +279,61 @@
 
         /* --- RIGHT COLUMN: Content --- */
         .content-heading {
-            font-family: var(--v-font-loud);
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            text-transform: uppercase;
-            color: var(--v-black);
+            font-family: var(--v-font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--v-text-main);
             margin-bottom: 24px;
-            text-shadow: 3px 3px 0 var(--v-blue);
-            display: flex; align-items: center; gap: 16px;
+            display: flex; align-items: center; gap: 12px;
+            letter-spacing: -0.5px;
         }
-        .content-heading i { font-size: 0.8em; color: var(--v-pink); }
+        .content-heading i { color: var(--v-primary); }
         
         .content-section { margin-bottom: 48px; }
 
         /* Cards Grid */
-        .v-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+        .v-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px; }
         .v-card { 
-            background: var(--v-white); border: var(--v-border-thick); border-radius: var(--v-radius-lg); 
-            box-shadow: var(--v-shadow-md); display: flex; flex-direction: column; overflow: hidden; 
-            transition: all var(--v-transition); text-decoration: none; color: inherit;
+            background: var(--v-surface); border: 1px solid var(--v-border); border-radius: var(--v-radius-lg); 
+            box-shadow: var(--v-shadow-sm); display: flex; flex-direction: column; overflow: hidden; 
+            transition: var(--v-transition); text-decoration: none; color: inherit; position: relative;
         }
-        .v-card:hover { transform: translate(-6px, -6px); box-shadow: var(--v-shadow-hover); }
+        .v-card:hover { transform: translateY(-4px); box-shadow: var(--v-shadow-md); border-color: #d2e3fc; }
         
-        .v-card-img-box { aspect-ratio: 4/3; border-bottom: var(--v-border-thick); overflow: hidden; position: relative; background: var(--v-gray-100); }
-        .v-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+        .v-card-img-box { aspect-ratio: 16/10; border-bottom: 1px solid var(--v-border); overflow: hidden; position: relative; background: var(--v-bg); }
+        .v-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
         .v-card:hover .v-card-img { transform: scale(1.05); }
         
-        .v-badge-card { position: absolute; top: 12px; left: 12px; background: var(--v-yellow); border: var(--v-border-thin); border-radius: var(--v-radius-sm); padding: 4px 10px; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; }
+        .v-badge-card { 
+            position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px);
+            border-radius: var(--v-radius-pill); padding: 4px 12px; font-size: 0.75rem; font-weight: 500; color: var(--v-text-main); z-index: 10;
+        }
         
-        .v-card-content { padding: 20px; flex: 1; display: flex; flex-direction: column; justify-content: center;}
-        .v-card-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 8px; line-height: 1.3; }
+        .v-card-content { padding: 20px; flex: 1; display: flex; flex-direction: column;}
+        .v-card-title { font-family: var(--v-font-display); font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         
-        .v-card-footer { padding: 16px 20px; border-top: var(--v-border-thick); background: var(--v-gray-50); display: flex; justify-content: space-between; align-items: center; }
-        .v-card-action { width: 36px; height: 36px; border: var(--v-border-thin); border-radius: 50%; display: grid; place-items: center; background: var(--v-white); box-shadow: 2px 2px 0 var(--v-black); transition: all 0.2s; }
-        .v-card:hover .v-card-action { background: var(--v-black); color: var(--v-white); }
+        .v-card-footer { padding: 16px 20px; border-top: 1px solid var(--v-border); background: var(--v-surface); display: flex; justify-content: space-between; align-items: center; }
+        .v-card-action { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--v-bg); color: var(--v-text-main); transition: var(--v-transition); }
+        .v-card:hover .v-card-action { background: var(--v-primary-bg); color: var(--v-primary); }
 
         /* Empty States */
         .empty-state {
-            border: 4px dashed var(--v-gray-300);
+            border: 2px dashed var(--v-border);
             border-radius: var(--v-radius-lg);
             padding: 60px 20px;
             text-align: center;
-            background: var(--v-white);
+            background: transparent;
         }
-        .empty-icon { font-size: 4rem; color: var(--v-gray-300); margin-bottom: 16px; }
-        .empty-state h3 { font-family: var(--v-font-loud); font-size: 2rem; color: var(--v-gray-600); margin: 0; text-transform: uppercase; }
+        .empty-icon { font-size: 3rem; color: var(--v-border); margin-bottom: 16px; }
+        .empty-state h3 { font-family: var(--v-font-display); font-size: 1.25rem; font-weight: 500; color: var(--v-text-muted); margin: 0; }
 
-        /* ==========================================================================
-           MOBILE RESPONSIVENESS FIXES
-           ========================================================================== */
+        /* Mobile Adjustments */
         @media (max-width: 991px) {
-            .profile-dashboard-grid { grid-template-columns: 1fr; } /* Stack on mobile/tablet */
+            .profile-dashboard-grid { grid-template-columns: 1fr; } 
             .sidebar-sticky { position: relative; top: 0; }
             
             .id-card-wrapper { flex-direction: row; flex-wrap: wrap; text-align: left; align-items: flex-start; }
-            .profile-avatar { width: 120px; height: 120px; margin-bottom: 0; margin-right: 24px;}
+            .profile-avatar { width: 100px; height: 100px; margin-bottom: 0; margin-right: 24px;}
             .profile-info-mobile { flex: 1; min-width: 200px; display: flex; flex-direction: column; justify-content: center; }
             
             .profile-bio { order: 3; margin-top: 24px; }
@@ -301,12 +346,13 @@
             .profile-avatar { margin-right: 0; margin-bottom: 16px; }
             .profile-info-mobile { align-items: center; }
             .action-group { flex-direction: column; }
-            .public-stats-grid { grid-template-columns: 1fr 1fr; } /* Keep 2 cols for stats */
         }
     </style>
 </head>
 
 <body>
+
+    
     <div class="vidyari-public-profile-master">
         <div class="v-container">
             
@@ -320,13 +366,13 @@
                             <div class="d-flex align-items-center justify-content-lg-center justify-content-start gap-2">
                                 <h1 class="profile-name"><%= userData.fullname || userData.username %></h1>
                                 <% if (userData.ISVERIFIED) { %>
-                                    <span title="Verified Creator"><img style="width: 28px; height: 28px;" src="/images/verify.png" alt="Verified Badge"/></span>
+                                    <span title="Verified Creator"><img style="width: 20px; height: 20px;" src="/images/verify.png" alt="Verified Badge"/></span>
                                 <% } %>
                             </div>
                             <div class="profile-username">@<%= userData.username %></div>
                         </div>
                         
-                        <div class="profile-bio"><%= userData.bio || 'Digital explorer navigating the vast realms of code and creativity.' %></div>
+                        <div class="profile-bio"><%= userData.bio || 'Sharing knowledge and resources on Vidyari.' %></div>
                         
                         <div class="public-stats-grid">
                             <div class="stat-pill">
@@ -339,7 +385,7 @@
                             </div>
                             <div class="stat-pill">
                                 <span class="count"><%= numsOfDocs %></span>
-                                <span class="lbl">Docs</span>
+                                <span class="lbl">Resources</span>
                             </div>
                             <div class="stat-pill">
                                 <span class="count"><%= numOfCourses %></span>
@@ -350,7 +396,9 @@
                         <div class="user-meta-info">
                             <div class="meta-row">
                                 <span class="lbl">Status</span>
-                                <span class="val" style="color: var(--v-green);"><i class="fas fa-circle text-success me-1" style="font-size: 0.6rem;"></i> Online</span>
+                                <span class="val" style="color: var(--v-success); display: flex; align-items: center; gap: 6px;">
+                                    <span style="width: 8px; height: 8px; background: var(--v-success); border-radius: 50%; display: inline-block;"></span> Online
+                                </span>
                             </div>
                             <% if (userData.createdAt) { %>
                                 <div class="meta-row">
@@ -358,54 +406,67 @@
                                     <span class="val"><%= new Date(userData.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) %></span>
                                 </div>
                             <% } %>
+                            
+                            <% if (userData.githubUrl || userData.instagramUrl) { %>
+                                <div class="meta-row" style="margin-top: 16px; border-top: 1px dashed var(--v-border); padding-top: 16px;">
+                                    <span class="lbl">Links</span>
+                                    <div style="display: flex; gap: 12px; font-size: 1.2rem;">
+                                        <% if (userData.githubUrl && !userData.githubUrl.includes('#')) { %>
+                                            <a href="<%= userData.githubUrl %>" target="_blank" rel="noopener noreferrer" style="color: var(--v-text-muted);"><i class="fa-brands fa-github"></i></a>
+                                        <% } %>
+                                        <% if (userData.instagramUrl && !userData.instagramUrl.includes('#')) { %>
+                                            <a href="<%= userData.instagramUrl %>" target="_blank" rel="noopener noreferrer" style="color: var(--v-text-muted);"><i class="fa-brands fa-instagram"></i></a>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
                         </div>
                         
                         <div class="action-group">
                             <button class="v-btn" id="followBtn" data-user-id="<%= userData._id %>">
                                 </button>
-                            <a href="/user/chat/<%=userData._id%>" class="v-btn btn-chat">
-                                <i class="fas fa-comment-dots"></i> Message
+                            <a href="/user/chat/<%=userData._id%>" class="v-btn v-btn-secondary">
+                                <i class="fa-regular fa-comment-dots"></i> Message
                             </a>
                         </div>
                     </div>
                 </aside>
 
                 <main>
-                    
                     <section class="content-section" id="docs-section">
-                        <h2 class="content-heading"><i class="fas fa-file-alt"></i> Documents</h2>
+                        <h2 class="content-heading"><i class="fa-regular fa-file-lines"></i> Published Resources</h2>
                         
                         <% if (files && files.length > 0) { %>
                             <div class="v-grid">
                                 <% files.forEach((file) => { %>
-                                    <a href="/file/<%= file.slug %>/<%= file._id %>" class="v-card">
+                                    <a href="/file/<%= file.slug || 'file' %>/<%= file._id %>" class="v-card">
                                         <div class="v-card-img-box">
                                             <div class="v-badge-card"><%= file.category || 'Resource' %></div>
-                                            <img class="v-card-img" src="<%= file.previewUrl || '/images/File_Demo.svg' %>" alt="Preview" onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
+                                            <img class="v-card-img" src="<%= file.previewUrl || '/images/File_Demo.svg' %>" alt="Preview" loading="lazy" onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
                                         </div>
                                         <div class="v-card-content">
                                             <h3 class="v-card-title"><%= file.filename || 'Untitled Document' %></h3>
                                         </div>
                                         <div class="v-card-footer">
-                                            <div class="fw-bold text-muted small"><%= file.fileType || 'PDF' %></div>
-                                            <div class="v-card-action"><i class="fas fa-arrow-right"></i></div>
+                                            <div style="font-size: 0.85rem; font-weight: 500; color: var(--v-text-muted);"><%= file.fileType || 'PDF' %></div>
+                                            <div class="v-card-action"><i class="fa-solid fa-arrow-right"></i></div>
                                         </div>
                                     </a>
                                 <% }) %>
                             </div>
                         <% } else { %>
                             <div class="empty-state">
-                                <i class="fas fa-folder-open empty-icon"></i>
-                                <h3>No Documents Published</h3>
+                                <i class="fa-regular fa-folder-open empty-icon"></i>
+                                <h3>No Resources Published</h3>
                             </div>
                         <% } %>
                     </section>
                     
                     <section class="content-section" id="courses-section">
-                        <h2 class="content-heading" style="text-shadow: 3px 3px 0 var(--v-yellow);"><i class="fas fa-video" style="color: var(--v-blue);"></i> Courses</h2>
+                        <h2 class="content-heading"><i class="fa-solid fa-book-open-reader"></i> Courses</h2>
                         
                         <div class="empty-state">
-                            <i class="fas fa-video-slash empty-icon"></i>
+                            <i class="fa-solid fa-video-slash empty-icon"></i>
                             <h3>No Courses Available</h3>
                         </div>
                     </section>
@@ -415,25 +476,28 @@
         </div>
     </div>
     
+   
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
             // --- Follow Button Logic ---
             const followBtn = document.getElementById('followBtn');
-            let isFollowed = <%= isFollowed %>; 
-            const userIdToFollow = followBtn.dataset.userId;
+            let isFollowed = <%= typeof isFollowed !== 'undefined' ? isFollowed : false %>; 
+            const userIdToFollow = followBtn ? followBtn.dataset.userId : null;
 
             function updateFollowButtonState() {
+                if (!followBtn) return;
                 if (isFollowed) {
-                    followBtn.innerHTML = '<i class="fas fa-check"></i> Following';
-                    followBtn.classList.add('is-following');
+                    followBtn.innerHTML = '<i class="fa-solid fa-check"></i> Following';
+                    followBtn.className = 'v-btn v-btn-outlined';
                 } else {
-                    followBtn.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
-                    followBtn.classList.remove('is-following');
+                    followBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Follow';
+                    followBtn.className = 'v-btn v-btn-primary';
                 }
             }
 
-            if (followBtn) {
+            if (followBtn && userIdToFollow) {
                 followBtn.addEventListener('click', () => {
                     const url = isFollowed ? `/user/unfollow` : `/user/follow`;
                     
@@ -451,7 +515,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Only reload if successful to update true backend state
+                            // Only reload if successful to update true backend state (follower counts)
                             window.location.reload(); 
                         } else {
                             // Revert on failure

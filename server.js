@@ -1237,8 +1237,10 @@ app.get("/admin", authenticateJWT, async (req, res) => {
   const filesWithUrls = await Promise.all(
     files.map(async (file) => {
       try {
-        // Construct the S3 key
-        const key = `main-files/${file.fileUrl}`; // adapt if your file structure is different
+            // Construct the S3 key (avoid double-prefixing if already present)
+            const key = file.fileUrl && String(file.fileUrl).startsWith('main-files/')
+              ? file.fileUrl
+              : `main-files/${file.fileUrl}`; // adapt if your file structure is different
 
         // Generate pre-signed URL (valid for 5 minutes)
         const downloadUrl = s3.getSignedUrl("getObject", {
@@ -1462,12 +1464,37 @@ function getCSSVariables() {
 
 // Edit File Details (Protected by JWT)
 app.post("/edit-file", authenticateJWT, async (req, res) => {
-  const { fileId, filename, filedescription, price } = req.body;
+  const { fileId, filename, filedescription, price, couponCode } = req.body;
   await File.findByIdAndUpdate(fileId, {
     filename,
     filedescription,
     price,
   });
+  // manage coupon association
+  if (couponCode && couponCode.trim() !== '') {
+    let coupon = await Coupon.findOne({ file: fileId });
+    if (coupon) {
+      coupon.code = couponCode.trim();
+      await coupon.save();
+    } else {
+      // assign default owner for coupon as well
+      const defaultUser = await User.findOne({ email: 'vidyari.inc@gmail.com' });
+      const userIdForCoupon = defaultUser ? defaultUser._id : (req.user && req.user._id);
+      await Coupon.create({
+        userId: userIdForCoupon,
+        file: fileId,
+        code: couponCode.trim(),
+        discountValue: 0,
+      });
+    }
+  } else {
+    // remove coupon if empty
+    await Coupon.deleteOne({ file: fileId });
+  }
+  // if JSON request (axios) respond accordingly, else redirect for form submit
+  if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+    return res.json({ success: true });
+  }
   res.redirect("/admin?fileUpdated=1");
 });
 
@@ -1495,50 +1522,67 @@ app.post(
   ]),
   authenticateJWT,
   async (req, res) => {
-    const { filename, filedescription, price, category } = req.body;
-    const pdfFile = req.files["file"]?.[0];
-    const imageFile = req.files["previewImage"]?.[0];
-    if (!pdfFile || !imageFile)
-      return res.status(400).send("PDF and image are required");
+    try {
+      const { filename, filedescription, price, category } = req.body;
+      const pdfFile = req.files["file"]?.[0];
+      const imageFile = req.files["previewImage"]?.[0];
+      if (!pdfFile || !imageFile)
+        return res.status(400).send("PDF and image are required");
 
-    // 1. Upload PDF to Supabase
-    const { data: pdfData, error: pdfError } = await supabase.storage
-      .from("files")
-      .upload(`${Date.now()}_${pdfFile.originalname}`, pdfFile.buffer, {
-        contentType: pdfFile.mimetype,
-        upsert: false,
-      });
-    if (pdfError) return res.status(500).send("Supabase PDF upload failed");
+    // 1. Upload PDF to AWS S3 (vidyarimain2 bucket)
+    const pdfS3Key = `main-files/${Date.now()}_${pdfFile.originalname}`;
+    await s3.putObject({
+      Bucket: 'vidyarimain2',
+      Key: pdfS3Key,
+      Body: pdfFile.buffer,
+      ContentType: pdfFile.mimetype,
+    }).promise();
 
-    // 2. Save metadata in MongoDB, including file size
+    // 3. Save metadata in MongoDB, including file size
+    // (We'll upload preview after, using the generated MongoDB _id)
+    // determine owner (req.user may be admin, fallback to vidyari.inc user)
+    let ownerUser = null;
+    if (req.user && req.user._id) {
+      ownerUser = await User.findById(req.user._id);
+    }
+    if (!ownerUser) {
+      ownerUser = await User.findOne({ email: 'vidyari.inc@gmail.com' });
+    }
+    const ownerId = ownerUser ? ownerUser._id : null;
+    const ownerName = ownerUser ? ownerUser.username : 'Admin';
+
     const newFile = await File.create({
-      filename,
+      userId: ownerId,
+      filename: filename || 'Untitled',
       filedescription,
-      price,
-      category,
-      fileUrl: pdfData.path,
+      price: price || 0,
+      category: category || 'Uncategorized',
+      fileUrl: pdfS3Key,
       uploadedAt: new Date(),
-      user: req.user ? req.user.username : "Admin",
-      fileSize: pdfFile.size, // <-- Add this line
+      user: ownerName,
+      fileSize: pdfFile.size,
+      imageType: 'jpg',
     });
+
+    // 2. Upload preview image to AWS S3 using the generated MongoDB _id
+    const previewS3Key = `files-previews/images/${newFile._id}.jpg`;
+    await s3.putObject({
+      Bucket: 'vidyari3',
+      Key: previewS3Key,
+      Body: imageFile.buffer,
+      ContentType: imageFile.mimetype,
+    }).promise();
     //notification update
     const newMessage = new Message({
-      message: `New file uploaded: ${filename} by ${req.user ? req.user.username : "Admin"
-        }`,
+      message: `New file uploaded: ${filename} by ${req.user ? req.user.username : "Admin"}`,
     });
     await newMessage.save();
-    const { error: imgError } = await supabase.storage
-      .from("files")
-      .upload(`previews/${newFile._id}.jpg`, imageFile.buffer, {
-        contentType: imageFile.mimetype,
-        upsert: true,
-      });
-    if (imgError) {
-      console.error("Preview image upload failed:", imgError);
-    }
 
     res.redirect("/admin?fileUploaded=1");
-    // ...rest of your code...
+    } catch (err) {
+      console.error('File upload error:', err);
+      res.status(500).send(`Upload failed: ${err.message}`);
+    }
   }
 );
 
@@ -1791,23 +1835,41 @@ app.post("/delete-file", authenticateJWT, async (req, res) => {
     const file = await File.findById(fileId);
     if (!file) return res.json({ success: false, message: "File not found" });
 
-    // Construct S3 keys
-    const mainFileKey = `main-files/${fileUrl}`;             // for vidyari-main bucket
-    const previewKey = `/files-previews/images/${file._id}.${file.imageType || "jpg"}`; // for vidyari3 bucket
+    // Construct S3 keys using DB values (fallback to request body if necessary)
+    const mainKeyFromDb = file.fileUrl
+      ? (String(file.fileUrl).startsWith('main-files/') ? file.fileUrl : `main-files/${file.fileUrl}`)
+      : null;
+    const mainKeyFromReq = fileUrl
+      ? (String(fileUrl).startsWith('main-files/') ? fileUrl : `main-files/${fileUrl}`)
+      : null;
+    const mainFileKey = mainKeyFromDb || mainKeyFromReq;
 
-    // Delete main file from vidyari-main
-    await s3
-      .deleteObject({ Bucket: "vidyarimain2", Key: mainFileKey })
-      .promise();
+    // Preview key should not start with a leading slash
+    const previewKey = `files-previews/images/${file._id}.${file.imageType || "jpg"}`;
+
+    // Delete main file from vidyari-main if key available
+    if (mainFileKey) {
+      try {
+        await s3.deleteObject({ Bucket: "vidyarimain2", Key: mainFileKey }).promise();
+        console.log(`Deleted main file from S3: ${mainFileKey}`);
+      } catch (delErr) {
+        console.error(`Error deleting main file ${mainFileKey}:`, delErr.message || delErr);
+      }
+    } else {
+      console.warn('No main file key available for deletion');
+    }
 
     // Delete preview image from vidyari3
-    await s3
-      .deleteObject({ Bucket: "vidyari3", Key: previewKey })
-      .promise();
+    try {
+      await s3.deleteObject({ Bucket: "vidyari3", Key: previewKey }).promise();
+      console.log(`Deleted preview image from S3: ${previewKey}`);
+    } catch (delErr) {
+      console.error(`Error deleting preview ${previewKey}:`, delErr.message || delErr);
+    }
 
     // Delete MongoDB record
     await File.deleteOne({ _id: fileId });
-    console.log("file deleted")
+    console.log('file deleted at db and attempted s3 cleanup')
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -1936,11 +1998,15 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
       if (!purchased) return res.render("404");
     }
 
-    // 🧩 Normalize & encode filename to avoid AccessDenied
-    const cleanFileName = decodeURIComponent(file.fileUrl)
-      .replace(/\s+/g, " ") // normalize spaces
-      .trim();
-    const encodedFileKey = encodeURIComponent(`main-files/${cleanFileName}`).replace(/%2F/g, "/");
+    // 🧩 Normalize & encode S3 key to avoid AccessDenied and duplicate prefixes
+    const rawFileKey = String(file.fileUrl || '').trim();
+    if (!rawFileKey) {
+      console.error('Download error: missing file.fileUrl for', fileId);
+      return res.render('file-not-found');
+    }
+    const normalizedKey = rawFileKey.startsWith('main-files/') ? rawFileKey : `main-files/${rawFileKey}`;
+    const cleanFileName = decodeURIComponent(normalizedKey).replace(/\s+/g, ' ').trim();
+    const encodedFileKey = encodeURIComponent(cleanFileName).replace(/%2F/g, "/");
 
     const cacheKey = `CF_URL_${encodedFileKey}`;
     let signedUrl = urlCache.get(cacheKey);
