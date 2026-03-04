@@ -24,8 +24,6 @@
     <meta property="og:title" content="<%= file.filename %> | Download on Vidyari">
     <meta property="og:description" content="Premium study material. <%= priceDetails.total == 0 ? 'Free' : '₹' + priceDetails.total %>. By <%= file.user %>. <%= file.downloadCount || 0 %> downloads, 4.8★ rating.">
     <meta property="og:image" content="<%= previewUrl || 'https://vidyari.com/images/logo-1200x630.png' %>">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://vidyari.com/file/<%= file.slug %>/<%= file._id %>">
     <meta property="og:site_name" content="Vidyari">
 
@@ -72,26 +70,7 @@
           "@id": "https://vidyari.com/profile/<%= file.user %>",
           "name": "<%= file.user || 'Vidyari Creator' %>"
         }
-      },
-      "interactionCount": {
-        "@type": "InteractionCounter",
-        "interactionType": "http://schema.org/DownloadAction",
-        "userInteractionCount": "<%= file.downloadCount || 0 %>"
-      },
-      "url": "https://vidyari.com/file/<%= file.slug %>/<%= file._id %>",
-      "datePublished": "<%= file.uploadedAt || new Date().toISOString() %>"
-    }
-    </script>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://vidyari.com" },
-        { "@type": "ListItem", "position": 2, "name": "<%= file.category %>", "item": "https://vidyari.com/courses?category=<%= file.category %>" },
-        { "@type": "ListItem", "position": 3, "name": "<%- file.filename %>", "item": "https://vidyari.com/file/<%= file.slug %>/<%= file._id %>" }
-      ]
+      }
     }
     </script>
     <link rel="icon" href="/images/logo.svg" type="image/svg" />
@@ -106,7 +85,7 @@
 
     <style>
         /* ==========================================================================
-           VIDYARI CHECKOUT: PREMIUM MATERIAL 3 THEME & AD DEFENSE
+           VIDYARI CHECKOUT: PREMIUM MATERIAL 3 THEME
            ========================================================================== */
         :root {
             --v-bg: #f8fafd;           
@@ -139,28 +118,55 @@
             --v-transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
         }
 
-        /* STRICT ANTI-AD-BLOWOUT RULES */
-        body {
+        /* * GLOBAL AD-DEFENSE & LAYORT PROTECTION
+         * These rules guarantee Google Ads cannot break the layout.
+         */
+        html, body {
             margin: 0;
+            padding: 0;
+            max-width: 100vw;
+            overflow-x: hidden; /* Hard stop on horizontal scrolling */
             font-family: var(--v-font-sans);
             background-color: var(--v-bg);
             color: var(--v-text-main);
-            min-height: 100vh;
-            overflow-x: hidden; /* Prevents side-scrolling from rogue ads */
             -webkit-font-smoothing: antialiased;
         }
-        * { box-sizing: border-box; min-width: 0; } /* min-width: 0 fixes flex/grid blowouts */
-        iframe, ins.adsbygoogle { max-width: 100% !important; overflow: hidden !important; }
+
+        * { 
+            box-sizing: border-box; 
+            min-width: 0; /* Prevents flex/grid children from bursting out */
+        } 
 
         a { text-decoration: none; color: inherit; transition: var(--v-transition); }
 
+        /* UNBREAKABLE AD CONTAINERS */
+        .ad-safe-zone {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden !important; /* Clips any oversized ads */
+            display: flex;
+            justify-content: center;
+            background: var(--v-border-light);
+            border-radius: var(--v-radius-md);
+            margin: 24px 0;
+            min-height: 50px;
+        }
+        
+        .ad-safe-zone ins.adsbygoogle, 
+        .ad-safe-zone iframe {
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+
         /* --- Layout Architecture --- */
         .checkout-layout {
+            width: 100%;
             max-width: 1240px;
             margin: 0 auto;
             padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px);
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 400px;
+            /* minmax(0, 1fr) prevents the left column from expanding infinitely */
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
             gap: clamp(32px, 5vw, 64px);
             align-items: start;
         }
@@ -172,7 +178,7 @@
             display: flex;
             flex-direction: column;
             gap: 24px;
-            min-width: 0; 
+            width: 100%;
         }
 
         .v-badge {
@@ -198,6 +204,7 @@
             line-height: 1.2;
             margin: 0;
             letter-spacing: -0.5px;
+            overflow-wrap: break-word;
             word-wrap: break-word;
         }
 
@@ -212,10 +219,11 @@
             border: 1px solid var(--v-border);
             box-shadow: var(--v-shadow-subtle);
             width: fit-content;
+            max-width: 100%;
         }
         .creator-link:hover { box-shadow: var(--v-shadow-card); transform: translateY(-2px); }
-        .creator-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid var(--v-border); }
-        .creator-name { font-weight: 600; color: var(--v-text-main); font-size: 1.05rem; display: flex; align-items: center; gap: 6px; }
+        .creator-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid var(--v-border); flex-shrink: 0; }
+        .creator-name { font-weight: 600; color: var(--v-text-main); font-size: 1.05rem; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* Image Gallery/Preview */
         .preview-wrapper {
@@ -244,6 +252,8 @@
             background: var(--v-surface); border-radius: var(--v-radius-lg);
             padding: clamp(24px, 4vw, 40px); box-shadow: var(--v-shadow-card);
             border: 1px solid var(--v-border);
+            width: 100%;
+            overflow: hidden;
         }
         .section-title {
             font-family: var(--v-font-display); font-size: 1.4rem; font-weight: 600;
@@ -252,29 +262,17 @@
         .section-title i { color: var(--v-primary); }
         
         .desc-content {
-            font-size: 1.05rem; line-height: 1.8; color: var(--v-text-muted); overflow-wrap: break-word;
+            font-size: 1.05rem; line-height: 1.8; color: var(--v-text-muted); 
+            overflow-wrap: break-word; word-wrap: break-word;
         }
         .desc-content p { margin-bottom: 16px; }
         .desc-content strong { color: var(--v-text-main); font-weight: 600; }
-        .desc-content img { max-width: 100%; height: auto; border-radius: var(--v-radius-md); margin: 20px 0;}
-
-        /* Safe Ad Container */
-        .ad-wrapper {
-            width: 100%;
-            background: var(--v-border-light);
-            border-radius: var(--v-radius-md);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 16px 0;
-            min-height: 90px; /* Standard ad height */
-        }
+        .desc-content img { max-width: 100% !important; height: auto !important; border-radius: var(--v-radius-md); margin: 20px 0;}
 
         /* ==========================================================================
            GOOGLE PLAY STORE STYLE: RELATED ITEMS (MOBILE SWIPEABLE)
            ========================================================================== */
-        .v-author-section { margin-bottom: 32px; }
+        .v-author-section { margin-bottom: 32px; width: 100%; overflow: hidden; }
         .v-author-section-title {
             font-family: var(--v-font-display); font-size: 1.2rem; font-weight: 600;
             color: var(--v-text-main); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
@@ -324,17 +322,19 @@
            ========================================================================== */
         .sidebar-column {
             display: flex; flex-direction: column; gap: 24px; position: sticky; top: 32px;
+            width: 100%;
         }
 
         .checkout-card {
             background: var(--v-surface); border-radius: var(--v-radius-lg);
             box-shadow: var(--v-shadow-card); border: 1px solid var(--v-border);
-            padding: 32px; display: flex; flex-direction: column;
+            padding: 32px; display: flex; flex-direction: column; width: 100%;
         }
 
         .price-display {
             font-family: var(--v-font-display); font-size: 3rem; font-weight: 700;
             color: var(--v-text-main); line-height: 1; margin-bottom: 24px; letter-spacing: -1px;
+            word-break: break-all;
         }
         .price-display.is-free { color: var(--v-success); }
 
@@ -357,6 +357,7 @@
         .coupon-input {
             flex: 1; border: none; padding: 12px 20px; font-family: var(--v-font-sans);
             font-weight: 500; font-size: 0.95rem; outline: none; background: transparent; color: var(--v-text-main); text-transform: uppercase;
+            min-width: 0; /* Important for flex child inputs */
         }
         .coupon-input::placeholder { color: #9aa0a6; text-transform: none;}
         .coupon-btn {
@@ -378,32 +379,39 @@
         .v-pay-btn.is-free:hover { background: #115926; }
 
         /* Action Row (Like / Share) */
-        .action-row { display: flex; gap: 12px; }
+        .action-row { display: flex; gap: 12px; width: 100%; }
         .v-btn-icon-text {
             flex: 1; background: var(--v-bg); border: 1px solid var(--v-border);
             border-radius: var(--v-radius-pill); padding: 12px; font-family: var(--v-font-sans);
             font-size: 0.95rem; font-weight: 500; color: var(--v-text-muted); cursor: pointer; transition: var(--v-transition);
-            display: flex; justify-content: center; align-items: center; gap: 8px;
+            display: flex; justify-content: center; align-items: center; gap: 8px; min-width: 0;
         }
         .v-btn-icon-text:hover { background: var(--v-border-light); transform: translateY(-1px); color: var(--v-text-main); }
         .v-btn-icon-text.liked { color: var(--v-primary); background: var(--v-primary-bg); border-color: transparent; }
 
         /* Specs Card */
         .specs-card {
-            background: var(--v-surface); border-radius: var(--v-radius-lg); border: 1px solid var(--v-border); padding: 32px; box-shadow: var(--v-shadow-card);
+            background: var(--v-surface); border-radius: var(--v-radius-lg); border: 1px solid var(--v-border); padding: 32px; box-shadow: var(--v-shadow-card); width: 100%;
         }
         .specs-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 20px; }
         .spec-item { display: flex; align-items: center; gap: 16px; color: var(--v-text-main); font-size: 1rem; font-weight: 600; }
         .spec-icon {
             width: 48px; height: 48px; border-radius: 50%; background: var(--v-bg); color: var(--v-primary);
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
         }
         .spec-label { color: var(--v-text-muted); font-size: 0.85rem; font-weight: 500; margin-bottom: 2px;}
 
-        /* Mobile Buy Bar (Frosted Glass iOS Style) */
+        /* Security Note */
+        .security-note {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            color: var(--v-text-muted); font-size: 0.85rem; font-weight: 500; margin-top: 20px;
+            padding-top: 20px; border-top: 1px solid var(--v-border);
+        }
+
+        /* Mobile Buy Bar */
         .mobile-buy-bar {
             display: none; position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border-top: 1px solid rgba(0,0,0,0.05); padding: 16px 24px; z-index: 1000;
             align-items: center; justify-content: space-between; gap: 16px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
@@ -430,9 +438,14 @@
            MOBILE RESPONSIVENESS
            ========================================================================== */
         @media (max-width: 991px) {
-            .checkout-layout { grid-template-columns: 1fr; gap: 24px; padding: 16px 16px calc(100px + env(safe-area-inset-bottom)) 16px; }
-            .sidebar-column { position: relative; top: 0; gap: 24px; }
-            .checkout-card, .specs-card, .content-box { padding: 24px; }
+            .checkout-layout { 
+                grid-template-columns: minmax(0, 1fr); /* 1 Column, strict overflow protection */
+                gap: 24px; 
+                padding: 16px 16px calc(100px + env(safe-area-inset-bottom)) 16px; 
+                width: 100vw;
+            }
+            .sidebar-column { position: relative; top: 0; gap: 24px; width: 100%;}
+            .checkout-card, .specs-card, .content-box { padding: 24px; width: 100%; }
             
             /* Order Change */
             .v-product-title { font-size: 1.8rem; order: -2; margin-bottom: 12px;}
@@ -488,18 +501,15 @@
             </div>
 
             <div class="preview-wrapper" data-bs-toggle="modal" data-bs-target="#imageModal">
-                <picture>
-                    <source type="image/webp" srcset="<%= (file.previewUrl && typeof file.previewUrl === 'string' && file.previewUrl.trim() !== '') ? file.previewUrl.replace(/\.(jpe?g|png)$/i,'.webp') : '/images/File_Demo.webp' %>">
-                    <img id="mainPreviewImage" 
-                        src="<%= (file.previewUrl && typeof file.previewUrl === 'string' && file.previewUrl.trim() !== '') ? file.previewUrl : '/images/File_Demo.svg' %>" 
-                        alt="<%= file.filename %>" 
-                        loading="lazy"
-                        onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
-                </picture>
+                <img id="mainPreviewImage" 
+                    src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>" 
+                    alt="<%= file.filename %>" 
+                    loading="eager"
+                    onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
                 <div class="zoom-hint"><i class="fa-solid fa-expand me-2"></i> Tap to Expand</div>
             </div>
             
-            <div class="ad-wrapper">
+            <div class="ad-safe-zone">
                 </div>
 
             <% if (file.filedescription) { %>
@@ -513,14 +523,14 @@
 
             <div class="mt-2"><%- include("reporttemplate") %></div>
 
-            <div class="mt-4">
+            <div class="mt-4" style="width: 100%; overflow: hidden;">
                 <h2 class="section-title border-0 mb-2" style="font-size: 1.4rem;"><i class="fa-solid fa-layer-group text-muted"></i> You might also like</h2>
-                <div id="relatedGridContainer">
+                <div id="relatedGridContainer" style="width: 100%;">
                     <p class="text-muted ps-2">Loading similar files...</p>
                 </div>
             </div>
             
-            <div class="mt-2"><%- include("chat") %></div>
+            <div class="mt-2" style="width: 100%;"><%- include("chat") %></div>
 
         </main>
 
@@ -566,7 +576,7 @@
                 <div class="action-row">
                     <button class="v-btn-icon-text" id="likeButton" data-file-id="<%= file._id %>" data-likes="<%= file.likes %>">
                         </button>
-                    <div style="flex:1; display:flex;"><%- include("share") %></div>
+                    <div style="flex:1; display:flex; min-width: 0;"><%- include("share") %></div>
                 </div>
 
                 <div class="security-note">
@@ -609,7 +619,7 @@
                 </ul>
             </div>
             
-            <div class="ad-wrapper d-none d-lg-flex">
+            <div class="ad-safe-zone d-none d-lg-flex">
                 </div>
 
         </aside>
@@ -656,18 +666,14 @@
             const isFree = doc.price === 0 || doc.price === '0';
             const priceBadgeText = isFree ? `Free` : `₹${doc.price}`;
             const priceBadgeClass = isFree ? `is-free` : ``;
-            const imgUrl = doc.previewUrl && doc.previewUrl.trim() !== '' ? doc.previewUrl : '/images/File_Demo.svg';
-            const webpUrl = imgUrl.replace(/\.(jpe?g|png)$/i, '.webp');
 
             return `
                 <a href="${fileUrl}" class="related-card">
                     <div class="related-img-box">
-                        <picture>
-                            <source type="image/webp" srcset="${webpUrl}">
-                            <img src="${imgUrl}" 
-                                 alt="${doc.filename}" loading="lazy" 
-                                 onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
-                        </picture>
+                        <div class="v-badge-card">${doc.category || 'Resource'}</div>
+                        <img src="${doc.previewUrl && doc.previewUrl.trim() !== '' ? doc.previewUrl : '/images/File_Demo.svg'}" 
+                             alt="${doc.filename}" loading="lazy" 
+                             onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
                     </div>
                     <div class="related-content">
                         <h3 class="related-title">${doc.filename}</h3>
@@ -680,6 +686,14 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const currentFileId = "<%= file._id %>";
+            const relatedGrid = document.getElementById('relatedGridContainer'); 
+            
+            // Initialize AdSense manually to ensure it triggers after layout
+            try {
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            } catch (e) {
+                console.log('Adsense error', e);
+            }
             
             // Modal Sync
             const mainPreviewImage = document.getElementById('mainPreviewImage');
@@ -694,6 +708,7 @@
 
             // Like Logic
             const likeButton = document.getElementById('likeButton');
+            
             if (likeButton) {
                 const fileId = likeButton.dataset.fileId;
                 let likeCount = parseInt(likeButton.dataset.likes, 10) || 0;
@@ -721,9 +736,6 @@
             }
 
             // --- Payment & Coupon Logic ---
-            const originalPrice = <%=priceDetails.originalPrice%>; 
-            const fees = <%=priceDetails.serviceFee + priceDetails.gstTax%>;
-
             const couponInput = document.getElementById('coupon-code');
             const applyBtn = document.getElementById('apply-coupon-btn');
             const totalAmountDisplay = document.getElementById('finalTotalPrice');
@@ -755,7 +767,7 @@
                     discountRowContainer.innerHTML = '';
                 }
                 const formattedTotal = activeData.total.toFixed(2);
-                if(totalAmountDisplay) totalAmountDisplay.textContent = `₹${formattedTotal}`;
+                if(totalAmountDisplay) totalAmountDisplay.textContent = `${formattedTotal}`;
                 if(mobileTotalAmountDisplay) mobileTotalAmountDisplay.textContent = formattedTotal;
             }
 
@@ -852,9 +864,8 @@
             if(payButton) payButton.addEventListener('click', handlePayment);
             if(payButtonMobile) payButtonMobile.addEventListener('click', handlePayment);
 
-            // Fetch Related Grid - Segregated by Author (Horizontal Scroll for Mobile)
+            // Fetch Related Grid - Segregated by Author
             const fetchRelatedFiles = async () => { 
-                const relatedContainer = document.getElementById('relatedGridContainer'); 
                 try {
                     const response = await fetch(`/products/related?fileId=${currentFileId}`);
                     if (!response.ok) throw new Error(`HTTP Error`);
@@ -883,12 +894,12 @@
                                 </div>
                             `;
                         }
-                        relatedContainer.innerHTML = finalHTML;
+                        relatedGrid.innerHTML = finalHTML;
                     } else {
-                        relatedContainer.innerHTML = '<p class="text-muted ps-2" style="font-size: 0.95rem;">No related files found.</p>';
+                        relatedGrid.innerHTML = '<p class="text-muted ps-2" style="font-size: 0.95rem;">No related files found.</p>';
                     }
                 } catch (error) {
-                    relatedContainer.innerHTML = '<p class="text-danger ps-2" style="font-size: 0.95rem;">Error loading related files.</p>';
+                    relatedGrid.innerHTML = '<p class="text-danger ps-2" style="font-size: 0.95rem;">Error loading related files.</p>';
                 }
             };
             fetchRelatedFiles();
