@@ -1304,11 +1304,11 @@
 
 async function loadDashboardData() {
             try {
-                console.log("Fetching dashboard stats from /api/admin/stats...");
+                // Fetching dashboard stats
                 const response = await axios.get(`${API_BASE}/stats`);
                 
                 // 1. Log exactly what the backend sent back
-                console.log("Backend Response:", response.data);
+                // Backend response logged for debugging
 
                 if (response.data && response.data.success === false) {
                     if (response.data.message === 'Unauthorized') window.location.href = '/admin-login';
@@ -1424,7 +1424,7 @@ async function loadDashboardData() {
             try {
                 const response = await axios.get('/api/admin/files?limit=500');
                 allFiles = response.data.files || [];
-                console.log('📁 Loaded files:', allFiles.length, 'Total available:', response.data.pagination?.total);
+                // Files loaded successfully
                 renderFilesGrid(allFiles);
                 setupFilterListeners();
             } catch (error) {
@@ -1708,7 +1708,7 @@ async function loadDashboardData() {
         function previewEmail() {
             updateLivePreview();
             showConfirm('Email Preview', 'This is how your email will look to recipients. Looks good?', () => {
-                console.log('Preview confirmed');
+                // Preview action confirmed
             });
         }
 
@@ -1993,7 +1993,7 @@ async function loadDashboardData() {
         function renderFilesGrid(files) {
             const grid = document.getElementById('filesGrid');
             grid.innerHTML = '';
-            console.log('Rendering', files.length, 'files to grid');
+            // Rendering files to grid
             if (files.length === 0) {
                 grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">No files found</div>';
                 return;

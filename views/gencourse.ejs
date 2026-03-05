@@ -1602,7 +1602,7 @@ document.addEventListener('DOMContentLoaded', () => {
              finalCoursePayload.modules.forEach(m => m.resources.forEach(r => delete r.file));
 
             // 5. Send final metadata to backend
-            console.log("Final payload to backend:", finalCoursePayload);
+            // Final payload prepared
 
             //  // --- MOCK BACKEND CALL ---
             //  console.log("MOCK: Sending final metadata to backend...");
@@ -1624,7 +1624,7 @@ document.addEventListener('DOMContentLoaded', () => {
                  throw new Error(error.message || 'Failed to save course data on the server.');
              }
              const backendResponse = await finalResponse.json();
-             console.log("Backend response:", backendResponse);
+             // Backend processing complete
               // --- END REAL ---
 
             // Success!
@@ -1707,7 +1707,7 @@ document.addEventListener('DOMContentLoaded', () => {
              delete courseData.introVideoOption; // Remove temporary field
 
 
-            console.log("Data collected, starting upload orchestrator:", courseData);
+            // Course data and upload preparation complete
             await uploadOrchestrator(courseData);
         });
     }

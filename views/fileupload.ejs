@@ -330,7 +330,7 @@
   .upload-form__checkbox-group { display: flex; align-items: center; gap: 12px; }
   .upload-form__checkbox-group--agreement { margin: 8px 0; align-items: flex-start; }
   .upload-form__checkbox-input { 
-      height: 20px; width: 20px; flex-shrink: 0; mt-1;
+      height: 20px; width: 20px; flex-shrink: 0; margin-top: 1px;
       border: 2px solid var(--v-text-muted); border-radius: 4px;
       appearance: none; cursor: pointer; transition: var(--v-transition);
       background: var(--v-surface);
@@ -437,6 +437,20 @@
   .upload-form__progress-stats-grid { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--v-text-muted); margin-bottom: 32px; background: var(--v-bg); padding: 12px 16px; border-radius: var(--v-radius-sm);}
   .upload-form__progress-controls { display: flex; gap: 16px; justify-content: center; }
 
+  /* Error state for inputs */
+  .upload-form__input:invalid,
+  .upload-form__input.error { 
+      border-color: var(--v-danger); 
+      background-color: var(--v-danger-bg);
+  }
+  .error-msg { 
+      font-size: 0.8rem; 
+      color: var(--v-danger); 
+      margin-top: 4px; 
+      display: block; 
+      font-weight: 500;
+  }
+
   /* Success Modal */
   .upload-form__modal-container { 
       position: fixed; inset: 0; z-index: 1050; display: flex; 
@@ -515,21 +529,125 @@
       }
 
       class Uploader {
-        constructor() { this.CHUNK_SIZE_MB = 5; this.queue = []; this.currentIndex = 0; this.state = this._resetState(); }
+        constructor() { this.CHUNK_SIZE_MB = 5; this.queue = []; this.currentIndex = 0; this.state = this._resetState(); this.MAX_RETRIES = 3; }
         _resetState() { return { file: null, fileType: null, fileId: null, key: null, generatedFileName: null, uploadId: null, completedParts: [], bytesUploadedFromCompletedParts: 0, isUploading: false, isPaused: false, currentXhr: null, uploadStartTime: null }; }
+        _saveState() { sessionStorage.setItem('uploadState', JSON.stringify({ queue: this.queue, currentIndex: this.currentIndex, state: this.state, timestamp: Date.now() })); }
+        _restoreState() { const saved = sessionStorage.getItem('uploadState'); if (saved) { try { const data = JSON.parse(saved); if (Date.now() - data.timestamp < 3600000) { this.queue = data.queue; this.currentIndex = data.currentIndex; this.state = data.state; return true; } } catch(e) {} sessionStorage.removeItem('uploadState'); } return false; }
+        _clearState() { sessionStorage.removeItem('uploadState'); }
         enqueueFiles(files) { this.queue = files; this.currentIndex = 0; }
         async startNext(onSuccess, onFail, onProgressUpdate) { if (this.currentIndex >= this.queue.length) { if (onSuccess) onSuccess(); return; } this.state = this._resetState(); const currentFile = this.queue[this.currentIndex]; this.state.file = currentFile.file; this.state.fileType = currentFile.type; this.state.fileId = currentFile.id; try { onProgressUpdate({ type: 'status', message: `Preparing to upload ${this.state.file.name}...` }); const response = await fetch(`/start-multipart-upload`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fileName: this.state.file.name, contentType: this.state.file.type, fileType: this.state.fileType, fileId: this.state.fileId }) }); if (!response.ok) throw new Error("Failed to initiate multipart upload."); const data = await response.json(); this.state.uploadId = data.uploadId; this.state.key = data.key; this.state.generatedFileName = data.generatedFileName; this.state.uploadStartTime = Date.now(); await this._uploadChunks(onProgressUpdate); if (this.state.isPaused) { return; } await this._completeUpload(onProgressUpdate); this.currentIndex++; await this.startNext(onSuccess, onFail, onProgressUpdate); } catch (error) { if (onFail) onFail(error); } }
         _uploadChunks(onProgressUpdate) { return new Promise(async (resolve, reject) => { this.state.isUploading = true; const chunkSize = this.CHUNK_SIZE_MB * 1024 * 1024; const totalChunks = Math.ceil(this.state.file.size / chunkSize); for (let partNumber = this.state.completedParts.length + 1; partNumber <= totalChunks; partNumber++) { if (this.state.isPaused) { this.state.isUploading = false; return resolve(); } const start = (partNumber - 1) * chunkSize; const end = Math.min(start + chunkSize, this.state.file.size); const chunk = this.state.file.slice(start, end); onProgressUpdate({ type: 'status', message: `Uploading ${this.state.file.name} (part ${partNumber} of ${totalChunks})...` }); try { await this._uploadPart(partNumber, chunk, onProgressUpdate); } catch (error) { this.state.isUploading = false; return reject(error); } } this.state.isUploading = false; resolve(); }); }
-        _uploadPart(partNumber, chunk, onProgressUpdate) { return new Promise(async (resolve, reject) => { try { const queryString = `?key=${encodeURIComponent(this.state.key)}&uploadId=${this.state.uploadId}&partNumber=${partNumber}&fileType=${this.state.fileType}`; const response = await fetch(`/get-presigned-part-url${queryString}`); if (!response.ok) return reject(new Error("Failed to get presigned URL.")); const { url } = await response.json(); const xhr = new XMLHttpRequest(); this.state.currentXhr = xhr; xhr.upload.onprogress = (e) => { const totalBytesUploaded = this.state.bytesUploadedFromCompletedParts + e.loaded; const totalProgress = (totalBytesUploaded / this.state.file.size) * 100; const elapsedTime = (Date.now() - this.state.uploadStartTime) / 1000; const speed = totalBytesUploaded / elapsedTime; const timeRemaining = speed > 0 ? (this.state.file.size - totalBytesUploaded) / speed : Infinity; onProgressUpdate({ type: 'progress', progress: totalProgress, speed, timeRemaining, uploadedBytes: totalBytesUploaded, totalBytes: this.state.file.size }); }; xhr.onload = () => { if (xhr.status === 200) { this.state.completedParts.push({ ETag: xhr.getResponseHeader("ETag"), PartNumber: partNumber }); this.state.bytesUploadedFromCompletedParts += chunk.size; resolve(); } else { reject(new Error(`Part upload failed with status ${xhr.status}.`)); } }; xhr.onerror = () => reject(new Error("Network error during part upload.")); xhr.onabort = () => resolve(); xhr.open("PUT", url); xhr.setRequestHeader("Content-Type", "application/octet-stream"); xhr.send(chunk); } catch (error) { reject(error); } }); }
+        _uploadPart(partNumber, chunk, onProgressUpdate, retryCount = 0) { return new Promise(async (resolve, reject) => { try { const queryString = `?key=${encodeURIComponent(this.state.key)}&uploadId=${this.state.uploadId}&partNumber=${partNumber}&fileType=${this.state.fileType}`; const response = await fetch(`/get-presigned-part-url${queryString}`); if (!response.ok) return reject(new Error("Failed to get presigned URL.")); const { url } = await response.json(); const xhr = new XMLHttpRequest(); this.state.currentXhr = xhr; xhr.upload.onprogress = (e) => { const totalBytesUploaded = this.state.bytesUploadedFromCompletedParts + e.loaded; const totalProgress = (totalBytesUploaded / this.state.file.size) * 100; const elapsedTime = (Date.now() - this.state.uploadStartTime) / 1000; const speed = totalBytesUploaded / elapsedTime; const timeRemaining = speed > 0 ? (this.state.file.size - totalBytesUploaded) / speed : Infinity; onProgressUpdate({ type: 'progress', progress: totalProgress, speed, timeRemaining, uploadedBytes: totalBytesUploaded, totalBytes: this.state.file.size }); }; xhr.onload = () => { if (xhr.status === 200) { this.state.completedParts.push({ ETag: xhr.getResponseHeader("ETag"), PartNumber: partNumber }); this.state.bytesUploadedFromCompletedParts += chunk.size; this._saveState(); resolve(); } else { reject(new Error(`Part upload failed with status ${xhr.status}.`)); } }; xhr.onerror = async () => { if (retryCount < this.MAX_RETRIES) { const waitTime = 1000 * (retryCount + 1); onProgressUpdate({ type: 'status', message: `Network error. Retrying part ${partNumber}... (${retryCount + 1}/${this.MAX_RETRIES})` }); setTimeout(() => { this._uploadPart(partNumber, chunk, onProgressUpdate, retryCount + 1).then(resolve).catch(reject); }, waitTime); } else { reject(new Error(`Part ${partNumber} upload failed after ${this.MAX_RETRIES} retries.`)); } }; xhr.onabort = () => resolve(); xhr.open("PUT", url); xhr.setRequestHeader("Content-Type", "application/octet-stream"); xhr.send(chunk); } catch (error) { reject(error); } }); }
         async _completeUpload(onProgressUpdate) { onProgressUpdate({ type: 'status', message: "Finalizing upload..." }); const response = await fetch("/complete-multipart-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: this.state.key, uploadId: this.state.uploadId, parts: this.state.completedParts, fileType: this.state.fileType, fileId: this.state.fileId, generatedFileName: this.state.generatedFileName, fileSize: this.state.file.size }), }); if (!response.ok) throw new Error("Failed to complete upload."); }
         togglePause(onProgressUpdate) { this.state.isPaused = !this.state.isPaused; if(this.state.isPaused) { if (this.state.currentXhr) this.state.currentXhr.abort(); onProgressUpdate({ type: 'status', message: 'Upload paused.' }); } else { onProgressUpdate({ type: 'status', message: 'Resuming upload...' }); this._uploadChunks(onProgressUpdate); } }
-        cancel(onCancel) { if (this.state.currentXhr) this.state.currentXhr.abort(); this.state = this._resetState(); this.queue = []; this.currentIndex = 0; if(onCancel) onCancel(); }
+        cancel(onCancel) { if (this.state.currentXhr) this.state.currentXhr.abort(); this.state = this._resetState(); this.queue = []; this.currentIndex = 0; this._clearState(); if(onCancel) onCancel(); }
       }
 
       const ui = new UIHandler('upload-form-app-container');
       const uploader = new Uploader();
       let formData = {};
       let imageFile, mainFile, quillEditor;
+      let hasRestoredSession = false;
+      let currentFileId = null;
+      let savedFormState = null; // Save form state when going to preview
+
+      const cleanupFailedUpload = async (fileId) => {
+        try {
+          const response = await fetch('/api/cleanup-failed-upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileId })
+          });
+          if (response.ok) {
+            // Cleanup successful
+          } else {
+            console.warn(`⚠ Cleanup failed for ${fileId}`);
+          }
+        } catch (err) {
+          console.error('Cleanup error:', err.message);
+        }
+      };
+
+      const saveFormState = () => {
+        savedFormState = {
+          title: document.getElementById('uploadFormTitle')?.value || '',
+          price: document.getElementById('uploadFormPrice')?.value || '',
+          category: document.getElementById('uploadFormCategory')?.value || '',
+          description: quillEditor ? quillEditor.root.innerHTML : '',
+          couponToggle: document.getElementById('couponToggleCheckbox')?.checked || false,
+          couponCode: document.getElementById('couponCode')?.value || '',
+          couponPercentage: document.getElementById('couponPercentage')?.value || '',
+          couponExpiry: document.getElementById('couponExpiry')?.value || '',
+          imageFile: imageFile,
+          mainFile: mainFile
+        };
+      };
+
+      const restoreFormState = () => {
+        if (!savedFormState) return;
+        
+        const titleInput = document.getElementById('uploadFormTitle');
+        const priceInput = document.getElementById('uploadFormPrice');
+        const categoryInput = document.getElementById('uploadFormCategory');
+        const couponToggle = document.getElementById('couponToggleCheckbox');
+        const couponCode = document.getElementById('couponCode');
+        const couponPercentage = document.getElementById('couponPercentage');
+        const couponExpiry = document.getElementById('couponExpiry');
+        const couponDetails = document.getElementById('couponDetailsContainer');
+        const imageInput = document.getElementById('imageUploadInput');
+        const fileInput = document.getElementById('fileUploadInput');
+        const imageUploadText = document.getElementById('imageUploadText');
+        const fileUploadText = document.getElementById('fileUploadText');
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+
+        // Restore text inputs
+        if (titleInput) titleInput.value = savedFormState.title;
+        if (priceInput) priceInput.value = savedFormState.price;
+        if (categoryInput) categoryInput.value = savedFormState.category;
+        
+        // Restore quill editor
+        if (quillEditor) {
+          quillEditor.root.innerHTML = savedFormState.description;
+        }
+
+        // Restore coupon fields
+        if (couponToggle) {
+          couponToggle.checked = savedFormState.couponToggle;
+          if (couponDetails) {
+            couponDetails.classList.toggle('visible', savedFormState.couponToggle);
+          }
+        }
+        if (couponCode) couponCode.value = savedFormState.couponCode;
+        if (couponPercentage) couponPercentage.value = savedFormState.couponPercentage;
+        if (couponExpiry) couponExpiry.value = savedFormState.couponExpiry;
+
+        // Restore file selections
+        imageFile = savedFormState.imageFile;
+        mainFile = savedFormState.mainFile;
+
+        if (imageFile && imageInput) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(imageFile);
+          imageInput.files = dataTransfer.files;
+          if (imageUploadArea) imageUploadArea.classList.add('file-selected');
+          if (imageUploadText) imageUploadText.textContent = imageFile.name.length <= 25 ? imageFile.name : `${imageFile.name.slice(0, 21)}...`;
+        }
+
+        if (mainFile && fileInput) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(mainFile);
+          fileInput.files = dataTransfer.files;
+          if (fileUploadArea) fileUploadArea.classList.add('file-selected');
+          if (fileUploadText) fileUploadText.textContent = mainFile.name.length <= 25 ? mainFile.name : `${mainFile.name.slice(0, 21)}...`;
+        }
+
+        // Trigger validation to update review button state
+        const form = document.getElementById('upload-form-main');
+        if (form) {
+          form.dispatchEvent(new Event('input'));
+        }
+      };
 
       const formatBytes = (bytes) => (bytes === 0 ? '0 B' : ( (k=1024, sizes=['B', 'KB', 'MB', 'GB'], i=Math.floor(Math.log(bytes)/Math.log(k))) => `${parseFloat((bytes/Math.pow(k,i)).toFixed(2))} ${sizes[i]}`)() );
       const formatRate = (bytes) => `${formatBytes(bytes)}/s`;
@@ -549,10 +667,29 @@
         }
       };
       
+      const checkAndRestoreUpload = () => {
+        if (uploader._restoreState()) {
+          const saved = JSON.parse(sessionStorage.getItem('uploadState'));
+          if (confirm('We found an incomplete upload. Would you like to resume it?')) {
+            hasRestoredSession = true;
+            goToUploadProgressStage();
+            return true;
+          } else {
+            uploader._clearState();
+          }
+        }
+        return false;
+      };
+
       const initializeFormStage = () => {
         ui.render('template-upload-form', () => {
           if (isQuillAvailable) { quillEditor = new Quill('#descriptionEditorContainer', { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }]] } }); }
-          
+          setupFormListeners();
+          restoreFormState(); // Restore any previous form state
+        });
+      };
+
+      const setupFormListeners = () => {
           const form = document.getElementById('upload-form-main');
           const reviewBtn = document.getElementById('reviewUploadBtn');
           const titleInput = document.getElementById('uploadFormTitle');
@@ -649,17 +786,23 @@
               couponCode: couponToggle.checked ? document.getElementById('couponCode').value : null,
               couponPercentage: couponToggle.checked ? document.getElementById('couponPercentage').value : null,
               couponExpiry: couponToggle.checked ? document.getElementById('couponExpiry').value : null,
-              imageType: document.getElementById('imageUploadInput').files[0].type.split('/')[1]
+              imageType: document.getElementById('imageUploadInput').files[0].type.split('/')[1].toLowerCase().replace('jpeg', 'jpg')
             };
             imageFile = imageInput.files[0]; mainFile = fileInput.files[0];
             goToPreviewStage();
           });
-        });
       };
 
       const goToPreviewStage = () => {
+        saveFormState(); // Save all form data before switching views
         ui.render('template-preview', () => {
-          document.getElementById('backToFormBtn').addEventListener('click', initializeFormStage);
+          document.getElementById('backToFormBtn').addEventListener('click', () => {
+            ui.render('template-upload-form', () => {
+              if (isQuillAvailable) { quillEditor = new Quill('#descriptionEditorContainer', { theme: 'snow', modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }]] } }); }
+              restoreFormState(); // Restore saved form data
+              setupFormListeners(); // Re-attach all event listeners
+            });
+          });
           document.getElementById('previewImage').style.backgroundImage = `url(${URL.createObjectURL(imageFile)})`;
           document.getElementById('previewFileName').textContent = mainFile.name;
           document.getElementById('previewTitle').textContent = formData.title;
@@ -688,10 +831,12 @@
                 throw new Error(errData.error || 'Could not create file record on server.');
               }
               const { fileId } = await response.json();
+              currentFileId = fileId; // Store for cleanup if needed
               uploader.enqueueFiles([
                 { type: 'main', file: mainFile, id: fileId },
                 { type: 'image', file: imageFile, id: fileId }
               ]);
+              uploader._saveState();
               goToUploadProgressStage();
             } catch (error) {
               alert(`Error: ${error.message}`);
@@ -713,14 +858,29 @@
           }));
           
           uploader.startNext(
-            () => ui.showModal(initializeFormStage), 
-            (err) => { alert(`Upload failed: ${err.message}`); initializeFormStage(); },
+            () => { uploader._clearState(); currentFileId = null; ui.showModal(initializeFormStage); }, 
+            (err) => { 
+              uploader._clearState(); 
+              // Cleanup MongoDB record if upload fails completely
+              if (currentFileId) {
+                cleanupFailedUpload(currentFileId).then(() => {
+                  alert(`Upload failed: ${err.message}\n\nFile record has been automatically deleted.`);
+                  currentFileId = null;
+                  initializeFormStage();
+                });
+              } else {
+                alert(`Upload failed: ${err.message}`);
+                initializeFormStage();
+              }
+            },
             updateProgressUI
           );
         });
       };
       
-      initializeFormStage();
+      if (!checkAndRestoreUpload()) {
+        initializeFormStage();
+      }
     }
   })();
 </script>
