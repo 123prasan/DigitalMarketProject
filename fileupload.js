@@ -43,9 +43,12 @@ router.use(express.urlencoded({ extended: true }));
 //                         Helper Functions
 // =================================================================
 const getS3Params = (fileType, originalFileName, fileId) => {
-    const fileExtension = path.extname(originalFileName);
+    let fileExtension = path.extname(originalFileName).toLowerCase();
 
     if (fileType === 'image') {
+        // normalise JPEG variants to .jpg so we have a single canonical key
+        if (fileExtension === '.jpeg') fileExtension = '.jpg';
+
         const generatedFileName = `${fileId}${fileExtension}`;
         return {
             bucket: IMAGE_BUCKET,
@@ -149,6 +152,12 @@ router.post('/complete-multipart-upload', async (req, res) => {
             // For images, save the full S3 URL and the filename (the object ID)
             updatePayload.imageUrl = fullS3Url;
             updatePayload.imageName = generatedFileName; // e.g., "6511a...a1b.jpg"
+
+            // ---- new: persist imageType so we don't have to probe S3 later ----
+            // extension comes from the generated filename (includes leading dot)
+            const ext = path.extname(generatedFileName).slice(1).toLowerCase();
+            // normalise jpeg/jpg etc
+            updatePayload.imageType = ext === "jpeg" ? "jpeg" : ext === "jpg" ? "jpg" : ext;
         } else { // 'main' file
             // For the main file, save ONLY the generated name to fileUrl
             updatePayload.fileUrl = generatedFileName; // e.g., "my-doc-175...-d7f3.pdf"
@@ -160,7 +169,7 @@ router.post('/complete-multipart-upload', async (req, res) => {
         if (!updatedFile) {
             return res.status(404).json({ error: 'File record not found in database.' });
         }
-        
+        console.log('Database updated successfully with S3 info:', updatePayload);
         res.json({ message: 'Upload completed successfully!' });
 
     } catch (err) {

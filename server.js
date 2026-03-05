@@ -1658,6 +1658,10 @@ async function getValidFileUrl(
     const BASE_URL = `https://${CLOUDFRONT_DOMAIN}/files-previews/images`;
 
     // ✅ Step 2: Use known type directly if present
+    // After the fix in `fileupload.js` we always persist `imageType` during
+    // the completion step, so every newly-uploaded image will hit this
+    // branch and avoid any network probes.  The expensive HEAD requests
+    // below only run for legacy records where the type wasn't stored.
     if (file.imageType && validTypes.includes(file.imageType)) {
       const url = `${BASE_URL}/${file._id}.${file.imageType}`;
       previewfileUrlCache.set(cacheKey, url);
@@ -1702,6 +1706,14 @@ async function getValidFileUrl(
     console.error("getValidFileUrl error:", err.message);
     return `https://${CLOUDFRONT_DOMAIN}/files-previews/images/${file._id}.jpg`;
   }
+}
+
+// simpler helper for when you already know the extension
+function buildPreviewUrl(file, CLOUDFRONT_DOMAIN = "d3epchi0htsp3c.cloudfront.net") {
+  // always normalise jpeg → jpg; S3 keys are generated with .jpg for both
+  let ext = file.imageType || 'jpg';
+  if (ext === 'jpeg') ext = 'jpg';
+  return `https://${CLOUDFRONT_DOMAIN}/files-previews/images/${file._id}.${ext}`;
 }
 
 
@@ -1799,7 +1811,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
 
     // Prepare price details for checkout display
     const priceDetails = GenCheckOutPrice(Number(file.price) || 0);
-
+   console.log(previewUrl, pdfUrl)
     // 🎨 Render final optimized view
     res.render("file-details", {
       file,
