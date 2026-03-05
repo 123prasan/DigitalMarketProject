@@ -1464,7 +1464,7 @@ function getCSSVariables() {
   return colors;
 }
 
-// Edit File Details (Protected by JWT)
+
 app.post("/edit-file", authenticateJWT, async (req, res) => {
   const { fileId, filename, filedescription, price, couponCode } = req.body;
   
