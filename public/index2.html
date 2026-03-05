@@ -27,7 +27,7 @@
     // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/firebase-messaging-sw.js')
-        .then(reg => console.log('SW registered:', reg))
+        .then(reg => {}) // Service Worker registered
         .catch(err => console.error('SW registration failed:', err));
     }
 
@@ -40,7 +40,7 @@
         const token = await getToken(messaging, { vapidKey });
 
         if (!token) return alert('No token generated.');
-        console.log('✅ FCM Token:', token);
+        // FCM Token obtained
 
         // Send token to backend
         const res = await fetch('/register-token', {
@@ -58,7 +58,7 @@
 
     // Foreground messages
     onMessage(messaging, payload => {
-      console.log('💬 Foreground message:', payload);
+      // Foreground message received
       alert(`${payload.notification?.title}\n${payload.notification?.body}`);
     });
   </script>

@@ -267,5 +267,34 @@ router.post('/api/create-file-record', authenticateJWT_user, requireAuth, async 
     }
 });
 
+// --- DELETE File Record (cleanup on upload failure) ---
+router.post('/api/cleanup-failed-upload', authenticateJWT_user, async (req, res) => {
+  try {
+    const { fileId } = req.body;
+    if (!fileId) {
+      return res.status(400).json({ error: 'Missing fileId' });
+    }
+
+    const file = await File.findById(fileId);
+    if (!file) {
+      return res.status(404).json({ error: 'File record not found' });
+    }
+
+    // Verify ownership
+    if (file.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    // Delete the file record from MongoDB
+    await File.deleteOne({ _id: fileId });
+    console.log(`Cleanup: Deleted failed upload record ${fileId}`);
+    
+    res.json({ success: true, message: 'Failed upload record cleaned up' });
+  } catch (error) {
+    console.error('Cleanup error:', error);
+    res.status(500).json({ error: 'Could not cleanup failed upload' });
+  }
+});
+
 // Export the router
 module.exports = { fileroute: router };

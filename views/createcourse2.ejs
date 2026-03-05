@@ -3462,7 +3462,7 @@ const isTitleValid = validateTitle();
                     courseData.tags.push(tagEl.querySelector('span:first-child').textContent.trim());
                 });
 
-                console.log("Final data collected from form:", courseData);
+                // Form data collected
 
                 // 2. CALL THE NEW UPLOAD ORCHESTRATOR
                 uploadOrchestrator(courseData);
@@ -3589,7 +3589,7 @@ const isTitleValid = validateTitle();
                 finalCoursePayload.modules.forEach(m => m.resources.forEach(r => delete r.file));
                 
                 // 5. Send the final metadata to your backend to create the course
-                console.log("Final payload to be sent to server:", finalCoursePayload);
+                // Payload prepared for server
                 
                 // --- FIX IS HERE: Corrected the URL ---
                 const finalBackendUrl = 'http://localhost:8000/api/courses/create-course';
@@ -3728,7 +3728,7 @@ const isTitleValid = validateTitle();
                     const name = document.getElementById('profile-name-text').textContent;
                     const email = document.getElementById('profile-email-text').textContent;
                     const phone = document.getElementById('profile-phone-text').textContent;
-                    console.log('Saving profile:', { name, email, phone });
+                    // Profile data saved
                     showModal('Profile Saved', 'Your profile details have been updated successfully!', false, true);
                 });
             }

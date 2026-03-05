@@ -442,7 +442,7 @@
                                             <% if(file.price){%>₹<%= file.price.toFixed(2) %><%}else{%>Free<%}%>
                                         </span>
                                         <div class="flex items-center gap-1">
-                                            <button class="edit-file-btn" data-file-id="<%= file.id %>" data-file-name="<%= file.filename %>" data-file-description="<%= file.description %>" data-file-price="<%= file.price %>" data-file-coupons='<%- JSON.stringify(file.coupons || []) %>' title="Edit Details"><i class="fa-solid fa-pen"></i></button>
+                                            <button class="edit-file-btn" data-file-id="<%= file.id %>" data-file-name="<%= file.filename %>" data-file-description="<%- file.filedescription ? file.filedescription.replace(/\"/g, '&quot;') : '' %>" data-file-price="<%= file.price %>" data-file-coupons='<%- JSON.stringify(file.coupons || []) %>' title="Edit Details"><i class="fa-solid fa-pen"></i></button>
                                             <button class="delete-file-btn" data-file-id="<%= file.id %>" data-file-name="<%= file.filename %>" title="Delete File"><i class="fa-regular fa-trash-can"></i></button>
                                         </div>
                                     </div>
@@ -1083,17 +1083,47 @@
         async function handleSaveFileChanges(saveBtn) {
             const fileId = saveBtn.dataset.fileId;
             const filename = document.getElementById('edit-file-name').value.trim();
-            const description = document.getElementById('edit-file-description').value.trim();
+            const filedescription = document.getElementById('edit-file-description').value.trim();
             const priceValue = document.getElementById('edit-file-price').value.trim();
             const price = priceValue === '' ? null : parseFloat(priceValue);
             
-            if(!filename || !description || price === null || isNaN(price)) {
+            if(!filename || !filedescription || price === null || isNaN(price)) {
                 alert(`Please fill in all fields correctly.`); return;
             }
             
-            const updatedData = { id: fileId, filename, description, price };
-            hideModal();
-            // Implement fetch logic here
+            saveBtn.disabled = true;
+            const spinner = saveBtn.querySelector('.fa-spin');
+            const btnText = saveBtn.querySelector('.btn-text');
+            if(spinner) spinner.classList.remove('hidden');
+            if(btnText) btnText.textContent = '';
+            
+            try {
+                const response = await fetch('/edit-file', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fileId: fileId,
+                        filename: filename,
+                        filedescription: filedescription,
+                        price: price
+                    })
+                });
+                
+                const data = await response.json();
+                if(data.success) {
+                    hideModal();
+                    location.reload();
+                } else {
+                    alert(data.error || 'Failed to save changes');
+                }
+            } catch(err) {
+                console.error(err);
+                alert('Error saving changes: ' + err.message);
+            } finally {
+                saveBtn.disabled = false;
+                if(spinner) spinner.classList.add('hidden');
+                if(btnText) btnText.textContent = 'Save Changes';
+            }
         }
 
         function handleDeleteFileClick(btn) {

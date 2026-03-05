@@ -246,7 +246,7 @@ function resumeUpload() {
     isPaused = false;
     updateButtonState(true, false, true);
     updateProgressBar(progressOnPause);
-    console.log(`Resuming upload. Progress at start of resume: ${progressOnPause.toFixed(2)}%`);
+    // Resuming upload from previous state
     updateStatus("Upload resuming...");
     uploadFileChunks();
   }
@@ -406,7 +406,7 @@ async function completeUpload() {
     updateStatus("File uploaded and assembled successfully! Check your S3 bucket.");
     updateRemainingTime(0);
     updateProgressBar(100);
-    console.log("Multipart upload successful!");
+    // Multipart upload successful
   } catch (error) {
     updateStatus(`Completion failed: ${error.message}`);
     console.error("Error during upload completion:", error);

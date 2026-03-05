@@ -1467,38 +1467,48 @@ function getCSSVariables() {
 // Edit File Details (Protected by JWT)
 app.post("/edit-file", authenticateJWT, async (req, res) => {
   const { fileId, filename, filedescription, price, couponCode } = req.body;
-  await File.findByIdAndUpdate(fileId, {
-    filename,
-    filedescription,
-    price,
-  });
-  // manage coupon association
-  if (couponCode && couponCode.trim() !== '') {
-    let coupon = await Coupon.findOne({ file: fileId });
-    if (coupon) {
-      coupon.code = couponCode.trim();
-      await coupon.save();
-    } else {
-      // assign default owner for coupon as well
-      const defaultUser = await User.findOne({ email: 'vidyari.inc@gmail.com' });
-      const userIdForCoupon = defaultUser ? defaultUser._id : (req.user && req.user._id);
-      await Coupon.create({
-        userId: userIdForCoupon,
-        file: fileId,
-        code: couponCode.trim(),
-        discountValue: 0,
-      });
+  
+  try {
+    const updatedFile = await File.findByIdAndUpdate(fileId, {
+      filename,
+      filedescription,
+      price,
+    }, { new: true });
+
+    if (!updatedFile) {
+      return res.status(404).json({ success: false, error: 'File not found' });
     }
-  } else {
-    // remove coupon if empty
-    await Coupon.deleteOne({ file: fileId });
+
+    // manage coupon association
+    if (couponCode && couponCode.trim() !== '') {
+      let coupon = await Coupon.findOne({ file: fileId });
+      if (coupon) {
+        coupon.code = couponCode.trim();
+        await coupon.save();
+      } else {
+        // assign default owner for coupon as well
+        const defaultUser = await User.findOne({ email: 'vidyari.inc@gmail.com' });
+        const userIdForCoupon = defaultUser ? defaultUser._id : (req.user && req.user._id);
+        await Coupon.create({
+          userId: userIdForCoupon,
+          file: fileId,
+          code: couponCode.trim(),
+          discountValue: 0,
+        });
+      }
+    } else {
+      // remove coupon if empty
+      await Coupon.deleteOne({ file: fileId });
+    }
+    
+    // Always return JSON for consistency
+    res.json({ success: true, message: 'File updated successfully', file: updatedFile });
+  } catch (error) {
+    console.error('Edit file error:', error);
+    res.status(500).json({ success: false, error: 'Could not update file' });
   }
-  // if JSON request (axios) respond accordingly, else redirect for form submit
-  if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
-    return res.json({ success: true });
-  }
-  res.redirect("/admin?fileUpdated=1");
 });
+
 
 // Send Notification (Protected by JWT)
 app.post("/send-notification", authenticateJWT, async (req, res) => {
@@ -1862,35 +1872,51 @@ app.post("/delete-file", authenticateJWT, async (req, res) => {
       : null;
     const mainFileKey = mainKeyFromDb || mainKeyFromReq;
 
-    // Preview key should not start with a leading slash
-    const previewKey = `files-previews/images/${file._id}.${file.imageType || "jpg"}`;
-
     // Delete main file from vidyari-main if key available
     if (mainFileKey) {
       try {
         await s3.deleteObject({ Bucket: "vidyarimain2", Key: mainFileKey }).promise();
-        console.log(`Deleted main file from S3: ${mainFileKey}`);
+        console.log(`✅ Deleted main file from S3: ${mainFileKey}`);
       } catch (delErr) {
-        console.error(`Error deleting main file ${mainFileKey}:`, delErr.message || delErr);
+        console.error(`❌ Error deleting main file ${mainFileKey}:`, delErr.message || delErr);
       }
     } else {
-      console.warn('No main file key available for deletion');
+      console.warn('⚠️ No main file key available for deletion');
     }
 
-    // Delete preview image from vidyari3
-    try {
-      await s3.deleteObject({ Bucket: "vidyari3", Key: previewKey }).promise();
-      console.log(`Deleted preview image from S3: ${previewKey}`);
-    } catch (delErr) {
-      console.error(`Error deleting preview ${previewKey}:`, delErr.message || delErr);
+    // Delete preview image(s) from vidyari3
+    // Try with stored imageType first, then fallback to common formats
+    const imageFormats = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    const storedType = file.imageType ? file.imageType.toLowerCase().replace('.', '') : null;
+    
+    // Reorder to try stored type first
+    const formatsToTry = storedType && imageFormats.includes(storedType)
+      ? [storedType, ...imageFormats.filter(f => f !== storedType)]
+      : imageFormats;
+
+    let deletedPreview = false;
+    for (const ext of formatsToTry) {
+      const previewKey = `files-previews/images/${file._id}.${ext}`;
+      try {
+        const result = await s3.deleteObject({ Bucket: "vidyari3", Key: previewKey }).promise();
+        console.log(`✅ Deleted preview image from S3: ${previewKey}`);
+        deletedPreview = true;
+        break; // Stop after first successful deletion
+      } catch (delErr) {
+        console.error(`⚠️ Could not delete ${previewKey}:`, delErr.message || delErr);
+      }
+    }
+
+    if (!deletedPreview) {
+      console.warn(`⚠️ Could not delete any preview image format for ${file._id}`);
     }
 
     // Delete MongoDB record
     await File.deleteOne({ _id: fileId });
-    console.log('file deleted at db and attempted s3 cleanup')
+    console.log(`✅ File record deleted from MongoDB: ${fileId}`);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error('❌ Delete error:', err);
     res.json({ success: false, message: "Server error" });
   }
 });
