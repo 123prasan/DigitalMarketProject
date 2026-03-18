@@ -48,25 +48,13 @@
       }
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [{
-        "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.vidyari.com/"
-      },{
-        "@type": "ListItem", "position": 2, "name": "Library", "item": "https://www.vidyari.com/documents"
-      }]
-    }
-    </script>
     <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
     <link rel="alternate icon" type="image/png" href="/images/logo.png">
-    <link rel="manifest" href="/manifest.json">
     <link rel="canonical" href="https://www.vidyari.com/documents">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -144,17 +132,21 @@
         .v-text-sub { font-size: 1.1rem; color: var(--v-text-muted); margin-bottom: 2rem; }
 
         /* Core Layout Architecture */
-        .v-layout { display: flex; max-width: 1600px; margin: 0 auto; align-items: flex-start; }
+        .v-layout { 
+            display: grid; 
+            grid-template-columns: 320px minmax(0, 1fr); 
+            max-width: 1600px; margin: 0 auto; align-items: flex-start; 
+        }
         
         .v-sidebar { 
-            width: 320px; background: var(--v-surface);
+            background: var(--v-surface);
             padding: 32px; position: sticky; top: 80px; 
             overflow-y: auto; flex-shrink: 0; z-index: 100; 
             display: flex; flex-direction: column; gap: 32px;
             height: calc(100vh - 80px); border-right: 1px solid var(--v-border);
         }
         
-        .v-main { flex: 1; padding: 40px; min-width: 0; position: relative; }
+        .v-main { padding: 40px; min-width: 0; position: relative; }
         
         .v-overlay { 
             position: fixed; inset: 0; background: rgba(32,33,36,0.6); backdrop-filter: blur(2px); 
@@ -164,6 +156,7 @@
         
         /* Mobile Responsive Overrides */
         @media (max-width: 1024px) {
+            .v-layout { grid-template-columns: minmax(0, 1fr); }
             .v-sidebar { 
                 position: fixed; top: 0; left: 0; width: 300px; height: 100vh; 
                 z-index: 2010; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -386,6 +379,9 @@
         .v-skeleton-line { height: 20px; background: linear-gradient(90deg, #f0f4f9 25%, #e8f0fe 50%, #f0f4f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 4px; }
         .v-skeleton-line.short { width: 60%; }
         .v-skeleton-line.price { width: 30%; height: 24px; margin-top: auto; border-radius: 12px;}
+        
+        .v-grid.is-list-view .v-skeleton-card { flex-direction: row; }
+        .v-grid.is-list-view .v-skeleton-img { width: 280px; aspect-ratio: 16/9; border-bottom: none; border-right: 1px solid var(--v-border); }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* 15. Pagination */
@@ -407,6 +403,7 @@
         }
         .v-toast.success i { color: #81c995; }
         .v-toast.error i { color: #f28b82; }
+        .v-toast.info i { color: var(--v-primary); }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* 17. Empty State */
@@ -439,117 +436,115 @@
 </head>
 <body>
 
-    <div class="vidyari-library-master">
+    <div class="v-overlay" id="vOverlay"></div>
+
+    <div class="v-layout">
         
-        <div class="v-overlay" id="vOverlay"></div>
+        <aside class="v-sidebar" id="vSidebar">
+            <div class="d-flex justify-content-between align-items-center d-lg-none mb-2">
+                <h2 style="font-size: 1.5rem; font-family: var(--v-font-display); font-weight: 600;">Filters</h2>
+                <button id="vCloseSidebarBtn" style="font-size: 1.5rem; color: var(--v-text-muted);"><i class="fas fa-times"></i></button>
+            </div>
 
-        <div class="v-layout">
+            <div class="v-filter-wrap">
+                <div class="v-filter-head">Pricing</div>
+                <label class="v-check-row">
+                    <input type="radio" name="priceTier" class="v-checkbox" value="all" checked id="vPriceAll">
+                    <span>All Resources</span>
+                </label>
+                <label class="v-check-row">
+                    <input type="radio" name="priceTier" class="v-checkbox" value="free" id="vPriceFree">
+                    <span>Free Only</span>
+                </label>
+                <label class="v-check-row">
+                    <input type="radio" name="priceTier" class="v-checkbox" value="paid" id="vPricePaid">
+                    <span>Premium Only</span>
+                </label>
+            </div>
+
+            <div class="v-filter-wrap">
+                <div class="v-filter-head">Categories</div>
+                <div id="vCategoryList" style="max-height: 250px; overflow-y: auto;">
+                    <div class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i> Loading...</div>
+                </div>
+            </div>
             
-            <aside class="v-sidebar" id="vSidebar">
-                <div class="d-flex justify-content-between align-items-center d-lg-none mb-2">
-                    <h2 style="font-size: 1.5rem;">Filters</h2>
-                    <button id="vCloseSidebarBtn" style="font-size: 1.5rem; color: var(--v-text-muted);"><i class="fas fa-times"></i></button>
+            <div class="v-filter-wrap">
+                <div class="v-filter-head">File Types</div>
+                <div id="vFileTypeList" style="max-height: 200px; overflow-y: auto;">
+                    <div class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i> Loading...</div>
                 </div>
+            </div>
 
-                <div class="v-filter-wrap">
-                    <div class="v-filter-head">Pricing</div>
-                    <label class="v-check-row">
-                        <input type="radio" name="priceTier" class="v-checkbox" value="all" checked id="vPriceAll">
-                        <span>All Resources</span>
-                    </label>
-                    <label class="v-check-row">
-                        <input type="radio" name="priceTier" class="v-checkbox" value="free" id="vPriceFree">
-                        <span>Free Only</span>
-                    </label>
-                    <label class="v-check-row">
-                        <input type="radio" name="priceTier" class="v-checkbox" value="paid" id="vPricePaid">
-                        <span>Premium Only</span>
-                    </label>
-                </div>
+            <div style="position: sticky; bottom: -32px; background: var(--v-surface); padding-top: 16px; z-index: 10; border-top: 1px solid var(--v-border);">
+                <button class="v-btn-block primary" id="vApplyBtn">Apply Filters</button>
+                <button class="v-btn-block secondary" id="vClearBtn">Clear All</button>
+            </div>
+        </aside>
 
-                <div class="v-filter-wrap">
-                    <div class="v-filter-head">Categories</div>
-                    <div id="vCategoryList" style="max-height: 250px; overflow-y: auto;">
-                        <div class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i> Loading...</div>
-                    </div>
+        <main class="v-main">
+            
+            <h1 class="v-text-loud">Library</h1>
+            <p class="v-text-sub">Explore thousands of premium academic resources, templates, and courses.</p>
+
+            <div class="v-search-container">
+                <div class="v-search-box" id="vSearchBox">
+                    <i class="fas fa-search v-search-icon"></i>
+                    <input type="text" class="v-search-input" id="vSearchInput" placeholder="Search for React notes, Math papers, PDF guides..." autocomplete="off" spellcheck="false">
+                    <div class="v-search-spinner" id="vSearchSpinner"></div>
+                    <button class="v-search-btn" id="vSearchBtn">Search</button>
                 </div>
                 
-                <div class="v-filter-wrap">
-                    <div class="v-filter-head">File Types</div>
-                    <div id="vFileTypeList" style="max-height: 200px; overflow-y: auto;">
-                        <div class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i> Loading...</div>
+                <div class="v-suggest-dropdown" id="vSuggestPane">
+                    <div class="v-suggest-header">
+                        <span id="vSuggestTitle">Suggestions</span>
+                        <span class="v-suggest-clear" id="vClearHistoryBtn" style="display:none;">Clear History</span>
                     </div>
+                    <div class="v-suggest-list" id="vSuggestList"></div>
                 </div>
+            </div>
 
-                <div style="position: sticky; bottom: -32px; background: var(--v-surface); padding-top: 16px; z-index: 10; border-top: 1px solid var(--v-border);">
-                    <button class="v-btn-block primary" id="vApplyBtn">Apply Filters</button>
-                    <button class="v-btn-block secondary" id="vClearBtn">Clear All</button>
+            <div class="v-active-filters" id="vActiveFilters"></div>
+
+            <div class="v-controls">
+                <div class="v-controls-meta">
+                    <span id="vTotalCount">0</span> Resources Found
                 </div>
-            </aside>
-
-            <main class="v-main">
-                
-                <h1 class="v-text-loud">Library</h1>
-                <p class="v-text-sub">Explore thousands of premium academic resources, templates, and courses.</p>
-
-                <div class="v-search-container">
-                    <div class="v-search-box" id="vSearchBox">
-                        <i class="fas fa-search v-search-icon"></i>
-                        <input type="text" class="v-search-input" id="vSearchInput" placeholder="Search for React notes, Math papers, PDF guides..." autocomplete="off" spellcheck="false">
-                        <div class="v-search-spinner" id="vSearchSpinner"></div>
-                        <button class="v-search-btn" id="vSearchBtn">Search</button>
-                    </div>
+                <div class="v-controls-actions">
+                    <select class="v-sort-select" id="vSortSelect">
+                        <option value="popular">Most Popular</option>
+                        <option value="newest">Newest First</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                    </select>
                     
-                    <div class="v-suggest-dropdown" id="vSuggestPane">
-                        <div class="v-suggest-header">
-                            <span id="vSuggestTitle">Suggestions</span>
-                            <span class="v-suggest-clear" id="vClearHistoryBtn" style="display:none;">Clear History</span>
-                        </div>
-                        <div class="v-suggest-list" id="vSuggestList"></div>
+                    <div class="v-view-toggles d-none d-lg-flex">
+                        <button class="v-view-btn is-active" data-view="grid" title="Grid View"><i class="fa-solid fa-grid-2"></i></button>
+                        <button class="v-view-btn" data-view="list" title="List View"><i class="fa-solid fa-list"></i></button>
                     </div>
                 </div>
+            </div>
 
-                <div class="v-active-filters" id="vActiveFilters"></div>
-
-                <div class="v-controls">
-                    <div class="v-controls-meta">
-                        <span id="vTotalCount">0</span> Resources Found
-                    </div>
-                    <div class="v-controls-actions">
-                        <select class="v-sort-select" id="vSortSelect">
-                            <option value="popular">Most Popular</option>
-                            <option value="newest">Newest First</option>
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="price-desc">Price: High to Low</option>
-                        </select>
-                        
-                        <div class="v-view-toggles d-none d-lg-flex">
-                            <button class="v-view-btn is-active" data-view="grid" title="Grid View"><i class="fa-solid fa-grid-2"></i></button>
-                            <button class="v-view-btn" data-view="list" title="List View"><i class="fa-solid fa-list"></i></button>
-                        </div>
-                    </div>
+            <div class="ad-safe-zone d-none d-md-flex">
                 </div>
 
-                <div class="ad-safe-zone d-none d-md-flex">
-                    </div>
+            <div class="v-grid" id="vGrid"></div>
 
-                <div class="v-grid" id="vGrid"></div>
+            <div class="v-pagination-wrap" id="vPagination"></div>
 
-                <div class="v-pagination-wrap" id="vPagination"></div>
-
-            </main>
-        </div>
-
-        <div class="v-mobile-actions">
-            <button class="v-mobile-btn" id="vMobileFilterBtn">
-                <i class="fas fa-sliders-h"></i> Filters 
-                <span class="v-mobile-badge" id="vMobileBadge" style="display: none;">0</span>
-            </button>
-        </div>
-
-        <div class="v-toast-container" id="vToastContainer"></div>
-
+        </main>
     </div>
+
+    <div class="v-mobile-actions">
+        <button class="v-mobile-btn" id="vMobileFilterBtn">
+            <i class="fas fa-sliders-h"></i> Filters 
+            <span class="v-mobile-badge" id="vMobileBadge" style="display: none;">0</span>
+        </button>
+    </div>
+
+    <div class="v-toast-container" id="vToastContainer"></div>
+
+    <%-include("footer")%>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

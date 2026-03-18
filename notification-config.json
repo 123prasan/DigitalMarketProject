@@ -1,0 +1,8 @@
+{
+  "QueueConfigurations": [
+    {
+      "QueueArn": "arn:aws:sqs:us-east-1:718383533207:vidyarisqs",
+      "Events": ["s3:ObjectCreated:*"]
+    }
+  ]
+}

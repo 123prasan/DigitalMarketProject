@@ -1,0 +1,272 @@
+<!-- ENROLLED STUDENTS TAB -->
+<div class="space-y-6">
+    <!-- Filter Section -->
+    <div class="data-card-unique">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h3 class="text-lg font-semibold" style="font-family: var(--v-font-display);">Course Selection</h3>
+                <p class="text-sm text-gray-500 mt-1">Select a course to view enrolled students.</p>
+            </div>
+            <div class="flex items-center gap-2 flex-1 sm:flex-none">
+                <select id="course-select" class="filter-input-unique py-2 px-4 flex-1 sm:flex-none">
+                    <option value="">-- Loading Courses --</option>
+                </select>
+                <button id="refresh-courses-btn" class="chunky-btn p-2" title="Refresh Courses">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Students Grid / List -->
+    <div id="students-container" class="data-card-unique">
+        <div id="no-course-selected" class="flex flex-col items-center justify-center py-16 text-center">
+            <i class="fa-solid fa-book-open text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700">No Course Selected</h3>
+            <p class="text-gray-500 mt-2">Select a course from above to view enrolled students.</p>
+        </div>
+
+        <div id="students-list" class="hidden space-y-4">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                <div>
+                    <h3 class="text-lg font-semibold" style="font-family: var(--v-font-display);">Enrolled Students</h3>
+                    <p class="text-sm text-gray-500 mt-1" id="student-count">0 students enrolled</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="text" id="student-search" placeholder="Search students..." class="filter-input-unique py-2 px-4">
+                </div>
+            </div>
+
+            <div id="students-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Students will be loaded here via JavaScript -->
+            </div>
+        </div>
+
+        <div id="loading-state" class="hidden flex justify-center items-center py-12">
+            <div class="flex flex-col items-center gap-3">
+                <div class="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <p class="text-gray-500">Loading students...</p>
+            </div>
+        </div>
+
+        <div id="empty-students" class="hidden flex flex-col items-center justify-center py-16 text-center">
+            <i class="fa-solid fa-user-slash text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700">No Students Yet</h3>
+            <p class="text-gray-500 mt-2">No students have enrolled in this course yet.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Enrolled Students Tab Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const courseSelect = document.getElementById('course-select');
+    const refreshBtn = document.getElementById('refresh-courses-btn');
+    const studentsContainer = document.getElementById('students-container');
+    const noCoursSelected = document.getElementById('no-course-selected');
+    const studentsList = document.getElementById('students-list');
+    const loadingState = document.getElementById('loading-state');
+    const emptyStudents = document.getElementById('empty-students');
+    const studentsGrid = document.getElementById('students-grid');
+    const studentSearch = document.getElementById('student-search');
+    const studentCount = document.getElementById('student-count');
+
+    // Load courses on page load
+    loadCoursesForDropdown();
+
+    // Refresh button
+    refreshBtn.addEventListener('click', loadCoursesForDropdown);
+
+    async function loadCoursesForDropdown() {
+        try {
+            console.log('Loading courses for dropdown...');
+            const response = await fetch('/api/instructor/courses');
+            if (!response.ok) throw new Error('Failed to load courses');
+
+            const data = await response.json();
+            const courses = data.courses || [];
+
+            console.log(`Loaded ${courses.length} courses`);
+
+            // Populate dropdown
+            courseSelect.innerHTML = '<option value="">-- Select a Course --</option>';
+            courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course._id;
+                option.textContent = course.title;
+                courseSelect.appendChild(option);
+            });
+
+            if (courses.length === 0) {
+                courseSelect.innerHTML += '<option disabled>No courses created yet</option>';
+            }
+        } catch (error) {
+            console.error('Error loading courses:', error);
+            courseSelect.innerHTML = '<option disabled>Error loading courses</option>';
+        }
+    }
+
+    courseSelect.addEventListener('change', async (e) => {
+        const courseId = e.target.value;
+        
+        if (!courseId) {
+            noCoursSelected.classList.remove('hidden');
+            studentsList.classList.add('hidden');
+            loadingState.classList.add('hidden');
+            emptyStudents.classList.add('hidden');
+            return;
+        }
+
+        // Show loading state
+        noCoursSelected.classList.add('hidden');
+        studentsList.classList.add('hidden');
+        loadingState.classList.remove('hidden');
+        emptyStudents.classList.add('hidden');
+
+        try {
+            console.log(`Fetching enrolled students for course: ${courseId}`);
+            const response = await fetch(`/api/courses/${courseId}/enrolled-students`);
+            
+            console.log(`Response status: ${response.status}`);
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to fetch students');
+            }
+
+            const data = await response.json();
+            console.log('Received data:', data);
+            
+            const students = data.students || [];
+            console.log(`Found ${students.length} students`);
+
+            loadingState.classList.add('hidden');
+
+            if (students.length === 0) {
+                emptyStudents.classList.remove('hidden');
+                studentsList.classList.add('hidden');
+            } else {
+                studentsList.classList.remove('hidden');
+                emptyStudents.classList.add('hidden');
+                studentCount.textContent = `${students.length} student${students.length !== 1 ? 's' : ''} enrolled`;
+                displayStudents(students);
+            }
+        } catch (error) {
+            console.error('Error fetching students:', error);
+            loadingState.classList.add('hidden');
+            studentsGrid.innerHTML = `
+                <div class="col-span-full text-center py-8">
+                    <p class="text-red-600"><i class="fa-solid fa-exclamation-circle"></i> Error: ${error.message}</p>
+                    <p class="text-sm text-gray-500 mt-2">Check browser console for details</p>
+                </div>
+            `;
+            studentsList.classList.remove('hidden');
+            emptyStudents.classList.add('hidden');
+        }
+    });
+
+    function displayStudents(students) {
+        studentsGrid.innerHTML = students.map(student => {
+            let statusBadge = '';
+            if (student.progress === 100) {
+                statusBadge = '<span class="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-3 py-1.5 rounded-full border border-green-200 flex-1 justify-center"><i class="fa-solid fa-check-circle"></i> Completed</span>';
+            } else if (student.progress > 0) {
+                statusBadge = '<span class="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200 flex-1 justify-center"><i class="fa-solid fa-circle-play"></i> In Progress</span>';
+            } else {
+                statusBadge = '<span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200 flex-1 justify-center"><i class="fa-solid fa-clock"></i> Not Started</span>';
+            }
+
+            return `
+            <div class="bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <!-- Student Header -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-4 flex-1">
+                        <img src="${student.profilePicUrl || '/images/avatar.jpg'}" 
+                             alt="${student.firstName || 'Student'}" 
+                             class="w-14 h-14 rounded-full object-cover border-2 border-blue-100">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-800 text-sm">${student.firstName || 'User'} ${student.lastName || ''}</h4>
+                            <p class="text-xs text-gray-500 mt-1">${student.email || 'No email'}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">Enrolled ${formatDate(student.enrollmentDate)}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div class="space-y-3 pt-4 border-t border-gray-100">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-semibold text-gray-600">Progress</span>
+                        <span class="text-sm font-bold text-blue-600">${student.progress || 0}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500" 
+                             style="width: ${student.progress || 0}%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-600 mt-2">
+                        <span>${student.completedLessons || 0} completed</span>
+                        <span>${student.totalLessons || 0} total</span>
+                    </div>
+                </div>
+
+                <!-- Stats Footer -->
+                <div class="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-3">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-gray-800">${student.progress || 0}%</p>
+                        <p class="text-xs text-gray-500">Complete</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-gray-800">${formatMinutes(student.timeSpent || 0)}</p>
+                        <p class="text-xs text-gray-500">Time Spent</p>
+                    </div>
+                </div>
+
+                <!-- Status Badge -->
+                <div class="mt-4 flex gap-2">
+                    ${statusBadge}
+                </div>
+            </div>
+        `}).join('');
+    }
+
+    // Search functionality
+    studentSearch.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const studentCards = studentsGrid.querySelectorAll('[data-student-id]');
+        
+        studentCards.forEach(card => {
+            const name = card.querySelector('h4').textContent.toLowerCase();
+            const email = card.querySelector('p').textContent.toLowerCase();
+            
+            if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+
+    // Helper function to format date
+    function formatDate(dateString) {
+        if (!dateString) return 'recently';
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) return 'today';
+        if (diffDays === 1) return 'yesterday';
+        if (diffDays < 7) return `${diffDays} days ago`;
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+        if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+        return `${Math.floor(diffDays / 365)} years ago`;
+    }
+
+    // Helper function to format minutes to hours
+    function formatMinutes(minutes) {
+        if (minutes < 60) return `${minutes}m`;
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+    }
+});
+</script>

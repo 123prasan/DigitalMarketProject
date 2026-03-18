@@ -256,10 +256,10 @@ async function sendNotification({
     });
 
     console.log("✅ Notification sent:", res.data);
-    return res.data;
+    return { success: true, data: res.data };
   } catch (err) {
     console.error("❌ Error sending notification:", err.response?.data || err.message);
-    throw err;
+    return { success: false, error: err.message };
   }
 }
 

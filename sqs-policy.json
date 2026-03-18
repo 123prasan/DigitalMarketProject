@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:ap-south-1:718383533207:vidyarisqs",
+      "Condition": {
+        "StringEquals": {
+          "aws:SourceAccount": "718383533207"
+        },
+        "StringLike": {
+          "aws:SourceArn": "arn:aws:s3:::vidyari3-us"
+        }
+      }
+    }
+  ]
+}

@@ -40,7 +40,12 @@ const Location = require("./models/userlocation"); // Assuming Location.js expor
 const chatRoutes = require("./routes/chat.js");
 const File = require("./models/file");
 const courseRoutes = require("./routes/courseroutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const fileReviewRoutes = require("./routes/fileReviewRoutes");
 const progressRoutes = require("./routes/progressroutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+const instructorPayoutRoutes = require("./routes/instructorPayoutRoutes");
+const adminPaymentRoutes = require("./routes/adminPaymentRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const authenticateJWT_user = require("./routes/authentication/jwtAuth.js");
 const User = require("./models/userData");
@@ -334,13 +339,821 @@ const cors = require("cors");
 app.use(cors());
 
 app.use("/api/courses", courseRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/file-reviews", fileReviewRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/instructor", instructorPayoutRoutes);
 // apply JWT authentication to all admin API routes so req.user is populated
 // and unauthorized calls respond with JSON instead of HTML
 app.use("/api/admin", authenticateJWT, adminRoutes);
+app.use("/api/admin", authenticateJWT, adminPaymentRoutes);
+
+// Handle /my-courses route
+app.get("/my-courses", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.redirect("/user-login");
+    }
+
+    const userId = req.user._id;
+    const Course = require("./models/course");
+    const UserProgress = require("./models/courseProgress");
+
+    // Get all courses where user is in enrolledStudents
+    const courses = await Course.find({
+      enrolledStudents: userId,
+    })
+      .select("title description price thumbnailUrl enrollCount rating duration modules")
+      .sort({ createdAt: -1 });
+
+    // Get progress for each course
+    const courseProgress = await Promise.all(
+      courses.map(async (course) => {
+        const progress = await UserProgress.findOne({
+          userId: userId,
+          courseId: course._id,
+        });
+
+        const totalLessons = course.modules.reduce(
+          (sum, module) => sum + (module.submodules?.length || 0),
+          0
+        );
+
+        const completedLessons = progress
+          ? progress.progress.filter((p) => p.status === "completed").length
+          : 0;
+
+        const percentage =
+          totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+        return {
+          courseId: course._id.toString(),
+          percentage: percentage,
+          completedLessons: completedLessons,
+          totalLessons: totalLessons,
+        };
+      })
+    );
+
+    res.render("my-courses", {
+      courses: courses,
+      courseProgress: courseProgress,
+      isLoggedin: !!req.user,
+      username: req.user?.username || req.user?.email,
+      useremail: req.user?.email,
+      uId: req.user?._id,
+      profileUrl: req.user?.profilePicUrl || '/images/avatar.jpg',
+    });
+  } catch (error) {
+    console.error("Error fetching user courses:", error);
+    res.status(500).render("500", {
+      error: "Failed to load your courses",
+    });
+  }
+});
+
 const apiRoutes = require('./routes/Adanalytics.js');
 
 app.use('/api/creator', apiRoutes);
+
+// === INSTRUCTOR COURSES API ROUTES ===
+
+// GET all courses created by the instructor
+app.get("/api/instructor/courses", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const instructorId = req.user._id;
+    const courses = await Course.find({ userId: instructorId })
+      .select("_id title description price discountPrice thumbnailUrl modules enrollCount rating duration published createdAt")
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, courses });
+  } catch (error) {
+    console.error("Error fetching instructor courses:", error);
+    res.status(500).json({ error: "Failed to fetch courses" });
+  }
+});
+
+// DELETE a course (only by instructor who created it)
+app.delete("/api/instructor/courses/:courseId", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId } = req.params;
+    const instructorId = req.user._id;
+
+    // Verify course belongs to this instructor
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found or unauthorized" });
+    }
+
+    // Delete the course
+    await Course.deleteOne({ _id: courseId });
+
+    res.json({ success: true, message: "Course deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    res.status(500).json({ error: "Failed to delete course" });
+  }
+});
+
+// GET enrolled students for a specific course
+app.get("/api/courses/:courseId/enrolled-students", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId } = req.params;
+    const instructorId = req.user._id;
+
+    console.log(`Fetching enrolled students for course ${courseId} (instructor: ${instructorId})`);
+
+    // Verify course belongs to this instructor
+    const course = await Course.findOne({ _id: courseId, userId: instructorId })
+      .populate('enrolledStudents', '_id firstName lastName email profilePicUrl');
+
+    if (!course) {
+      console.log(`Course ${courseId} not found or user is not the instructor`);
+      return res.status(404).json({ error: "Course not found or unauthorized" });
+    }
+
+    console.log(`Found course: ${course.title}, enrolled students: ${course.enrolledStudents?.length || 0}`);
+
+    // Get progress for each enrolled student
+    const UserProgress = require("./models/courseProgress");
+    
+    const studentsWithProgress = await Promise.all(
+      (course.enrolledStudents || []).map(async (student) => {
+        try {
+          const progress = await UserProgress.findOne({
+            userId: student._id,
+            courseId: courseId,
+          });
+
+          const totalLessons = course.modules.reduce(
+            (sum, module) => sum + (module.submodules?.length || 0),
+            0
+          );
+
+          const completedLessons = progress
+            ? progress.progress.filter((p) => p.status === "completed").length
+            : 0;
+
+          const progressPercentage =
+            totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+          const timeSpent = progress?.timeSpent || 0;
+
+          return {
+            _id: student._id,
+            firstName: student.firstName || "User",
+            lastName: student.lastName || "",
+            email: student.email,
+            profilePicUrl: student.profilePicUrl,
+            progress: progressPercentage,
+            completedLessons: completedLessons,
+            totalLessons: totalLessons,
+            timeSpent: timeSpent,
+            enrollmentDate: course.createdAt, // Use course creation as student enrollment date
+          };
+        } catch (studentError) {
+          console.error(`Error processing student ${student._id}:`, studentError);
+          return null;
+        }
+      })
+    );
+
+    // Filter out null entries
+    const validStudents = studentsWithProgress.filter(s => s !== null);
+
+    console.log(`Returning ${validStudents.length} students for course ${courseId}`);
+    res.json({ success: true, students: validStudents });
+  } catch (error) {
+    console.error("Error fetching enrolled students:", error);
+    res.status(500).json({ error: "Failed to fetch enrolled students", details: error.message });
+  }
+});
+
+// === COURSE EDITING ROUTES ===
+
+// GET edit course page
+app.get("/edit-course/:courseId", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.redirect("/user-login");
+    }
+
+    const { courseId } = req.params;
+    const instructorId = req.user._id;
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).render("404", { message: "Course not found" });
+    }
+
+    res.render("edit-course", {
+      courseId: courseId,
+      course: course,
+      isLoggedin: !!req.user,
+      username: req.user?.username || req.user?.email,
+      profileUrl: req.user?.profilePicUrl || '/images/avatar.jpg',
+    });
+  } catch (error) {
+    console.error("Error loading edit course page:", error);
+    res.status(500).render("500", { error: "Failed to load course" });
+  }
+});
+
+// GET course data for editing (JSON API)
+app.get("/api/instructor/courses/:courseId/edit", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId } = req.params;
+    const instructorId = req.user._id;
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    // Return course data directly (not wrapped)
+    res.json(course);
+  } catch (error) {
+    console.error("Error fetching course:", error);
+    res.status(500).json({ error: "Failed to fetch course" });
+  }
+});
+
+// PUT update course details
+app.put("/api/instructor/courses/:courseId", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId } = req.params;
+    const { title, description, category, price, level, published, thumbnail, introVideo, learningOutcomes, requirements } = req.body;
+    const instructorId = req.user._id;
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    const wasPublished = course.published;
+
+    // Update fields
+    if (title) course.title = title;
+    if (description) course.description = description;
+    if (category) course.category = category;
+    if (price !== undefined) course.price = price;
+    if (level) course.level = level;
+    if (published !== undefined) course.published = published;
+    if (thumbnail) {
+        // Delete old thumbnail from S3 if it exists
+        if (course.thumbnailUrl) {
+            try {
+                // Extract key from CloudFront URL: https://domain/courses/thumbnails/filename
+                const urlParts = course.thumbnailUrl.split('/');
+                const keyIndex = urlParts.findIndex(part => part === 'courses');
+                if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
+                    const s3Key = urlParts.slice(keyIndex).join('/');
+                    await s3.deleteObject({
+                        Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+                        Key: s3Key
+                    }).promise();
+                    console.log(`Deleted old thumbnail: ${s3Key}`);
+                }
+            } catch (deleteError) {
+                console.warn('Failed to delete old thumbnail:', deleteError);
+                // Don't fail the update if deletion fails
+            }
+        }
+        course.thumbnailUrl = thumbnail;
+    }
+    if (introVideo) {
+        // Delete old intro video from S3 if it exists
+        if (course.introVideoUrl) {
+            try {
+                // Extract key from CloudFront URL
+                const urlParts = course.introVideoUrl.split('/');
+                const keyIndex = urlParts.findIndex(part => part === 'courses');
+                if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
+                    const s3Key = urlParts.slice(keyIndex).join('/');
+                    await s3.deleteObject({
+                        Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+                        Key: s3Key
+                    }).promise();
+                    console.log(`Deleted old intro video: ${s3Key}`);
+                }
+            } catch (deleteError) {
+                console.warn('Failed to delete old intro video:', deleteError);
+                // Don't fail the update if deletion fails
+            }
+        }
+        course.introVideoUrl = introVideo;
+    }
+    if (learningOutcomes && Array.isArray(learningOutcomes)) course.learningOutcomes = learningOutcomes;
+    if (requirements && Array.isArray(requirements)) course.requirements = requirements;
+
+    await course.save();
+
+    // Send notifications to followers if course is being published
+    if (published === true && !wasPublished) {
+      try {
+        const instructor = await User.findById(instructorId).select('fullName followers');
+        if (instructor && instructor.followers && instructor.followers.length > 0) {
+          const followerIds = instructor.followers.map(f => f.toString());
+          const notifications = followerIds.map(userId => 
+            sendNotification({
+              userId,
+              title: `New Course by ${instructor.fullName || 'Instructor'}`,
+              body: `Check out the new course: ${course.title}`,
+              target_link: `/course-detail?courseId=${courseId}`,
+              notification_type: "course_upload"
+            })
+          );
+          await Promise.allSettled(notifications);
+          console.log(`Sent notifications to ${followerIds.length} followers for course: ${course.title}`);
+        }
+      } catch (notifError) {
+        console.error("Error sending notifications:", notifError);
+        // Don't fail the request if notifications fail
+      }
+    }
+
+    res.json({ success: true, course });
+  } catch (error) {
+    console.error("Error updating course:", error);
+    res.status(500).json({ error: "Failed to update course" });
+  }
+});
+
+// POST add new module
+app.post("/api/instructor/courses/:courseId/modules", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId } = req.params;
+    const { unit } = req.body;
+    const instructorId = req.user._id;
+
+    if (!unit) {
+      return res.status(400).json({ error: "Module name is required" });
+    }
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    const newModule = {
+      unit: unit,
+      submodules: [],
+      order: (course.modules?.length || 0) + 1,
+    };
+
+    course.modules.push(newModule);
+    await course.save();
+
+    res.json({ success: true, module: course.modules[course.modules.length - 1] });
+  } catch (error) {
+    console.error("Error adding module:", error);
+    res.status(500).json({ error: "Failed to add module" });
+  }
+});
+
+// PUT update module
+app.put("/api/instructor/courses/:courseId/modules/:moduleId", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId, moduleId } = req.params;
+    const { unit } = req.body;
+    const instructorId = req.user._id;
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    const module = course.modules.id(moduleId);
+    if (!module) {
+      return res.status(404).json({ error: "Module not found" });
+    }
+
+    if (unit) module.unit = unit;
+    await course.save();
+
+    res.json({ success: true, module });
+  } catch (error) {
+    console.error("Error updating module:", error);
+    res.status(500).json({ error: "Failed to update module" });
+  }
+});
+
+// DELETE module
+app.delete("/api/instructor/courses/:courseId/modules/:moduleId", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId, moduleId } = req.params;
+    const instructorId = req.user._id;
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    // Remove module
+    course.modules.id(moduleId).remove();
+    await course.save();
+
+    res.json({ success: true, message: "Module deleted" });
+  } catch (error) {
+    console.error("Error deleting module:", error);
+    res.status(500).json({ error: "Failed to delete module" });
+  }
+});
+
+// POST add submodule (lesson)
+app.post("/api/instructor/courses/:courseId/modules/:moduleId/submodules", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId, moduleId } = req.params;
+    const { title, type, fileUrl, externalUrl, duration } = req.body;
+    const instructorId = req.user._id;
+
+    if (!title || !type) {
+      return res.status(400).json({ error: "Title and type are required" });
+    }
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    const module = course.modules.id(moduleId);
+    if (!module) {
+      return res.status(404).json({ error: "Module not found" });
+    }
+
+    const newSubmodule = {
+      title,
+      type,
+      fileUrl: fileUrl || undefined,
+      externalUrl: externalUrl || undefined,
+      duration: duration || 0,
+      order: (module.submodules?.length || 0) + 1,
+    };
+
+    module.submodules.push(newSubmodule);
+    await course.save();
+
+    res.json({ success: true, submodule: module.submodules[module.submodules.length - 1] });
+  } catch (error) {
+    console.error("Error adding submodule:", error);
+    res.status(500).json({ error: "Failed to add lesson" });
+  }
+});
+
+// PUT update submodule
+app.put("/api/instructor/courses/:courseId/modules/:moduleId/submodules/:submoduleId", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId, moduleId, submoduleId } = req.params;
+    const { title, type, fileUrl, externalUrl, duration } = req.body;
+    const instructorId = req.user._id;
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    const module = course.modules.id(moduleId);
+    if (!module) {
+      return res.status(404).json({ error: "Module not found" });
+    }
+
+    const submodule = module.submodules.id(submoduleId);
+    if (!submodule) {
+      return res.status(404).json({ error: "Lesson not found" });
+    }
+
+    // Update fields
+    if (title) submodule.title = title;
+    if (type) submodule.type = type;
+    if (duration !== undefined) submodule.duration = duration;
+    
+    // Only update file/external URLs if provided (don't clear existing ones)
+    if (fileUrl !== undefined) {
+        // Delete old file from S3 if it exists and is not an external URL
+        if (submodule.fileUrl && submodule.fileUrl.includes('cloudfront.net') && fileUrl !== submodule.fileUrl) {
+            try {
+                // Extract key from CloudFront URL
+                const urlParts = submodule.fileUrl.split('/');
+                const keyIndex = urlParts.findIndex(part => part === 'courses');
+                if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
+                    const s3Key = urlParts.slice(keyIndex).join('/');
+                    await s3.deleteObject({
+                        Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+                        Key: s3Key
+                    }).promise();
+                    console.log(`Deleted old lesson file: ${s3Key}`);
+                }
+            } catch (deleteError) {
+                console.warn('Failed to delete old lesson file:', deleteError);
+                // Don't fail the update if deletion fails
+            }
+        }
+        submodule.fileUrl = fileUrl;
+    }
+    if (externalUrl !== undefined) submodule.externalUrl = externalUrl;
+
+    await course.save();
+
+    res.json({ success: true, submodule });
+  } catch (error) {
+    console.error("Error updating submodule:", error);
+    res.status(500).json({ error: "Failed to update lesson" });
+  }
+});
+
+// DELETE submodule
+app.delete("/api/instructor/courses/:courseId/modules/:moduleId/submodules/:submoduleId", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId, moduleId, submoduleId } = req.params;
+    const instructorId = req.user._id;
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    const module = course.modules.id(moduleId);
+    if (!module) {
+      return res.status(404).json({ error: "Module not found" });
+    }
+
+    // Remove submodule
+    module.submodules.pull(submoduleId);
+    await course.save();
+
+    res.json({ success: true, message: "Lesson deleted" });
+  } catch (error) {
+    console.error("Error deleting submodule:", error);
+    res.status(500).json({ error: "Failed to delete lesson" });
+  }
+});
+
+// POST generate presigned URL for course file upload
+app.post("/api/courses/generate-presigned-url", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { fileName, fileType, fileCategory } = req.body;
+    if (!fileName || !fileType) {
+      return res.status(400).json({ error: "fileName and fileType are required" });
+    }
+
+    // Create S3 key with category
+    const fileExt = fileName.split('.').pop().toLowerCase();
+    const timestamp = Date.now();
+    const unique = Math.random().toString(36).substring(2, 8);
+    const s3Key = `courses/${fileCategory || 'files'}/${timestamp}-${unique}.${fileExt}`;
+
+    // Generate presigned PUT URL (for uploading)
+    const signedUrl = s3.getSignedUrl('putObject', {
+      Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+      Key: s3Key,
+      ContentType: fileType,
+      Expires: 3600 // 1 hour
+    });
+
+    // Generate CloudFront URL (for accessing)
+    const finalUrl = `${CF_DOMAIN}/${s3Key}`;
+
+    console.log(`Generated presigned URL for: ${fileName} -> ${s3Key}`);
+
+    res.json({ 
+      success: true,
+      signedUrl,
+      finalUrl,
+      s3Key,
+      fileName,
+      fileSize: 0
+    });
+  } catch (error) {
+    console.error("Error generating presigned URL:", error);
+    res.status(500).json({ error: "Failed to generate presigned URL" });
+  }
+});
+
+// POST upload course file (legacy endpoint - kept for backward compatibility)
+app.post("/api/instructor/upload-course-file", authenticateJWT_user, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.user || !req.file) {
+      return res.status(400).json({ error: "File is required" });
+    }
+
+    // Upload to S3
+    const fileExt = req.file.originalname.split('.').pop().toLowerCase();
+    const timestamp = Date.now();
+    const unique = Math.random().toString(36).substring(2, 8);
+    const s3Key = `courses/files/${timestamp}-${unique}.${fileExt}`;
+
+    try {
+      await s3.putObject({
+        Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+        Key: s3Key,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype
+      }).promise();
+
+      const fileUrl = `${CF_DOMAIN}/${s3Key}`;
+
+      console.log(`File uploaded to S3: ${req.file.originalname} -> ${s3Key}`);
+
+      res.json({ 
+        success: true, 
+        fileUrl,
+        s3Key,
+        fileName: req.file.originalname,
+        fileSize: req.file.size
+      });
+    } catch (s3Error) {
+      console.error("S3 upload error:", s3Error);
+      return res.status(500).json({ error: "Failed to upload to S3: " + s3Error.message });
+    }
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    res.status(500).json({ error: "Failed to upload file" });
+  }
+});
+
+// DELETE entire course
+// Helper function to extract S3 key from CloudFront URL
+function extractS3KeyFromUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  
+  // Try multiple extraction methods
+  
+  // Method 1: CloudFront domain (https://d3tonh6o5ach9f.cloudfront.net/...)
+  if (url.includes('cloudfront.net')) {
+    const urlParts = url.split('/');
+    const keyIndex = urlParts.findIndex(part => part === 'courses');
+    if (keyIndex !== -1 && urlParts.length > keyIndex) {
+      return urlParts.slice(keyIndex).join('/');
+    }
+  }
+  
+  // Method 2: Fallback - extract everything after domain
+  try {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname.startsWith('/') ? urlObj.pathname.substring(1) : urlObj.pathname;
+    if (pathname) return pathname;
+  } catch (e) {
+    // Not a valid URL
+  }
+  
+  // Method 3: If it's already an S3 key (like courses/thumbnails/...)
+  if (url.startsWith('courses/')) {
+    return url;
+  }
+  
+  return null;
+}
+
+// Helper function to delete a file from S3
+async function deleteS3File(s3Key) {
+  if (!s3Key) return;
+  try {
+    await s3.deleteObject({
+      Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+      Key: s3Key
+    }).promise();
+    console.log(`✓ Deleted S3 file: ${s3Key}`);
+    return true;
+  } catch (error) {
+    console.warn(`⚠ Failed to delete S3 file ${s3Key}:`, error.message);
+    // Don't fail the entire course deletion if a file deletion fails
+    return false;
+  }
+}
+
+// DELETE entire course including all associated files
+app.delete("/api/instructor/courses/:courseId", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { courseId } = req.params;
+    const instructorId = req.user._id;
+
+    const course = await Course.findOne({ _id: courseId, userId: instructorId });
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    console.log(`\n🗑️  Starting deletion of course: ${course.title}`);
+
+    // Array to track deleted files
+    const deletedFiles = [];
+    const failedDeletions = [];
+
+    // 1. Delete thumbnail image from S3
+    if (course.thumbnailUrl) {
+      const thumbnailKey = extractS3KeyFromUrl(course.thumbnailUrl);
+      if (thumbnailKey) {
+        const success = await deleteS3File(thumbnailKey);
+        if (success) deletedFiles.push(thumbnailKey);
+        else failedDeletions.push(thumbnailKey);
+      }
+    }
+
+    // 2. Delete intro video from S3
+    if (course.introVideoUrl) {
+      const introVideoKey = extractS3KeyFromUrl(course.introVideoUrl);
+      if (introVideoKey) {
+        const success = await deleteS3File(introVideoKey);
+        if (success) deletedFiles.push(introVideoKey);
+        else failedDeletions.push(introVideoKey);
+      }
+    }
+
+    // 3. Delete all lesson files (videos and documents) from modules/submodules
+    if (course.modules && Array.isArray(course.modules)) {
+      for (const module of course.modules) {
+        if (module.submodules && Array.isArray(module.submodules)) {
+          for (const submodule of module.submodules) {
+            if (submodule.fileUrl) {
+              const lessonKey = extractS3KeyFromUrl(submodule.fileUrl);
+              if (lessonKey) {
+                const success = await deleteS3File(lessonKey);
+                if (success) deletedFiles.push(lessonKey);
+                else failedDeletions.push(lessonKey);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // 4. Delete the course metadata from database
+    await Course.deleteOne({ _id: courseId, userId: instructorId });
+
+    console.log(`\n✅ Course deletion complete for: ${course.title}`);
+    console.log(`📊 Files deleted: ${deletedFiles.length}`);
+    if (failedDeletions.length > 0) {
+      console.log(`⚠️  Failed deletions: ${failedDeletions.length}`);
+    }
+
+    res.json({ 
+      success: true, 
+      message: "Course and all associated files deleted successfully",
+      details: {
+        courseTitle: course.title,
+        filesDeleted: deletedFiles.length,
+        failedDeletions: failedDeletions.length,
+        totalModules: course.modules?.length || 0
+      }
+    });
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    res.status(500).json({ error: "Failed to delete course", details: error.message });
+  }
+});
+
 // app.use(cookieParser())
 function getcategories() {
   return categories.find({}).then((cats) => cats.map((cat) => cat.name));
@@ -529,8 +1342,59 @@ app.get("/files/impression/:id/:impression", authenticateJWT_user, requireAuth, 
 });
 
 
-app.get("/dashboard", (req, res) => {
-  res.render("createcourse");
+app.get("/dashboard", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.redirect("/user-login");
+    }
+
+    const userId = req.user._id;
+
+    // Get all courses created by this instructor
+    const instructorCourses = await Course.find({ userId: userId })
+      .select("_id title description price discountPrice thumbnailUrl modules enrollCount rating duration published createdAt")
+      .sort({ createdAt: -1 });
+
+    // Get all files uploaded by this user
+    const userFiles = await File.find({ userId: userId })
+      .select("_id filename fileUrl fileType price filedescription slug downloadCount imageType imageUrl imageName")
+      .sort({ uploadedAt: -1 });
+
+    // Transform files to include preview information
+    const filesWithPreview = userFiles.map(file => {
+      // Check if file is an image based on imageType
+      const imageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+      const isImage = file.imageType && imageExtensions.includes(file.imageType.toLowerCase());
+      
+      return {
+        id: file._id,
+        filename: file.filename,
+        fileUrl: file.fileUrl,
+        previewUrl: file.imageUrl || null, // Use imageUrl for preview
+        fileType: file.fileType || 'pdf',
+        price: file.price,
+        filedescription: file.filedescription,
+        slug: file.slug,
+        downloadCount: file.downloadCount,
+        imageType: file.imageType,
+        isImage: isImage,
+        size: file.fileType ? file.fileType.toUpperCase() : 'PDF'
+      };
+    });
+
+    res.render("createcourse", {
+      instructorCourses: instructorCourses,
+      files: filesWithPreview,
+      isLoggedin: !!req.user,
+      username: req.user?.username || req.user?.email,
+      useremail: req.user?.email,
+      uId: req.user?._id,
+      profileUrl: req.user?.profilePicUrl || '/images/avatar.jpg',
+    });
+  } catch (error) {
+    console.error("Error loading dashboard:", error);
+    res.status(500).render("500", { error: "Failed to load dashboard" });
+  }
 });
 // Razorpay Order Creation - No auth needed (public)
 app.post("/create-order", authenticateJWT_user,requireAuth,async (req, res) => {
@@ -2623,50 +3487,266 @@ app.get('/files', async (req, res) => {
 
 //course routes
 
-// app.get('/courses', async (req, res) => {
+// GET /courses - Display all available courses
+app.get('/courses', authenticateJWT_user, async (req, res) => {
+    try {
+        let user = null;
+        let profileUrl = null;
 
-//     try {
-//         if (req.query.search !== undefined) {
+        // 1. User Caching Logic
+        if (req.user) {
+            const cacheKey = `user_${req.user._id}`;
+            const cachedUser = pageCache.get(cacheKey);
 
-//             // --- API SEARCH (Returns JSON) ---
-//             console.log(`Search query received: "${req.query.search}"`);
-//             const searchQuery = req.query.search;
+            if (cachedUser) {
+                user = cachedUser;
+                profileUrl = cachedUser.profilePicUrl;
+            } else {
+                user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+                if (user) {
+                    if (user.profilePicUrl?.includes("s3.")) {
+                        try {
+                            const fileName = user.profilePicUrl.split("/").pop();
+                            user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+                        } catch (err) {
+                            console.warn("⚠️ Profile URL conversion failed:", err.message);
+                        }
+                    }
+                    pageCache.set(cacheKey, user);
+                    profileUrl = user.profilePicUrl;
+                }
+            }
+        }
 
-//             const query = {
-//                 published: true, // Only search published courses
-//                 $or: [
-//                     { title: { $regex: searchQuery, $options: 'i' } },
-//                     { description: { $regex: searchQuery, $options: 'i' } },
-//                     { tags: { $regex: searchQuery, $options: 'i' } }
-//                 ]
-//             };
+        // 2. Detect if request is AJAX/API or a standard page load
+        // This checks if the frontend used fetch() with JSON headers or passed a specific query parameter
+        const isAjaxRequest = req.xhr || 
+                              req.headers.accept?.includes('application/json') || 
+                              req.query.ajax === 'true' || 
+                              Object.keys(req.query).length > 0;
 
-//             const filteredCourses = await Course.find(query)
-//                 // vvv UPDATED THIS LINE vvv
-//                 .populate('userId', 'fullName profilePicUrl username') 
-//                 .sort({ createdAt: -1 });
+        // 3. Build the MongoDB Query Object
+        const query = { published: true }; // Always only show published courses
 
-//             res.json(filteredCourses);
+        // Text Search ($or across multiple fields)
+        if (req.query.search) {
+            const searchRegex = new RegExp(req.query.search, 'i'); // Case-insensitive
+            query.$or = [
+                { title: searchRegex },
+                { description: searchRegex },
+                { tags: searchRegex },
+                { category: searchRegex }
+            ];
+        }
 
-//         } else {
+        // Category Filter (Handles both single string and array of strings)
+        if (req.query.category) {
+            const categories = Array.isArray(req.query.category) ? req.query.category : [req.query.category];
+            query.category = { $in: categories };
+        }
 
-//             // --- INITIAL PAGE LOAD (Renders EJS) ---
-//             console.log('Initial page load. Fetching from DB and rendering EJS.');
+        // Level Filter
+        if (req.query.level) {
+            const levels = Array.isArray(req.query.level) ? req.query.level : [req.query.level];
+            query.level = { $in: levels };
+        }
 
-//             // vvv UPDATED THIS LINE vvv
-//             const allCourses = await Course.find({}) 
-//                 // vvv AND UPDATED THIS LINE vvv
-//                 .populate('userId', 'fullName profilePicUrl username')
-//                 .sort({ createdAt: -1 });
+        // Price Tier Filter
+        if (req.query.price) {
+            if (req.query.price === 'free') {
+                query.$or = [{ price: 0 }, { isFree: true }];
+            } else if (req.query.price === 'paid') {
+                query.price = { $gt: 0 };
+                query.isFree = { $ne: true };
+            }
+        }
 
-//             // vvv UPDATED THIS LINE vvv
-//             res.render('courses', { courses: allCourses }); // Changed 'courses' to 'index'
-//         }
-//     } catch (error) {
-//         console.error('Error fetching courses:', error);
-//         res.status(500).send('SERVER_ERROR. Check console.');
-//     }
-// });
+        // Minimum Rating Filter
+        if (req.query.minRating) {
+            query.rating = { $gte: parseFloat(req.query.minRating) };
+        }
+
+        // 4. Build the Sorting Object
+        let sortObj = { enrollCount: -1 }; // Default to most popular
+        switch (req.query.sort) {
+            case 'newest': sortObj = { createdAt: -1 }; break;
+            case 'rating': sortObj = { rating: -1 }; break;
+            case 'price-asc': sortObj = { price: 1 }; break;
+            case 'price-desc': sortObj = { price: -1 }; break;
+            case 'popular': sortObj = { enrollCount: -1 }; break;
+        }
+
+        // 5. Pagination Logic
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 12;
+        const skip = (page - 1) * limit;
+
+        // ==========================================
+        // ROUTE A: JSON RESPONSE (FOR DYNAMIC UI)
+        // ==========================================
+        if (isAjaxRequest) {
+            console.log(`🔍 API Filter triggered. Page: ${page}, Limit: ${limit}`);
+
+            // Run count and fetch concurrently for better performance
+            const [totalCourses, rawCourses] = await Promise.all([
+                Course.countDocuments(query),
+                Course.find(query)
+                    .populate('userId', 'fullName profilePicUrl username')
+                    .sort(sortObj)
+                    .skip(skip)
+                    .limit(limit)
+                    .lean()
+            ]);
+
+            const totalPages = Math.ceil(totalCourses / limit);
+
+            // Format course output securely for the frontend
+            const formattedCourses = rawCourses.map(course => ({
+                _id: course._id,
+                slug: course.slug,
+                title: course.title,
+                instructor: course.userId?.fullName || 'Premium Instructor',
+                instructorAvatar: course.userId?.profilePicUrl,
+                category: course.category,
+                level: course.level || 'All Levels',
+                price: course.price || 0,
+                discountPrice: course.discountPrice,
+                rating: course.rating || 0,
+                enrollCount: course.enrollCount || 0,
+                duration: course.duration || 0,
+                thumbnailUrl: course.thumbnailUrl,
+                tags: course.tags || [],
+                createdAt: course.createdAt
+            }));
+
+            return res.json({
+                success: true,
+                courses: formattedCourses, // Sent to frontend Render.grid()
+                totalCourses,
+                totalPages,
+                currentPage: page
+            });
+        } 
+        
+        // ==========================================
+        // ROUTE B: EJS RENDER (INITIAL PAGE LOAD)
+        // ==========================================
+        else {
+            console.log('🚀 Loading initial Courses page via EJS.');
+
+            // Fetch a generous base chunk (e.g., 50) of popular courses to inject into EJS 
+            // so the frontend immediately has data to parse for categories/levels without a loading screen.
+            const rawCourses = await Course.find({ published: true })
+                .populate('userId', 'fullName profilePicUrl username')
+                .sort({ enrollCount: -1 })
+                .limit(50) 
+                .lean();
+
+            const formattedCourses = rawCourses.map(course => ({
+                _id: course._id,
+                slug: course.slug,
+                title: course.title,
+                instructor: course.userId?.fullName || 'Premium Instructor',
+                instructorAvatar: course.userId?.profilePicUrl,
+                category: course.category,
+                level: course.level || 'All Levels',
+                price: course.price || 0,
+                discountPrice: course.discountPrice,
+                rating: course.rating || 0,
+                enrollCount: course.enrollCount || 0,
+                duration: course.duration || 0,
+                thumbnailUrl: course.thumbnailUrl,
+                tags: course.tags || [],
+                createdAt: course.createdAt
+            }));
+
+            res.render('courses', { 
+                courses: formattedCourses,
+                isLoggedin: !!req.user,
+                profileUrl,
+                username: user?.username || null,
+                useremail: user?.email || null,
+                uId: user?._id?.toString() || null,
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Error fetching courses:', error);
+        
+        if (req.xhr || req.headers.accept?.includes('application/json')) {
+            return res.status(500).json({ success: false, error: 'Failed to fetch courses.' });
+        }
+        res.status(500).render('500', { error: 'An unexpected error occurred while loading courses.' });
+    }
+});
+
+// GET /course-detail - Display single course details
+app.get('/course-detail',authenticateJWT_user, async (req, res) => {
+    try {
+       let user = null;
+        let profileUrl = null;
+
+        // 1. User Caching Logic
+        if (req.user) {
+            const cacheKey = `user_${req.user._id}`;
+            const cachedUser = pageCache.get(cacheKey);
+
+            if (cachedUser) {
+                user = cachedUser;
+                profileUrl = cachedUser.profilePicUrl;
+            } else {
+                user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+                if (user) {
+                    if (user.profilePicUrl?.includes("s3.")) {
+                        try {
+                            const fileName = user.profilePicUrl.split("/").pop();
+                            user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+                        } catch (err) {
+                            console.warn("⚠️ Profile URL conversion failed:", err.message);
+                        }
+                    }
+                    pageCache.set(cacheKey, user);
+                    profileUrl = user.profilePicUrl;
+                }
+            }
+        }
+        const { courseId } = req.query;
+
+        if (!courseId) {
+            return res.status(400).render('404', { message: 'Course ID is required' });
+        }
+
+        // Validate MongoDB ObjectId format
+        if (!mongoose.Types.ObjectId.isValid(courseId)) {
+            return res.status(400).render('404', { message: 'Invalid course ID format' });
+        }
+
+        // Fetch course from MongoDB
+        const course = await Course.findById(courseId)
+            .populate('userId', 'fullName profilePicUrl username email');
+
+        if (!course) {
+            return res.status(404).render('404', { message: 'Course not found' });
+        }
+
+        console.log(`Loading course details for: ${course.title}`);
+
+        // Pass course data to view
+        res.render('course-detail', { 
+            course: course, 
+            title: course.title,
+            isLoggedin: !!req.user,
+                profileUrl,
+                username: user?.username || null,
+                useremail: user?.email || null,
+                uId: user?._id?.toString() || null, 
+        });
+
+    } catch (error) {
+        console.error('Error fetching course details:', error);
+        res.status(500).render('500', { error: error.message });
+    }
+});
 
 
 
@@ -3268,6 +4348,7 @@ app.get(
         );
         if (user) {
           console.log("User profile pic URL:", user.profilePicUrl);
+          
         }
       }
 

@@ -1,0 +1,309 @@
+<!-- INSTRUCTOR MY COURSES TAB -->
+<div class="space-y-6">
+    <!-- Header Section -->
+    <div class="data-card-unique flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-semibold" style="font-family: var(--v-font-display);">My Courses</h2>
+            <p class="text-sm text-gray-500 mt-1">Manage and edit your published courses.</p>
+        </div>
+        <a href="#" class="chunky-btn" onclick="document.querySelector('[data-target=create-course-section]').click(); return false;">
+            <i class="fa-solid fa-plus"></i> Create New Course
+        </a>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="data-card-unique">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex-grow">
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" 
+                           id="course-search" 
+                           placeholder="Search courses..." 
+                           class="filter-input-unique w-full pl-12 pr-4 py-2">
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <select id="course-filter" class="filter-input-unique py-2 px-4">
+                    <option value="">All Status</option>
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
+                </select>
+                <select id="course-sort" class="filter-input-unique py-2 px-4">
+                    <option value="recent">Most Recent</option>
+                    <option value="popular">Most Popular</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="price-low">Price: Low to High</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div id="courses-container">
+        <div id="loading-courses" class="flex justify-center items-center py-16">
+            <div class="flex flex-col items-center gap-3">
+                <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                <p class="text-gray-500">Loading your courses...</p>
+            </div>
+        </div>
+
+        <div id="no-courses" class="hidden">
+            <div class="data-card-unique flex flex-col items-center justify-center py-20 text-center">
+                <i class="fa-solid fa-book-open text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-700">No Courses Yet</h3>
+                <p class="text-gray-500 mt-2 mb-6">Create your first course to get started!</p>
+                <a href="#" class="chunky-btn" onclick="document.querySelector('[data-target=create-course-section]').click(); return false;">
+                    <i class="fa-solid fa-plus"></i> Create First Course
+                </a>
+            </div>
+        </div>
+
+        <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Course cards will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="modal-backdrop-unique">
+    <div class="modal-dialog-unique">
+        <div class="text-center">
+            <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-trash-can text-2xl text-red-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Delete Course?</h3>
+            <p class="text-gray-600 mb-6">This action cannot be undone. All student enrollments and progress will be lost.</p>
+            <div class="flex gap-3 justify-center">
+                <button type="button" class="chunky-btn bg-gray-200 text-gray-800 hover:bg-gray-300" onclick="closeDeleteModal()">
+                    Cancel
+                </button>
+                <button type="button" class="chunky-btn bg-red-600 text-white hover:bg-red-700" onclick="confirmDelete()">
+                    <i class="fa-solid fa-trash-can"></i> Delete Course
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let allCourses = [];
+let courseToDelete = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCourses();
+
+    // Setup filters and search
+    document.getElementById('course-search').addEventListener('input', filterCourses);
+    document.getElementById('course-filter').addEventListener('change', filterCourses);
+    document.getElementById('course-sort').addEventListener('change', sortCourses);
+});
+
+async function loadCourses() {
+    try {
+        const response = await fetch('/api/instructor/courses');
+        if (!response.ok) throw new Error('Failed to load courses');
+
+        const data = await response.json();
+        allCourses = data.courses || [];
+
+        document.getElementById('loading-courses').classList.add('hidden');
+
+        if (allCourses.length === 0) {
+            document.getElementById('no-courses').classList.remove('hidden');
+            document.getElementById('courses-grid').innerHTML = '';
+        } else {
+            document.getElementById('no-courses').classList.add('hidden');
+            displayCourses(allCourses);
+        }
+    } catch (error) {
+        console.error('Error loading courses:', error);
+        document.getElementById('loading-courses').classList.add('hidden');
+        document.getElementById('courses-grid').innerHTML = `
+            <div class="col-span-full text-center py-8">
+                <p class="text-red-600">Error loading courses. Please try again.</p>
+            </div>
+        `;
+    }
+}
+
+function displayCourses(courses) {
+    const grid = document.getElementById('courses-grid');
+    
+    if (courses.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-12 text-gray-500">
+                <i class="fa-solid fa-filter text-4xl mb-3 opacity-50"></i>
+                <p>No courses match your filters.</p>
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = courses.map(course => {
+        const statusBadge = course.published 
+            ? '<span class="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-2.5 py-1 rounded-full border border-green-200"><i class="fa-solid fa-circle-check"></i> Published</span>'
+            : '<span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-200"><i class="fa-solid fa-file"></i> Draft</span>';
+
+        const discountDisplay = course.discountPrice 
+            ? `<span class="text-xs text-gray-500 line-through ml-2">₹${course.discountPrice}</span>`
+            : '';
+
+        return `
+        <div class="data-card-unique group hover:shadow-lg transition-all duration-300">
+            <!-- Course Thumbnail -->
+            <div class="relative mb-4 rounded-lg overflow-hidden bg-gray-100 h-40">
+                <img src="${course.thumbnailUrl || '/images/placeholder.jpg'}" 
+                     alt="${course.title}" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                
+                <!-- Status Badge -->
+                <div class="absolute top-3 left-3">
+                    ${statusBadge}
+                </div>
+
+                <!-- Action Buttons Overlay -->
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+                    <a href="/edit-course/${course._id}" class="p-3 bg-white rounded-full hover:bg-blue-600 hover:text-white transition-colors" title="Edit Course">
+                        <i class="fa-solid fa-pen text-lg"></i>
+                    </a>
+                    <button onclick="openDeleteModal('${course._id}', '${course.title.replace(/'/g, "\\'")}');" class="p-3 bg-white rounded-full hover:bg-red-600 hover:text-white transition-colors" title="Delete Course">
+                        <i class="fa-solid fa-trash-can text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Course Info -->
+            <div class="space-y-3">
+                <!-- Title -->
+                <h3 class="font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    ${course.title}
+                </h3>
+
+                <!-- Stats Row -->
+                <div class="flex items-center gap-4 text-sm text-gray-600">
+                    <div class="flex items-center gap-1">
+                        <i class="fa-solid fa-users text-blue-500"></i>
+                        <span>${course.enrollCount || 0} students</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <i class="fa-solid fa-book text-green-500"></i>
+                        <span>${course.modules?.length || 0} modules</span>
+                    </div>
+                </div>
+
+                <!-- Rating -->
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-star text-xs text-yellow-400"></i>
+                    <i class="fa-solid fa-star text-xs text-yellow-400"></i>
+                    <i class="fa-solid fa-star text-xs text-yellow-400"></i>
+                    <i class="fa-solid fa-star text-xs text-yellow-400"></i>
+                    <i class="fa-solid fa-star text-xs text-yellow-400"></i>
+                    <span class="text-sm text-gray-600">${course.rating || 0}.0</span>
+                </div>
+
+                <!-- Price & Duration -->
+                <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
+                    <div>
+                        <span class="text-lg font-bold text-gray-900">₹${course.price || 0}</span>
+                        ${discountDisplay}
+                    </div>
+                    <span class="text-xs text-gray-500">${course.duration || 0} mins</span>
+                </div>
+
+                <!-- Action Buttons (Mobile) -->
+                <div class="pt-3 border-t border-gray-100 flex gap-2 md:hidden">
+                    <a href="/edit-course/${course._id}" class="flex-1 chunky-btn bg-blue-600 text-white text-center py-2 text-sm">
+                        <i class="fa-solid fa-pen"></i> Edit
+                    </a>
+                    <button onclick="openDeleteModal('${course._id}', '${course.title.replace(/'/g, "\\'")}');" class="flex-1 chunky-btn bg-red-100 text-red-600 hover:bg-red-200 text-center py-2 text-sm">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    `}).join('');
+}
+
+function filterCourses() {
+    const searchTerm = document.getElementById('course-search').value.toLowerCase();
+    const filter = document.getElementById('course-filter').value;
+
+    let filtered = allCourses.filter(course => {
+        const matchesSearch = course.title.toLowerCase().includes(searchTerm) ||
+                            (course.description && course.description.toLowerCase().includes(searchTerm));
+        const matchesFilter = !filter || (filter === 'published' ? course.published : !course.published);
+        return matchesSearch && matchesFilter;
+    });
+
+    displayCourses(filtered);
+}
+
+function sortCourses() {
+    const sortBy = document.getElementById('course-sort').value;
+    let sorted = [...allCourses];
+
+    switch(sortBy) {
+        case 'popular':
+            sorted.sort((a, b) => (b.enrollCount || 0) - (a.enrollCount || 0));
+            break;
+        case 'price-high':
+            sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
+            break;
+        case 'price-low':
+            sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
+            break;
+        case 'recent':
+        default:
+            sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    displayCourses(sorted);
+}
+
+function openDeleteModal(courseId, courseTitle) {
+    courseToDelete = { id: courseId, title: courseTitle };
+    const modal = document.getElementById('delete-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('visible');
+    
+    // Update modal text with course title
+    modal.querySelector('h3').textContent = `Delete "${courseTitle}"?`;
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('delete-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('visible');
+    courseToDelete = null;
+}
+
+async function confirmDelete() {
+    if (!courseToDelete) return;
+
+    try {
+        const response = await fetch(`/api/instructor/courses/${courseToDelete.id}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error('Failed to delete course');
+
+        closeDeleteModal();
+        
+        // Show success message and reload
+        alert('Course deleted successfully!');
+        loadCourses();
+    } catch (error) {
+        console.error('Error deleting course:', error);
+        alert('Error deleting course. Please try again.');
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('delete-modal');
+    if (e.target === modal) {
+        closeDeleteModal();
+    }
+});
+</script>

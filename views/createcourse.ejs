@@ -400,24 +400,20 @@
                 </div>
                 
                 <div id="my-courses-section" class="content-section hidden">
-                    <div class="coming-soon-container flex flex-col items-center justify-center py-20">
-                        <i class="fa-solid fa-laptop-code coming-soon-icon"></i>
-                        <h2 class="coming-soon-text">My Courses</h2>
-                        <p class="text-gray-500 mt-2">Manage your published courses here soon.</p>
+                    <div class="data-card-unique">
+                        <%-include("instructor-mycourses")%>
                     </div>
                 </div>
                 
                 <div id="create-course-section" class="content-section hidden">
                     <div class="data-card-unique">
-                        <%-include("gencourse")%>
+                        <iframe id="gencourse-iframe" src="/api/courses/coursecreation" style="width: 100%; border: none; min-height: 800px;" frameborder="0"></iframe>
                     </div>
                 </div>
                 
                 <div id="student-list-section" class="content-section hidden">
-                    <div class="coming-soon-container flex flex-col items-center justify-center py-20">
-                        <i class="fa-solid fa-users coming-soon-icon"></i>
-                        <h2 class="coming-soon-text">Student Roster</h2>
-                        <p class="text-gray-500 mt-2">View and interact with your enrolled students soon.</p>
+                    <div class="data-card-unique">
+                        <%-include("enrolled-students")%>
                     </div>
                 </div>
                 
@@ -431,8 +427,31 @@
                         <% if (typeof files !=='undefined' && files.length> 0) { %>
                             <% files.forEach(file=> { %>
                                 <div class="file-card-unique" data-file-id="<%= file.id %>">
-                                    <div class="flex-grow flex flex-col items-center justify-center text-center py-4 bg-[#f8fafd] rounded-xl border border-gray-100 mb-4"> 
-                                        <i class="fa-regular fa-file-pdf text-4xl" style="color: var(--v-primary);"></i>
+                                    <div class="flex-grow flex flex-col items-center justify-center text-center py-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-gray-100 mb-4 overflow-hidden relative min-h-[120px]">
+                                        <% if (file.isImage && file.previewUrl) { %>
+                                            <!-- Display actual image preview -->
+                                            <img src="<%= file.previewUrl %>" alt="<%= file.filename %>" class="w-full h-full object-cover rounded-lg" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                                            <div style="display:none;" class="flex flex-col items-center justify-center gap-2 w-full h-full">
+                                                <i class="fa-regular fa-image text-4xl" style="color: var(--v-primary);"></i>
+                                                <span class="text-xs font-semibold text-gray-600 uppercase"><%= file.imageType %></span>
+                                            </div>
+                                        <% } else { %>
+                                            <!-- Display file type icon for documents -->
+                                            <div class="flex flex-col items-center justify-center gap-2">
+                                                <% if (file.fileType === 'pdf') { %>
+                                                    <i class="fa-regular fa-file-pdf text-4xl" style="color: #d24726;"></i>
+                                                <% } else if (file.fileType === 'docx' || file.fileType === 'doc') { %>
+                                                    <i class="fa-regular fa-file-word text-4xl" style="color: #2b579a;"></i>
+                                                <% } else if (file.fileType === 'pptx' || file.fileType === 'ppt') { %>
+                                                    <i class="fa-regular fa-file-powerpoint text-4xl" style="color: #c55a11;"></i>
+                                                <% } else if (file.isImage) { %>
+                                                    <i class="fa-regular fa-image text-4xl" style="color: var(--v-primary);"></i>
+                                                <% } else { %>
+                                                    <i class="fa-regular fa-file text-4xl" style="color: var(--v-primary);"></i>
+                                                <% } %>
+                                                <span class="text-xs font-semibold text-gray-600 uppercase"><%= file.fileType || file.imageType || 'file' %></span>
+                                            </div>
+                                        <% } %>
                                     </div>
                                     <p class="file-card-name truncate w-full" title="<%= file.filename %>"><%= file.filename %></p>
                                     <p class="text-xs text-gray-500 mt-1"><%= file.size %></p>
@@ -1238,6 +1257,9 @@
             });
         }
     });
+
+    // Course Creation Form JavaScript from gencourse.ejs
+
     </script>
 </body>
 </html>

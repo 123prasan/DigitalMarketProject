@@ -324,10 +324,15 @@ router.get(
   reaquireAuth,
   async (req, res) => {
     const latestCourse = await Course.findOne().sort({ _id: -1 });
-    console.log("Latest course ID:", latestCourse._id);
-const userTransactions = await UserTransactions.find({
-  userId: req.user._id,
-});
+    if (latestCourse) {
+      console.log("Latest course ID:", latestCourse._id);
+    } else {
+      console.log("No courses found in database");
+    }
+    
+    const userTransactions = await UserTransactions.find({
+      userId: req.user._id,
+    });
 
 
 

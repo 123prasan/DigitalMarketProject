@@ -1,20 +1,20 @@
 // config.js
 module.exports = {
-  // AWS region
-  region: "ap-south-1",
+  // AWS region - Using us-east-1 for MediaConvert availability
+  region: "us-east-1",
 
   // SQS configuration
-  sqsUrl: "https://sqs.ap-south-1.amazonaws.com/718383533207/vidyarisqs",
+  sqsUrl: "https://sqs.us-east-1.amazonaws.com/718383533207/vidyarisqs",
   waitTimeSeconds: 5,   // Long polling
   maxMessages: 5,       // Number of messages to receive per poll
 
   // S3 configuration
   inputBucket: "vidyari3",              // Bucket where raw videos are uploaded
-  outputBucket: "post-upload-pending2",  // Bucket where transcoded HLS outputs are stored
+  outputBucket: "post-upload-pending2",  // Not used for direct serving
 
   // MediaConvert configuration
-  mediaconvertEndpoint: "https://mediaconvert.ap-south-1.amazonaws.com",
-  mediaConvertRole: "arn:aws:iam::582626475255:role/MediaConvert_Default_Role",
+  mediaconvertEndpoint: "https://mediaconvert.us-east-1.amazonaws.com",
+  mediaConvertRole: "arn:aws:iam::718383533207:role/service-role/MediaConvert_Default_Role",
 
   // Transcoding presets (multi-quality HLS)
   transcodingPresets: {

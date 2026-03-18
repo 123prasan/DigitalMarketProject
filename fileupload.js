@@ -21,6 +21,8 @@ const requireAuth = require('./routes/authentication/reaquireAuth'); // Assuming
 const Categories=require("./models/categories")
 const router = express.Router();
 const Coupon=require("./models/couponschema.js");
+const User = require("./models/userData");
+const { sendNotification } = require("./test.js");
 
 // --- Configuration ---
 const IMAGE_BUCKET = process.env.S3_IMAGE_BUCKET || 'vidyari3';
@@ -258,6 +260,28 @@ router.post('/api/create-file-record', authenticateJWT_user, requireAuth, async 
         
      
         await newFile.save();
+
+        // Send notifications to followers
+        try {
+            const creator = await User.findById(req.user._id).select('fullName followers');
+            if (creator && creator.followers && creator.followers.length > 0) {
+                const followerIds = creator.followers.map(f => f.toString());
+                const notifications = followerIds.map(userId => 
+                    sendNotification({
+                        userId,
+                        title: `New File by ${creator.fullName || 'Creator'}`,
+                        body: `Check out the new file: ${newFile.filename}`,
+                        target_link: `/file/${newFile.slug}/${newFile._id}`,
+                        notification_type: "file_upload"
+                    })
+                );
+                await Promise.allSettled(notifications);
+                console.log(`Sent notifications to ${followerIds.length} followers for file: ${newFile.filename}`);
+            }
+        } catch (notifError) {
+            console.error("Error sending notifications:", notifError);
+            // Don't fail the request if notifications fail
+        }
         
         res.status(201).json({ fileId: newFile._id });
 

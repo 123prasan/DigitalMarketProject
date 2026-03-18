@@ -434,6 +434,417 @@
         #imageModal .btn-close { filter: invert(1); opacity: 0.8; margin: 24px; }
         #imageModal img { max-width: 95vw; max-height: 85vh; object-fit: contain; border-radius: var(--v-radius-sm); }
 
+        /* Enhanced Review System - World's Best */
+        .v-review-system {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .v-review-header {
+            text-align: center;
+            margin-bottom: 32px;
+            position: relative;
+        }
+        
+        .v-review-title {
+            font-family: var(--v-font-display);
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--v-text-main);
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShine 3s ease-in-out infinite;
+        }
+        
+        @keyframes titleShine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2) saturate(1.3); }
+        }
+        
+        .v-review-subtitle {
+            font-size: 1.1rem;
+            color: var(--v-text-muted);
+            font-weight: 500;
+        }
+        
+        /* Premium Star Rating System */
+        .v-interactive-stars {
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-bottom: 24px; 
+            flex-direction: row-reverse;
+            position: relative;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+            border-radius: var(--v-radius-lg);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transition: all 0.3s ease;
+        }
+        
+        .v-interactive-stars:hover {
+            border-color: #fbbf24;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .v-interactive-stars input { display: none; }
+        
+        .v-interactive-stars label {
+            font-size: 3rem; 
+            color: #e0e0e0; 
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0));
+            transform: scale(1) rotate(0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        
+        .v-interactive-stars label::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease-out;
+            z-index: -1;
+        }
+
+        .v-modal-title { font-family: var(--v-font-display); font-size: 1.5rem; font-weight: 600; margin-bottom: 8px; text-align: center;}
+        .v-modal-subtitle { text-align: center; color: var(--v-text-muted); font-size: 0.95rem; margin-bottom: 24px; }
+
+        .v-interactive-stars {
+            display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-direction: row-reverse;
+            position: relative;
+        }
+        .v-interactive-stars input { display: none; }
+        .v-interactive-stars label {
+            font-size: 3rem; color: #e0e0e0; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0));
+            transform: scale(1) rotate(0deg);
+        }
+        .v-interactive-stars label::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease-out;
+            z-index: -1;
+        }
+        .v-interactive-stars label:hover {
+            color: #fbbf24 !important;
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.8));
+            animation: starBounce 0.6s ease-in-out;
+        }
+        .v-interactive-stars label:hover::before {
+            width: 60px;
+            height: 60px;
+        }
+        .v-interactive-stars label:hover ~ label {
+            color: #fbbf24 !important;
+            transform: scale(1.1) rotate(-2deg);
+            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));
+            animation: starPulse 0.8s ease-in-out infinite;
+        }
+        .v-interactive-stars input:checked ~ label {
+            color: #f59e0b !important;
+            transform: scale(1.15) rotate(0deg);
+            filter: drop-shadow(0 0 12px rgba(245, 158, 11, 1));
+            animation: starSelected 0.5s ease-out;
+        }
+        .v-interactive-stars input:checked ~ label::before {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.8) 0%, transparent 70%);
+        }
+
+        /* Force gold color for Font Awesome stars */
+        .v-interactive-stars label i.fa-star,
+        .v-interactive-stars label i.fas.fa-star,
+        .v-interactive-stars label i.far.fa-star {
+            color: inherit !important;
+        }
+        .v-interactive-stars input:checked ~ label i.fa-star,
+        .v-interactive-stars input:checked ~ label i.fas.fa-star,
+        .v-interactive-stars input:checked ~ label i.far.fa-star {
+            color: #f59e0b !important;
+        }
+        .v-interactive-stars label:hover i.fa-star,
+        .v-interactive-stars label:hover i.fas.fa-star,
+        .v-interactive-stars label:hover i.far.fa-star {
+            color: #fbbf24 !important;
+        }
+
+        /* Star Animation Keyframes */
+        @keyframes starBounce {
+            0%, 20%, 50%, 80%, 100% { transform: scale(1) rotate(0deg) translateY(0); }
+            40% { transform: scale(1.3) rotate(10deg) translateY(-8px); }
+            60% { transform: scale(1.1) rotate(-5deg) translateY(-4px); }
+        }
+
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.05) rotate(2deg); opacity: 0.8; }
+        }
+
+        @keyframes starSelected {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.4) rotate(15deg); }
+            50% { transform: scale(1.2) rotate(-10deg); }
+            75% { transform: scale(1.3) rotate(5deg); }
+            100% { transform: scale(1.15) rotate(0deg); }
+        }
+
+        /* Add sparkle effect */
+        .v-interactive-stars label::after {
+            content: '✨';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 12px;
+            opacity: 0;
+            transform: scale(0) rotate(0deg);
+            transition: all 0.4s ease-out;
+            pointer-events: none;
+        }
+        .v-interactive-stars input:checked ~ label::after {
+            opacity: 1;
+            transform: scale(1) rotate(360deg);
+            animation: sparkle 1s ease-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 0.7; }
+        }
+
+        /* Enhanced Modal Animations */
+        .v-modal-overlay {
+            position: fixed; inset: 0; background: rgba(32, 33, 36, 0.6); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .v-modal-overlay.active {
+            opacity: 1; visibility: visible;
+            animation: modalBackdrop 0.4s ease-out;
+        }
+
+        .v-review-modal {
+            background: var(--v-surface); border-radius: var(--v-radius-lg); width: 90%; max-width: 500px;
+            padding: 32px; box-shadow: 0 24px 38px rgba(0,0,0,0.14);
+            transform: scale(0.7) translateY(50px) rotate(-5deg);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+        }
+        .v-modal-overlay.active .v-review-modal {
+            transform: scale(1) translateY(0) rotate(0deg);
+            opacity: 1;
+            animation: modalEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalBackdrop {
+            0% { backdrop-filter: blur(0px); background: rgba(32, 33, 36, 0); }
+            100% { backdrop-filter: blur(4px); background: rgba(32, 33, 36, 0.6); }
+        }
+
+        @keyframes modalEntrance {
+            0% { transform: scale(0.7) translateY(50px) rotate(-5deg); opacity: 0; }
+            50% { transform: scale(1.05) translateY(-10px) rotate(2deg); opacity: 0.8; }
+            100% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
+        }
+
+        /* Enhanced Button Animations */
+        .v-btn-review {
+            background: linear-gradient(135deg, var(--v-primary) 0%, var(--v-primary-hover) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--v-radius-pill);
+            padding: 14px 28px;
+            font-family: var(--v-font-sans);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(11, 87, 208, 0.3);
+        }
+        .v-btn-review::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .v-btn-review:hover::before {
+            left: 100%;
+        }
+        .v-btn-review:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(11, 87, 208, 0.4);
+            animation: buttonGlow 1.5s ease-in-out infinite;
+        }
+        .v-btn-review:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        @keyframes buttonGlow {
+            0%, 100% { box-shadow: 0 8px 25px rgba(11, 87, 208, 0.4); }
+            50% { box-shadow: 0 8px 25px rgba(11, 87, 208, 0.6), 0 0 30px rgba(11, 87, 208, 0.3); }
+        }
+
+        /* Review Card Slide In Animation */
+        @keyframes slideInUp {
+            0% {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Shake Animation for Validation */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Success Pulse Animation */
+        @keyframes successPulse {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(11, 87, 208, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(20, 115, 51, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(11, 87, 208, 0.3); }
+        }
+
+        /* Confetti Animation */
+        .confetti-piece {
+            position: fixed;
+            top: -10px;
+            width: 8px;
+            height: 8px;
+            z-index: 9999;
+            animation: confettiFall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .v-textarea {
+            width: 100%; 
+            padding: 16px 20px; 
+            border: 2px solid var(--v-border); 
+            border-radius: var(--v-radius-md);
+            font-family: var(--v-font-sans); 
+            font-size: 1rem; 
+            color: var(--v-text-main); 
+            resize: vertical; 
+            min-height: 120px;
+            margin-bottom: 24px; 
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            background: var(--v-bg);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            outline: none;
+        }
+        .v-textarea:focus { 
+            border-color: #fbbf24; 
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1), inset 0 1px 3px rgba(0,0,0,0.1);
+            background: white;
+            transform: translateY(-1px);
+        }
+        .v-textarea::placeholder {
+            color: var(--v-text-muted);
+            font-style: italic;
+        }
+
+        .v-modal-actions { 
+            display: flex; 
+            gap: 16px; 
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+        .v-modal-btn { 
+            padding: 14px 28px; 
+            border-radius: var(--v-radius-pill); 
+            font-weight: 600; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            border: none; 
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .v-btn-cancel { 
+            background: var(--v-border); 
+            color: var(--v-text-main);
+            border: 1px solid var(--v-border);
+        }
+        .v-btn-cancel:hover { 
+            background: var(--v-border-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .v-btn-submit { 
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            color: white;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+            border: 1px solid #f59e0b;
+        }
+        .v-btn-submit:hover:not(:disabled) { 
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+        }
+        .v-btn-submit:disabled { 
+            background: var(--v-border); 
+            color: var(--v-text-muted); 
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         /* ==========================================================================
            MOBILE RESPONSIVENESS
            ========================================================================== */
@@ -484,156 +895,250 @@
     %>
 
     <div class="checkout-layout">
-        
-        <main class="main-column">
-            
-            <div style="display: flex; flex-direction: column;">
-                <span class="v-badge"><i class="fa-solid fa-folder-open me-2"></i> <%= file.category || 'Resource' %></span>
-                <h1 class="v-product-title"><%- file.title || file.filename %></h1>
-                
-                <a href="/profile/<%= file.user || 'admin' %>" class="creator-link">
-                    <img src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>" alt="Creator" class="creator-avatar" onerror="this.onerror=null; this.src='/images/avatar.jpg';">
-                    <span class="creator-name">
-                        <%= file.user || 'Vidyari Team' %>
-                        <% if (typeof ISVERIFIED !== 'undefined' && ISVERIFIED) { %> <img style="width:16px;" src="/images/verify.png" alt="Verified"> <% } %>
+        <!-- Main Content Column -->
+        <main class="main-column" role="main">
+            <!-- Hero Section -->
+            <header class="hero-section">
+                <div class="hero-content">
+                    <span class="v-badge" aria-label="Category: <%= file.category || 'Resource' %>">
+                        <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
+                        <%= file.category || 'Resource' %>
                     </span>
-                </a>
-            </div>
+                    <h1 class="v-product-title" id="main-heading">
+                        <%- file.title || file.filename %>
+                    </h1>
 
-            <div class="preview-wrapper" data-bs-toggle="modal" data-bs-target="#imageModal">
-                <img id="mainPreviewImage" 
-                    src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>" 
-                    alt="<%= file.filename %>" 
-                    loading="eager"
-                    onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
-                <div class="zoom-hint"><i class="fa-solid fa-expand me-2"></i> Tap to Expand</div>
-            </div>
-            
-            <div class="ad-safe-zone">
+                    <a href="/profile/<%= file.user || 'admin' %>" class="creator-link" aria-label="View creator profile">
+                        <img src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>"
+                             alt="Creator avatar"
+                             class="creator-avatar"
+                             onerror="this.onerror=null; this.src='/images/avatar.jpg';">
+                        <span class="creator-name">
+                            <%= file.user || 'Vidyari Team' %>
+                            <% if (typeof ISVERIFIED !== 'undefined' && ISVERIFIED) { %>
+                                <img style="width:16px;" src="/images/verify.png" alt="Verified creator" aria-label="Verified">
+                            <% } %>
+                        </span>
+                    </a>
                 </div>
+            </header>
 
+            <!-- Preview Section -->
+            <section class="preview-section" aria-labelledby="preview-heading">
+                <h2 id="preview-heading" class="sr-only">Resource Preview</h2>
+                <div class="preview-wrapper" data-bs-toggle="modal" data-bs-target="#imageModal" role="button" tabindex="0" aria-label="Expand preview image">
+                    <img id="mainPreviewImage"
+                        src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>"
+                        alt="Preview of <%= file.filename %>"
+                        loading="eager"
+                        onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
+                    <div class="zoom-hint" aria-hidden="true">
+                        <i class="fa-solid fa-expand" aria-hidden="true"></i> Tap to Expand
+                    </div>
+                </div>
+            </section>
+
+            <!-- Advertisement Section -->
+            <aside class="ad-section" aria-label="Advertisement">
+                <div class="ad-safe-zone">
+                    <!-- Ad content will be loaded here -->
+                </div>
+            </aside>
+
+            <!-- Description Section -->
             <% if (file.filedescription) { %>
+            <section class="description-section" aria-labelledby="description-heading">
                 <div class="content-box">
-                    <h2 class="section-title"><i class="fa-solid fa-circle-info"></i> About this resource</h2>
+                    <h2 id="description-heading" class="section-title">
+                        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                        About this resource
+                    </h2>
                     <div class="desc-content">
                         <%- file.filedescription %>
                     </div>
                 </div>
+            </section>
             <% } %>
 
-            <div class="mt-2"><%- include("reporttemplate") %></div>
+            <!-- Report Section -->
+            <section class="report-section" aria-labelledby="report-heading">
+                <h2 id="report-heading" class="sr-only">Report Content</h2>
+                <div class="mt-2"><%- include("reporttemplate") %></div>
+            </section>
 
-            <div class="mt-4" style="width: 100%; overflow: hidden;">
-                <h2 class="section-title border-0 mb-2" style="font-size: 1.4rem;"><i class="fa-solid fa-layer-group text-muted"></i> You might also like</h2>
-                <div id="relatedGridContainer" style="width: 100%;">
-                    <p class="text-muted ps-2">Loading similar files...</p>
+            <!-- Reviews Section -->
+            <section class="reviews-section" aria-labelledby="reviews-heading">
+                <div class="mt-4 content-box" id="reviewsSection">
+                    <h2 id="reviews-heading" class="section-title">
+                        <i class="fa-solid fa-star" aria-hidden="true"></i>
+                        Student Reviews
+                    </h2>
+                    <div id="reviewsContent" aria-live="polite" aria-atomic="true">
+                        <p class="text-muted">Loading reviews...</p>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="mt-2" style="width: 100%;"><%- include("chat") %></div>
+            </section>
 
+            <!-- Related Content Section -->
+            <section class="related-section" aria-labelledby="related-heading">
+                <div class="mt-4" style="width: 100%; overflow: hidden;">
+                    <h2 id="related-heading" class="section-title border-0 mb-2" style="font-size: 1.4rem;">
+                        <i class="fa-solid fa-layer-group text-muted" aria-hidden="true"></i>
+                        You might also like
+                    </h2>
+                    <div id="relatedGridContainer" style="width: 100%;" aria-live="polite" aria-atomic="true">
+                        <p class="text-muted ps-2">Loading similar files...</p>
+                    </div>
+                </div>
+            </section>
         </main>
 
-        <aside class="sidebar-column">
-            
-            <div class="checkout-card">
-                <div class="price-display <%= Number(priceDetails.total) === 0 ? 'is-free' : '' %>">
-                    <%= Number(priceDetails.total) === 0 ? 'Free' : '₹' + priceDetails.total.toFixed(2) %>
-                </div>
+        <!-- Sidebar Column -->
+        <aside class="sidebar-column" role="complementary">
+            <!-- Purchase Section -->
+            <section class="purchase-section" aria-labelledby="purchase-heading">
+                <div class="checkout-card">
+                    <h2 id="purchase-heading" class="sr-only">Purchase Options</h2>
 
-                <div class="invoice-row">
-                    <span>Base Asset Price</span>
-                    <span>₹<%=priceDetails.originalPrice.toFixed(2)%></span>
-                </div>
-                <div class="invoice-row muted">
-                    <span>Platform Processing</span>
-                    <span>₹<%=(priceDetails.serviceFee + priceDetails.gstTax).toFixed(2)%></span>
-                </div>
-                <div id="dynamic-discount-row"></div>
+                    <div class="price-display <%= Number(priceDetails.total) === 0 ? 'is-free' : '' %>" aria-label="Price: <%= Number(priceDetails.total) === 0 ? 'Free' : '₹' + priceDetails.total.toFixed(2) %>">
+                        <%= Number(priceDetails.total) === 0 ? 'Free' : '₹' + priceDetails.total.toFixed(2) %>
+                    </div>
 
-                <div class="coupon-box">
-                    <input type="text" id="coupon-code" class="coupon-input" placeholder="Promo code" autocomplete="off" spellcheck="false">
-                    <button id="apply-coupon-btn" class="coupon-btn">Apply</button>
-                </div>
-
-                <div class="invoice-row total">
-                    <span>Total Due</span>
-                    <span id="finalTotalPrice">₹<%=priceDetails.total.toFixed(2)%></span>
-                </div>
-
-                <div class="mt-4">
-                    <% if (Number(priceDetails.total) === 0) { %>
-                        <a href="/download?file_id=<%=file._id%>" class="v-pay-btn is-free" id="downloadBtn">
-                            Download Now <i class="fa-solid fa-cloud-arrow-down"></i>
-                        </a>
-                    <% } else { %>
-                        <button type="button" class="v-pay-btn" id="razorpay-pay-btn">
-                            Secure Checkout <i class="fa-solid fa-lock"></i>
-                        </button>
-                    <% } %>
-                </div>
-
-                <div class="action-row">
-                    <button class="v-btn-icon-text" id="likeButton" data-file-id="<%= file._id %>" data-likes="<%= file.likes %>">
-                        </button>
-                    <div style="flex:1; display:flex; min-width: 0;"><%- include("share") %></div>
-                </div>
-
-                <div class="security-note">
-                    <i class="fa-solid fa-shield-check text-success" style="font-size: 1.1rem;"></i> 
-                    <span>Guaranteed Safe & Secure Checkout</span>
-                </div>
-            </div>
-
-            <div class="specs-card">
-                <h3 class="section-title border-0 mb-4" style="font-size: 1.2rem;">File Information</h3>
-                <ul class="specs-list">
-                    <li class="spec-item">
-                        <div class="spec-icon"><i class="fa-solid fa-star text-warning"></i></div>
-                        <div>
-                            <div class="spec-label">Average Rating</div>
-                            <div>4.8 / 5.0</div>
+                    <!-- Price Breakdown -->
+                    <div class="price-breakdown" role="region" aria-labelledby="breakdown-heading">
+                        <h3 id="breakdown-heading" class="sr-only">Price Breakdown</h3>
+                        <div class="invoice-row">
+                            <span>Base Asset Price</span>
+                            <span>₹<%=priceDetails.originalPrice.toFixed(2)%></span>
                         </div>
-                    </li>
-                    <li class="spec-item">
-                        <div class="spec-icon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                        <div>
-                            <div class="spec-label">Total Downloads</div>
-                            <div><%= (file.downloadCount || 0).toLocaleString() %></div>
+                        <div class="invoice-row muted">
+                            <span>Platform Processing</span>
+                            <span>₹<%=(priceDetails.serviceFee + priceDetails.gstTax).toFixed(2)%></span>
                         </div>
-                    </li>
-                    <li class="spec-item">
-                        <div class="spec-icon"><i class="fa-regular fa-file-code"></i></div>
-                        <div>
-                            <div class="spec-label">Format Type</div>
-                            <div><%= file.fileType || 'PDF' %></div>
-                        </div>
-                    </li>
-                    <li class="spec-item">
-                        <div class="spec-icon"><i class="fa-regular fa-hard-drive"></i></div>
-                        <div>
-                            <div class="spec-label">File Size</div>
-                            <div><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            
-            <div class="ad-safe-zone d-none d-lg-flex">
-                </div>
+                        <div id="dynamic-discount-row"></div>
+                    </div>
 
+                    <!-- Coupon Section -->
+                    <div class="coupon-section" role="region" aria-labelledby="coupon-heading">
+                        <h3 id="coupon-heading" class="sr-only">Apply Coupon</h3>
+                        <div class="coupon-box">
+                            <input type="text" id="coupon-code" class="coupon-input" placeholder="Promo code" autocomplete="off" spellcheck="false" aria-label="Enter promo code">
+                            <button id="apply-coupon-btn" class="coupon-btn" aria-label="Apply coupon">Apply</button>
+                        </div>
+                    </div>
+
+                    <!-- Total and CTA -->
+                    <div class="purchase-total" role="region" aria-labelledby="total-heading">
+                        <h3 id="total-heading" class="sr-only">Total Amount</h3>
+                        <div class="invoice-row total">
+                            <span>Total Due</span>
+                            <span id="finalTotalPrice">₹<%=priceDetails.total.toFixed(2)%></span>
+                        </div>
+                    </div>
+
+                    <div class="purchase-actions">
+                        <% if (Number(priceDetails.total) === 0) { %>
+                            <a href="/download?file_id=<%=file._id%>" class="v-pay-btn is-free" id="downloadBtn" aria-label="Download file for free">
+                                <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
+                                Download Now
+                            </a>
+                        <% } else { %>
+                            <button type="button" class="v-pay-btn" id="razorpay-pay-btn" aria-label="Proceed to secure checkout">
+                                <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                                Secure Checkout
+                            </button>
+                        <% } %>
+                    </div>
+
+                    <!-- Social Actions -->
+                    <div class="social-actions" role="region" aria-labelledby="social-heading">
+                        <h3 id="social-heading" class="sr-only">Share and Like</h3>
+                        <div class="action-row">
+                            <button class="v-btn-icon-text" id="likeButton" data-file-id="<%= file._id %>" data-likes="<%= file.likes %>" aria-label="Like this resource">
+                                <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                                <span id="likeCount"><%= file.likes || 0 %></span>
+                            </button>
+                            <div style="flex:1; display:flex; min-width: 0;" aria-label="Share options"><%- include("share") %></div>
+                        </div>
+                    </div>
+
+                    <!-- Security Notice -->
+                    <div class="security-note" role="note" aria-label="Security guarantee">
+                        <i class="fa-solid fa-shield-check text-success" aria-hidden="true"></i>
+                        <span>Guaranteed Safe & Secure Checkout</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File Information Section -->
+            <section class="file-info-section" aria-labelledby="file-info-heading">
+                <div class="specs-card">
+                    <h3 id="file-info-heading" class="section-title border-0 mb-4" style="font-size: 1.2rem;">
+                        <i class="fa-solid fa-info-circle" aria-hidden="true"></i>
+                        File Information
+                    </h3>
+                    <ul class="specs-list">
+                        <li class="spec-item">
+                            <div class="spec-icon" aria-hidden="true">
+                                <i class="fa-solid fa-star text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="spec-label">Average Rating</div>
+                                <div aria-label="4.8 out of 5 stars">4.8 / 5.0</div>
+                            </div>
+                        </li>
+                        <li class="spec-item">
+                            <div class="spec-icon" aria-hidden="true">
+                                <i class="fa-solid fa-cloud-arrow-down"></i>
+                            </div>
+                            <div>
+                                <div class="spec-label">Total Downloads</div>
+                                <div><%= (file.downloadCount || 0).toLocaleString() %></div>
+                            </div>
+                        </li>
+                        <li class="spec-item">
+                            <div class="spec-icon" aria-hidden="true">
+                                <i class="fa-regular fa-file-code"></i>
+                            </div>
+                            <div>
+                                <div class="spec-label">Format Type</div>
+                                <div><%= file.fileType || 'PDF' %></div>
+                            </div>
+                        </li>
+                        <li class="spec-item">
+                            <div class="spec-icon" aria-hidden="true">
+                                <i class="fa-regular fa-hard-drive"></i>
+                            </div>
+                            <div>
+                                <div class="spec-label">File Size</div>
+                                <div><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Sidebar Advertisement -->
+            <aside class="sidebar-ad" aria-label="Advertisement">
+                <div class="ad-safe-zone d-none d-lg-flex">
+                    <!-- Ad content will be loaded here -->
+                </div>
+            </aside>
         </aside>
     </div>
 
-    <div class="mobile-buy-bar">
+    <!-- Mobile Bottom Bar -->
+    <nav class="mobile-buy-bar" aria-label="Mobile purchase options">
         <% if (Number(priceDetails.total) === 0) { %>
-            <div class="price-display is-free">Free</div>
-            <a href="/download?file_id=<%=file._id%>" class="v-pay-btn is-free mb-0">Download</a>
+            <div class="price-display is-free" aria-label="Free download">Free</div>
+            <a href="/download?file_id=<%=file._id%>" class="v-pay-btn is-free mb-0" aria-label="Download file">Download</a>
         <% } else { %>
-            <div class="price-display">₹<span id="mobileFinalPrice"><%=priceDetails.total.toFixed(2)%></span></div>
-            <button id="razorpay-button-mobile" class="v-pay-btn mb-0">Checkout</button>
+            <div class="price-display" aria-label="Total price ₹<%=priceDetails.total.toFixed(2)%>">
+                ₹<span id="mobileFinalPrice"><%=priceDetails.total.toFixed(2)%></span>
+            </div>
+            <button id="razorpay-button-mobile" class="v-pay-btn mb-0" aria-label="Proceed to checkout">Checkout</button>
         <% } %>
-    </div>
+    </nav>
 
     <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
@@ -652,6 +1157,42 @@
 
     <div id="toast-msg">
         <i class="icon"></i> <span class="text"></span>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="v-modal-overlay" id="reviewModal">
+        <div class="v-review-modal">
+            <h3 class="v-modal-title">Rate this Document</h3>
+            <p class="v-modal-subtitle">Share your experience to help other students.</p>
+            
+            <form id="reviewForm">
+                <div class="v-interactive-stars">
+                    <input type="radio" id="star5" name="rating" value="5" required>
+                    <label for="star5" title="5 stars"><i class="fa-solid fa-star"></i></label>
+                    
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4" title="4 stars"><i class="fa-solid fa-star"></i></label>
+                    
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3" title="3 stars"><i class="fa-solid fa-star"></i></label>
+                    
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2" title="2 stars"><i class="fa-solid fa-star"></i></label>
+                    
+                    <input type="radio" id="star1" name="rating" value="1">
+                    <label for="star1" title="1 star"><i class="fa-solid fa-star"></i></label>
+                </div>
+
+                <input type="text" id="reviewTitle" placeholder="Review title" required style="width: 100%; padding: 12px; border: 1px solid var(--v-border); border-radius: var(--v-radius-md); font-family: var(--v-font-sans); font-size: 1rem; margin-bottom: 16px; outline: none; transition: var(--v-transition);" onfocus="this.style.borderColor='var(--v-primary)'; this.style.boxShadow='0 0 0 3px var(--v-primary-bg)';">
+
+                <textarea class="v-textarea" id="reviewText" placeholder="What did you like or dislike? What was the most helpful part?" required></textarea>
+
+                <div class="v-modal-actions">
+                    <button type="button" class="v-modal-btn v-btn-cancel" onclick="closeReviewModal()">Cancel</button>
+                    <button type="submit" class="v-modal-btn v-btn-submit" id="submitReviewBtn">Submit Review</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -903,6 +1444,324 @@
                 }
             };
             fetchRelatedFiles();
+
+            // Load Reviews
+            const loadReviews = async () => {
+                const reviewsContent = document.getElementById('reviewsContent');
+                try {
+                    const response = await fetch(`/api/file-reviews/file/${currentFileId}`);
+                    if (!response.ok) throw new Error('Failed to load reviews');
+                    
+                    const data = await response.json();
+                    
+                    if (data.count === 0) {
+                        reviewsContent.innerHTML = `
+                            <div style="text-align: center; padding: 40px 20px;">
+                                <i class="fa-solid fa-star text-muted" style="font-size: 3rem; margin-bottom: 16px;"></i>
+                                <h4 style="color: var(--v-text-muted); margin-bottom: 8px;">No reviews yet</h4>
+                                <p style="color: var(--v-text-muted); margin-bottom: 24px;">Be the first to review this document!</p>
+                                <button class="v-btn-review" onclick="document.getElementById('reviewModal').classList.add('active')" style="width: auto; padding: 12px 24px;">
+                                    <i class="fa-regular fa-pen-to-square"></i> Write a Review
+                                </button>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    // Update the average rating in the specs card
+                    const avgRatingElement = document.querySelector('.spec-item .spec-label + div');
+                    if (avgRatingElement) {
+                        avgRatingElement.textContent = `${data.averageRating} / 5.0`;
+                    }
+
+                    // Generate stars HTML
+                    const generateStars = (rating) => {
+                        let stars = '';
+                        for (let i = 1; i <= 5; i++) {
+                            stars += `<i class="fa-solid fa-star ${i <= rating ? '' : 'empty'}"></i>`;
+                        }
+                        return stars;
+                    };
+
+                    // Generate distribution bars
+                    const maxCount = Math.max(...Object.values(data.ratingDistribution));
+                    const distributionHTML = Object.entries(data.ratingDistribution)
+                        .reverse()
+                        .map(([stars, count]) => {
+                            const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
+                            return `
+                                <div class="v-dist-row">
+                                    <div class="v-dist-stars">${stars} star</div>
+                                    <div class="v-dist-bar-bg"><div class="v-dist-bar-fill" style="width: ${percentage}%;"></div></div>
+                                    <div class="v-dist-percent">${count}</div>
+                                </div>
+                            `;
+                        }).join('');
+
+                    // Generate reviews list
+                    const reviewsHTML = data.reviews.map(review => `
+                        <div class="v-review-card">
+                            <div class="v-review-header">
+                                <div class="v-reviewer-info">
+                                    <div class="v-reviewer-avatar">${(review.userId?.fullName || review.userId?.username || 'User').substring(0, 2).toUpperCase()}</div>
+                                    <div>
+                                        <div class="v-reviewer-name">${review.userId?.fullName || review.userId?.username || 'Anonymous'}</div>
+                                        <div class="v-review-date">${new Date(review.createdAt).toLocaleDateString()}</div>
+                                    </div>
+                                </div>
+                                <div class="v-review-stars">
+                                    ${generateStars(review.rating)}
+                                </div>
+                            </div>
+                            <div class="v-review-body">
+                                <strong>${review.title}</strong><br>
+                                ${review.reviewText}
+                            </div>
+                            <div class="v-review-actions">
+                                <span style="font-size: 0.85rem; color: var(--v-text-muted); margin-right: auto;">Was this helpful?</span>
+                                <button class="v-helpful-btn" onclick="markHelpful('${review._id}')">
+                                    <i class="fa-regular fa-thumbs-up"></i> Yes (${review.helpful || 0})
+                                </button>
+                                <button class="v-helpful-btn">
+                                    <i class="fa-regular fa-thumbs-down"></i> No
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    reviewsContent.innerHTML = `
+                        <style>
+                            .v-reviews-dashboard { grid-template-columns: 300px 1fr; gap: 40px; background: var(--v-surface); border: 1px solid var(--v-border); border-radius: var(--v-radius-lg); padding: 32px; box-shadow: var(--v-shadow-card); margin-bottom: 40px; }
+                            .v-aggregate-score { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+                            .v-avg-number { font-family: var(--v-font-display); font-size: 4rem; font-weight: 700; line-height: 1; color: var(--v-text-main); margin-bottom: 8px; }
+                            .v-stars-display { color: var(--v-warning); font-size: 1.25rem; margin-bottom: 8px; display: flex; gap: 4px; }
+                            .v-total-count { color: var(--v-text-muted); font-size: 0.95rem; margin-bottom: 24px; }
+                            .v-btn-review { background: var(--v-primary); color: white; border: none; border-radius: var(--v-radius-pill); padding: 12px 24px; font-family: var(--v-font-sans); font-weight: 500; font-size: 1rem; cursor: pointer; transition: var(--v-transition); display: inline-flex; align-items: center; gap: 8px; width: 100%; }
+                            .v-btn-review:hover { background: var(--v-primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(11,87,208,0.2); }
+                            .v-distribution { display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+                            .v-dist-row { display: flex; align-items: center; gap: 16px; font-size: 0.9rem; color: var(--v-text-muted); }
+                            .v-dist-stars { width: 50px; text-align: right; font-weight: 500;}
+                            .v-dist-bar-bg { flex: 1; height: 8px; background: var(--v-bg); border-radius: 4px; overflow: hidden; }
+                            .v-dist-bar-fill { height: 100%; background: var(--v-warning); border-radius: 4px; }
+                            .v-dist-percent { width: 40px; text-align: right; }
+                            .v-reviews-list { display: flex; flex-direction: column; gap: 24px; }
+                            .v-review-card { 
+                                background: var(--v-surface); 
+                                border: 1px solid var(--v-border); 
+                                border-radius: var(--v-radius-lg); 
+                                padding: 28px; 
+                                transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+                                position: relative;
+                                overflow: hidden;
+                                box-shadow: var(--v-shadow-subtle);
+                            }
+                            .v-review-card:hover { 
+                                border-color: rgba(251, 191, 36, 0.3); 
+                                box-shadow: 0 8px 32px rgba(251, 191, 36, 0.1);
+                                transform: translateY(-2px);
+                            }
+                            .v-review-card::before {
+                                content: '';
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                height: 3px;
+                                background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+                                opacity: 0;
+                                transition: opacity 0.3s ease;
+                            }
+                            .v-review-card:hover::before {
+                                opacity: 1;
+                            }
+                            .v-review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+                            .v-reviewer-info { display: flex; align-items: center; gap: 12px; }
+                            .v-reviewer-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--v-primary-bg); color: var(--v-primary); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.1rem; }
+                            .v-reviewer-name { font-weight: 600; font-size: 1.05rem; color: var(--v-text-main); margin-bottom: 2px;}
+                            .v-review-date { font-size: 0.85rem; color: var(--v-text-muted); }
+                            .v-review-stars { color: var(--v-warning); font-size: 0.95rem; display: flex; gap: 2px;}
+                            .v-review-stars i.empty { color: var(--v-border); }
+                            .v-review-body { font-size: 1rem; line-height: 1.6; color: var(--v-text-main); margin-bottom: 16px; }
+                            .v-review-actions { display: flex; align-items: center; gap: 16px; border-top: 1px solid var(--v-border); padding-top: 16px; }
+                            .v-helpful-btn { background: transparent; border: 1px solid var(--v-border); color: var(--v-text-muted); border-radius: var(--v-radius-pill); padding: 6px 16px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--v-transition); display: flex; align-items: center; gap: 6px; }
+                            .v-helpful-btn:hover, .v-helpful-btn.active { background: var(--v-primary-bg); color: var(--v-primary); border-color: transparent; }
+                        </style>
+                        
+                        <div class="v-reviews-dashboard">
+                            <div class="v-aggregate-score">
+                                <div class="v-avg-number">${data.averageRating.toFixed(1)}</div>
+                                <div class="v-stars-display">
+                                    ${generateStars(Math.round(data.averageRating))}
+                                </div>
+                                <div class="v-total-count">Based on ${data.count} reviews</div>
+                                <button class="v-btn-review" onclick="document.getElementById('reviewModal').classList.add('active')">
+                                    <i class="fa-regular fa-pen-to-square"></i> Write a Review
+                                </button>
+                            </div>
+                            <div class="v-distribution">
+                                ${distributionHTML}
+                            </div>
+                        </div>
+                        
+                        <div class="v-reviews-list">
+                            ${reviewsHTML}
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error('Error loading reviews:', error);
+                    reviewsContent.innerHTML = '<p class="text-danger">Error loading reviews. Please try again later.</p>';
+                }
+            };
+            loadReviews();
+
+            // Mark review as helpful
+            window.markHelpful = async (reviewId) => {
+                try {
+                    const response = await fetch(`/api/file-reviews/${reviewId}/helpful`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Add auth header if needed
+                        }
+                    });
+                    if (response.ok) {
+                        loadReviews(); // Reload reviews to update counts
+                    }
+                } catch (error) {
+                    console.error('Error marking review helpful:', error);
+                }
+            };
+
+            // Review Modal Functions
+            window.closeReviewModal = () => {
+                const modal = document.getElementById('reviewModal');
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    document.getElementById('reviewForm').reset();
+                }, 300);
+            };
+
+            // Handle review form submission
+            document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const rating = document.querySelector('input[name="rating"]:checked')?.value;
+                const title = document.getElementById('reviewTitle').value.trim();
+                const reviewText = document.getElementById('reviewText').value.trim();
+                const submitBtn = document.getElementById('submitReviewBtn');
+
+                if (!rating) {
+                    showToast('Please select a star rating.', 'error');
+                    // Shake animation for stars
+                    const starsContainer = document.querySelector('.v-interactive-stars');
+                    starsContainer.style.animation = 'shake 0.5s ease-in-out';
+                    setTimeout(() => starsContainer.style.animation = '', 500);
+                    return;
+                }
+
+                if (!title || !reviewText) {
+                    showToast('Please fill in all fields.', 'error');
+                    return;
+                }
+
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/api/file-reviews/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            fileId: currentFileId,
+                            rating: parseInt(rating),
+                            title,
+                            reviewText
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Success animation with confetti
+                        submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
+                        submitBtn.style.background = 'var(--v-success)';
+                        submitBtn.style.animation = 'successPulse 0.6s ease-out';
+                        
+                        // Trigger confetti effect
+                        createConfetti();
+                        
+                        showToast('Review submitted successfully!', 'success');
+                        
+                        setTimeout(() => {
+                            closeReviewModal();
+                            loadReviews(); // Reload reviews
+                        }, 2000);
+                    } else {
+                        showToast(data.message || 'Failed to submit review.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error submitting review:', error);
+                    showToast('Failed to submit review. Please try again.', 'error');
+                } finally {
+                    if (!response?.ok) {
+                        submitBtn.innerHTML = 'Submit Review';
+                        submitBtn.disabled = false;
+                        submitBtn.style.background = '';
+                        submitBtn.style.animation = '';
+                    }
+                }
+            });
+
+            // Close modal on outside click
+            document.getElementById('reviewModal').addEventListener('click', (e) => {
+                if (e.target.id === 'reviewModal') {
+                    closeReviewModal();
+                }
+            });
+
+            // World's Best Confetti Effect Function
+            function createConfetti() {
+                const colors = ['#fbbf24', '#f59e0b', '#d97706', '#b45309', '#92400e', '#78350f', '#f97316', '#ea580c', '#dc2626', '#b91c1c', '#0b57d0', '#0842a0', '#137333', '#0f5132', '#7c3aed', '#6d28d9'];
+                const confettiCount = 150;
+                const container = document.body;
+                
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti-piece';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    
+                    // Random shapes for premium effect
+                    const shapes = ['circle', 'square', 'triangle'];
+                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                    
+                    if (shape === 'circle') {
+                        confetti.style.borderRadius = '50%';
+                        confetti.style.width = confetti.style.height = Math.random() * 12 + 4 + 'px';
+                    } else if (shape === 'square') {
+                        confetti.style.width = confetti.style.height = Math.random() * 10 + 4 + 'px';
+                    } else {
+                        confetti.style.width = '0';
+                        confetti.style.height = '0';
+                        confetti.style.borderLeft = Math.random() * 8 + 4 + 'px solid transparent';
+                        confetti.style.borderRight = Math.random() * 8 + 4 + 'px solid transparent';
+                        confetti.style.borderBottom = Math.random() * 12 + 6 + 'px solid ' + confetti.style.backgroundColor;
+                        confetti.style.backgroundColor = 'transparent';
+                    }
+                    
+                    container.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        if (confetti.parentNode) {
+                            confetti.parentNode.removeChild(confetti);
+                        }
+                    }, 5000);
+                }
+            }
         }); 
     </script>
 </body>

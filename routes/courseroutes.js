@@ -12,8 +12,11 @@ const Course = require("../models/course");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { type } = require("os");
+const fs = require("fs");
+const path = require("path");
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { getSignedUrl: getCloudFrontSignedUrl } = require("@aws-sdk/cloudfront-signer");
 const s3 = new S3Client({ region: "ap-south-1" });
 
 // TODO: Add your authentication middleware to protect these routes
@@ -48,7 +51,10 @@ router.post("/create-course", authenticateJWT_user, createCourse);
 
 // router.get('/:courseId', authenticateJWT_user, getCourseById);
 const s3BucketName = "post-upload-pending2";
-const cloudfrontDomain = "d1iz17ohzrj8rc.cloudfront.net";
+const cloudfrontDomain = "d3epchi0htsp3c.cloudfront.net";
+const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID;
+const PRIVATE_KEY_PATH = path.join(__dirname, "..", "private_keys", "cloudfront-private-key.pem");
+const PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
 
 router.get("/:courseId", authenticateJWT_user, async (req, res) => {
   try {
@@ -66,49 +72,15 @@ router.get("/:courseId", authenticateJWT_user, async (req, res) => {
       return res.status(404).send("Course not found");
     }
 
-    // --- DYNAMIC URL TRANSFORMATION FOR HLS MANIFEST ---
-    if (cloudfrontDomain && s3BucketName) {
-      const s3BaseUrl = `https://${s3BucketName}.s3`;
-
-      // Transform thumbnail URL
-      if (course.thumbnailUrl && course.thumbnailUrl.includes(s3BaseUrl)) {
-        const urlPath = new URL(course.thumbnailUrl).pathname;
-        course.thumbnailUrl = `https://${cloudfrontDomain}${urlPath}`;
-        // console.log(course.thumbnailUrl)
-      }
-
-      // Transform submodule URLs. These URLs should now point to the HLS .m3u8 manifest file.
-      course.modules.forEach(async(module) => {
-        module.submodules.forEach(async(submodule) => {
-          if (submodule.fileUrl) {
-            const urlPath = new URL(submodule.fileUrl).pathname;
-            console.log(urlPath);
-            if (urlPath.includes(".pdf") || urlPath.includes(".docx")) {
-                console.log("this is file")
-              async function getPresignedPDF(fileKey) {
-                const command = new GetObjectCommand({
-                  Bucket: "vidyari3",
-                  Key: fileKey,
-                });
-                return await getSignedUrl(s3, command, { expiresIn: 3600 }); // 1 hour
-              }
-              const pdfUrl = await getPresignedPDF(urlPath);
-             
-              submodule.fileUrl = `${pdfUrl}`;
-              console.log(submodule.fileUrl)
-              return;
-            }
-            // Assign the replaced string back to urlPath
-            const newPath = urlPath
-              .replace(/^\/courses\/uploads\//, "/hls-output/") // folder replacement
-              .replace(/\.mp4$/i, ".m3u8"); // extension replacement
-            console.log(newPath);
-            // Update submodule.fileUrl to point to the CloudFront HLS master playlist
-            submodule.fileUrl = `https://${cloudfrontDomain}${newPath}`;
-          }
-        });
-      });
+    // Check if user has purchased/enrolled in this course
+    const isEnrolled = course.enrolledStudents && course.enrolledStudents.some(id => id.toString() === userId.toString());
+    if (!isEnrolled) {
+      return res.status(403).render("404", { message: "You must purchase this course to access it." });
     }
+
+    // --- DYNAMIC URL TRANSFORMATION FOR CLOUDFRONT ---
+    // Note: We no longer transform file URLs here for security.
+    // Video URLs will be served securely via the /video API endpoint.
 
     const progressData = userProgress || {
       courseId: courseId,
@@ -124,6 +96,74 @@ router.get("/:courseId", authenticateJWT_user, async (req, res) => {
   } catch (error) {
     console.error("Error rendering course player:", error);
     res.status(500).send("Server error");
+  }
+});
+
+// Secure video access endpoint
+router.get("/:courseId/lessons/:lessonId/video", authenticateJWT_user, async (req, res) => {
+  try {
+    const { courseId, lessonId } = req.params;
+    const userId = req.user._id;
+
+    // Find the course
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    // Verify user is enrolled
+    const isEnrolled = course.enrolledStudents && course.enrolledStudents.some(id => id.toString() === userId.toString());
+    if (!isEnrolled) {
+      return res.status(403).json({ error: "Access denied. You must purchase this course." });
+    }
+
+    // Find the lesson
+    let lesson = null;
+    for (const module of course.modules) {
+      lesson = module.submodules.find(sub => sub._id.toString() === lessonId);
+      if (lesson) break;
+    }
+
+    if (!lesson || lesson.type !== 'Video') {
+      return res.status(404).json({ error: "Video lesson not found" });
+    }
+
+    // Generate signed URL for the video
+    const videoUrl = lesson.fileUrl;
+    if (!videoUrl) {
+      return res.status(404).json({ error: "Video URL not available" });
+    }
+
+    // Extract S3 key from CloudFront URL
+    const cloudfrontDomain = "d3epchi0htsp3c.cloudfront.net";
+    const urlPattern = new RegExp(`https://${cloudfrontDomain}/(.+)`);
+    const match = videoUrl.match(urlPattern);
+
+    if (!match) {
+      return res.status(400).json({ error: "Invalid video URL format" });
+    }
+
+    const s3Key = match[1];
+
+    // Generate CloudFront signed URL (valid for 1 hour)
+    const cloudFrontUrl = `https://${cloudfrontDomain}/${s3Key}`;
+    const signedUrl = getCloudFrontSignedUrl({
+      url: cloudFrontUrl,
+      keyPairId: CLOUDFRONT_KEY_PAIR_ID,
+      privateKey: PRIVATE_KEY,
+      dateLessThan: new Date(Date.now() + 3600 * 1000), // 1 hour from now
+    });
+
+    res.json({
+      success: true,
+      videoUrl: signedUrl,
+      title: lesson.title,
+      duration: lesson.duration
+    });
+
+  } catch (error) {
+    console.error("Error generating secure video URL:", error);
+    res.status(500).json({ error: "Failed to generate video URL" });
   }
 });
 
