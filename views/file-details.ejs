@@ -1,7 +1,6 @@
-<%-include("header")%>
+<%- include("header") %>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
@@ -14,1816 +13,1252 @@
         <% } %>
     </title>
 
-    <meta name="description" content="Download '<%= file.filename %>' on Vidyari - Premium study material by <%= file.user %>. <%= priceDetails.total == 0 ? 'Free access' : '₹' + priceDetails.total %> - Verified creator, 4.8★ rating, <%= file.downloadCount || 0 %> downloads.">
-    <meta name="keywords" content="<%= file.category %>, <%= file.filename %>, study notes, digital resources, download, online learning, <%= file.user %>">
-    <meta name="author" content="<%= file.user %>">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <link rel="canonical" href="https://vidyari.com/file/<%= file.slug %>/<%= file._id %>">
-    
+    <meta name="description" content="Download '<%= file.filename %>' on Vidyari. <%= priceDetails.total == 0 ? 'Free access' : '₹' + priceDetails.total %> — Verified creator, 4.8★ rating.">
     <meta property="og:type" content="product">
     <meta property="og:title" content="<%= file.filename %> | Download on Vidyari">
-    <meta property="og:description" content="Premium study material. <%= priceDetails.total == 0 ? 'Free' : '₹' + priceDetails.total %>. By <%= file.user %>. <%= file.downloadCount || 0 %> downloads, 4.8★ rating.">
     <meta property="og:image" content="<%= previewUrl || 'https://vidyari.com/images/logo-1200x630.png' %>">
     <meta property="og:url" content="https://vidyari.com/file/<%= file.slug %>/<%= file._id %>">
-    <meta property="og:site_name" content="Vidyari">
-
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= file.filename %> | Vidyari">
-    <meta name="twitter:description" content="<%= priceDetails.total == 0 ? 'Free study material' : 'Premium resource ₹' + priceDetails.total %> by <%= file.user %>">
-    <meta name="twitter:image" content="<%= previewUrl %>">
-    <meta name="twitter:site" content="@vidyari">
-    
+    <link rel="canonical" href="https://vidyari.com/file/<%= file.slug %>/<%= file._id %>">
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org/",
       "@type": "Product",
-      "@id": "https://vidyari.com/file/<%= file.slug %>/<%= file._id %>",
-      "name": "<%- file.filename ? file.filename.replace(/"/g, '&quot;') : 'Digital Resource' %>",
+      "name": "<%- (file.filename || 'Digital Resource').replace(/"/g, '&quot;') %>",
       "image": ["<%= previewUrl || 'https://vidyari.com/images/logo.png' %>"],
-      "description": "<%- file.filedescription ? file.filedescription.substring(0, 160).replace(/"/g, '&quot;') : 'Premium educational resource' %>",
-      "category": "<%= file.category || 'Educational' %>",
-      "author": {
-        "@type": "Person",
-        "@id": "https://vidyari.com/profile/<%= file.user %>",
-        "name": "<%= file.user || 'Vidyari Creator' %>"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "<%= Math.max((file.downloadCount || 0) + 50, 100) %>",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "brand": {
-        "@type": "Brand",
-        "name": "Vidyari"
-      },
+      "description": "<%- (file.filedescription || 'Premium educational resource').substring(0, 160).replace(/"/g, '&quot;') %>",
       "offers": {
         "@type": "Offer",
-        "@id": "https://vidyari.com/file/<%= file.slug %>/<%= file._id %>#offer",
-        "url": "https://vidyari.com/file/<%= file.slug %>/<%= file._id %>",
         "priceCurrency": "INR",
         "price": "<%= priceDetails.total %>",
-        "availability": "https://schema.org/InStock",
-        "seller": {
-          "@type": "Person",
-          "@id": "https://vidyari.com/profile/<%= file.user %>",
-          "name": "<%= file.user || 'Vidyari Creator' %>"
-        }
+        "availability": "https://schema.org/InStock"
       }
     }
     </script>
-    <link rel="icon" href="/images/logo.svg" type="image/svg" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 
+    <link rel="icon" href="/images/logo.svg" type="image/svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
 
     <style>
-        /* ==========================================================================
-           VIDYARI CHECKOUT: PREMIUM MATERIAL 3 THEME
-           ========================================================================== */
+        /* ============================================================
+           VIDYARI FILE CHECKOUT — LUXURY EDITORIAL WHITE THEME
+           ============================================================ */
         :root {
-            --v-bg: #f8fafd;           
-            --v-surface: #ffffff;      
-            --v-text-main: #202124;    
-            --v-text-muted: #5f6368;   
-            
-            --v-primary: #0b57d0;      
-            --v-primary-hover: #0842a0;
-            --v-primary-bg: #e8f0fe;
-            
-            --v-success: #137333;      
-            --v-success-bg: #e6f4ea;
-            
-            --v-border: #dadce0;       
-            --v-border-light: #f1f3f4;
-            
-            --v-font-display: 'Outfit', sans-serif;
-            --v-font-sans: 'Inter', sans-serif;
-            
-            --v-radius-sm: 8px;
-            --v-radius-md: 12px;
-            --v-radius-lg: 24px;
-            --v-radius-pill: 9999px;
-            
-            --v-shadow-subtle: 0 1px 3px rgba(60,64,67,0.08);
-            --v-shadow-card: 0 4px 12px rgba(60,64,67,0.06);
-            --v-shadow-float: 0 8px 24px rgba(11, 87, 208, 0.12);
-            
-            --v-transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+            --ink:        #0e0f11;
+            --ink-2:      #3a3d44;
+            --ink-3:      #7a7e8a;
+            --ink-4:      #b4b8c4;
+            --rule:       #e8eaee;
+            --rule-light: #f4f5f7;
+            --surface:    #ffffff;
+            --bg:         #f9fafb;
+            --accent:     #1a56f0;
+            --accent-2:   #f0f4ff;
+            --accent-ink: #0d37b8;
+            --green:      #0b7a45;
+            --green-bg:   #edfaf3;
+            --amber:      #e8811f;
+            --amber-bg:   #fef6ee;
+
+            --serif:  'DM Serif Display', Georgia, serif;
+            --sans:   'DM Sans', system-ui, sans-serif;
+
+            --r-sm:   8px;
+            --r-md:   14px;
+            --r-lg:   20px;
+            --r-xl:   28px;
+            --r-pill: 9999px;
+
+            --shadow-xs:    0 1px 2px rgba(14,15,17,0.05);
+            --shadow-sm:    0 2px 8px rgba(14,15,17,0.07);
+            --shadow-md:    0 6px 20px rgba(14,15,17,0.08);
+            --shadow-card:  0 0 0 1px rgba(14,15,17,0.06), 0 4px 16px rgba(14,15,17,0.06);
+            --shadow-float: 0 0 0 1px rgba(14,15,17,0.06), 0 20px 48px rgba(14,15,17,0.1);
+            --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* * GLOBAL AD-DEFENSE & LAYORT PROTECTION
-         * These rules guarantee Google Ads cannot break the layout.
-         */
-        html, body {
-            margin: 0;
-            padding: 0;
-            max-width: 100vw;
-            overflow-x: hidden; /* Hard stop on horizontal scrolling */
-            font-family: var(--v-font-sans);
-            background-color: var(--v-bg);
-            color: var(--v-text-main);
-            -webkit-font-smoothing: antialiased;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; min-width: 0; }
+        html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--ink);
+            overflow-x: hidden;
         }
 
-        * { 
-            box-sizing: border-box; 
-            min-width: 0; /* Prevents flex/grid children from bursting out */
-        } 
-
-        a { text-decoration: none; color: inherit; transition: var(--v-transition); }
-
-        /* UNBREAKABLE AD CONTAINERS */
-        .ad-safe-zone {
-            width: 100%;
-            max-width: 100%;
-            overflow: hidden !important; /* Clips any oversized ads */
-            display: flex;
-            justify-content: center;
-            background: var(--v-border-light);
-            border-radius: var(--v-radius-md);
-            margin: 24px 0;
-            min-height: 50px;
-        }
-        
-        .ad-safe-zone ins.adsbygoogle, 
-        .ad-safe-zone iframe {
-            max-width: 100% !important;
-            overflow: hidden !important;
-        }
-
-        /* --- Layout Architecture --- */
-        .checkout-layout {
-            width: 100%;
-            max-width: 1240px;
+        /* ── LAYOUT ── */
+        .page-wrap {
+            max-width: 1380px;
             margin: 0 auto;
-            padding: clamp(24px, 4vw, 48px) clamp(16px, 4vw, 32px);
+            padding: 0 clamp(16px, 3vw, 40px);
+        }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.875rem; font-weight: 500;
+            color: var(--ink-3); text-decoration: none;
+            padding: 9px 16px;
+            background: var(--surface); border: 1px solid var(--rule);
+            border-radius: var(--r-pill); margin: 24px 0;
+            transition: all 0.2s var(--ease-out);
+            box-shadow: var(--shadow-xs);
+        }
+        .back-btn:hover { color: var(--accent); border-color: rgba(26,86,240,0.3); transform: translateX(-3px); }
+
+        .main-grid {
             display: grid;
-            /* minmax(0, 1fr) prevents the left column from expanding infinitely */
-            grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
-            gap: clamp(32px, 5vw, 64px);
+            grid-template-columns: 1fr 352px;
+            gap: 28px;
+            padding-bottom: 100px;
             align-items: start;
         }
 
-        /* ==========================================================================
-           LEFT: MAIN CONTENT (Image, Title, Description)
-           ========================================================================== */
-        .main-column {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-            width: 100%;
+        /* ── LEFT COLUMN ── */
+        .left-col { display: flex; flex-direction: column; gap: 20px; }
+
+        /* ── HERO / TITLE AREA ── */
+        .file-hero {
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            border-radius: var(--r-xl);
+            padding: 32px 36px;
+            box-shadow: var(--shadow-card);
         }
 
-        .v-badge {
-            align-self: flex-start;
-            background: var(--v-primary-bg);
-            color: var(--v-primary);
-            padding: 6px 16px;
-            border-radius: var(--v-radius-pill);
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        .file-category-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.7rem; font-weight: 600;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-2);
+            border: 1px solid rgba(26,86,240,0.15);
+            padding: 4px 12px; border-radius: var(--r-pill);
+            margin-bottom: 16px;
         }
 
-        .v-product-title {
-            font-family: var(--v-font-display);
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
-            font-weight: 700;
-            color: var(--v-text-main);
-            line-height: 1.2;
-            margin: 0;
-            letter-spacing: -0.5px;
+        .file-title {
+            font-family: var(--serif);
+            font-size: clamp(1.6rem, 3vw, 2.3rem);
+            font-weight: 400; line-height: 1.15;
+            color: var(--ink);
+            margin-bottom: 20px;
             overflow-wrap: break-word;
-            word-wrap: break-word;
         }
 
-        .creator-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 6px 20px 6px 6px;
-            background: var(--v-surface);
-            border-radius: var(--v-radius-pill);
-            transition: var(--v-transition);
-            border: 1px solid var(--v-border);
-            box-shadow: var(--v-shadow-subtle);
-            width: fit-content;
+        .creator-card {
+            display: inline-flex; align-items: center; gap: 11px;
+            padding: 8px 16px 8px 8px;
+            background: var(--rule-light);
+            border: 1px solid var(--rule);
+            border-radius: var(--r-pill);
+            text-decoration: none; color: inherit;
+            transition: all 0.2s var(--ease-out);
             max-width: 100%;
         }
-        .creator-link:hover { box-shadow: var(--v-shadow-card); transform: translateY(-2px); }
-        .creator-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid var(--v-border); flex-shrink: 0; }
-        .creator-name { font-weight: 600; color: var(--v-text-main); font-size: 1.05rem; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .creator-card:hover { border-color: rgba(26,86,240,0.25); background: var(--accent-2); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+        .creator-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--rule); flex-shrink: 0; }
+        .creator-name { font-size: 0.9rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+        .creator-name img { width: 14px; flex-shrink: 0; }
 
-        /* Image Gallery/Preview */
-        .preview-wrapper {
-            width: 100%;
-            aspect-ratio: 16/10;
-            background: var(--v-border-light);
-            border-radius: var(--v-radius-lg);
+        /* ── PREVIEW IMAGE ── */
+        .preview-card {
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            border-radius: var(--r-xl);
             overflow: hidden;
-            border: 1px solid var(--v-border);
-            box-shadow: var(--v-shadow-card);
-            cursor: zoom-in;
+            box-shadow: var(--shadow-card);
             position: relative;
+            cursor: zoom-in;
         }
-        .preview-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1); }
-        .preview-wrapper:hover img { transform: scale(1.02); }
-        .zoom-hint {
-            position: absolute; bottom: 20px; right: 20px;
-            background: rgba(32, 33, 36, 0.75); color: white; padding: 8px 16px; 
-            border-radius: var(--v-radius-pill); font-size: 0.9rem; font-weight: 500;
-            backdrop-filter: blur(8px); opacity: 0; transition: var(--v-transition);
+        .preview-card img {
+            width: 100%; aspect-ratio: 16/10;
+            object-fit: cover; display: block;
+            transition: transform 0.5s var(--ease-out);
         }
-        .preview-wrapper:hover .zoom-hint { opacity: 1; }
+        .preview-card:hover img { transform: scale(1.02); }
+        .preview-zoom-hint {
+            position: absolute; bottom: 16px; right: 16px;
+            background: rgba(14,15,17,0.7);
+            backdrop-filter: blur(8px);
+            color: white; font-size: 0.75rem; font-weight: 500;
+            padding: 6px 14px; border-radius: var(--r-pill);
+            opacity: 0; transition: opacity 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .preview-card:hover .preview-zoom-hint { opacity: 1; }
 
-        /* Description */
-        .content-box {
-            background: var(--v-surface); border-radius: var(--v-radius-lg);
-            padding: clamp(24px, 4vw, 40px); box-shadow: var(--v-shadow-card);
-            border: 1px solid var(--v-border);
-            width: 100%;
-            overflow: hidden;
+        /* ── CONTENT CARD ── */
+        .content-card {
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            border-radius: var(--r-xl);
+            padding: 28px 32px;
+            box-shadow: var(--shadow-card);
         }
-        .section-title {
-            font-family: var(--v-font-display); font-size: 1.4rem; font-weight: 600;
-            color: var(--v-text-main); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+        .content-card-title {
+            font-family: var(--serif);
+            font-size: 1.25rem; font-weight: 400;
+            color: var(--ink);
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--rule-light);
+            display: flex; align-items: center; gap: 10px;
         }
-        .section-title i { color: var(--v-primary); }
-        
-        .desc-content {
-            font-size: 1.05rem; line-height: 1.8; color: var(--v-text-muted); 
-            overflow-wrap: break-word; word-wrap: break-word;
+        .content-card-title i { color: var(--accent); font-size: 1rem; }
+        .desc-text {
+            font-size: 0.96rem; font-weight: 300;
+            line-height: 1.75; color: var(--ink-2);
+            overflow-wrap: break-word;
         }
-        .desc-content p { margin-bottom: 16px; }
-        .desc-content strong { color: var(--v-text-main); font-weight: 600; }
-        .desc-content img { max-width: 100% !important; height: auto !important; border-radius: var(--v-radius-md); margin: 20px 0;}
+        .desc-text p { margin-bottom: 14px; }
+        .desc-text p:last-child { margin-bottom: 0; }
+        .desc-text strong { color: var(--ink); font-weight: 600; }
+        .desc-text img { max-width: 100% !important; height: auto !important; border-radius: var(--r-md); margin: 16px 0; }
 
-        /* ==========================================================================
-           GOOGLE PLAY STORE STYLE: RELATED ITEMS (MOBILE SWIPEABLE)
-           ========================================================================== */
-        .v-author-section { margin-bottom: 32px; width: 100%; overflow: hidden; }
-        .v-author-section-title {
-            font-family: var(--v-font-display); font-size: 1.2rem; font-weight: 600;
-            color: var(--v-text-main); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+        /* ── AD ZONE ── */
+        .ad-zone {
+            width: 100%; overflow: hidden;
+            display: flex; justify-content: center;
+            background: var(--rule-light);
+            border: 1px dashed var(--rule);
+            border-radius: var(--r-lg);
+            min-height: 90px;
         }
 
-        .related-scroll-container {
-            display: flex;
-            overflow-x: auto;
+        /* ── RELATED FILES ── */
+        .related-author-block { margin-bottom: 8px; }
+        .related-author-label {
+            font-size: 0.72rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            color: var(--ink-3); margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .related-author-label::after {
+            content: ''; flex: 1; height: 1px;
+            background: var(--rule-light);
+        }
+
+        .related-scroll {
+            display: flex; gap: 14px;
+            overflow-x: auto; padding-bottom: 12px;
+            scrollbar-width: none; -webkit-overflow-scrolling: touch;
             scroll-snap-type: x mandatory;
-            gap: 16px;
-            padding-bottom: 16px;
-            scrollbar-width: none; 
-            -webkit-overflow-scrolling: touch;
         }
-        .related-scroll-container::-webkit-scrollbar { display: none; }
+        .related-scroll::-webkit-scrollbar { display: none; }
 
-        .related-card { 
-            background: transparent; border: none; border-radius: 0; 
-            display: flex; flex-direction: column; transition: var(--v-transition); 
+        .related-item {
+            flex-shrink: 0; width: 120px;
             text-decoration: none; color: inherit;
-            width: 130px; min-width: 130px; /* Compact Play Store Book size */
-            scroll-snap-align: start; flex-shrink: 0;
+            scroll-snap-align: start;
+            transition: transform 0.2s var(--ease-out);
         }
-        .related-card:hover { transform: translateY(-4px); }
-        
-        .related-img-box { 
-            aspect-ratio: 3/4; /* Portrait for books/docs */
-            background: var(--v-border-light); border: 1px solid var(--v-border); 
-            border-radius: var(--v-radius-md); position: relative; overflow: hidden;
-            margin-bottom: 10px; box-shadow: var(--v-shadow-subtle);
+        .related-item:hover { transform: translateY(-3px); }
+        .related-item-thumb {
+            width: 100%; aspect-ratio: 3/4;
+            background: var(--rule-light);
+            border: 1px solid var(--rule);
+            border-radius: var(--r-md);
+            overflow: hidden; margin-bottom: 8px;
+            box-shadow: var(--shadow-xs);
         }
-        .related-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .related-content { display: flex; flex-direction: column; flex: 1; }
-        .related-title { 
-            font-family: var(--v-font-sans); font-size: 0.85rem; font-weight: 500; 
-            margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; 
-            -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; color: var(--v-text-main); 
+        .related-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .related-item-name {
+            font-size: 0.78rem; font-weight: 500; color: var(--ink);
+            line-height: 1.3; margin-bottom: 3px;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-        .related-author { font-size: 0.75rem; color: var(--v-text-muted); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .related-price { font-weight: 600; color: var(--v-text-main); margin-top: auto; font-size: 0.85rem;}
-        .related-price.is-free { color: var(--v-success); }
+        .related-item-author { font-size: 0.7rem; color: var(--ink-3); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .related-item-price { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
+        .related-item-price.free { color: var(--green); }
 
-
-        /* ==========================================================================
-           RIGHT: SIDEBAR (Order Summary, Checkout)
-           ========================================================================== */
-        .sidebar-column {
-            display: flex; flex-direction: column; gap: 24px; position: sticky; top: 32px;
-            width: 100%;
+        /* ── REVIEWS ── */
+        .rating-summary-block {
+            display: flex; align-items: center; gap: 24px;
+            padding: 20px 22px;
+            background: var(--rule-light);
+            border: 1px solid var(--rule);
+            border-radius: var(--r-lg);
+            margin-bottom: 20px;
         }
+        .rating-num { font-family: var(--serif); font-size: 3.5rem; line-height: 1; color: var(--ink); }
+        .rating-stars-row { color: var(--amber); font-size: 1rem; letter-spacing: 1px; margin-bottom: 4px; }
+        .rating-count-label { font-size: 0.78rem; color: var(--ink-3); }
 
+        .rating-dist { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .dist-row { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--ink-3); }
+        .dist-label { width: 36px; text-align: right; flex-shrink: 0; }
+        .dist-track { flex: 1; height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; }
+        .dist-fill { height: 100%; background: var(--amber); border-radius: 3px; transition: width 0.6s var(--ease-out); }
+        .dist-count { width: 24px; text-align: right; flex-shrink: 0; }
+
+        .write-review-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: var(--sans); font-size: 0.875rem; font-weight: 600;
+            color: var(--accent); background: var(--accent-2);
+            border: 1.5px solid rgba(26,86,240,0.2);
+            border-radius: var(--r-md); padding: 10px 20px;
+            cursor: pointer; transition: all 0.2s var(--ease-out);
+            margin-bottom: 20px;
+        }
+        .write-review-btn:hover { background: var(--accent); color: white; border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,86,240,0.25); }
+
+        .review-list { display: flex; flex-direction: column; gap: 12px; }
+        .review-item {
+            background: var(--surface); border: 1px solid var(--rule);
+            border-radius: var(--r-lg); padding: 18px 20px;
+            transition: box-shadow 0.2s;
+        }
+        .review-item:hover { box-shadow: var(--shadow-sm); }
+        .review-item-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .review-initials {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--accent-2); color: var(--accent);
+            font-size: 0.8rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; border: 1.5px solid rgba(26,86,240,0.15);
+        }
+        .review-user-name { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
+        .review-user-date { font-size: 0.74rem; color: var(--ink-4); margin-top: 1px; }
+        .review-item-stars { color: var(--amber); font-size: 0.78rem; margin-left: auto; }
+        .review-item-stars .empty { color: var(--rule); }
+        .review-item-title { font-size: 0.875rem; font-weight: 600; color: var(--ink); margin-bottom: 5px; }
+        .review-item-body { font-size: 0.84rem; color: var(--ink-2); line-height: 1.65; margin-bottom: 12px; }
+        .review-helpful-row { display: flex; align-items: center; gap: 8px; }
+        .helpful-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.75rem; font-weight: 500; color: var(--ink-3);
+            background: var(--rule-light); border: 1px solid var(--rule);
+            border-radius: var(--r-pill); padding: 4px 12px;
+            cursor: pointer; transition: all 0.15s; user-select: none;
+        }
+        .helpful-btn:hover, .helpful-btn.active { color: var(--accent); background: var(--accent-2); border-color: rgba(26,86,240,0.2); }
+        .helpful-label { font-size: 0.74rem; color: var(--ink-4); margin-right: auto; }
+
+        .no-reviews-state {
+            text-align: center; padding: 40px 20px;
+            background: var(--rule-light);
+            border: 1px solid var(--rule);
+            border-radius: var(--r-lg);
+        }
+        .no-reviews-state i { font-size: 2.5rem; color: var(--ink-4); margin-bottom: 12px; display: block; }
+        .no-reviews-state p { font-size: 0.9rem; color: var(--ink-3); }
+
+        /* ── SIDEBAR ── */
+        .right-col { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 14px; }
+
+        /* Price card dark header */
         .checkout-card {
-            background: var(--v-surface); border-radius: var(--v-radius-lg);
-            box-shadow: var(--v-shadow-card); border: 1px solid var(--v-border);
-            padding: 32px; display: flex; flex-direction: column; width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            border-radius: var(--r-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-float);
         }
 
-        .price-display {
-            font-family: var(--v-font-display); font-size: 3rem; font-weight: 700;
-            color: var(--v-text-main); line-height: 1; margin-bottom: 24px; letter-spacing: -1px;
-            word-break: break-all;
+        .price-hero {
+            background: linear-gradient(135deg, #0e0f11 0%, #1a2340 100%);
+            padding: 22px 22px 18px;
+            position: relative; overflow: hidden;
         }
-        .price-display.is-free { color: var(--v-success); }
+        .price-hero::before {
+            content: ''; position: absolute; top: -24px; right: -24px;
+            width: 100px; height: 100px; border-radius: 50%;
+            background: rgba(26,86,240,0.18); pointer-events: none;
+        }
+        .price-hero::after {
+            content: ''; position: absolute; bottom: -16px; left: 16px;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: rgba(26,86,240,0.08); pointer-events: none;
+        }
+        .price-thumb {
+            width: 100%; aspect-ratio: 16/9;
+            object-fit: cover; display: block;
+            border-radius: var(--r-md);
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .price-tag-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+        .price-amount {
+            font-family: var(--serif);
+            font-size: 2.2rem; line-height: 1;
+            color: white;
+        }
+        .price-amount.free { color: #6ee7b7; font-size: 1.7rem; }
+        .price-original { font-size: 0.9rem; color: rgba(255,255,255,0.38); text-decoration: line-through; }
+        .price-badge-pill {
+            font-size: 0.68rem; font-weight: 700;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            padding: 3px 9px; border-radius: var(--r-pill);
+            background: rgba(110,231,183,0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(110,231,183,0.3);
+        }
+        .price-note { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+        .price-note i { color: #fbbf24; font-size: 0.65rem; }
 
+        .checkout-body { padding: 20px 22px; }
+
+        /* Invoice rows */
+        .invoice-section { margin-bottom: 16px; }
         .invoice-row {
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.95rem; padding: 10px 0; color: var(--v-text-muted); font-weight: 500;
+            font-size: 0.85rem; padding: 7px 0; color: var(--ink-3);
         }
         .invoice-row.total {
-            border-top: 1px dashed var(--v-border); margin-top: 16px; padding-top: 20px;
-            color: var(--v-text-main); font-weight: 700; font-size: 1.2rem;
+            border-top: 1px dashed var(--rule);
+            margin-top: 10px; padding-top: 14px;
+            color: var(--ink); font-weight: 700; font-size: 1.05rem;
         }
-        .invoice-row.discount { color: var(--v-success); background: var(--v-success-bg); padding: 8px 12px; border-radius: var(--v-radius-sm); margin: 8px 0;}
+        .invoice-discount-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.82rem; padding: 7px 10px; margin: 6px 0;
+            background: var(--green-bg); color: var(--green);
+            border-radius: var(--r-sm); font-weight: 500;
+        }
 
-        /* Coupon Field */
-        .coupon-box {
-            display: flex; border: 1px solid var(--v-border); border-radius: var(--v-radius-pill);
-            overflow: hidden; margin: 24px 0; background: var(--v-bg); transition: var(--v-transition);
+        /* Coupon */
+        .coupon-wrap {
+            display: flex;
+            border: 1.5px solid var(--rule);
+            border-radius: var(--r-md);
+            overflow: hidden; margin: 14px 0;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: var(--rule-light);
         }
-        .coupon-box:focus-within { border-color: var(--v-primary); box-shadow: 0 0 0 3px var(--v-primary-bg); }
+        .coupon-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,86,240,0.1); }
         .coupon-input {
-            flex: 1; border: none; padding: 12px 20px; font-family: var(--v-font-sans);
-            font-weight: 500; font-size: 0.95rem; outline: none; background: transparent; color: var(--v-text-main); text-transform: uppercase;
-            min-width: 0; /* Important for flex child inputs */
+            flex: 1; border: none; padding: 10px 14px;
+            font-family: var(--sans); font-size: 0.875rem;
+            color: var(--ink); background: transparent; outline: none;
+            text-transform: uppercase; font-weight: 500;
         }
-        .coupon-input::placeholder { color: #9aa0a6; text-transform: none;}
-        .coupon-btn {
-            background: transparent; color: var(--v-primary); border: none; border-left: 1px solid var(--v-border);
-            padding: 0 20px; font-family: var(--v-font-sans); font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: var(--v-transition);
+        .coupon-input::placeholder { text-transform: none; color: var(--ink-4); font-weight: 400; }
+        .coupon-apply-btn {
+            background: transparent; border: none; border-left: 1.5px solid var(--rule);
+            color: var(--accent); padding: 0 16px;
+            font-family: var(--sans); font-size: 0.82rem; font-weight: 600;
+            cursor: pointer; transition: background 0.15s; white-space: nowrap;
         }
-        .coupon-btn:hover { background: var(--v-primary-bg); }
+        .coupon-apply-btn:hover { background: var(--accent-2); }
 
         /* CTA Button */
-        .v-pay-btn {
-            width: 100%; background: var(--v-primary); color: white; border: none;
-            border-radius: var(--v-radius-pill); padding: 18px; font-family: var(--v-font-sans);
-            font-size: 1.15rem; font-weight: 600; box-shadow: var(--v-shadow-float); cursor: pointer;
-            transition: var(--v-transition); display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 24px;
+        .cta-btn {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px;
+            font-family: var(--sans); font-size: 1rem; font-weight: 700;
+            color: white; background: var(--accent);
+            border: none; border-radius: var(--r-lg);
+            padding: 15px; cursor: pointer; margin: 14px 0 10px;
+            transition: all 0.25s var(--ease-out);
+            box-shadow: 0 4px 20px rgba(26,86,240,0.35);
+            position: relative; overflow: hidden;
+            letter-spacing: 0.01em;
         }
-        .v-pay-btn:hover { background: var(--v-primary-hover); transform: translateY(-2px); box-shadow: 0 12px 24px rgba(11,87,208,0.2); }
-        .v-pay-btn:active { transform: translateY(0); }
-        .v-pay-btn.is-free { background: var(--v-success); box-shadow: 0 8px 24px rgba(20, 108, 46, 0.15);}
-        .v-pay-btn.is-free:hover { background: #115926; }
+        .cta-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .cta-btn:hover { background: var(--accent-ink); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,86,240,0.4); }
+        .cta-btn:hover::before { opacity: 1; }
+        .cta-btn:active { transform: translateY(0); }
+        .cta-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
+        .cta-btn.free-btn { background: var(--green); box-shadow: 0 4px 20px rgba(11,122,69,0.3); }
+        .cta-btn.free-btn:hover { background: #096636; box-shadow: 0 8px 28px rgba(11,122,69,0.35); }
 
-        /* Action Row (Like / Share) */
-        .action-row { display: flex; gap: 12px; width: 100%; }
-        .v-btn-icon-text {
-            flex: 1; background: var(--v-bg); border: 1px solid var(--v-border);
-            border-radius: var(--v-radius-pill); padding: 12px; font-family: var(--v-font-sans);
-            font-size: 0.95rem; font-weight: 500; color: var(--v-text-muted); cursor: pointer; transition: var(--v-transition);
-            display: flex; justify-content: center; align-items: center; gap: 8px; min-width: 0;
+        .guarantee-row {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            font-size: 0.76rem; color: var(--ink-3); margin-bottom: 16px;
         }
-        .v-btn-icon-text:hover { background: var(--v-border-light); transform: translateY(-1px); color: var(--v-text-main); }
-        .v-btn-icon-text.liked { color: var(--v-primary); background: var(--v-primary-bg); border-color: transparent; }
+        .guarantee-row i { color: var(--green); }
 
-        /* Specs Card */
-        .specs-card {
-            background: var(--v-surface); border-radius: var(--v-radius-lg); border: 1px solid var(--v-border); padding: 32px; box-shadow: var(--v-shadow-card); width: 100%;
+        /* Action row */
+        .action-row { display: flex; gap: 8px; margin-bottom: 16px; }
+        .action-pill {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+            font-family: var(--sans); font-size: 0.82rem; font-weight: 500;
+            color: var(--ink-2); background: var(--rule-light);
+            border: 1px solid var(--rule); border-radius: var(--r-md);
+            padding: 9px; cursor: pointer;
+            transition: all 0.15s; user-select: none;
         }
-        .specs-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 20px; }
-        .spec-item { display: flex; align-items: center; gap: 16px; color: var(--v-text-main); font-size: 1rem; font-weight: 600; }
-        .spec-icon {
-            width: 48px; height: 48px; border-radius: 50%; background: var(--v-bg); color: var(--v-primary);
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
-        }
-        .spec-label { color: var(--v-text-muted); font-size: 0.85rem; font-weight: 500; margin-bottom: 2px;}
+        .action-pill:hover { background: var(--rule); color: var(--ink); }
+        .action-pill.liked { color: var(--accent); background: var(--accent-2); border-color: rgba(26,86,240,0.2); }
 
-        /* Security Note */
-        .security-note {
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            color: var(--v-text-muted); font-size: 0.85rem; font-weight: 500; margin-top: 20px;
-            padding-top: 20px; border-top: 1px solid var(--v-border);
-        }
+        .divider { height: 1px; background: var(--rule-light); margin: 4px 0 16px; }
 
-        /* Mobile Buy Bar */
-        .mobile-buy-bar {
-            display: none; position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid rgba(0,0,0,0.05); padding: 16px 24px; z-index: 1000;
-            align-items: center; justify-content: space-between; gap: 16px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
-            padding-bottom: calc(16px + env(safe-area-inset-bottom)); /* iPhone safe area */
+        /* Specs list */
+        .specs-label {
+            font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--ink-3); margin-bottom: 10px;
         }
+        .specs-list { list-style: none; }
+        .spec-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 9px 0; border-bottom: 1px solid var(--rule-light);
+        }
+        .spec-row:last-child { border-bottom: none; }
+        .spec-icon-wrap {
+            width: 36px; height: 36px; border-radius: var(--r-sm);
+            background: var(--rule-light); border: 1px solid var(--rule);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--ink-3); font-size: 0.85rem; flex-shrink: 0;
+        }
+        .spec-label { font-size: 0.74rem; color: var(--ink-3); }
+        .spec-value { font-size: 0.875rem; font-weight: 600; color: var(--ink); margin-top: 1px; }
 
-        /* Toast Notification */
-        #toast-msg {
-            position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-20px);
-            background: #202124; color: white; padding: 14px 24px; border-radius: var(--v-radius-pill); 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2); font-family: var(--v-font-sans); font-weight: 500; font-size: 0.95rem;
-            display: flex; align-items: center; gap: 12px; opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.2, 0, 0, 1); z-index: 9999;
+        /* Share card */
+        .share-card {
+            background: var(--surface); border: 1px solid var(--rule);
+            border-radius: var(--r-lg); padding: 18px;
+            box-shadow: var(--shadow-xs);
         }
-        #toast-msg.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
-        #toast-msg.success i { color: #81c995; }
-        #toast-msg.error i { color: #f28b82; }
+        .share-label {
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
+        }
+        .share-row { display: flex; gap: 7px; flex-wrap: wrap; }
+        .share-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.76rem; font-weight: 500;
+            color: var(--ink-2); background: var(--rule-light);
+            border: 1px solid var(--rule); border-radius: var(--r-pill);
+            padding: 6px 13px; cursor: pointer; transition: all 0.15s;
+            text-decoration: none;
+        }
+        .share-pill:hover { background: var(--rule); color: var(--ink); }
 
-        /* Modal Overrides */
-        #imageModal .modal-content { background: rgba(32,33,36,0.95); backdrop-filter: blur(10px); border: none; }
-        #imageModal .btn-close { filter: invert(1); opacity: 0.8; margin: 24px; }
-        #imageModal img { max-width: 95vw; max-height: 85vh; object-fit: contain; border-radius: var(--v-radius-sm); }
+        /* ── MOBILE STICKY BAR ── */
+        .mobile-cta-bar {
+            display: none;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--rule);
+            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+            z-index: 800;
+            box-shadow: 0 -4px 20px rgba(14,15,17,0.08);
+        }
+        .mobile-cta-inner { display: flex; align-items: center; gap: 14px; }
+        .mobile-price {
+            font-family: var(--serif); font-size: 1.35rem;
+            color: var(--ink); white-space: nowrap;
+        }
+        .mobile-price.free { color: var(--green); }
+        .mobile-enroll-btn {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: var(--sans); font-size: 0.95rem; font-weight: 700;
+            color: white; background: var(--accent);
+            border: none; border-radius: var(--r-md);
+            padding: 13px; cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+            box-shadow: 0 3px 12px rgba(26,86,240,0.3);
+        }
+        .mobile-enroll-btn.free-btn { background: var(--green); box-shadow: 0 3px 12px rgba(11,122,69,0.3); }
+        .mobile-enroll-btn:hover { transform: translateY(-1px); }
 
-        /* Enhanced Review System - World's Best */
-        .v-review-system {
-            position: relative;
-            overflow: hidden;
+        /* ── REVIEW MODAL ── */
+        .modal-veil {
+            position: fixed; inset: 0;
+            background: rgba(14,15,17,0.5);
+            backdrop-filter: blur(6px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 9000;
         }
-        
-        .v-review-header {
-            text-align: center;
-            margin-bottom: 32px;
-            position: relative;
+        .modal-veil.open { display: flex; animation: fadeVeil 0.25s ease; }
+        @keyframes fadeVeil { from { opacity: 0; } to { opacity: 1; } }
+
+        .review-modal {
+            background: var(--surface); border-radius: var(--r-xl);
+            padding: 32px 28px; width: 90%; max-width: 460px;
+            box-shadow: var(--shadow-float);
+            animation: modalPop 0.35s var(--ease-out);
         }
-        
-        .v-review-title {
-            font-family: var(--v-font-display);
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--v-text-main);
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: titleShine 3s ease-in-out infinite;
+        @keyframes modalPop { from { opacity:0; transform: translateY(16px) scale(0.97); } to { opacity:1; transform: none; } }
+
+        .modal-title { font-family: var(--serif); font-size: 1.3rem; color: var(--ink); margin-bottom: 6px; }
+        .modal-sub { font-size: 0.85rem; color: var(--ink-3); margin-bottom: 22px; }
+
+        /* Star picker in modal */
+        .modal-stars {
+            display: flex; justify-content: center; gap: 10px;
+            flex-direction: row-reverse; margin-bottom: 22px;
         }
-        
-        @keyframes titleShine {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.2) saturate(1.3); }
-        }
-        
-        .v-review-subtitle {
-            font-size: 1.1rem;
-            color: var(--v-text-muted);
-            font-weight: 500;
-        }
-        
-        /* Premium Star Rating System */
-        .v-interactive-stars {
-            display: flex; 
-            justify-content: center; 
-            gap: 12px; 
-            margin-bottom: 24px; 
-            flex-direction: row-reverse;
-            position: relative;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
-            border-radius: var(--v-radius-lg);
-            border: 2px solid transparent;
-            background-clip: padding-box;
-            transition: all 0.3s ease;
-        }
-        
-        .v-interactive-stars:hover {
-            border-color: #fbbf24;
-            box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .v-interactive-stars input { display: none; }
-        
-        .v-interactive-stars label {
-            font-size: 3rem; 
-            color: #e0e0e0; 
+        .modal-stars input { display: none; }
+        .modal-stars label {
+            font-size: 2.2rem; color: var(--rule);
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            position: relative;
-            filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0));
-            transform: scale(1) rotate(0deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            transition: color 0.15s, transform 0.2s var(--ease-out);
+        }
+        .modal-stars label:hover { color: var(--amber); transform: scale(1.2); }
+        .modal-stars label:hover ~ label { color: var(--amber); }
+        .modal-stars input:checked ~ label { color: var(--amber); }
+
+        .modal-input {
+            width: 100%; padding: 10px 13px;
+            font-family: var(--sans); font-size: 0.875rem; color: var(--ink);
+            background: var(--rule-light); border: 1.5px solid var(--rule);
+            border-radius: var(--r-md); outline: none; margin-bottom: 12px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .modal-input::placeholder { color: var(--ink-4); }
+        .modal-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,86,240,0.1); background: var(--surface); }
+        textarea.modal-input { resize: vertical; min-height: 90px; }
+
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+        .modal-cancel-btn {
+            font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
+            color: var(--ink-2); background: var(--rule-light);
+            border: 1px solid var(--rule); border-radius: var(--r-md);
+            padding: 10px 20px; cursor: pointer; transition: all 0.15s;
+        }
+        .modal-cancel-btn:hover { background: var(--rule); }
+        .modal-submit-btn {
+            font-family: var(--sans); font-size: 0.875rem; font-weight: 700;
+            color: white; background: var(--amber);
+            border: none; border-radius: var(--r-md);
+            padding: 10px 24px; cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+            box-shadow: 0 3px 10px rgba(232,129,31,0.3);
+        }
+        .modal-submit-btn:hover:not(:disabled) { background: #c96c10; transform: translateY(-1px); }
+        .modal-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* ── TOAST ── */
+        #vToast {
+            position: fixed; top: 24px; left: 50%;
+            transform: translateX(-50%) translateY(-12px);
+            background: var(--ink); color: white;
+            padding: 12px 20px; border-radius: var(--r-pill);
+            font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: var(--shadow-md);
+            opacity: 0; visibility: hidden;
+            transition: all 0.3s var(--ease-out);
+            z-index: 9999; white-space: nowrap;
+        }
+        #vToast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        #vToast .toast-icon.success { color: #6ee7b7; }
+        #vToast .toast-icon.error { color: #f87171; }
+
+        /* ── IMAGE MODAL ── */
+        .img-modal-veil {
+            position: fixed; inset: 0;
+            background: rgba(14,15,17,0.92);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(251, 191, 36, 0.2);
+            display: none; align-items: center; justify-content: center;
+            z-index: 9100;
         }
-        
-        .v-interactive-stars label::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, transparent 70%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.6s ease-out;
-            z-index: -1;
+        .img-modal-veil.open { display: flex; }
+        .img-modal-veil img { max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: var(--r-lg); }
+        .img-modal-close {
+            position: absolute; top: 20px; right: 24px;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+            color: white; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .img-modal-close:hover { background: rgba(255,255,255,0.2); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .right-col { position: static; }
+            .checkout-card { max-width: 520px; }
+            .mobile-cta-bar { display: block; }
+            .checkout-body .cta-btn,
+            .checkout-body .guarantee-row { display: none; }
+        }
+        @media (max-width: 640px) {
+            .file-hero, .content-card { padding: 20px 18px; }
+            .rating-summary-block { flex-direction: column; align-items: flex-start; gap: 14px; }
         }
 
-        .v-modal-title { font-family: var(--v-font-display); font-size: 1.5rem; font-weight: 600; margin-bottom: 8px; text-align: center;}
-        .v-modal-subtitle { text-align: center; color: var(--v-text-muted); font-size: 0.95rem; margin-bottom: 24px; }
-
-        .v-interactive-stars {
-            display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-direction: row-reverse;
-            position: relative;
-        }
-        .v-interactive-stars input { display: none; }
-        .v-interactive-stars label {
-            font-size: 3rem; color: #e0e0e0; cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            position: relative;
-            filter: drop-shadow(0 0 0 rgba(251, 191, 36, 0));
-            transform: scale(1) rotate(0deg);
-        }
-        .v-interactive-stars label::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, transparent 70%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 0.6s ease-out;
-            z-index: -1;
-        }
-        .v-interactive-stars label:hover {
-            color: #fbbf24 !important;
-            transform: scale(1.2) rotate(5deg);
-            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.8));
-            animation: starBounce 0.6s ease-in-out;
-        }
-        .v-interactive-stars label:hover::before {
-            width: 60px;
-            height: 60px;
-        }
-        .v-interactive-stars label:hover ~ label {
-            color: #fbbf24 !important;
-            transform: scale(1.1) rotate(-2deg);
-            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));
-            animation: starPulse 0.8s ease-in-out infinite;
-        }
-        .v-interactive-stars input:checked ~ label {
-            color: #f59e0b !important;
-            transform: scale(1.15) rotate(0deg);
-            filter: drop-shadow(0 0 12px rgba(245, 158, 11, 1));
-            animation: starSelected 0.5s ease-out;
-        }
-        .v-interactive-stars input:checked ~ label::before {
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, rgba(245, 158, 11, 0.8) 0%, transparent 70%);
-        }
-
-        /* Force gold color for Font Awesome stars */
-        .v-interactive-stars label i.fa-star,
-        .v-interactive-stars label i.fas.fa-star,
-        .v-interactive-stars label i.far.fa-star {
-            color: inherit !important;
-        }
-        .v-interactive-stars input:checked ~ label i.fa-star,
-        .v-interactive-stars input:checked ~ label i.fas.fa-star,
-        .v-interactive-stars input:checked ~ label i.far.fa-star {
-            color: #f59e0b !important;
-        }
-        .v-interactive-stars label:hover i.fa-star,
-        .v-interactive-stars label:hover i.fas.fa-star,
-        .v-interactive-stars label:hover i.far.fa-star {
-            color: #fbbf24 !important;
-        }
-
-        /* Star Animation Keyframes */
-        @keyframes starBounce {
-            0%, 20%, 50%, 80%, 100% { transform: scale(1) rotate(0deg) translateY(0); }
-            40% { transform: scale(1.3) rotate(10deg) translateY(-8px); }
-            60% { transform: scale(1.1) rotate(-5deg) translateY(-4px); }
-        }
-
-        @keyframes starPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-            50% { transform: scale(1.05) rotate(2deg); opacity: 0.8; }
-        }
-
-        @keyframes starSelected {
-            0% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.4) rotate(15deg); }
-            50% { transform: scale(1.2) rotate(-10deg); }
-            75% { transform: scale(1.3) rotate(5deg); }
-            100% { transform: scale(1.15) rotate(0deg); }
-        }
-
-        /* Add sparkle effect */
-        .v-interactive-stars label::after {
-            content: '✨';
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 12px;
-            opacity: 0;
-            transform: scale(0) rotate(0deg);
-            transition: all 0.4s ease-out;
-            pointer-events: none;
-        }
-        .v-interactive-stars input:checked ~ label::after {
-            opacity: 1;
-            transform: scale(1) rotate(360deg);
-            animation: sparkle 1s ease-out infinite;
-        }
-
-        @keyframes sparkle {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-            50% { transform: scale(1.2) rotate(180deg); opacity: 0.7; }
-        }
-
-        /* Enhanced Modal Animations */
-        .v-modal-overlay {
-            position: fixed; inset: 0; background: rgba(32, 33, 36, 0.6); backdrop-filter: blur(4px);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
-            opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .v-modal-overlay.active {
-            opacity: 1; visibility: visible;
-            animation: modalBackdrop 0.4s ease-out;
-        }
-
-        .v-review-modal {
-            background: var(--v-surface); border-radius: var(--v-radius-lg); width: 90%; max-width: 500px;
-            padding: 32px; box-shadow: 0 24px 38px rgba(0,0,0,0.14);
-            transform: scale(0.7) translateY(50px) rotate(-5deg);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            opacity: 0;
-        }
-        .v-modal-overlay.active .v-review-modal {
-            transform: scale(1) translateY(0) rotate(0deg);
-            opacity: 1;
-            animation: modalEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes modalBackdrop {
-            0% { backdrop-filter: blur(0px); background: rgba(32, 33, 36, 0); }
-            100% { backdrop-filter: blur(4px); background: rgba(32, 33, 36, 0.6); }
-        }
-
-        @keyframes modalEntrance {
-            0% { transform: scale(0.7) translateY(50px) rotate(-5deg); opacity: 0; }
-            50% { transform: scale(1.05) translateY(-10px) rotate(2deg); opacity: 0.8; }
-            100% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
-        }
-
-        /* Enhanced Button Animations */
-        .v-btn-review {
-            background: linear-gradient(135deg, var(--v-primary) 0%, var(--v-primary-hover) 100%);
-            color: white;
-            border: none;
-            border-radius: var(--v-radius-pill);
-            padding: 14px 28px;
-            font-family: var(--v-font-sans);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(11, 87, 208, 0.3);
-        }
-        .v-btn-review::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        .v-btn-review:hover::before {
-            left: 100%;
-        }
-        .v-btn-review:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(11, 87, 208, 0.4);
-            animation: buttonGlow 1.5s ease-in-out infinite;
-        }
-        .v-btn-review:active {
-            transform: translateY(0) scale(0.98);
-        }
-
-        @keyframes buttonGlow {
-            0%, 100% { box-shadow: 0 8px 25px rgba(11, 87, 208, 0.4); }
-            50% { box-shadow: 0 8px 25px rgba(11, 87, 208, 0.6), 0 0 30px rgba(11, 87, 208, 0.3); }
-        }
-
-        /* Review Card Slide In Animation */
-        @keyframes slideInUp {
-            0% {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* Shake Animation for Validation */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-
-        /* Success Pulse Animation */
-        @keyframes successPulse {
-            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(11, 87, 208, 0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(20, 115, 51, 0.5); }
-            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(11, 87, 208, 0.3); }
-        }
-
-        /* Confetti Animation */
-        .confetti-piece {
-            position: fixed;
-            top: -10px;
-            width: 8px;
-            height: 8px;
-            z-index: 9999;
-            animation: confettiFall linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes confettiFall {
-            0% {
-                transform: translateY(-10px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        .v-textarea {
-            width: 100%; 
-            padding: 16px 20px; 
-            border: 2px solid var(--v-border); 
-            border-radius: var(--v-radius-md);
-            font-family: var(--v-font-sans); 
-            font-size: 1rem; 
-            color: var(--v-text-main); 
-            resize: vertical; 
-            min-height: 120px;
-            margin-bottom: 24px; 
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-            background: var(--v-bg);
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-            outline: none;
-        }
-        .v-textarea:focus { 
-            border-color: #fbbf24; 
-            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1), inset 0 1px 3px rgba(0,0,0,0.1);
-            background: white;
-            transform: translateY(-1px);
-        }
-        .v-textarea::placeholder {
-            color: var(--v-text-muted);
-            font-style: italic;
-        }
-
-        .v-modal-actions { 
-            display: flex; 
-            gap: 16px; 
-            justify-content: flex-end;
-            margin-top: 32px;
-        }
-        .v-modal-btn { 
-            padding: 14px 28px; 
-            border-radius: var(--v-radius-pill); 
-            font-weight: 600; 
-            font-size: 1rem; 
-            cursor: pointer; 
-            border: none; 
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        .v-btn-cancel { 
-            background: var(--v-border); 
-            color: var(--v-text-main);
-            border: 1px solid var(--v-border);
-        }
-        .v-btn-cancel:hover { 
-            background: var(--v-border-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .v-btn-submit { 
-            background: linear-gradient(135deg, #f59e0b, #fbbf24);
-            color: white;
-            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
-            border: 1px solid #f59e0b;
-        }
-        .v-btn-submit:hover:not(:disabled) { 
-            background: linear-gradient(135deg, #d97706, #f59e0b);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
-        }
-        .v-btn-submit:disabled { 
-            background: var(--v-border); 
-            color: var(--v-text-muted); 
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* ==========================================================================
-           MOBILE RESPONSIVENESS
-           ========================================================================== */
-        @media (max-width: 991px) {
-            .checkout-layout { 
-                grid-template-columns: minmax(0, 1fr); /* 1 Column, strict overflow protection */
-                gap: 24px; 
-                padding: 16px 16px calc(100px + env(safe-area-inset-bottom)) 16px; 
-                width: 100vw;
-            }
-            .sidebar-column { position: relative; top: 0; gap: 24px; width: 100%;}
-            .checkout-card, .specs-card, .content-box { padding: 24px; width: 100%; }
-            
-            /* Order Change */
-            .v-product-title { font-size: 1.8rem; order: -2; margin-bottom: 12px;}
-            .v-badge { order: -3; }
-            .creator-link { order: -1; margin-bottom: 24px; align-self: flex-start;}
-            
-            /* Hide desktop buy elements, show mobile sticky bar */
-            .checkout-card .v-pay-btn, .checkout-card .price-display { display: none; } 
-            .mobile-buy-bar { display: flex; }
-            .mobile-buy-bar .price-display { margin: 0; font-size: 1.8rem; display: block; }
-            .mobile-buy-bar .v-pay-btn { width: auto; padding: 14px 32px; margin: 0; flex-shrink: 0;}
-
-            /* Related Row Bleed to edges on mobile */
-            .related-scroll-container { margin-right: -16px; padding-right: 16px; margin-left: -16px; padding-left: 16px;}
-        }
-        
-        @media (min-width: 992px) {
-            /* Desktop Fallback for Related Grid */
-            .related-scroll-container {
-                flex-wrap: wrap; margin-right: 0; padding-right: 0; overflow-x: visible;
-            }
-            .related-card { width: 140px; min-width: 140px; }
+        @media (min-width: 1025px) {
+            .related-scroll { flex-wrap: wrap; }
+            .related-item { width: 130px; }
         }
     </style>
 </head>
-
 <body>
-    <% 
-    const formatBytes = (bytes, decimals=2) => {
-        if (!+bytes) return '0 Bytes';
-        const k = 1024; const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Bytes', 'KB' , 'MB' , 'GB' , 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-    }; 
-    %>
 
-    <div class="checkout-layout">
-        <!-- Main Content Column -->
-        <main class="main-column" role="main">
-            <!-- Hero Section -->
-            <header class="hero-section">
-                <div class="hero-content">
-                    <span class="v-badge" aria-label="Category: <%= file.category || 'Resource' %>">
-                        <i class="fa-solid fa-folder-open" aria-hidden="true"></i>
-                        <%= file.category || 'Resource' %>
+<%
+const formatBytes = (bytes, decimals=2) => {
+    if (!+bytes) return 'N/A';
+    const k=1024, dm=decimals<0?0:decimals, sizes=['B','KB','MB','GB','TB'];
+    const i=Math.floor(Math.log(bytes)/Math.log(k));
+    return parseFloat((bytes/Math.pow(k,i)).toFixed(dm))+' '+sizes[i];
+};
+const isFree = Number(priceDetails.total) === 0;
+%>
+
+<div class="page-wrap">
+    <a href="/files" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Files</a>
+
+    <div class="main-grid">
+
+        <!-- ════════ LEFT COLUMN ════════ -->
+        <div class="left-col">
+
+            <!-- FILE HERO -->
+            <div class="file-hero">
+                <div class="file-category-pill">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <%= file.category || 'Resource' %>
+                </div>
+                <h1 class="file-title"><%- file.title || file.filename %></h1>
+                <a href="/profile/<%= file.user || 'admin' %>" class="creator-card">
+                    <img src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>"
+                         alt="Creator"
+                         class="creator-avatar"
+                         onerror="this.src='/images/avatar.jpg'">
+                    <span class="creator-name">
+                        <%= file.user || 'Vidyari Team' %>
+                        <% if (typeof ISVERIFIED !== 'undefined' && ISVERIFIED) { %>
+                            <img src="/images/verify.png" alt="Verified" style="width:14px;">
+                        <% } %>
                     </span>
-                    <h1 class="v-product-title" id="main-heading">
-                        <%- file.title || file.filename %>
-                    </h1>
+                </a>
+            </div>
 
-                    <a href="/profile/<%= file.user || 'admin' %>" class="creator-link" aria-label="View creator profile">
-                        <img src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>"
-                             alt="Creator avatar"
-                             class="creator-avatar"
-                             onerror="this.onerror=null; this.src='/images/avatar.jpg';">
-                        <span class="creator-name">
-                            <%= file.user || 'Vidyari Team' %>
-                            <% if (typeof ISVERIFIED !== 'undefined' && ISVERIFIED) { %>
-                                <img style="width:16px;" src="/images/verify.png" alt="Verified creator" aria-label="Verified">
-                            <% } %>
-                        </span>
-                    </a>
-                </div>
-            </header>
+            <!-- PREVIEW -->
+            <div class="preview-card" onclick="openImgModal(this.querySelector('img').src)">
+                <img src="<%= (previewUrl && previewUrl.trim()) ? previewUrl : '/images/File_Demo.svg' %>"
+                     alt="Preview of <%= file.filename %>"
+                     onerror="this.src='/images/File_Demo.svg'">
+                <div class="preview-zoom-hint"><i class="fa-solid fa-expand"></i> Tap to expand</div>
+            </div>
 
-            <!-- Preview Section -->
-            <section class="preview-section" aria-labelledby="preview-heading">
-                <h2 id="preview-heading" class="sr-only">Resource Preview</h2>
-                <div class="preview-wrapper" data-bs-toggle="modal" data-bs-target="#imageModal" role="button" tabindex="0" aria-label="Expand preview image">
-                    <img id="mainPreviewImage"
-                        src="<%= (previewUrl && typeof previewUrl === 'string' && previewUrl.trim() !== '') ? previewUrl : '/images/File_Demo.svg' %>"
-                        alt="Preview of <%= file.filename %>"
-                        loading="eager"
-                        onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
-                    <div class="zoom-hint" aria-hidden="true">
-                        <i class="fa-solid fa-expand" aria-hidden="true"></i> Tap to Expand
-                    </div>
-                </div>
-            </section>
+            <!-- AD -->
+            <div class="ad-zone">
+                <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true" data-ad-client="ca-pub-3321203820490717"></ins>
+            </div>
 
-            <!-- Advertisement Section -->
-            <aside class="ad-section" aria-label="Advertisement">
-                <div class="ad-safe-zone">
-                    <!-- Ad content will be loaded here -->
-                </div>
-            </aside>
-
-            <!-- Description Section -->
+            <!-- DESCRIPTION -->
             <% if (file.filedescription) { %>
-            <section class="description-section" aria-labelledby="description-heading">
-                <div class="content-box">
-                    <h2 id="description-heading" class="section-title">
-                        <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
-                        About this resource
-                    </h2>
-                    <div class="desc-content">
-                        <%- file.filedescription %>
-                    </div>
-                </div>
-            </section>
+            <div class="content-card">
+                <h2 class="content-card-title"><i class="fa-solid fa-circle-info"></i> About this resource</h2>
+                <div class="desc-text"><%- file.filedescription %></div>
+            </div>
             <% } %>
 
-            <!-- Report Section -->
-            <section class="report-section" aria-labelledby="report-heading">
-                <h2 id="report-heading" class="sr-only">Report Content</h2>
-                <div class="mt-2"><%- include("reporttemplate") %></div>
-            </section>
+            <!-- REPORT -->
+            <div class="mt-1"><%- include("reporttemplate") %></div>
 
-            <!-- Reviews Section -->
-            <section class="reviews-section" aria-labelledby="reviews-heading">
-                <div class="mt-4 content-box" id="reviewsSection">
-                    <h2 id="reviews-heading" class="section-title">
-                        <i class="fa-solid fa-star" aria-hidden="true"></i>
-                        Student Reviews
-                    </h2>
-                    <div id="reviewsContent" aria-live="polite" aria-atomic="true">
-                        <p class="text-muted">Loading reviews...</p>
-                    </div>
-                </div>
-            </section>
+            <!-- REVIEWS -->
+            <div class="content-card">
+                <h2 class="content-card-title"><i class="fa-solid fa-star"></i> Student Reviews</h2>
+                <div id="reviewsArea"><p style="color:var(--ink-3);font-size:0.875rem;">Loading reviews…</p></div>
+            </div>
 
-            <!-- Related Content Section -->
-            <section class="related-section" aria-labelledby="related-heading">
-                <div class="mt-4" style="width: 100%; overflow: hidden;">
-                    <h2 id="related-heading" class="section-title border-0 mb-2" style="font-size: 1.4rem;">
-                        <i class="fa-solid fa-layer-group text-muted" aria-hidden="true"></i>
-                        You might also like
-                    </h2>
-                    <div id="relatedGridContainer" style="width: 100%;" aria-live="polite" aria-atomic="true">
-                        <p class="text-muted ps-2">Loading similar files...</p>
-                    </div>
-                </div>
-            </section>
-        </main>
+            <!-- RELATED -->
+            <div class="content-card">
+                <h2 class="content-card-title"><i class="fa-solid fa-layer-group"></i> You might also like</h2>
+                <div id="relatedArea"><p style="color:var(--ink-3);font-size:0.875rem;">Loading…</p></div>
+            </div>
 
-        <!-- Sidebar Column -->
-        <aside class="sidebar-column" role="complementary">
-            <!-- Purchase Section -->
-            <section class="purchase-section" aria-labelledby="purchase-heading">
-                <div class="checkout-card">
-                    <h2 id="purchase-heading" class="sr-only">Purchase Options</h2>
+        </div><!-- /left-col -->
 
-                    <div class="price-display <%= Number(priceDetails.total) === 0 ? 'is-free' : '' %>" aria-label="Price: <%= Number(priceDetails.total) === 0 ? 'Free' : '₹' + priceDetails.total.toFixed(2) %>">
-                        <%= Number(priceDetails.total) === 0 ? 'Free' : '₹' + priceDetails.total.toFixed(2) %>
-                    </div>
+        <!-- ════════ RIGHT SIDEBAR ════════ -->
+        <aside class="right-col">
 
-                    <!-- Price Breakdown -->
-                    <div class="price-breakdown" role="region" aria-labelledby="breakdown-heading">
-                        <h3 id="breakdown-heading" class="sr-only">Price Breakdown</h3>
-                        <div class="invoice-row">
-                            <span>Base Asset Price</span>
-                            <span>₹<%=priceDetails.originalPrice.toFixed(2)%></span>
-                        </div>
-                        <div class="invoice-row muted">
-                            <span>Platform Processing</span>
-                            <span>₹<%=(priceDetails.serviceFee + priceDetails.gstTax).toFixed(2)%></span>
-                        </div>
-                        <div id="dynamic-discount-row"></div>
-                    </div>
-
-                    <!-- Coupon Section -->
-                    <div class="coupon-section" role="region" aria-labelledby="coupon-heading">
-                        <h3 id="coupon-heading" class="sr-only">Apply Coupon</h3>
-                        <div class="coupon-box">
-                            <input type="text" id="coupon-code" class="coupon-input" placeholder="Promo code" autocomplete="off" spellcheck="false" aria-label="Enter promo code">
-                            <button id="apply-coupon-btn" class="coupon-btn" aria-label="Apply coupon">Apply</button>
-                        </div>
-                    </div>
-
-                    <!-- Total and CTA -->
-                    <div class="purchase-total" role="region" aria-labelledby="total-heading">
-                        <h3 id="total-heading" class="sr-only">Total Amount</h3>
-                        <div class="invoice-row total">
-                            <span>Total Due</span>
-                            <span id="finalTotalPrice">₹<%=priceDetails.total.toFixed(2)%></span>
-                        </div>
-                    </div>
-
-                    <div class="purchase-actions">
-                        <% if (Number(priceDetails.total) === 0) { %>
-                            <a href="/download?file_id=<%=file._id%>" class="v-pay-btn is-free" id="downloadBtn" aria-label="Download file for free">
-                                <i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>
-                                Download Now
-                            </a>
+            <!-- CHECKOUT CARD -->
+            <div class="checkout-card">
+                <div class="price-hero">
+                    <img src="<%= (previewUrl && previewUrl.trim()) ? previewUrl : '/images/File_Demo.svg' %>"
+                         alt="Thumbnail" class="price-thumb" onerror="this.style.display='none'">
+                    <div class="price-tag-row">
+                        <% if (isFree) { %>
+                            <div class="price-amount free">Free</div>
+                            <span class="price-badge-pill">Open Access</span>
                         <% } else { %>
-                            <button type="button" class="v-pay-btn" id="razorpay-pay-btn" aria-label="Proceed to secure checkout">
-                                <i class="fa-solid fa-lock" aria-hidden="true"></i>
-                                Secure Checkout
-                            </button>
+                            <div class="price-amount">₹<%= priceDetails.total.toFixed(0) %></div>
+                            <% if (priceDetails.originalPrice && priceDetails.originalPrice > priceDetails.total) { %>
+                                <span class="price-original">₹<%= priceDetails.originalPrice.toFixed(0) %></span>
+                                <span class="price-badge-pill"><%= Math.round((1 - priceDetails.total / priceDetails.originalPrice) * 100) %>% OFF</span>
+                            <% } %>
                         <% } %>
                     </div>
+                    <% if (!isFree) { %>
+                        <div class="price-note"><i class="fa-solid fa-fire"></i> Limited-time price</div>
+                    <% } %>
+                </div>
 
-                    <!-- Social Actions -->
-                    <div class="social-actions" role="region" aria-labelledby="social-heading">
-                        <h3 id="social-heading" class="sr-only">Share and Like</h3>
-                        <div class="action-row">
-                            <button class="v-btn-icon-text" id="likeButton" data-file-id="<%= file._id %>" data-likes="<%= file.likes %>" aria-label="Like this resource">
-                                <i class="fa-regular fa-heart" aria-hidden="true"></i>
-                                <span id="likeCount"><%= file.likes || 0 %></span>
-                            </button>
-                            <div style="flex:1; display:flex; min-width: 0;" aria-label="Share options"><%- include("share") %></div>
+                <div class="checkout-body">
+                    <!-- Invoice breakdown -->
+                    <div class="invoice-section">
+                        <div class="invoice-row">
+                            <span>Base price</span>
+                            <span>₹<%= priceDetails.originalPrice.toFixed(2) %></span>
+                        </div>
+                        <div class="invoice-row">
+                            <span>Platform fee + GST</span>
+                            <span>₹<%= (priceDetails.serviceFee + priceDetails.gstTax).toFixed(2) %></span>
+                        </div>
+                        <div id="discountRow"></div>
+                        <div class="invoice-row total">
+                            <span>Total</span>
+                            <span id="finalTotal">₹<%= priceDetails.total.toFixed(2) %></span>
                         </div>
                     </div>
 
-                    <!-- Security Notice -->
-                    <div class="security-note" role="note" aria-label="Security guarantee">
-                        <i class="fa-solid fa-shield-check text-success" aria-hidden="true"></i>
-                        <span>Guaranteed Safe & Secure Checkout</span>
+                    <!-- Coupon -->
+                    <div class="coupon-wrap">
+                        <input type="text" id="couponInput" class="coupon-input" placeholder="Promo code" autocomplete="off" spellcheck="false">
+                        <button id="couponApplyBtn" class="coupon-apply-btn">Apply</button>
                     </div>
-                </div>
-            </section>
 
-            <!-- File Information Section -->
-            <section class="file-info-section" aria-labelledby="file-info-heading">
-                <div class="specs-card">
-                    <h3 id="file-info-heading" class="section-title border-0 mb-4" style="font-size: 1.2rem;">
-                        <i class="fa-solid fa-info-circle" aria-hidden="true"></i>
-                        File Information
-                    </h3>
+                    <!-- CTA -->
+                    <% if (isFree) { %>
+                        <a href="/download?file_id=<%= file._id %>" class="cta-btn free-btn" style="text-decoration:none;">
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Download Free
+                        </a>
+                    <% } else { %>
+                        <button class="cta-btn" id="payBtn">
+                            <i class="fa-solid fa-lock"></i> Secure Checkout
+                        </button>
+                    <% } %>
+
+                    <div class="guarantee-row">
+                        <i class="fa-solid fa-shield-halved"></i> 30-day money-back guarantee
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- Like + Share -->
+                    <div class="action-row">
+                        <button class="action-pill" id="likeBtn" data-id="<%= file._id %>" data-count="<%= file.likes || 0 %>">
+                            <i class="fa-regular fa-heart"></i>
+                            <span id="likeCountLabel"><%= file.likes || 0 %></span>
+                        </button>
+                        <div style="flex:1;display:flex;min-width:0;"><%- include("share") %></div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- File specs -->
+                    <div class="specs-label">File details</div>
                     <ul class="specs-list">
-                        <li class="spec-item">
-                            <div class="spec-icon" aria-hidden="true">
-                                <i class="fa-solid fa-star text-warning"></i>
-                            </div>
+                        <li class="spec-row">
+                            <div class="spec-icon-wrap"><i class="fa-solid fa-star" style="color:var(--amber)"></i></div>
                             <div>
-                                <div class="spec-label">Average Rating</div>
-                                <div aria-label="4.8 out of 5 stars">4.8 / 5.0</div>
+                                <div class="spec-label">Rating</div>
+                                <div class="spec-value" id="avgRatingDisplay">4.8 / 5.0</div>
                             </div>
                         </li>
-                        <li class="spec-item">
-                            <div class="spec-icon" aria-hidden="true">
-                                <i class="fa-solid fa-cloud-arrow-down"></i>
-                            </div>
+                        <li class="spec-row">
+                            <div class="spec-icon-wrap"><i class="fa-solid fa-cloud-arrow-down"></i></div>
                             <div>
-                                <div class="spec-label">Total Downloads</div>
-                                <div><%= (file.downloadCount || 0).toLocaleString() %></div>
+                                <div class="spec-label">Downloads</div>
+                                <div class="spec-value"><%= (file.downloadCount || 0).toLocaleString() %></div>
                             </div>
                         </li>
-                        <li class="spec-item">
-                            <div class="spec-icon" aria-hidden="true">
-                                <i class="fa-regular fa-file-code"></i>
-                            </div>
+                        <li class="spec-row">
+                            <div class="spec-icon-wrap"><i class="fa-regular fa-file-code"></i></div>
                             <div>
-                                <div class="spec-label">Format Type</div>
-                                <div><%= file.fileType || 'PDF' %></div>
+                                <div class="spec-label">Format</div>
+                                <div class="spec-value"><%= file.fileType || 'PDF' %></div>
                             </div>
                         </li>
-                        <li class="spec-item">
-                            <div class="spec-icon" aria-hidden="true">
-                                <i class="fa-regular fa-hard-drive"></i>
-                            </div>
+                        <li class="spec-row">
+                            <div class="spec-icon-wrap"><i class="fa-regular fa-hard-drive"></i></div>
                             <div>
-                                <div class="spec-label">File Size</div>
-                                <div><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></div>
+                                <div class="spec-label">Size</div>
+                                <div class="spec-value"><%= file.fileSize ? formatBytes(file.fileSize) : 'N/A' %></div>
                             </div>
                         </li>
                     </ul>
                 </div>
-            </section>
+            </div>
 
-            <!-- Sidebar Advertisement -->
-            <aside class="sidebar-ad" aria-label="Advertisement">
-                <div class="ad-safe-zone d-none d-lg-flex">
-                    <!-- Ad content will be loaded here -->
+            <!-- SHARE CARD -->
+            <div class="share-card">
+                <div class="share-label">Share this file</div>
+                <div class="share-row">
+                    <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://vidyari.com/file/' + file.slug + '/' + file._id) %>&text=<%= encodeURIComponent(file.filename || '') %>"
+                       target="_blank" class="share-pill">
+                        <i class="fa-brands fa-x-twitter"></i> X
+                    </a>
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= encodeURIComponent('https://vidyari.com/file/' + file.slug + '/' + file._id) %>"
+                       target="_blank" class="share-pill">
+                        <i class="fa-brands fa-linkedin-in"></i> LinkedIn
+                    </a>
+                    <a href="https://wa.me/?text=<%= encodeURIComponent((file.filename || '') + ' - https://vidyari.com/file/' + file.slug + '/' + file._id) %>"
+                       target="_blank" class="share-pill">
+                        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <button class="share-pill" onclick="copyPageLink(event)">
+                        <i class="fa-solid fa-link"></i> Copy
+                    </button>
                 </div>
-            </aside>
+            </div>
+
         </aside>
-    </div>
 
-    <!-- Mobile Bottom Bar -->
-    <nav class="mobile-buy-bar" aria-label="Mobile purchase options">
-        <% if (Number(priceDetails.total) === 0) { %>
-            <div class="price-display is-free" aria-label="Free download">Free</div>
-            <a href="/download?file_id=<%=file._id%>" class="v-pay-btn is-free mb-0" aria-label="Download file">Download</a>
+    </div><!-- /main-grid -->
+</div><!-- /page-wrap -->
+
+<!-- MOBILE STICKY BAR -->
+<div class="mobile-cta-bar">
+    <div class="mobile-cta-inner">
+        <% if (isFree) { %>
+            <div class="mobile-price free">Free</div>
+            <a href="/download?file_id=<%= file._id %>" class="mobile-enroll-btn free-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+                <i class="fa-solid fa-cloud-arrow-down"></i> Download Free
+            </a>
         <% } else { %>
-            <div class="price-display" aria-label="Total price ₹<%=priceDetails.total.toFixed(2)%>">
-                ₹<span id="mobileFinalPrice"><%=priceDetails.total.toFixed(2)%></span>
-            </div>
-            <button id="razorpay-button-mobile" class="v-pay-btn mb-0" aria-label="Proceed to checkout">Checkout</button>
+            <div class="mobile-price">₹<span id="mobileFinalPrice"><%= priceDetails.total.toFixed(0) %></span></div>
+            <button class="mobile-enroll-btn" id="payBtnMobile">
+                <i class="fa-solid fa-lock"></i> Checkout
+            </button>
         <% } %>
-    </nav>
+    </div>
+</div>
 
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-header border-0 position-absolute top-0 end-0 z-3">
-                    <button type="button" class="btn-close btn-close-white fs-5" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex align-items-center justify-content-center p-0 p-md-4">
-                    <img id="modalFullImage" src="" alt="Full preview">
-                </div>
+<!-- IMAGE MODAL -->
+<div class="img-modal-veil" id="imgModalVeil" onclick="closeImgModal()">
+    <button class="img-modal-close" onclick="closeImgModal()"><i class="fa-solid fa-times"></i></button>
+    <img id="imgModalSrc" src="" alt="Preview">
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal-veil" id="reviewModalVeil">
+    <div class="review-modal" onclick="event.stopPropagation()">
+        <div class="modal-title">Rate this Document</div>
+        <p class="modal-sub">Your review helps other students make better decisions.</p>
+        <form id="reviewForm">
+            <div class="modal-stars">
+                <input type="radio" name="rating" id="s5" value="5" required>
+                <label for="s5">★</label>
+                <input type="radio" name="rating" id="s4" value="4">
+                <label for="s4">★</label>
+                <input type="radio" name="rating" id="s3" value="3">
+                <label for="s3">★</label>
+                <input type="radio" name="rating" id="s2" value="2">
+                <label for="s2">★</label>
+                <input type="radio" name="rating" id="s1" value="1">
+                <label for="s1">★</label>
             </div>
-        </div>
+            <input type="text" id="rvTitle" class="modal-input" placeholder="Review title" required>
+            <textarea id="rvText" class="modal-input" placeholder="What did you think? Was it helpful?" required></textarea>
+            <div class="modal-actions">
+                <button type="button" class="modal-cancel-btn" onclick="closeReviewModal()">Cancel</button>
+                <button type="submit" class="modal-submit-btn" id="rvSubmitBtn">Submit Review</button>
+            </div>
+        </form>
     </div>
-    
-    <%- include('footer') %>
+</div>
 
-    <div id="toast-msg">
-        <i class="icon"></i> <span class="text"></span>
-    </div>
+<!-- TOAST -->
+<div id="vToast"><i class="toast-icon"></i><span id="vToastText"></span></div>
 
-    <!-- Review Modal -->
-    <div class="v-modal-overlay" id="reviewModal">
-        <div class="v-review-modal">
-            <h3 class="v-modal-title">Rate this Document</h3>
-            <p class="v-modal-subtitle">Share your experience to help other students.</p>
-            
-            <form id="reviewForm">
-                <div class="v-interactive-stars">
-                    <input type="radio" id="star5" name="rating" value="5" required>
-                    <label for="star5" title="5 stars"><i class="fa-solid fa-star"></i></label>
-                    
-                    <input type="radio" id="star4" name="rating" value="4">
-                    <label for="star4" title="4 stars"><i class="fa-solid fa-star"></i></label>
-                    
-                    <input type="radio" id="star3" name="rating" value="3">
-                    <label for="star3" title="3 stars"><i class="fa-solid fa-star"></i></label>
-                    
-                    <input type="radio" id="star2" name="rating" value="2">
-                    <label for="star2" title="2 stars"><i class="fa-solid fa-star"></i></label>
-                    
-                    <input type="radio" id="star1" name="rating" value="1">
-                    <label for="star1" title="1 star"><i class="fa-solid fa-star"></i></label>
-                </div>
+<%- include('footer') %>
 
-                <input type="text" id="reviewTitle" placeholder="Review title" required style="width: 100%; padding: 12px; border: 1px solid var(--v-border); border-radius: var(--v-radius-md); font-family: var(--v-font-sans); font-size: 1rem; margin-bottom: 16px; outline: none; transition: var(--v-transition);" onfocus="this.style.borderColor='var(--v-primary)'; this.style.boxShadow='0 0 0 3px var(--v-primary-bg)';">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-                <textarea class="v-textarea" id="reviewText" placeholder="What did you like or dislike? What was the most helpful part?" required></textarea>
+<script>
+const FILE_ID   = "<%= file._id %>";
+const FILE_NAME = "<%- (file.filename || 'Resource').replace(/"/g,'&quot;') %>";
+let   activeTotal = <%= priceDetails.total %>;
 
-                <div class="v-modal-actions">
-                    <button type="button" class="v-modal-btn v-btn-cancel" onclick="closeReviewModal()">Cancel</button>
-                    <button type="submit" class="v-modal-btn v-btn-submit" id="submitReviewBtn">Submit Review</button>
-                </div>
-            </form>
-        </div>
-    </div>
+/* ════════ TOAST ════════ */
+function showToast(msg, type='success') {
+    const el   = document.getElementById('vToast');
+    const icon = el.querySelector('.toast-icon');
+    icon.className = `toast-icon ${type} ` + (type==='success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation');
+    document.getElementById('vToastText').textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 4000);
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+/* ════════ IMAGE MODAL ════════ */
+function openImgModal(src) {
+    document.getElementById('imgModalSrc').src = src;
+    document.getElementById('imgModalVeil').classList.add('open');
+}
+function closeImgModal() { document.getElementById('imgModalVeil').classList.remove('open'); }
 
-    <script>
-        const slugifyJS = (text) => text ? text.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-') : 'file';
+/* ════════ REVIEW MODAL ════════ */
+function openReviewModal() { document.getElementById('reviewModalVeil').classList.add('open'); }
+function closeReviewModal() {
+    document.getElementById('reviewModalVeil').classList.remove('open');
+    document.getElementById('reviewForm').reset();
+}
+document.getElementById('reviewModalVeil').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeReviewModal();
+});
 
-        // Template for Compact Google Play Store style cards
-        const renderFileCardJS = (doc) => {
-            const fileUrl = `/file/${doc.slug || slugifyJS(doc.filename)}/${doc._id}`;
-            const isFree = doc.price === 0 || doc.price === '0';
-            const priceBadgeText = isFree ? `Free` : `₹${doc.price}`;
-            const priceBadgeClass = isFree ? `is-free` : ``;
+/* ════════ LIKE BUTTON ════════ */
+(function initLike() {
+    const btn    = document.getElementById('likeBtn');
+    if (!btn) return;
+    const fileId = btn.dataset.id;
+    let count    = parseInt(btn.dataset.count) || 0;
+    const stored = JSON.parse(localStorage.getItem('vidyari_likes') || '{}');
+    let liked    = !!stored[fileId];
 
-            return `
-                <a href="${fileUrl}" class="related-card">
-                    <div class="related-img-box">
-                        <div class="v-badge-card">${doc.category || 'Resource'}</div>
-                        <img src="${doc.previewUrl && doc.previewUrl.trim() !== '' ? doc.previewUrl : '/images/File_Demo.svg'}" 
-                             alt="${doc.filename}" loading="lazy" 
-                             onerror="this.onerror=null;this.src='/images/File_Demo.svg';">
-                    </div>
-                    <div class="related-content">
-                        <h3 class="related-title">${doc.filename}</h3>
-                        <div class="related-author">${doc.user || 'Vidyari Creator'}</div>
-                        <div class="related-price ${priceBadgeClass}">${priceBadgeText}</div>
-                    </div>
-                </a>
-            `;
-        };
+    const render = () => {
+        btn.classList.toggle('liked', liked);
+        const icon = liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        btn.innerHTML = `<i class="${icon}"></i><span>${count}</span>`;
+    };
+    render();
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentFileId = "<%= file._id %>";
-            const relatedGrid = document.getElementById('relatedGridContainer'); 
-            
-            // Initialize AdSense manually to ensure it triggers after layout
-            try {
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            } catch (e) {
-                // Adsense error handler
-            }
-            
-            // Modal Sync
-            const mainPreviewImage = document.getElementById('mainPreviewImage');
-            const modalFullImage = document.getElementById('modalFullImage');
-            const imageModalElement = document.getElementById('imageModal');
+    btn.addEventListener('click', () => {
+        liked = !liked;
+        count += liked ? 1 : -1;
+        stored[fileId] = liked || undefined;
+        if (!liked) delete stored[fileId];
+        localStorage.setItem('vidyari_likes', JSON.stringify(stored));
+        render();
+        fetch(`/files/impression/${fileId}/${liked ? 'like' : 'dislike'}`).catch(()=>{});
+    });
+})();
 
-            if (imageModalElement && mainPreviewImage) {
-                imageModalElement.addEventListener('show.bs.modal', () => {
-                    if (modalFullImage) modalFullImage.src = mainPreviewImage.src;
-                });
-            }
+/* ════════ SHARE ════════ */
+function copyPageLink(e) {
+    navigator.clipboard.writeText(location.href).then(() => {
+        const btn = e.currentTarget;
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        setTimeout(() => btn.innerHTML = orig, 2000);
+    });
+}
 
-            // Like Logic
-            const likeButton = document.getElementById('likeButton');
-            
-            if (likeButton) {
-                const fileId = likeButton.dataset.fileId;
-                let likeCount = parseInt(likeButton.dataset.likes, 10) || 0;
-                let allFiles = JSON.parse(localStorage.getItem("fileData")) || {};
-                let isLiked = (allFiles[fileId] && allFiles[fileId].liked) || false;
-
-                const updateUI = () => {
-                    likeButton.classList.toggle('liked', isLiked);
-                    likeButton.innerHTML = `<i class="fa-${isLiked ? 'solid' : 'regular'} fa-heart"></i> <span>${likeCount} Likes</span>`;
-                };
-
-                updateUI();
-
-                likeButton.addEventListener('click', () => {
-                    isLiked = !isLiked;
-                    likeCount += isLiked ? 1 : -1;
-                    
-                    if (!allFiles[fileId]) allFiles[fileId] = {};
-                    allFiles[fileId].liked = isLiked;
-                    localStorage.setItem("fileData", JSON.stringify(allFiles));
-
-                    updateUI();
-                    fetch(`/files/impression/${fileId}/${isLiked ? 'like' : 'dislike'}`).catch(console.error);
-                });
-            }
-
-            // --- Payment & Coupon Logic ---
-            const couponInput = document.getElementById('coupon-code');
-            const applyBtn = document.getElementById('apply-coupon-btn');
-            const totalAmountDisplay = document.getElementById('finalTotalPrice');
-            const mobileTotalAmountDisplay = document.getElementById('mobileFinalPrice');
-            const discountRowContainer = document.getElementById('dynamic-discount-row');
-            
-            const payButton = document.getElementById('razorpay-pay-btn');
-            const payButtonMobile = document.getElementById('razorpay-button-mobile');
-            const toast = document.getElementById('toast-msg');
-
-            let activeData = { total: <%=priceDetails.total%>, discount: 0 };
-
-            function showToast(message, type = 'success') {
-                toast.className = `show ${type}`;
-                toast.querySelector('.text').textContent = message;
-                toast.querySelector('i').className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
-                setTimeout(() => { toast.classList.remove('show'); }, 4000);
-            }
-
-            function renderSummary() {
-                if (activeData.discount > 0) {
-                    discountRowContainer.innerHTML = `
-                        <div class="invoice-row discount">
-                            <span><i class="fa-solid fa-tag me-2"></i> Promo Applied</span>
-                            <span>-₹${activeData.discount.toFixed(2)}</span>
-                        </div>
-                    `;
-                } else {
-                    discountRowContainer.innerHTML = '';
-                }
-                const formattedTotal = activeData.total.toFixed(2);
-                if(totalAmountDisplay) totalAmountDisplay.textContent = `${formattedTotal}`;
-                if(mobileTotalAmountDisplay) mobileTotalAmountDisplay.textContent = formattedTotal;
-            }
-
-            if(applyBtn && couponInput) {
-                applyBtn.addEventListener('click', async () => {
-                    const code = couponInput.value.trim();
-                    if(!code) return;
-                    
-                    applyBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-                    
-                    try {
-                        const res = await fetch(`/check/coupon?fileId=${currentFileId}&couponCode=${code}&quantity=1`);
-                        const data = await res.json();
-                        
-                        if(data.valid) {
-                            const p = data.priceDetails;
-                            activeData.total = p.total;
-                            activeData.discount = p.originalPrice - p.discountedPrice;
-                            renderSummary();
-                            showToast(`Code Applied! Saved ₹${activeData.discount.toFixed(2)}`, 'success');
-                            couponInput.disabled = true; 
-                            applyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-                            applyBtn.disabled = true;
-                        } else {
-                            showToast(data.message || "Invalid Code", 'error');
-                            applyBtn.textContent = "Apply";
-                        }
-                    } catch (e) { 
-                        showToast("Server Error", 'error');
-                        applyBtn.textContent = "Apply";
-                    }
-                });
-            }
-
-           const handlePayment = async function(e) {
-    e.preventDefault();
-    const btn = e.currentTarget;
-
-    // 1. Check if Razorpay is loaded
-    if (typeof Razorpay === 'undefined') {
-        showToast("Payment gateway is loading. Please wait a moment.", "error");
-        return;
-    }
-
-    const originalContent = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-    btn.disabled = true;
+/* ════════ COUPON ════════ */
+document.getElementById('couponApplyBtn')?.addEventListener('click', async () => {
+    const code = document.getElementById('couponInput').value.trim();
+    if (!code) return;
+    const btn = document.getElementById('couponApplyBtn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     try {
-        // 2. Create Order on Server
-        const res = await fetch('/create-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ 
-                fileId: currentFileId, 
-                price: activeData.total, 
-                filename: "<%- file.filename ? file.filename.replace(/"/g, '&quot;') : 'Resource' %>", 
-                couponCode: couponInput ? couponInput.value.trim() : '' 
-            })
-        });
-
-        const order = await res.json();
-        console.log('Order response:', res.status, order);
-
-        // 3. Handle Authentication Required
-        if (res.status === 401 || order.requiresLogin) {
-            window.location.href = order.loginRedirectUrl || '/login';
-            return;
+        const res  = await fetch(`/check/coupon?fileId=${FILE_ID}&couponCode=${code}&quantity=1`);
+        const data = await res.json();
+        if (data.valid) {
+            const p = data.priceDetails;
+            const saving = p.originalPrice - p.discountedPrice;
+            activeTotal  = p.total;
+            document.getElementById('finalTotal').textContent = `₹${p.total.toFixed(2)}`;
+            const mob = document.getElementById('mobileFinalPrice');
+            if (mob) mob.textContent = p.total.toFixed(0);
+            document.getElementById('discountRow').innerHTML = `
+                <div class="invoice-discount-row">
+                    <span><i class="fa-solid fa-tag" style="margin-right:6px;"></i>Promo Applied</span>
+                    <span>−₹${saving.toFixed(2)}</span>
+                </div>`;
+            showToast(`Code applied! Saved ₹${saving.toFixed(2)}`);
+            document.getElementById('couponInput').disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            btn.disabled  = true;
+        } else {
+            showToast(data.message || 'Invalid code.', 'error');
+            btn.textContent = 'Apply';
         }
-
-        // 4. Handle Order Creation Failure
-        if (!res.ok || !order.success) {
-            btn.innerHTML = originalContent;
-            btn.disabled = false;
-            showToast(order.error || "Failed to create order", "error");
-            return;
-        }
-
-        // 5. Razorpay Options Configuration
-        const options = {
-            key: order.key,
-            amount: order.amount,
-            currency: "INR",
-            name: "Vidyari",
-            image: "https://www.vidyari.com/images/logo.svg",
-            description: "<%- file.filename ? file.filename.replace(/"/g, '&quot;') : 'Resource' %>",
-            order_id: order.order_id,
-            theme: { color: "#0b57d0" }, // Premium Google Blue
-            handler: async function (response) {
-                // Payment successful at Razorpay - now verify on server
-                btn.innerHTML = '<i class="fa-solid fa-shield-check fa-fade"></i> Verifying...';
-                
-                try {
-                    const verifyRes = await fetch('/verify-payment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            fileId: currentFileId,
-                            totalprice: activeData.total
-                        })
-                    });
-
-                    const d = await verifyRes.json();
-
-                    if (verifyRes.status === 401 || d.requiresLogin) {
-                        window.location.href = d.loginRedirectUrl || '/login';
-                        return;
-                    }
-
-                    if (d.success) {
-                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
-                        btn.style.background = '#137333'; // Success Green
-                        btn.style.borderColor = '#137333';
-                        
-                        showToast("Payment Successful!", "success");
-                        
-                        // Redirect to download
-                        setTimeout(() => {
-                            window.location.href = d.downloadUrl;
-                        }, 1000);
-                    } else {
-                        throw new Error(d.message || "Verification failed");
-                    }
-                } catch (vErr) {
-                    showToast(vErr.message, "error");
-                    btn.innerHTML = originalContent;
-                    btn.disabled = false;
-                }
-            },
-            modal: {
-                ondismiss: function() {
-                    // Reset button if user closes the Razorpay window manually
-                    btn.disabled = false;
-                    btn.innerHTML = originalContent;
-                }
-            }
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.open();
-
-    } catch (err) {
-        console.error('Payment Initialization Error:', err);
-        btn.disabled = false;
-        btn.innerHTML = originalContent;
-        showToast("Connection error. Please check your internet.", "error");
+    } catch {
+        showToast('Server error.', 'error');
+        btn.textContent = 'Apply';
     }
-};
+});
 
-            if(payButton) payButton.addEventListener('click', handlePayment);
-            if(payButtonMobile) payButtonMobile.addEventListener('click', handlePayment);
+/* ════════ PAYMENT ════════ */
+async function initiatePayment(btn) {
+    if (typeof Razorpay === 'undefined') { showToast('Payment gateway loading, please wait.', 'error'); return; }
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing…';
+    btn.disabled  = true;
 
-            // Fetch Related Grid - Segregated by Author
-            const fetchRelatedFiles = async () => { 
+    try {
+        const res   = await fetch('/create-order', {
+            method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'include',
+            body: JSON.stringify({ fileId: FILE_ID, price: activeTotal, filename: FILE_NAME, couponCode: document.getElementById('couponInput')?.value.trim() || '' })
+        });
+        const order = await res.json();
+
+        if (res.status === 401 || order.requiresLogin) { window.location.href = order.loginRedirectUrl || '/login'; return; }
+        if (!res.ok || !order.success) { btn.innerHTML = orig; btn.disabled = false; showToast(order.error || 'Order failed.', 'error'); return; }
+
+        const rzp = new Razorpay({
+            key: order.key, amount: order.amount, currency: 'INR',
+            name: 'Vidyari', image: 'https://www.vidyari.com/images/logo.svg',
+            description: FILE_NAME, order_id: order.order_id,
+            theme: { color: '#1a56f0' },
+            handler: async function(resp) {
+                btn.innerHTML = '<i class="fa-solid fa-shield-check fa-fade"></i> Verifying…';
                 try {
-                    const response = await fetch(`/products/related?fileId=${currentFileId}`);
-                    if (!response.ok) throw new Error(`HTTP Error`);
-                    const relatedDocs = await response.json();
-                    
-                    if (relatedDocs && relatedDocs.length > 0) {
-                        // Group by Author
-                        const groupedDocs = {};
-                        relatedDocs.forEach(doc => {
-                            const author = doc.user || 'Vidyari Creators';
-                            if (!groupedDocs[author]) groupedDocs[author] = [];
-                            groupedDocs[author].push(doc);
-                        });
-
-                        let finalHTML = '';
-                        for (const [author, docs] of Object.entries(groupedDocs)) {
-                            const cardsHTML = docs.map(doc => renderFileCardJS(doc)).join('');
-                            finalHTML += `
-                                <div class="v-author-section">
-                                    <h3 class="v-author-section-title">
-                                        <i class="fa-regular fa-circle-user text-muted"></i> More from ${author}
-                                    </h3>
-                                    <div class="related-scroll-container">
-                                        ${cardsHTML}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                        relatedGrid.innerHTML = finalHTML;
-                    } else {
-                        relatedGrid.innerHTML = '<p class="text-muted ps-2" style="font-size: 0.95rem;">No related files found.</p>';
-                    }
-                } catch (error) {
-                    relatedGrid.innerHTML = '<p class="text-danger ps-2" style="font-size: 0.95rem;">Error loading related files.</p>';
-                }
-            };
-            fetchRelatedFiles();
-
-            // Load Reviews
-            const loadReviews = async () => {
-                const reviewsContent = document.getElementById('reviewsContent');
-                try {
-                    const response = await fetch(`/api/file-reviews/file/${currentFileId}`);
-                    if (!response.ok) throw new Error('Failed to load reviews');
-                    
-                    const data = await response.json();
-                    
-                    if (data.count === 0) {
-                        reviewsContent.innerHTML = `
-                            <div style="text-align: center; padding: 40px 20px;">
-                                <i class="fa-solid fa-star text-muted" style="font-size: 3rem; margin-bottom: 16px;"></i>
-                                <h4 style="color: var(--v-text-muted); margin-bottom: 8px;">No reviews yet</h4>
-                                <p style="color: var(--v-text-muted); margin-bottom: 24px;">Be the first to review this document!</p>
-                                <button class="v-btn-review" onclick="document.getElementById('reviewModal').classList.add('active')" style="width: auto; padding: 12px 24px;">
-                                    <i class="fa-regular fa-pen-to-square"></i> Write a Review
-                                </button>
-                            </div>
-                        `;
-                        return;
-                    }
-
-                    // Update the average rating in the specs card
-                    const avgRatingElement = document.querySelector('.spec-item .spec-label + div');
-                    if (avgRatingElement) {
-                        avgRatingElement.textContent = `${data.averageRating} / 5.0`;
-                    }
-
-                    // Generate stars HTML
-                    const generateStars = (rating) => {
-                        let stars = '';
-                        for (let i = 1; i <= 5; i++) {
-                            stars += `<i class="fa-solid fa-star ${i <= rating ? '' : 'empty'}"></i>`;
-                        }
-                        return stars;
-                    };
-
-                    // Generate distribution bars
-                    const maxCount = Math.max(...Object.values(data.ratingDistribution));
-                    const distributionHTML = Object.entries(data.ratingDistribution)
-                        .reverse()
-                        .map(([stars, count]) => {
-                            const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-                            return `
-                                <div class="v-dist-row">
-                                    <div class="v-dist-stars">${stars} star</div>
-                                    <div class="v-dist-bar-bg"><div class="v-dist-bar-fill" style="width: ${percentage}%;"></div></div>
-                                    <div class="v-dist-percent">${count}</div>
-                                </div>
-                            `;
-                        }).join('');
-
-                    // Generate reviews list
-                    const reviewsHTML = data.reviews.map(review => `
-                        <div class="v-review-card">
-                            <div class="v-review-header">
-                                <div class="v-reviewer-info">
-                                    <div class="v-reviewer-avatar">${(review.userId?.fullName || review.userId?.username || 'User').substring(0, 2).toUpperCase()}</div>
-                                    <div>
-                                        <div class="v-reviewer-name">${review.userId?.fullName || review.userId?.username || 'Anonymous'}</div>
-                                        <div class="v-review-date">${new Date(review.createdAt).toLocaleDateString()}</div>
-                                    </div>
-                                </div>
-                                <div class="v-review-stars">
-                                    ${generateStars(review.rating)}
-                                </div>
-                            </div>
-                            <div class="v-review-body">
-                                <strong>${review.title}</strong><br>
-                                ${review.reviewText}
-                            </div>
-                            <div class="v-review-actions">
-                                <span style="font-size: 0.85rem; color: var(--v-text-muted); margin-right: auto;">Was this helpful?</span>
-                                <button class="v-helpful-btn" onclick="markHelpful('${review._id}')">
-                                    <i class="fa-regular fa-thumbs-up"></i> Yes (${review.helpful || 0})
-                                </button>
-                                <button class="v-helpful-btn">
-                                    <i class="fa-regular fa-thumbs-down"></i> No
-                                </button>
-                            </div>
-                        </div>
-                    `).join('');
-
-                    reviewsContent.innerHTML = `
-                        <style>
-                            .v-reviews-dashboard { grid-template-columns: 300px 1fr; gap: 40px; background: var(--v-surface); border: 1px solid var(--v-border); border-radius: var(--v-radius-lg); padding: 32px; box-shadow: var(--v-shadow-card); margin-bottom: 40px; }
-                            .v-aggregate-score { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-                            .v-avg-number { font-family: var(--v-font-display); font-size: 4rem; font-weight: 700; line-height: 1; color: var(--v-text-main); margin-bottom: 8px; }
-                            .v-stars-display { color: var(--v-warning); font-size: 1.25rem; margin-bottom: 8px; display: flex; gap: 4px; }
-                            .v-total-count { color: var(--v-text-muted); font-size: 0.95rem; margin-bottom: 24px; }
-                            .v-btn-review { background: var(--v-primary); color: white; border: none; border-radius: var(--v-radius-pill); padding: 12px 24px; font-family: var(--v-font-sans); font-weight: 500; font-size: 1rem; cursor: pointer; transition: var(--v-transition); display: inline-flex; align-items: center; gap: 8px; width: 100%; }
-                            .v-btn-review:hover { background: var(--v-primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(11,87,208,0.2); }
-                            .v-distribution { display: flex; flex-direction: column; justify-content: center; gap: 12px; }
-                            .v-dist-row { display: flex; align-items: center; gap: 16px; font-size: 0.9rem; color: var(--v-text-muted); }
-                            .v-dist-stars { width: 50px; text-align: right; font-weight: 500;}
-                            .v-dist-bar-bg { flex: 1; height: 8px; background: var(--v-bg); border-radius: 4px; overflow: hidden; }
-                            .v-dist-bar-fill { height: 100%; background: var(--v-warning); border-radius: 4px; }
-                            .v-dist-percent { width: 40px; text-align: right; }
-                            .v-reviews-list { display: flex; flex-direction: column; gap: 24px; }
-                            .v-review-card { 
-                                background: var(--v-surface); 
-                                border: 1px solid var(--v-border); 
-                                border-radius: var(--v-radius-lg); 
-                                padding: 28px; 
-                                transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-                                position: relative;
-                                overflow: hidden;
-                                box-shadow: var(--v-shadow-subtle);
-                            }
-                            .v-review-card:hover { 
-                                border-color: rgba(251, 191, 36, 0.3); 
-                                box-shadow: 0 8px 32px rgba(251, 191, 36, 0.1);
-                                transform: translateY(-2px);
-                            }
-                            .v-review-card::before {
-                                content: '';
-                                position: absolute;
-                                top: 0;
-                                left: 0;
-                                right: 0;
-                                height: 3px;
-                                background: linear-gradient(90deg, transparent, #fbbf24, transparent);
-                                opacity: 0;
-                                transition: opacity 0.3s ease;
-                            }
-                            .v-review-card:hover::before {
-                                opacity: 1;
-                            }
-                            .v-review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-                            .v-reviewer-info { display: flex; align-items: center; gap: 12px; }
-                            .v-reviewer-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--v-primary-bg); color: var(--v-primary); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.1rem; }
-                            .v-reviewer-name { font-weight: 600; font-size: 1.05rem; color: var(--v-text-main); margin-bottom: 2px;}
-                            .v-review-date { font-size: 0.85rem; color: var(--v-text-muted); }
-                            .v-review-stars { color: var(--v-warning); font-size: 0.95rem; display: flex; gap: 2px;}
-                            .v-review-stars i.empty { color: var(--v-border); }
-                            .v-review-body { font-size: 1rem; line-height: 1.6; color: var(--v-text-main); margin-bottom: 16px; }
-                            .v-review-actions { display: flex; align-items: center; gap: 16px; border-top: 1px solid var(--v-border); padding-top: 16px; }
-                            .v-helpful-btn { background: transparent; border: 1px solid var(--v-border); color: var(--v-text-muted); border-radius: var(--v-radius-pill); padding: 6px 16px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--v-transition); display: flex; align-items: center; gap: 6px; }
-                            .v-helpful-btn:hover, .v-helpful-btn.active { background: var(--v-primary-bg); color: var(--v-primary); border-color: transparent; }
-                        </style>
-                        
-                        <div class="v-reviews-dashboard">
-                            <div class="v-aggregate-score">
-                                <div class="v-avg-number">${data.averageRating.toFixed(1)}</div>
-                                <div class="v-stars-display">
-                                    ${generateStars(Math.round(data.averageRating))}
-                                </div>
-                                <div class="v-total-count">Based on ${data.count} reviews</div>
-                                <button class="v-btn-review" onclick="document.getElementById('reviewModal').classList.add('active')">
-                                    <i class="fa-regular fa-pen-to-square"></i> Write a Review
-                                </button>
-                            </div>
-                            <div class="v-distribution">
-                                ${distributionHTML}
-                            </div>
-                        </div>
-                        
-                        <div class="v-reviews-list">
-                            ${reviewsHTML}
-                        </div>
-                    `;
-                } catch (error) {
-                    console.error('Error loading reviews:', error);
-                    reviewsContent.innerHTML = '<p class="text-danger">Error loading reviews. Please try again later.</p>';
-                }
-            };
-            loadReviews();
-
-            // Mark review as helpful
-            window.markHelpful = async (reviewId) => {
-                try {
-                    const response = await fetch(`/api/file-reviews/${reviewId}/helpful`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            // Add auth header if needed
-                        }
+                    const vRes  = await fetch('/verify-payment', {
+                        method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+                        body: JSON.stringify({ razorpay_order_id: resp.razorpay_order_id, razorpay_payment_id: resp.razorpay_payment_id, razorpay_signature: resp.razorpay_signature, fileId: FILE_ID, totalprice: activeTotal })
                     });
-                    if (response.ok) {
-                        loadReviews(); // Reload reviews to update counts
-                    }
-                } catch (error) {
-                    console.error('Error marking review helpful:', error);
-                }
-            };
+                    const vData = await vRes.json();
+                    if (vRes.status === 401 || vData.requiresLogin) { window.location.href = vData.loginRedirectUrl || '/login'; return; }
+                    if (vData.success) {
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
+                        btn.style.background = 'var(--green)';
+                        showToast('Payment successful!');
+                        setTimeout(() => window.location.href = vData.downloadUrl, 1200);
+                    } else throw new Error(vData.message || 'Verification failed.');
+                } catch (e) { showToast(e.message, 'error'); btn.innerHTML = orig; btn.disabled = false; btn.style.background = ''; }
+            },
+            modal: { ondismiss: () => { btn.innerHTML = orig; btn.disabled = false; } }
+        });
+        rzp.open();
+    } catch (e) { showToast('Connection error.', 'error'); btn.innerHTML = orig; btn.disabled = false; }
+}
 
-            // Review Modal Functions
-            window.closeReviewModal = () => {
-                const modal = document.getElementById('reviewModal');
-                modal.classList.remove('active');
-                setTimeout(() => {
-                    document.getElementById('reviewForm').reset();
-                }, 300);
-            };
+document.getElementById('payBtn')?.addEventListener('click', e => initiatePayment(e.currentTarget));
+document.getElementById('payBtnMobile')?.addEventListener('click', e => initiatePayment(document.getElementById('payBtn') || e.currentTarget));
 
-            // Handle review form submission
-            document.getElementById('reviewForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const rating = document.querySelector('input[name="rating"]:checked')?.value;
-                const title = document.getElementById('reviewTitle').value.trim();
-                const reviewText = document.getElementById('reviewText').value.trim();
-                const submitBtn = document.getElementById('submitReviewBtn');
+/* ════════ REVIEWS ════════ */
+async function loadReviews() {
+    const area = document.getElementById('reviewsArea');
+    try {
+        const res  = await fetch(`/api/file-reviews/file/${FILE_ID}`);
+        const data = await res.json();
 
-                if (!rating) {
-                    showToast('Please select a star rating.', 'error');
-                    // Shake animation for stars
-                    const starsContainer = document.querySelector('.v-interactive-stars');
-                    starsContainer.style.animation = 'shake 0.5s ease-in-out';
-                    setTimeout(() => starsContainer.style.animation = '', 500);
-                    return;
-                }
+        // Update rating display
+        if (data.averageRating) document.getElementById('avgRatingDisplay').textContent = `${data.averageRating.toFixed(1)} / 5.0`;
 
-                if (!title || !reviewText) {
-                    showToast('Please fill in all fields.', 'error');
-                    return;
-                }
+        const genStars = (n, cls='') => '★'.repeat(n) + `<span class="empty">${'★'.repeat(5-n)}</span>`;
 
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
-                submitBtn.disabled = true;
+        if (data.count === 0) {
+            area.innerHTML = `
+                <div class="no-reviews-state">
+                    <i class="fa-regular fa-star"></i>
+                    <p style="font-weight:500;color:var(--ink);margin-bottom:6px;">No reviews yet</p>
+                    <p>Be the first to share your experience!</p>
+                    <button class="write-review-btn" style="margin:16px auto 0;display:inline-flex;" onclick="openReviewModal()">
+                        <i class="fa-regular fa-pen-to-square"></i> Write a Review
+                    </button>
+                </div>`;
+            return;
+        }
 
-                try {
-                    const response = await fetch('/api/file-reviews/submit', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            fileId: currentFileId,
-                            rating: parseInt(rating),
-                            title,
-                            reviewText
-                        })
-                    });
+        // Rating distribution
+        const maxC = Math.max(...Object.values(data.ratingDistribution), 1);
+        const distHTML = [5,4,3,2,1].map(s => `
+            <div class="dist-row">
+                <span class="dist-label">${s} ★</span>
+                <div class="dist-track"><div class="dist-fill" style="width:${((data.ratingDistribution[s]||0)/maxC*100).toFixed(0)}%"></div></div>
+                <span class="dist-count">${data.ratingDistribution[s]||0}</span>
+            </div>`).join('');
 
-                    const data = await response.json();
+        const reviewsHTML = data.reviews.map(rv => `
+            <div class="review-item">
+                <div class="review-item-head">
+                    <div class="review-initials">${(rv.userId?.fullName||rv.userId?.username||'U').substring(0,2).toUpperCase()}</div>
+                    <div>
+                        <div class="review-user-name">${rv.userId?.fullName||rv.userId?.username||'Anonymous'}</div>
+                        <div class="review-user-date">${new Date(rv.createdAt).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'})}</div>
+                    </div>
+                    <div class="review-item-stars">${genStars(rv.rating)}</div>
+                </div>
+                <div class="review-item-title">${rv.title||''}</div>
+                <div class="review-item-body">${rv.reviewText||''}</div>
+                <div class="review-helpful-row">
+                    <span class="helpful-label">Was this helpful?</span>
+                    <button class="helpful-btn" onclick="markHelpful('${rv._id}',this)">
+                        <i class="fa-regular fa-thumbs-up"></i> ${rv.helpful||0}
+                    </button>
+                </div>
+            </div>`).join('');
 
-                    if (response.ok) {
-                        // Success animation with confetti
-                        submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
-                        submitBtn.style.background = 'var(--v-success)';
-                        submitBtn.style.animation = 'successPulse 0.6s ease-out';
-                        
-                        // Trigger confetti effect
-                        createConfetti();
-                        
-                        showToast('Review submitted successfully!', 'success');
-                        
-                        setTimeout(() => {
-                            closeReviewModal();
-                            loadReviews(); // Reload reviews
-                        }, 2000);
-                    } else {
-                        showToast(data.message || 'Failed to submit review.', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error submitting review:', error);
-                    showToast('Failed to submit review. Please try again.', 'error');
-                } finally {
-                    if (!response?.ok) {
-                        submitBtn.innerHTML = 'Submit Review';
-                        submitBtn.disabled = false;
-                        submitBtn.style.background = '';
-                        submitBtn.style.animation = '';
-                    }
-                }
-            });
+        area.innerHTML = `
+            <div class="rating-summary-block">
+                <div>
+                    <div class="rating-num">${data.averageRating.toFixed(1)}</div>
+                    <div class="rating-stars-row">${genStars(Math.round(data.averageRating))}</div>
+                    <div class="rating-count-label">${data.count} reviews</div>
+                </div>
+                <div class="rating-dist">${distHTML}</div>
+            </div>
+            <button class="write-review-btn" onclick="openReviewModal()">
+                <i class="fa-regular fa-pen-to-square"></i> Write a Review
+            </button>
+            <div class="review-list">${reviewsHTML}</div>`;
+    } catch {
+        area.innerHTML = '<p style="color:var(--ink-3);font-size:0.875rem;">Unable to load reviews.</p>';
+    }
+}
 
-            // Close modal on outside click
-            document.getElementById('reviewModal').addEventListener('click', (e) => {
-                if (e.target.id === 'reviewModal') {
-                    closeReviewModal();
-                }
-            });
+async function markHelpful(id, btn) {
+    try {
+        const res = await fetch(`/api/file-reviews/${id}/helpful`, { method:'POST', headers:{'Content-Type':'application/json'} });
+        if (res.ok) { btn.classList.add('active'); loadReviews(); }
+    } catch {}
+}
 
-            // World's Best Confetti Effect Function
-            function createConfetti() {
-                const colors = ['#fbbf24', '#f59e0b', '#d97706', '#b45309', '#92400e', '#78350f', '#f97316', '#ea580c', '#dc2626', '#b91c1c', '#0b57d0', '#0842a0', '#137333', '#0f5132', '#7c3aed', '#6d28d9'];
-                const confettiCount = 150;
-                const container = document.body;
-                
-                for (let i = 0; i < confettiCount; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti-piece';
-                    confetti.style.left = Math.random() * 100 + 'vw';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDelay = Math.random() * 3 + 's';
-                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    
-                    // Random shapes for premium effect
-                    const shapes = ['circle', 'square', 'triangle'];
-                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
-                    
-                    if (shape === 'circle') {
-                        confetti.style.borderRadius = '50%';
-                        confetti.style.width = confetti.style.height = Math.random() * 12 + 4 + 'px';
-                    } else if (shape === 'square') {
-                        confetti.style.width = confetti.style.height = Math.random() * 10 + 4 + 'px';
-                    } else {
-                        confetti.style.width = '0';
-                        confetti.style.height = '0';
-                        confetti.style.borderLeft = Math.random() * 8 + 4 + 'px solid transparent';
-                        confetti.style.borderRight = Math.random() * 8 + 4 + 'px solid transparent';
-                        confetti.style.borderBottom = Math.random() * 12 + 6 + 'px solid ' + confetti.style.backgroundColor;
-                        confetti.style.backgroundColor = 'transparent';
-                    }
-                    
-                    container.appendChild(confetti);
-                    
-                    setTimeout(() => {
-                        if (confetti.parentNode) {
-                            confetti.parentNode.removeChild(confetti);
-                        }
-                    }, 5000);
-                }
-            }
-        }); 
-    </script>
+document.getElementById('reviewForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const rating = document.querySelector('input[name="rating"]:checked')?.value;
+    if (!rating) { showToast('Please select a rating.', 'error'); return; }
+    const title = document.getElementById('rvTitle').value.trim();
+    const text  = document.getElementById('rvText').value.trim();
+    const btn   = document.getElementById('rvSubmitBtn');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting…';
+    btn.disabled  = true;
+    try {
+        const res  = await fetch('/api/file-reviews/submit', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ fileId: FILE_ID, rating: +rating, title, reviewText: text })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Submitted!';
+            btn.style.background = 'var(--green)';
+            showToast('Review submitted! Thank you.');
+            setTimeout(() => { closeReviewModal(); loadReviews(); }, 1500);
+        } else {
+            showToast(data.message || 'Submission failed.', 'error');
+            btn.innerHTML = 'Submit Review'; btn.disabled = false; btn.style.background = '';
+        }
+    } catch { showToast('Error. Try again.', 'error'); btn.innerHTML = 'Submit Review'; btn.disabled = false; }
+});
+
+/* ════════ RELATED FILES ════════ */
+async function loadRelated() {
+    const area = document.getElementById('relatedArea');
+    try {
+        const res  = await fetch(`/products/related?fileId=${FILE_ID}`);
+        if (!res.ok) throw new Error();
+        const docs = await res.json();
+        if (!docs?.length) { area.innerHTML = '<p style="color:var(--ink-3);font-size:0.875rem;">No related files found.</p>'; return; }
+
+        const groups = {};
+        docs.forEach(d => { const a = d.user||'Vidyari'; if (!groups[a]) groups[a]=[]; groups[a].push(d); });
+
+        area.innerHTML = Object.entries(groups).map(([author, files]) => `
+            <div class="related-author-block">
+                <div class="related-author-label">More from ${author}</div>
+                <div class="related-scroll">
+                    ${files.map(f => `
+                        <a href="/file/${f.slug||f._id}/${f._id}" class="related-item">
+                            <div class="related-item-thumb">
+                                <img src="${f.previewUrl||'/images/File_Demo.svg'}" alt="${f.filename}" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
+                            </div>
+                            <div class="related-item-name">${f.filename}</div>
+                            <div class="related-item-author">${f.user||'Vidyari'}</div>
+                            <div class="related-item-price ${f.price==0?'free':''}">${f.price==0?'Free':'₹'+f.price}</div>
+                        </a>`).join('')}
+                </div>
+            </div>`).join('');
+    } catch { area.innerHTML = '<p style="color:var(--ink-3);font-size:0.875rem;">Unable to load suggestions.</p>'; }
+}
+
+/* ════════ ADSENSE ════════ */
+try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch {}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => { loadReviews(); loadRelated(); });
+</script>
 </body>
 </html>
