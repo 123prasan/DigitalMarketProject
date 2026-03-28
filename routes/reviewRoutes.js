@@ -14,6 +14,11 @@ const authenticateJWT = require("./authentication/jwtAuth");
  */
 router.post("/submit", authenticateJWT, async (req, res) => {
   try {
+    // Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: "You must be logged in to submit a review" });
+    }
+
     const { courseId, rating, title, reviewText } = req.body;
     const userId = req.user._id;
 
@@ -117,6 +122,11 @@ router.get("/course/:courseId", async (req, res) => {
  */
 router.post("/:reviewId/helpful", authenticateJWT, async (req, res) => {
   try {
+    // Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: "You must be logged in to mark reviews as helpful" });
+    }
+
     const { reviewId } = req.params;
     const userId = req.user._id;
 
@@ -166,6 +176,11 @@ router.post("/:reviewId/helpful", authenticateJWT, async (req, res) => {
  */
 router.delete("/:reviewId", authenticateJWT, async (req, res) => {
   try {
+    // Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ message: "You must be logged in to delete reviews" });
+    }
+
     const { reviewId } = req.params;
     const userId = req.user._id;
 

@@ -273,9 +273,13 @@
                     // Save JWT if needed
                     localStorage.setItem("token", data.token);
 
-                    // Redirect to dashboard
+                    // Get returnUrl from query parameter
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const returnUrl = urlParams.get('returnUrl') || '/';
+
+                    // Redirect to original page or dashboard
                     setTimeout(() => {
-                        window.location.href = "/";
+                        window.location.href = returnUrl;
                     }, 1500);
                 } else {
                     showToast(false, data.message); // error toast

@@ -1343,64 +1343,125 @@
                 });
             }
 
-            const handlePayment = async function(e) {
-                e.preventDefault();
-                const btn = e.currentTarget;
-                
-                const originalContent = btn.innerHTML;
-                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-                btn.disabled = true;
+           const handlePayment = async function(e) {
+    e.preventDefault();
+    const btn = e.currentTarget;
+
+    // 1. Check if Razorpay is loaded
+    if (typeof Razorpay === 'undefined') {
+        showToast("Payment gateway is loading. Please wait a moment.", "error");
+        return;
+    }
+
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+    btn.disabled = true;
+
+    try {
+        // 2. Create Order on Server
+        const res = await fetch('/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ 
+                fileId: currentFileId, 
+                price: activeData.total, 
+                filename: "<%- file.filename ? file.filename.replace(/"/g, '&quot;') : 'Resource' %>", 
+                couponCode: couponInput ? couponInput.value.trim() : '' 
+            })
+        });
+
+        const order = await res.json();
+        console.log('Order response:', res.status, order);
+
+        // 3. Handle Authentication Required
+        if (res.status === 401 || order.requiresLogin) {
+            window.location.href = order.loginRedirectUrl || '/login';
+            return;
+        }
+
+        // 4. Handle Order Creation Failure
+        if (!res.ok || !order.success) {
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+            showToast(order.error || "Failed to create order", "error");
+            return;
+        }
+
+        // 5. Razorpay Options Configuration
+        const options = {
+            key: order.key,
+            amount: order.amount,
+            currency: "INR",
+            name: "Vidyari",
+            image: "https://www.vidyari.com/images/logo.svg",
+            description: "<%- file.filename ? file.filename.replace(/"/g, '&quot;') : 'Resource' %>",
+            order_id: order.order_id,
+            theme: { color: "#0b57d0" }, // Premium Google Blue
+            handler: async function (response) {
+                // Payment successful at Razorpay - now verify on server
+                btn.innerHTML = '<i class="fa-solid fa-shield-check fa-fade"></i> Verifying...';
                 
                 try {
-                    const res = await fetch('/create-order', {
+                    const verifyRes = await fetch('/verify-payment', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ fileId: currentFileId, price: activeData.total, filename: "<%- file.filename ? file.filename.replace(/"/g, '&quot;') : 'Resource' %>", couponCode: couponInput ? couponInput.value.trim() : '' })
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            fileId: currentFileId,
+                            totalprice: activeData.total
+                        })
                     });
-                    const order = await res.json();
-                    
-                    const options = {
-                        key: order.key,
-                        amount: order.amount,
-                        name: "Vidyari",
-                        image:"https://www.vidyari.com/images/logo.svg",
-                        description: "<%- file.filename ? file.filename.replace(/"/g, '&quot;') : 'Resource' %>",
-                        order_id: order.order_id,
-                        theme: { color: "#0b57d0" }, // Google Blue Theme
-                        handler: async function (response) {
-                            btn.innerHTML = '<i class="fa-solid fa-shield-check"></i> Verifying...';
-                            const verify = await fetch('/verify-payment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_signature: response.razorpay_signature,
-                                    fileId: currentFileId,
-                                    totalprice: activeData.total
-                                })
-                            });
-                            const d = await verify.json();
-                            if(d.success) {
-                                btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
-                                btn.style.background = 'var(--v-success)';
-                                window.location.href = d.downloadUrl;
-                            }
-                        },
-                        modal: { 
-                            ondismiss: () => { 
-                                btn.disabled = false; 
-                                btn.innerHTML = originalContent; 
-                            } 
-                        }
-                    };
-                    new Razorpay(options).open();
-                } catch (err) { 
-                    showToast("Failed to initialize gateway.", "error");
-                    btn.disabled = false; 
+
+                    const d = await verifyRes.json();
+
+                    if (verifyRes.status === 401 || d.requiresLogin) {
+                        window.location.href = d.loginRedirectUrl || '/login';
+                        return;
+                    }
+
+                    if (d.success) {
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
+                        btn.style.background = '#137333'; // Success Green
+                        btn.style.borderColor = '#137333';
+                        
+                        showToast("Payment Successful!", "success");
+                        
+                        // Redirect to download
+                        setTimeout(() => {
+                            window.location.href = d.downloadUrl;
+                        }, 1000);
+                    } else {
+                        throw new Error(d.message || "Verification failed");
+                    }
+                } catch (vErr) {
+                    showToast(vErr.message, "error");
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }
+            },
+            modal: {
+                ondismiss: function() {
+                    // Reset button if user closes the Razorpay window manually
+                    btn.disabled = false;
                     btn.innerHTML = originalContent;
                 }
-            };
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+
+    } catch (err) {
+        console.error('Payment Initialization Error:', err);
+        btn.disabled = false;
+        btn.innerHTML = originalContent;
+        showToast("Connection error. Please check your internet.", "error");
+    }
+};
 
             if(payButton) payButton.addEventListener('click', handlePayment);
             if(payButtonMobile) payButtonMobile.addEventListener('click', handlePayment);

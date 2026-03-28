@@ -507,4 +507,59 @@ async function handleOrderPaid(orderData) {
   }
 }
 
+/**
+ * POST /api/enroll/free
+ * Enroll student in a free course
+ * Body: { courseId }
+ * Auth: Required
+ */
+router.post("/enroll/free", authenticateJWT, requireAuth, async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    const studentId = req.user._id;
+
+    // Validate input
+    if (!courseId) {
+      return res.status(400).json({ success: false, error: "courseId is required" });
+    }
+
+    // Fetch course
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ success: false, error: "Course not found" });
+    }
+
+    // Verify course is free
+    if (course.price && course.price > 0) {
+      return res.status(400).json({ success: false, error: "This course is not free" });
+    }
+
+    // Check if user already enrolled
+    const enrollmentCheck = await Course.findOne({
+      _id: courseId,
+      enrolledStudents: studentId,
+    });
+    if (enrollmentCheck) {
+      return res.status(400).json({ success: false, error: "You are already enrolled in this course" });
+    }
+
+    // Enroll student
+    if (!course.enrolledStudents.includes(studentId)) {
+      course.enrolledStudents.push(studentId);
+      course.enrollCount = (course.enrollCount || 0) + 1;
+      await course.save();
+    }
+
+    return res.json({
+      success: true,
+      message: "Successfully enrolled in the course",
+      courseId: courseId,
+      redirect: "/my-courses"
+    });
+  } catch (error) {
+    console.error("Error enrolling in free course:", error);
+    res.status(500).json({ success: false, error: "Enrollment failed", details: error.message });
+  }
+});
+
 module.exports = router;

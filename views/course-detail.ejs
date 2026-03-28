@@ -1,1037 +1,700 @@
+<%-include('header')%>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Details | Premium Learning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Course Details | Vidyari</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <%- include('header.ejs') %>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <style>
+        /* ============================================================
+           VIDYARI COURSE DETAIL — LUXURY EDITORIAL WHITE THEME
+           ============================================================ */
         :root {
-            /* Clean SaaS Light Theme Palette */
-            --bg:           #f8fafc;
-            --surface:      #ffffff;
-            --surface-hover:#f1f5f9;
-            --border:       #e2e8f0;
-            --text-main:    #0f172a;
-            --text-muted:   #475569;
-            --text-dim:     #94a3b8;
+            --ink:        #0a0a0b;
+            --ink-2:      #3f424a;
+            --ink-3:      #6b707d;
+            --ink-4:      #a2a6b0;
+            --rule:       #e2e4e9;
+            --rule-light: #f1f3f7;
+            --surface:    #ffffff;
+            --bg:         #fcfcfd;
             
-            --accent-blue:  #3b82f6;
-            --accent-hover: #2563eb;
-            --accent-light: #eff6ff;
-            --warning-star: #fbbf24;
-            --success:      #10b981;
+            /* Professional Trust Blue */
+            --accent:     #0F4C81; 
+            --accent-2:   #F0F4F8;
+            --accent-ink: #0A365C;
             
-            --radius-lg:    24px;
-            --radius-md:    16px;
-            --radius-sm:    12px;
-            
-            --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.05);
-            --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-            --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            --green:      #0b7a45;
+            --green-bg:   #edfaf3;
+            --amber:      #e8811f;
+
+            --serif:  'DM Serif Display', Georgia, serif;
+            --sans:   'DM Sans', system-ui, sans-serif;
+
+            --r-sm:   6px;
+            --r-md:   12px;
+            --r-lg:   16px;
+            --r-xl:   24px;
+            --r-pill: 9999px;
+
+            --shadow-sm: 0 2px 8px rgba(10,10,11,0.04);
+            --shadow-md: 0 8px 24px rgba(10,10,11,0.08);
+            --shadow-card: 0 0 0 1px rgba(10,10,11,0.05), 0 4px 20px rgba(10,10,11,0.04);
+            --shadow-float: 0 -4px 24px rgba(10,10,11,0.12);
+
+            --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; min-width: 0; }
+        html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
 
         body {
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--ink);
             overflow-x: hidden;
-            min-height: 100vh;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
+            /* Padding for mobile sticky bar */
+            padding-bottom: 0; 
         }
 
-        /* Container */
-        .container {
+        /* ── CONTAINER ── */
+        .cd-wrap {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 0 2rem;
-            position: relative;
-            z-index: 1;
+            padding: 0 clamp(16px, 4vw, 40px);
         }
 
-        /* Back Button */
-        .back-button {
-            margin: 2rem 0;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 0.6rem 1.25rem;
-            font-weight: 500;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text-muted);
-            box-shadow: var(--shadow-sm);
-            text-decoration: none;
+        /* ── BACK BUTTON ── */
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.9rem; font-weight: 600; color: var(--ink-3);
+            text-decoration: none; padding: 12px 20px;
+            background: var(--surface); border: 1px solid var(--rule);
+            border-radius: var(--r-pill); margin: 32px 0 24px;
+            transition: all 0.2s var(--ease-out); box-shadow: var(--shadow-sm);
         }
-        .back-button:hover {
-            transform: translateX(-4px);
-            color: var(--accent-blue);
-            border-color: var(--border);
-            box-shadow: var(--shadow-md);
+        .back-btn:hover {
+            color: var(--accent); border-color: var(--accent);
+            transform: translateX(-4px); box-shadow: var(--shadow-md);
         }
 
-        /* Main Layout */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 2.5rem;
-            padding-bottom: 4rem;
+        /* ── MAIN LAYOUT ── */
+        .cd-layout {
+            display: grid; grid-template-columns: 1fr 380px; gap: 40px;
+            padding-bottom: 80px; align-items: start;
         }
 
-        /* Hero Section */
-        .hero-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
+        /* ── VIDEO PLAYER ── */
+        .player-shell {
+            background: var(--ink); border-radius: var(--r-xl); overflow: hidden;
+            position: relative; margin-bottom: 32px; box-shadow: var(--shadow-md);
+            aspect-ratio: 16 / 9; border: 1px solid var(--rule);
         }
 
-        .video-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px; /* Set a maximum width for the video container */
-            margin: 0 auto; /* Center the video container */
-            padding-top: 56.25%; /* Maintain 16:9 aspect ratio */
-            background: #000;
-            cursor: pointer;
-            overflow: hidden;
-            border-radius: var(--radius-lg); /* Add rounded corners */
-        }
-        .video-preview {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: contain; /* Ensure the video maintains its aspect ratio */
-            background-color: black; /* Add black background for letterboxing */
-            opacity: 1; /* Ensure full visibility */
-            transition: opacity 0.3s;
-        }
-        .video-container:hover .video-preview { opacity: 0.7; }
+        .player-thumb { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .player-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out); }
+        .player-thumb:hover img { transform: scale(1.04); }
+        .player-thumb-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,11,0.8) 0%, rgba(10,10,11,0.2) 60%, transparent 100%); }
 
-        .play-button {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 72px; height: 72px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(8px);
-            border-radius: 50%;
+        .play-ring {
+            position: absolute; width: 80px; height: 80px; border-radius: 50%;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: all 0.3s var(--ease-out);
         }
-        .video-container:hover .play-button { transform: translate(-50%, -50%) scale(1.1); background: #fff; }
-        .play-icon {
-            width: 0; height: 0;
-            border-left: 22px solid var(--accent-blue);
-            border-top: 14px solid transparent;
-            border-bottom: 14px solid transparent;
-            margin-left: 6px;
+        .player-thumb:hover .play-ring { transform: scale(1.1); background: white; box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+        .play-ring i { color: var(--accent); font-size: 1.5rem; margin-left: 4px; }
+
+        .player-label {
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.9);
+            letter-spacing: 0.08em; text-transform: uppercase;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .player-label::before, .player-label::after { content: ''; width: 40px; height: 1px; background: rgba(255,255,255,0.4); }
+
+        .player-shell iframe, .player-shell video { position: absolute; inset: 0; width: 100%; height: 100%; border: none; border-radius: var(--r-xl); }
+        .player-shell.playing .player-thumb { display: none; }
+
+        /* ── COURSE HEADER CARD ── */
+        .course-header-card {
+            background: var(--surface); border: 1px solid var(--rule);
+            border-radius: var(--r-xl); padding: 40px; margin-bottom: 32px;
+            box-shadow: var(--shadow-card);
         }
 
-        .course-header { padding: 2.5rem; }
-
-        .course-badge {
-            display: inline-block;
-            background: var(--accent-light);
-            color: var(--accent-blue);
-            border-radius: 20px;
-            padding: 0.4rem 1rem;
-            font-weight: 700;
-            font-size: 0.8rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .course-eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--accent); background: var(--accent-2);
+            border: 1px solid rgba(15,76,129,0.15); padding: 6px 14px;
+            border-radius: var(--r-pill); margin-bottom: 20px;
         }
 
         .course-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-            color: var(--text-main);
+            font-family: var(--serif); font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            font-weight: 400; line-height: 1.15; color: var(--ink); margin-bottom: 16px;
         }
 
-        .course-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            line-height: 1.6;
+        .course-desc {
+            font-size: 1.05rem; font-weight: 400; color: var(--ink-2);
+            line-height: 1.6; margin-bottom: 28px; max-width: 720px;
         }
 
-        .course-meta {
-            display: flex; flex-wrap: wrap; gap: 1.5rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+        .course-meta-row {
+            display: flex; flex-wrap: wrap; gap: 24px; padding: 24px 0;
+            border-top: 1px solid var(--rule-light); border-bottom: 1px solid var(--rule-light);
+            margin-bottom: 28px;
         }
-        .meta-item { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; color: var(--text-muted); font-size: 0.95rem; }
-        .meta-item .material-icons { color: var(--accent-blue); font-size: 20px; }
-        .rating-stars { color: var(--warning-star); display: flex; gap: 0.1rem; }
+        .meta-chip { display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--ink-2); }
+        .meta-chip i { color: var(--accent); font-size: 1rem; }
+        .meta-chip .stars { color: var(--amber); letter-spacing: -1px; font-size: 0.9rem; }
+        .meta-chip strong { font-weight: 700; color: var(--ink); }
 
-        .instructor-info { display: flex; align-items: center; gap: 1rem; margin-top: 2rem; }
-        .instructor-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
-        .instructor-details h4 { font-weight: 600; color: var(--text-main); font-size: 1rem; }
-        .instructor-details p { color: var(--text-muted); font-size: 0.85rem; }
+        .instructor-link {
+            display: flex; align-items: center; gap: 16px; padding: 16px 24px;
+            background: var(--rule-light); border: 1px solid var(--rule);
+            border-radius: var(--r-lg); text-decoration: none; color: inherit;
+            transition: all 0.2s var(--ease-out);
+        }
+        .instructor-link:hover { border-color: var(--accent); background: var(--surface); box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+        .instructor-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,0.1); flex-shrink: 0; }
+        .instructor-name { font-family: var(--serif); font-size: 1.15rem; color: var(--ink); }
+        .instructor-role { font-size: 0.85rem; color: var(--ink-3); margin-top: 2px; }
 
-        /* Content Sections */
-        .content-section {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem;
-            box-shadow: var(--shadow-md);
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
+        /* ── CONTENT SECTIONS ── */
+        .cd-section {
+            background: var(--surface); border: 1px solid var(--rule);
+            border-radius: var(--r-xl); padding: 40px; margin-bottom: 32px;
+            box-shadow: var(--shadow-card);
         }
-        .section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-main); }
-        .section-subtitle { font-size: 1.2rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text-main); }
 
-        /* What You'll Learn */
-        .learning-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
-        .learning-item {
-            display: flex; gap: 0.75rem; padding: 1rem;
-            background: var(--bg); border-radius: var(--radius-sm);
-            border: 1px solid var(--border); transition: all 0.2s;
-            align-items: flex-start;
+        .cd-section-title {
+            font-family: var(--serif); font-size: 1.6rem; font-weight: 400;
+            color: var(--ink); margin-bottom: 28px; padding-bottom: 16px;
+            border-bottom: 1px solid var(--rule-light);
         }
-        .learning-item:hover { border-color: var(--accent-blue); box-shadow: var(--shadow-sm); }
-        .learning-item .material-icons { color: var(--success); font-size: 20px; flex-shrink: 0; margin-top: 2px;}
-        .learning-item span { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;}
 
-        /* Requirements */
-        .requirements-list { list-style: none; }
-        .requirements-list li {
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; gap: 1rem;
-            color: var(--text-muted); font-size: 0.95rem;
+        /* What you'll learn */
+        .learn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+        .learn-item {
+            display: flex; align-items: flex-start; gap: 12px; padding: 16px;
+            background: var(--bg); border: 1px solid var(--rule);
+            border-radius: var(--r-md); font-size: 0.95rem; color: var(--ink-2);
+            line-height: 1.5; transition: all 0.2s;
         }
-        .requirements-list li:last-child { border-bottom: none; }
-        .requirements-list li::before {
-            content: '•'; color: var(--accent-blue); font-size: 1.5rem; font-weight: bold; line-height: 0;
-        }
+        .learn-item:hover { border-color: rgba(15,76,129,0.3); background: var(--accent-2); }
+        .learn-item i { color: var(--green); font-size: 1.1rem; margin-top: 2px; flex-shrink: 0; }
 
         /* Curriculum */
-        .curriculum-item {
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            margin-bottom: 1rem;
-            background: var(--surface);
-            overflow: hidden;
-            transition: all 0.2s;
-        }
-        .curriculum-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1.25rem 1.5rem; cursor: pointer; background: var(--bg); transition: background 0.2s;
-        }
-        .curriculum-header:hover { background: var(--surface-hover); }
-        .curriculum-title { font-weight: 600; font-size: 1.05rem; display: flex; align-items: center; gap: 1rem; color: var(--text-main); }
-        .curriculum-meta { color: var(--text-dim); font-size: 0.9rem; }
-        .curriculum-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-        .curriculum-item.active .curriculum-content { max-height: 1500px; }
-        .curriculum-item.active .expand-icon { transform: rotate(180deg); }
-        .expand-icon { transition: transform 0.3s; color: var(--text-dim); }
+        .curriculum-summary { font-size: 0.95rem; color: var(--ink-3); margin-bottom: 24px; font-weight: 500; }
+        .module-item { border: 1px solid var(--rule); border-radius: var(--r-lg); margin-bottom: 12px; overflow: hidden; transition: box-shadow 0.2s; }
+        .module-item.open { box-shadow: var(--shadow-sm); border-color: var(--ink-4); }
 
-        .lesson-list { padding: 0.5rem 1.5rem 1.5rem; }
-        .lesson-item {
+        .module-header {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0.85rem 0; border-bottom: 1px solid var(--border);
+            padding: 20px 24px; cursor: pointer; background: var(--rule-light);
+            transition: background 0.2s; user-select: none;
         }
-        .lesson-item:last-child { border-bottom: none; padding-bottom: 0; }
-        .lesson-info { display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); font-size: 0.95rem;}
-        .lesson-icon { color: var(--accent-blue); font-size: 18px; }
-        .lesson-duration { color: var(--text-dim); font-size: 0.85rem; }
+        .module-header:hover { background: #eef0f4; }
+        .module-item.open .module-header { background: var(--surface); border-bottom: 1px solid var(--rule); }
 
-        /* Sidebar & Pricing */
-        .sidebar { position: sticky; top: 2rem; height: fit-content; }
+        .module-title { font-size: 1rem; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 14px; }
+        .module-num {
+            width: 32px; height: 32px; border-radius: 50%; background: var(--surface);
+            border: 1px solid var(--rule); font-size: 0.85rem; font-weight: 700;
+            color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .module-item.open .module-num { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .module-meta { display: flex; align-items: center; gap: 16px; font-size: 0.9rem; color: var(--ink-3); font-weight: 500; }
+        .module-chevron {
+            width: 32px; height: 32px; border-radius: 50%; background: var(--surface);
+            border: 1px solid var(--rule); display: flex; align-items: center; justify-content: center;
+            color: var(--ink-3); font-size: 0.85rem; transition: all 0.3s var(--ease-out); flex-shrink: 0;
+        }
+        .module-item.open .module-chevron { transform: rotate(180deg); background: var(--accent); color: white; border-color: var(--accent); }
+
+        .module-body { max-height: 0; overflow: hidden; transition: max-height 0.4s var(--ease-out); background: var(--surface); }
+        .module-item.open .module-body { max-height: 2000px; }
+        
+        .lesson-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 24px; border-bottom: 1px solid var(--rule-light);
+        }
+        .lesson-row:last-child { border-bottom: none; }
+        .lesson-left { display: flex; align-items: center; gap: 12px; font-size: 0.95rem; color: var(--ink-2); font-weight: 500; }
+        .lesson-left i { color: var(--accent); font-size: 1rem; opacity: 0.8; }
+        .lesson-dur { font-size: 0.85rem; color: var(--ink-4); font-weight: 600; }
+
+        /* ── SIDEBAR (DESKTOP) ── */
+        .cd-sidebar { position: sticky; top: 32px; }
+
         .price-card {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            box-shadow: var(--shadow-float);
-            border: 1px solid var(--border);
-            margin-bottom: 2rem;
+            background: var(--surface); border: 1px solid var(--rule);
+            border-radius: var(--r-xl); overflow: hidden; box-shadow: var(--shadow-md);
+            margin-bottom: 24px;
         }
-        .price-header { text-align: center; padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-        .price-current { font-size: 2.8rem; font-weight: 700; color: var(--text-main); line-height: 1;}
-        .price-original { font-size: 1.1rem; color: var(--text-dim); text-decoration: line-through; margin-top: 0.25rem; }
+        .price-card-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-bottom: 1px solid var(--rule); display: block; }
+        .price-card-body { padding: 32px; }
+
+        .price-current { font-family: var(--serif); font-size: 2.8rem; color: var(--ink); line-height: 1; margin-bottom: 8px; }
+        .price-current.free { color: var(--green); font-size: 2.2rem; }
+        .price-was { font-size: 1rem; color: var(--ink-4); text-decoration: line-through; font-weight: 500; }
+        .price-discount {
+            display: inline-block; background: #FEF3C7; color: #92400E;
+            font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: var(--r-pill); margin-left: 12px; vertical-align: middle;
+        }
+
+        .enroll-btn {
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-family: var(--sans); font-size: 1.1rem; font-weight: 700; color: white;
+            background: var(--accent); border: none; border-radius: var(--r-lg);
+            padding: 18px; cursor: pointer; margin: 24px 0 16px;
+            transition: all 0.2s var(--ease-out); box-shadow: 0 4px 16px rgba(15,76,129,0.3);
+        }
+        .enroll-btn:hover { background: var(--accent-ink); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,76,129,0.4); }
+        .enroll-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .guarantee-note { text-align: center; font-size: 0.85rem; color: var(--ink-3); font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; }
+        .guarantee-note i { color: var(--green); font-size: 1rem; }
+
+        /* ── STICKY MOBILE ACTION BAR ── */
+        .mobile-enroll-bar {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--surface); padding: 16px 24px;
+            border-top: 1px solid var(--rule); box-shadow: var(--shadow-float);
+            z-index: 100; align-items: center; justify-content: space-between;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        }
+        .mobile-enroll-price { font-family: var(--serif); font-size: 1.8rem; font-weight: 600; color: var(--ink); line-height: 1; }
+        .mobile-enroll-price.free { color: var(--green); }
+        .mobile-enroll-was { font-size: 0.85rem; color: var(--ink-4); text-decoration: line-through; font-family: var(--sans); font-weight: 500; display: block; }
         
-        .discount-badge-large {
-            display: inline-block; background: #fef3c7; color: #b45309;
-            border-radius: 6px; padding: 0.25rem 0.75rem; font-weight: 700; font-size: 0.85rem; margin-top: 0.75rem;
+        .mobile-enroll-btn {
+            background: var(--accent); color: white; border: none;
+            padding: 14px 32px; border-radius: var(--r-pill); font-size: 1rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(15,76,129,0.3);
         }
+        .mobile-enroll-btn:active { transform: scale(0.98); }
+        .mobile-enroll-btn:disabled { opacity: 0.7; pointer-events: none; }
 
-        .enroll-button {
-            width: 100%;
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 1.1rem;
-            font-weight: 600;
-            font-size: 1.05rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-            margin: 0.5rem 0 1.5rem;
+        /* ── SUCCESS MODAL ── */
+        .modal-veil {
+            position: fixed; inset: 0; background: rgba(10,10,11,0.6);
+            backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999;
         }
-        .enroll-button:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35); }
+        .modal-veil.show { display: flex; animation: fadeVeil 0.3s ease; }
+        @keyframes fadeVeil { from { opacity: 0; } to { opacity: 1; } }
 
-        .guarantee-text { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
-        .includes-list { list-style: none; }
-        .includes-list li { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; color: var(--text-muted); font-size: 0.9rem;}
-        .includes-list .material-icons { color: var(--text-dim); font-size: 18px; }
-
-        /* Reviews Section */
-        .reviews-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 2rem; }
-        .rating-summary { display: flex; align-items: center; gap: 1.5rem; }
-        .rating-number { font-size: 4rem; font-weight: 700; color: var(--text-main); line-height: 1;}
-        .rating-details { display: flex; flex-direction: column; gap: 0.25rem; }
-        
-        .review-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: all 0.2s;
-        }
-        .review-card:hover { border-color: var(--border-hover); box-shadow: var(--shadow-sm); }
-        .review-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
-        .reviewer-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
-        .reviewer-info h4 { font-weight: 600; font-size: 1rem; color: var(--text-main);}
-        .review-rating { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.15rem; }
-        .review-date { color: var(--text-dim); font-size: 0.85rem; margin-left: auto; }
-        .review-text { color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem;}
-        
-        .review-helpful {
-            display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted);
-            font-size: 0.85rem; cursor: pointer; padding: 0.4rem 0.75rem; border-radius: 40px;
-            background: var(--surface); border: 1px solid var(--border); transition: all 0.2s; user-select: none;
-        }
-        .review-helpful:hover { background: var(--surface-hover); color: var(--text-main); }
-        .review-helpful.liked { color: var(--accent-blue); background: var(--accent-light); border-color: var(--accent-light); }
-        .like-icon { font-size: 16px; }
-
-        /* Comment Form */
-        .comment-form {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-        .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-main); font-size: 0.95rem;}
-        .form-control {
-            width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border);
-            border-radius: var(--radius-sm); font-family: 'Outfit', sans-serif; font-size: 0.95rem; transition: all 0.2s;
-        }
-        .form-control:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        textarea.form-control { min-height: 100px; resize: vertical; }
-
-        .rating-input { display: flex; gap: 0.25rem; font-size: 1.8rem; }
-        .star-rating { cursor: pointer; color: var(--border-hover); transition: all 0.2s; }
-        .star-rating:hover, .star-rating.active { color: var(--warning-star); transform: scale(1.1); }
-
-        .submit-button {
-            background: var(--text-main); color: white; border: none; border-radius: var(--radius-sm);
-            padding: 0.85rem 2rem; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
-        }
-        .submit-button:hover { background: #000; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-
-        /* Custom Success Modal */
-        .success-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            animation: fadeIn 0.3s ease;
-        }
-        .success-modal-overlay.show {
-            display: flex;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
         .success-modal {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 3rem 2rem;
-            text-align: center;
-            max-width: 420px;
-            box-shadow: var(--shadow-float);
-            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--surface); border-radius: var(--r-xl); padding: 48px;
+            text-align: center; max-width: 440px; width: 90%; box-shadow: var(--shadow-float);
+            animation: modalUp 0.4s var(--ease-out);
         }
-        @keyframes slideUp {
-            from { 
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1.5rem;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2.5rem;
-            animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes scaleIn {
-            from { transform: scale(0.5); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .success-modal h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 0.5rem;
-        }
-        .success-modal p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-        .success-progress {
-            width: 100%;
-            height: 3px;
-            background: var(--border);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .success-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            animation: progressBounce 2s ease-in-out forwards;
-        }
-        @keyframes progressBounce {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
+        @keyframes modalUp { from { opacity:0; transform: translateY(24px) scale(0.95); } to { opacity:1; transform: translateY(0) scale(1); } }
 
-        @media (max-width: 1024px) {
-            .main-layout { grid-template-columns: 1fr; }
-            .sidebar { position: static; }
+        .modal-icon {
+            width: 80px; height: 80px; border-radius: 50%; background: var(--green-bg);
+            border: 2px solid rgba(11,122,69,0.2); display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px; animation: iconPop 0.5s var(--ease-out) 0.2s both;
         }
-        @media (max-width: 768px) {
-            .container { padding: 0 1rem; }
-            .course-header, .content-section, .price-card, .comment-form { padding: 1.5rem; }
-            .course-title { font-size: 1.8rem; }
-            .rating-summary { flex-direction: column; align-items: flex-start; gap: 1rem;}
-            .success-modal {
-                padding: 2rem 1.5rem;
-                margin: 0 1rem;
-            }
+        @keyframes iconPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-icon i { color: var(--green); font-size: 2.2rem; }
+
+        .modal-title { font-family: var(--serif); font-size: 1.8rem; color: var(--ink); margin-bottom: 12px; }
+        .modal-text { font-size: 1rem; color: var(--ink-2); line-height: 1.6; margin-bottom: 32px; }
+        .modal-progress { height: 4px; background: var(--rule-light); border-radius: var(--r-pill); overflow: hidden; }
+        .modal-progress-bar { height: 100%; background: var(--green); border-radius: var(--r-pill); animation: progress 2s linear forwards; }
+        @keyframes progress { from { width: 0; } to { width: 100%; } }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .cd-layout { grid-template-columns: 1fr; gap: 32px; padding-bottom: 120px; }
+            /* Hide desktop sidebar price card, show mobile bar */
+            .cd-sidebar .price-card { display: none; }
+            .mobile-enroll-bar { display: flex; }
+            .course-header-card, .cd-section { padding: 32px 24px; }
+        }
+        @media (max-width: 640px) {
+            .course-meta-row { gap: 16px; flex-direction: column; }
+            .instructor-link { flex-direction: column; text-align: center; align-items: center; }
+            .instructor-link i { display: none; }
+            .course-title { font-size: 2rem; }
+            .mobile-enroll-btn { padding: 14px 24px; }
         }
     </style>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
-
 <body>
-    <div class="container">
-        <a href="/courses" class="back-button">
-            <span class="material-icons" style="font-size: 18px;">arrow_back</span>
-            Back to Catalog
-        </a>
 
-        <div class="main-layout">
-            <div class="main-content">
-                
-                <div class="hero-section">
-                    <div class="video-container" onclick="playVideo()">
-                        <video id="intro-video" class="video-preview" poster="<%= typeof course !== 'undefined' && course.thumbnailUrl ? course.thumbnailUrl : 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=675&fit=crop' %>"></video>
-                        <div class="play-button"><div class="play-icon"></div></div>
+<div class="cd-wrap">
+    <a href="/courses" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Back to Catalog
+    </a>
+
+    <div class="cd-layout">
+
+        <!-- ════════════════════════ LEFT COLUMN -->
+        <div class="cd-main">
+
+            <!-- VIDEO PLAYER -->
+            <div class="player-shell" id="playerShell">
+                <div class="player-thumb" id="playerThumb" onclick="startPlayer()">
+                    <img src="<%= typeof course !== 'undefined' && course.thumbnailUrl ? course.thumbnailUrl : 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=675&fit=crop' %>" alt="Course preview" id="thumbImg">
+                    <div class="player-thumb-overlay"></div>
+                    <div class="play-ring"><i class="fa-solid fa-play"></i></div>
+                    <div class="player-label">Preview this course</div>
+                </div>
+            </div>
+
+            <!-- COURSE HEADER -->
+            <div class="course-header-card">
+                <div class="course-eyebrow">
+                    <%= typeof course !== 'undefined' && course.published ? '✦ Published' : '✦ Bestseller' %>
+                </div>
+
+                <h1 class="course-title">
+                    <%= typeof course !== 'undefined' && course.title ? course.title : 'Complete Web Development Bootcamp 2025' %>
+                </h1>
+
+                <p class="course-desc">
+                    <%= typeof course !== 'undefined' && course.description ? course.description : 'Become a full-stack developer with one comprehensive, expertly crafted course.' %>
+                </p>
+
+                <!-- Meta -->
+                <div class="course-meta-row">
+                    <div class="meta-chip">
+                        <span class="stars">
+                            <% if (course && course.rating) { %>
+                                <%= '★'.repeat(Math.round(course.rating)) %><% if (Math.round(course.rating) < 5) { %><span style="color:var(--rule)"><%= '★'.repeat(5 - Math.round(course.rating)) %></span><% } %>
+                            <% } else { %><span style="color:var(--rule)">★★★★★</span><% } %>
+                        </span>
+                        <strong><%= course && course.rating ? course.rating.toFixed(1) : '—' %></strong>
+                        <span style="color:var(--ink-4)">(<%= course && course.enrollCount ? course.enrollCount.toLocaleString() : 0 %> ratings)</span>
                     </div>
-
-                    <div class="course-header">
-                        <span class="course-badge"><%= typeof course !=='undefined' && course.published ? 'Published' : 'Bestseller' %></span>
-                        <h1 class="course-title">
-                            <%= typeof course !=='undefined' && course.title ? course.title : 'Complete Web Development Bootcamp 2025' %>
-                        </h1>
-                        <p class="course-subtitle">
-                            <%= typeof course !=='undefined' && course.description ? course.description : 'Become a Full-Stack Web Developer with just ONE course. HTML, CSS, JavaScript, React, Node.js, MongoDB and More!' %>
-                        </p>
-
-                        <div class="course-meta">
-                            <div class="meta-item">
-                                <div class="rating-stars">
-                                    <% if (course.rating) { %>
-                                        <%- Array(Math.round(course.rating)).fill('★').join('') %><% if (course.rating < 5) { %><span style="color:#e2e8f0;">☆</span><% } %>
-                                    <% } else { %>
-                                        <span style="color:#e2e8f0;">☆☆☆☆☆</span>
-                                    <% } %>
-                                </div>
-                                <span><%= course.rating ? course.rating.toFixed(1) : '0' %> (<%= course.enrollCount || 0 %> ratings)</span>
-                            </div>
-                            <div class="meta-item"><span class="material-icons">people</span> <%= course.enrollCount || 0 %> students</div>
-                            <div class="meta-item"><span class="material-icons">schedule</span> <%= course.duration ? (course.duration / 60).toFixed(1) : '0' %> hours</div>
-                            <div class="meta-item"><span class="material-icons">category</span> <%= course.category || 'General' %></div>
-                            <div class="meta-item"><span class="material-icons">school</span> <%= course.level || 'All Levels' %></div>
-                        </div>
-
-                       <a href="/profile/<%= course.userId?.username || '' %>" 
-   style="
-     display: flex;
-     align-items: center;
-     gap: 16px;
-     padding: 14px;
-     border-radius: 12px;
-     background: #ffffff;
-     text-decoration: none;
-     color: inherit;
-     transition: all 0.3s ease;
-     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-   "
-   onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 18px rgba(0,0,0,0.12)'"
-   onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)'"
->
-
-  <img 
-    src="<%= profileUrl && profileUrl.trim() ? profileUrl : '/images/avatar.jpg' %>" 
-    alt="<%= course.userId?.fullName || 'Instructor' %>" 
-    style="
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #f0f0f0;
-      flex-shrink: 0;
-    "
-    onerror="this.src='/images/avatar.jpg'"
-  >
-
-  <div style="display: flex; flex-direction: column; justify-content: center;">
-    
-    <h4 style="
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: #333;
-    ">
-      Created by <%= course.userId?.fullName || 'Premium Instructor' %>
-    </h4>
-    
-    <p style="
-      margin: 4px 0 0;
-      font-size: 18px;
-      font-weight: 500;
-      color: #0073e6;
-    ">
-      <%= course.userId?.username || 'Instructor' %>
-      <span style="color:#777; font-size:14px;"> • Course Creator</span>
-    </p>
-
-  </div>
-
-</a>
+                    <div class="meta-chip">
+                        <i class="fa-solid fa-users"></i>
+                        <strong><%= course && course.enrollCount ? course.enrollCount.toLocaleString() : 0 %></strong> students
+                    </div>
+                    <div class="meta-chip">
+                        <i class="fa-regular fa-clock"></i>
+                        <strong><%= course && course.duration ? (course.duration / 60).toFixed(1) : '0' %>h</strong> content
+                    </div>
+                    <div class="meta-chip">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <%= course && course.category ? course.category : 'General' %>
                     </div>
                 </div>
 
-                <div class="content-section">
-                    <h2 class="section-title">What you'll learn</h2>
-                    <div class="learning-grid">
-                        <% if (course && course.learningOutcomes && course.learningOutcomes.length > 0) { %>
-                            <% course.learningOutcomes.forEach((outcome) => { %>
-                                <div class="learning-item"><span class="material-icons">check_circle</span><span><%= outcome %></span></div>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="learning-item"><span class="material-icons">check_circle</span><span>Complete curriculum with <%= course.modules ? course.modules.length : '0' %> modules</span></div>
-                            <div class="learning-item"><span class="material-icons">check_circle</span><span><%= course.duration ? 'Learn in ' + (course.duration / 60).toFixed(1) + ' hours' : 'Comprehensive training' %></span></div>
-                            <% if (course.tags && course.tags.length > 0) { %>
-                                <% course.tags.slice(0, 4).forEach((tag) => { %>
-                                    <div class="learning-item"><span class="material-icons">check_circle</span><span>Master <%= tag %></span></div>
-                                <% }); %>
+                <!-- Instructor -->
+                <a href="/profile/<%= course && course.userId ? (course.userId.username || '') : '' %>" class="instructor-link">
+                    <img src="<%= typeof profileUrl !== 'undefined' && profileUrl && profileUrl.trim() ? profileUrl : '/images/avatar.jpg' %>" alt="Instructor" class="instructor-avatar" onerror="this.src='/images/avatar.jpg'">
+                    <div>
+                        <div class="instructor-name"><%= course && course.userId ? (course.userId.fullName || 'Premium Instructor') : 'Premium Instructor' %></div>
+                        <div class="instructor-role">Course Creator &amp; Subject Matter Expert</div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right" style="margin-left:auto;color:var(--ink-4);"></i>
+                </a>
+            </div>
+
+            <!-- WHAT YOU'LL LEARN -->
+            <div class="cd-section">
+                <h2 class="cd-section-title">What you'll learn</h2>
+                <div class="learn-grid">
+                    <% if (course && course.learningOutcomes && course.learningOutcomes.length > 0) { %>
+                        <% course.learningOutcomes.forEach(o => { %>
+                            <div class="learn-item"><i class="fa-solid fa-circle-check"></i><span><%= o %></span></div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="learn-item"><i class="fa-solid fa-circle-check"></i><span>Complete curriculum with <%= course && course.modules ? course.modules.length : 0 %> modules</span></div>
+                        <div class="learn-item"><i class="fa-solid fa-circle-check"></i><span><%= course && course.duration ? (course.duration/60).toFixed(1) + ' hours' : 'Comprehensive' %> of expert-led video</span></div>
+                        <div class="learn-item"><i class="fa-solid fa-circle-check"></i><span>Professional best practices &amp; patterns</span></div>
+                        <div class="learn-item"><i class="fa-solid fa-circle-check"></i><span>Real-world projects &amp; applications</span></div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- CURRICULUM -->
+            <div class="cd-section">
+                <h2 class="cd-section-title">Course Curriculum</h2>
+                <p class="curriculum-summary" id="curriculumSummary">Loading curriculum…</p>
+                <div id="curriculumContainer"></div>
+            </div>
+
+        </div><!-- /cd-main -->
+
+        <!-- ════════════════════════ RIGHT SIDEBAR -->
+        <aside class="cd-sidebar">
+            <div class="price-card">
+                <img src="<%= typeof course !== 'undefined' && course.thumbnailUrl ? course.thumbnailUrl : 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800' %>" alt="Course thumbnail" class="price-card-thumb" onerror="this.style.display='none'">
+                
+                <div class="price-card-body">
+                    <% const isFree = !course || !course.price || course.price <= 0; %>
+                    <% const hasDis = course && course.discountPrice && course.discountPrice > 0; %>
+
+                    <% if (isFree) { %>
+                        <div class="price-current free">Free</div>
+                    <% } else { %>
+                        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                            <div class="price-current">₹<%= course.price.toFixed(0) %></div>
+                            <% if (hasDis) { %>
+                                <span class="price-was">₹<%= course.discountPrice.toFixed(0) %></span>
+                                <span class="price-discount"><%= Math.round((1 - course.price / course.discountPrice) * 100) %>% OFF</span>
                             <% } else { %>
-                                <div class="learning-item"><span class="material-icons">check_circle</span><span>Professional-grade content and best practices</span></div>
-                                <div class="learning-item"><span class="material-icons">check_circle</span><span>Real-world projects and practical applications</span></div>
+                                <span class="price-was">₹<%= (course.price * 1.3).toFixed(0) %></span>
                             <% } %>
-                        <% } %>
-                    </div>
-                </div>
+                        </div>
+                    <% } %>
 
-                <div class="content-section">
-                    <h2 class="section-title">Requirements</h2>
-                    <ul class="requirements-list">
-                        <% if (course && course.requirements && course.requirements.length > 0) { %>
-                            <% course.requirements.forEach((req) => { %> <li><%= req %></li> <% }); %>
-                        <% } else { %>
-                            <li>Basic computer knowledge and internet connection</li>
-                            <li>Willingness to learn and practice</li>
-                        <% } %>
+                    <button class="enroll-btn" onclick="enrollNow(event, this)">
+                        <i class="fa-solid fa-bolt"></i>
+                        <%= isFree ? 'Enroll for Free' : 'Enroll Now' %>
+                    </button>
+
+                    <div class="guarantee-note">
+                        <i class="fa-solid fa-shield-halved"></i> 30-day money-back guarantee
+                    </div>
+
+                    <ul class="includes-list" style="list-style:none;">
+                        <li style="font-size:0.8rem; font-weight:700; text-transform:uppercase; color:var(--ink-3); margin-bottom:12px;">This course includes</li>
+                        <li style="display:flex; gap:10px; padding:8px 0; font-size:0.9rem; color:var(--ink-2); border-bottom:1px solid var(--rule-light);"><i class="fa-solid fa-video" style="color:var(--ink-4); width:16px;"></i><span><%= course && course.duration ? (course.duration/60).toFixed(1) : 0 %>h on-demand video</span></li>
+                        <li style="display:flex; gap:10px; padding:8px 0; font-size:0.9rem; color:var(--ink-2); border-bottom:1px solid var(--rule-light);"><i class="fa-solid fa-cubes" style="color:var(--ink-4); width:16px;"></i><span><%= course && course.modules ? course.modules.length : 0 %> course modules</span></li>
+                        <li style="display:flex; gap:10px; padding:8px 0; font-size:0.9rem; color:var(--ink-2); border-bottom:1px solid var(--rule-light);"><i class="fa-solid fa-download" style="color:var(--ink-4); width:16px;"></i><span>Downloadable resources</span></li>
+                        <li style="display:flex; gap:10px; padding:8px 0; font-size:0.9rem; color:var(--ink-2);"><i class="fa-solid fa-infinity" style="color:var(--ink-4); width:16px;"></i><span>Full lifetime access</span></li>
                     </ul>
                 </div>
-
-                <div class="content-section">
-                    <h2 class="section-title">Course Curriculum</h2>
-                    <p id="curriculum-summary" style="margin-bottom:1.5rem; color: var(--text-muted); font-size:0.95rem;">Loading curriculum...</p>
-                    <div id="curriculum-container"></div>
-                </div>
-
-                <div class="content-section">
-                    <h2 class="section-title">Student Reviews</h2>
-
-                    <div class="reviews-header">
-                        <div class="rating-summary">
-                            <div class="rating-number"><%= (course && course.rating) ? course.rating.toFixed(1) : 'N/A' %></div>
-                            <div class="rating-details">
-                                <div class="rating-stars" style="font-size:1.2rem;">
-                                    <% 
-                                        const stars = (course && course.rating) ? Math.round(course.rating) : 0;
-                                        for (let i = 0; i < 5; i++) {
-                                            if (i < stars) { %>★<% } else { %><span style="color:#e2e8f0;">☆</span><% }
-                                        }
-                                    %>
-                                </div>
-                                <p style="color:var(--text-muted); font-size: 0.85rem;"><%= (course && course.enrollCount) ? course.enrollCount + ' ratings' : 'No ratings yet' %></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="reviews-container">
-                        <% if (!course || !course.rating || course.rating === 0) { %>
-                            <div style="padding: 2rem; text-align: center; color: var(--text-muted); background: var(--bg); border-radius: 12px; border: 1px solid var(--border);">
-                                <p style="font-size: 1.05rem; margin-bottom: 0.5rem; font-weight:500;">No reviews yet</p>
-                                <p style="font-size: 0.9rem;">Be the first to review this course!</p>
-                            </div>
-                        <% } %>
-                    </div>
-
-                    <div class="comment-form">
-                        <h3 class="section-subtitle" style="margin-top:0;">Leave a Review</h3>
-                        <form onsubmit="submitReview(event)">
-                            <div class="form-group">
-                                <label>Your Rating</label>
-                                <div class="rating-input" id="ratingInput">
-                                    <span class="star-rating" data-rating="1">☆</span>
-                                    <span class="star-rating" data-rating="2">☆</span>
-                                    <span class="star-rating" data-rating="3">☆</span>
-                                    <span class="star-rating" data-rating="4">☆</span>
-                                    <span class="star-rating" data-rating="5">☆</span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="reviewTitle">Review Title</label>
-                                <input type="text" id="reviewTitle" class="form-control" placeholder="Summarize your experience" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="reviewText">Your Review</label>
-                                <textarea id="reviewText" class="form-control" placeholder="Share your thoughts about this course..." required></textarea>
-                            </div>
-                            <button type="submit" class="submit-button">Submit Review</button>
-                        </form>
-                    </div>
-                </div>
             </div>
+        </aside>
 
-            <aside class="sidebar">
-                <div class="price-card">
-                    <div class="price-header">
-                        <div class="price-current">₹<%= course && course.price ? course.price.toFixed(2) : '0.00' %></div>
-                        <% if (course && course.discountPrice && course.discountPrice > 0) { %>
-                            <div class="price-original">$<%= course.discountPrice.toFixed(2) %></div>
-                            <div class="discount-badge-large"><%= Math.round((1 - course.price / course.discountPrice) * 100) %>% OFF</div>
-                        <% } else if (course && course.price > 0) { %>
-                            <div class="price-original">₹<%= (course.price * 1.3).toFixed(2) %></div>
-                            <div class="discount-badge-large">Special Offer</div>
-                        <% } else { %>
-                            <div class="price-original" style="font-size: 1.1rem; color: var(--success); font-weight: 600; text-decoration:none;">FREE COURSE</div>
-                        <% } %>
-                    </div>
-
-                    <button class="enroll-button" onclick="enrollNow()">Enroll Now</button>
-                    <p class="guarantee-text">30-Day Money-Back Guarantee</p>
-
-                    <h3 style="font-weight:600; margin-bottom: 1rem; font-size:1rem;">This course includes:</h3>
-                    <ul class="includes-list">
-                        <li><span class="material-icons">ondemand_video</span><span><%= course && course.duration ? (course.duration / 60).toFixed(1) : '0' %> hours on-demand video</span></li>
-                        <li><span class="material-icons">article</span><span><%= course && course.modules ? course.modules.length : '0' %> modules</span></li>
-                        <li><span class="material-icons">file_download</span><span>Downloadable resources</span></li>
-                        <li><span class="material-icons">code</span><span>Practical projects & exercises</span></li>
-                        <li><span class="material-icons">all_inclusive</span><span>Full lifetime access</span></li>
-                        <!-- <li><span class="material-icons">workspace_premium</span><span>Certificate of completion</span></li> -->
-                    </ul>
-                </div>
-            </aside>
-        </div>
     </div>
+</div>
 
-    <script id="course-data" type="application/json">
-        <%-JSON.stringify(course || {})%>
-    </script>
+<!-- ── STICKY MOBILE ACTION BAR ── -->
+<div class="mobile-enroll-bar">
+    <div>
+        <% if (isFree) { %>
+            <div class="mobile-enroll-price free">Free</div>
+        <% } else { %>
+            <div class="mobile-enroll-price">₹<%= course.price.toFixed(0) %></div>
+            <% if (hasDis) { %><span class="mobile-enroll-was">₹<%= course.discountPrice.toFixed(0) %></span><% } %>
+        <% } %>
+    </div>
+    <button class="mobile-enroll-btn" onclick="enrollNow(event, this)">
+        <%= isFree ? 'Enroll Free' : 'Enroll Now' %>
+    </button>
+</div>
 
-    <script>
-        // Make course data available to JavaScript
-        const course = <%- JSON.stringify(course || {}) %>;
-        
-        // Star rating
-        let selectedRating = 0;
-        const stars = document.querySelectorAll('.star-rating');
+<!-- SUCCESS MODAL -->
+<div class="modal-veil" id="successModal">
+    <div class="success-modal">
+        <div class="modal-icon"><i class="fa-solid fa-check"></i></div>
+        <div class="modal-title">You're enrolled! 🎉</div>
+        <p class="modal-text">Welcome aboard. You'll be redirected to your courses in a moment.</p>
+        <div class="modal-progress"><div class="modal-progress-bar"></div></div>
+    </div>
+</div>
 
-        stars.forEach(star => {
-            star.addEventListener('click', function () {
-                selectedRating = parseInt(this.dataset.rating);
-                updateStarDisplay();
-            });
-            star.addEventListener('mouseenter', function () {
-                highlightStars(parseInt(this.dataset.rating));
-            });
+<!-- Course data for JS -->
+<script id="course-json" type="application/json"><%- JSON.stringify(course || {}) %></script>
+
+<script>
+const COURSE = (() => {
+    try { return JSON.parse(document.getElementById('course-json').textContent); }
+    catch(e) { return {}; }
+})();
+
+function getYouTubeId(url) {
+    if (!url) return null;
+    const patterns = [
+        /youtube\.com\/watch\?(?:.*&)?v=([^&#]+)/,
+        /youtube\.com\/embed\/([^/?#]+)/,
+        /youtu\.be\/([^/?#]+)/,
+    ];
+    for (const re of patterns) {
+        const m = url.match(re);
+        if (m && m[1]) return m[1];
+    }
+    return null;
+}
+
+function startPlayer() {
+    const shell = document.getElementById('playerShell');
+    const url   = COURSE.introVideoUrl || '';
+    if (!url) { alert('No preview video available.'); return; }
+    
+    const ytId = getYouTubeId(url);
+    if (ytId) {
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1`;
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allowFullscreen = true;
+        shell.appendChild(iframe);
+    } else {
+        const video = document.createElement('video');
+        video.src = url; video.controls = true; video.autoplay = true; video.style.background = '#000';
+        shell.appendChild(video);
+    }
+    shell.classList.add('playing');
+}
+
+(function renderCurriculum() {
+    const container = document.getElementById('curriculumContainer');
+    const summary   = document.getElementById('curriculumSummary');
+    const modules   = COURSE.modules || [];
+
+    if (!modules.length) {
+        summary.textContent = '0 modules · 0 lessons';
+        container.innerHTML = `<div style="text-align:center;padding:32px;color:var(--ink-3);background:var(--rule-light);border:1px dashed var(--rule);border-radius:var(--r-lg);">No curriculum available yet.</div>`;
+        return;
+    }
+
+    const totalLessons = modules.reduce((s, m) => s + (m.submodules?.length || 0), 0);
+    summary.textContent = `${modules.length} section${modules.length !== 1 ? 's' : ''} · ${totalLessons} lesson${totalLessons !== 1 ? 's' : ''}`;
+
+    function esc(t) { return (t || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
+
+    container.innerHTML = modules.map((mod, i) => {
+        const count = mod.submodules?.length || 0;
+        const lessons = count === 0
+            ? `<p style="color:var(--ink-4);font-size:0.875rem;padding:12px 0;">No lessons added yet.</p>`
+            : mod.submodules.map(l => `
+                <div class="lesson-row">
+                    <div class="lesson-left">
+                        <i class="fa-${l.type === 'Video' ? 'solid fa-play-circle' : 'regular fa-file-lines'}"></i>
+                        <span>${esc(l.title)}</span>
+                    </div>
+                    ${l.duration ? `<span class="lesson-dur">${l.duration} min</span>` : ''}
+                </div>`).join('');
+
+        return `
+            <div class="module-item" id="mod-${i}">
+                <div class="module-header" onclick="toggleModule(${i})">
+                    <div class="module-title"><span class="module-num">${i + 1}</span>${esc(mod.unit)}</div>
+                    <div class="module-meta">
+                        <span>${count} lesson${count !== 1 ? 's' : ''}</span>
+                        <span class="module-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+                    </div>
+                </div>
+                <div class="module-body"><div class="lesson-list">${lessons}</div></div>
+            </div>`;
+    }).join('');
+
+    if (modules.length > 0) toggleModule(0);
+})();
+
+function toggleModule(i) {
+    document.getElementById('mod-' + i)?.classList.toggle('open');
+}
+
+/* ══════════════════════════════════════════════
+   ENROLMENT (Syncs both Mobile & Desktop Buttons)
+   ══════════════════════════════════════════════ */
+function enrollNow(event, btnElement) {
+    const courseId    = '<%= typeof course !== "undefined" ? course._id : "" %>';
+    const coursePrice = <%= typeof course !== "undefined" ? (course.price || 0) : 0 %>;
+    
+    // Target both buttons to lock UI
+    const allBtns = document.querySelectorAll('.enroll-btn, .mobile-enroll-btn');
+    const originalTexts = Array.from(allBtns).map(b => b.innerHTML);
+    
+    allBtns.forEach(b => {
+        b.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing…';
+        b.disabled = true;
+    });
+
+    const restoreBtns = () => {
+        allBtns.forEach((b, i) => {
+            b.innerHTML = originalTexts[i];
+            b.disabled = false;
         });
+    };
 
-        document.getElementById('ratingInput').addEventListener('mouseleave', updateStarDisplay);
-
-        function highlightStars(rating) {
-            stars.forEach((star, index) => {
-                if (index < rating) {
-                    star.textContent = '★'; star.style.color = '#fbbf24';
-                } else {
-                    star.textContent = '☆'; star.style.color = '#cbd5e1';
-                }
-            });
-        }
-        function updateStarDisplay() { highlightStars(selectedRating); }
-
-        // Reviews Loader
-        function loadReviews() {
-            const courseId = new URLSearchParams(window.location.search).get('courseId');
-            if (!courseId) return;
-
-            fetch(`/api/reviews/course/${courseId}`)
-                .then(res => res.ok ? res.json() : Promise.reject('Failed to load reviews'))
-                .then(data => {
-                    const container = document.querySelector('.reviews-container');
-                    if (!container) return;
-
-                    container.querySelectorAll('.review-card').forEach(r => r.remove());
-
-                    if (data.reviews && data.reviews.length > 0) {
-                        const noMsg = container.querySelector('div[style*="text-align: center"]');
-                        if (noMsg) noMsg.remove();
-
-                        data.reviews.forEach(review => {
-                            const isLiked = review.isLikedByCurrentUser || false;
-                            const html = `
-                                <div class="review-card">
-                                    <div class="review-header">
-<img 
-  src="${review.userId?.profilePicUrl && review.userId.profilePicUrl.trim() 
-        ? review.userId.profilePicUrl 
-        : '/images/avatar.jpg'}" 
-  class="reviewer-avatar"
-  onerror="this.src='/images/avatar.jpg'"
->                                        <div class="reviewer-info">
-                                            <h4>${review.userId ? (review.userId.fullName || review.userId.username || 'Anonymous') : 'Anonymous'}</h4>
-                                            <div class="review-rating">
-                                                <div class="rating-stars" style="font-size:0.9rem;">
-                                                    ${'★'.repeat(review.rating)}<span style="color:#e2e8f0;">${'☆'.repeat(5 - review.rating)}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <span class="review-date">${new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                                    </div>
-                                    <h5 style="font-weight: 600; margin-bottom: 0.5rem;">${review.title}</h5>
-                                    <p class="review-text">${review.reviewText}</p>
-                                    <div class="review-helpful ${isLiked ? 'liked' : ''}" onclick="toggleHelpful('${review._id}', this)">
-                                        <span class="material-icons like-icon">thumb_up</span>
-                                        <span class="helpful-count">${review.helpful}</span>
-                                        <span style="margin-left:2px;">helpful</span>
-                                    </div>
-                                </div>
-                            `;
-                            container.insertAdjacentHTML('afterbegin', html);
-                        });
-                    }
-                }).catch(console.error);
-        }
-
-        function submitReview(event) {
-            event.preventDefault();
-            if (selectedRating === 0) return alert('Please select a rating!');
-            const title = document.getElementById('reviewTitle').value.trim();
-            const text = document.getElementById('reviewText').value.trim();
-            const courseId = new URLSearchParams(window.location.search).get('courseId');
-
-            if (!title || !text || !courseId) return alert('Missing fields');
-
-            fetch('/api/reviews/submit', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ courseId, rating: selectedRating, title, reviewText: text })
-            }).then(res => res.json().then(data => ({ isOk: res.ok, data })))
-              .then(result => {
-                  if (!result.isOk) return alert(result.data.message || 'Failed to submit review');
-                  alert('Review submitted successfully!');
-                  loadReviews();
-                  event.target.reset();
-                  selectedRating = 0; updateStarDisplay();
-              }).catch(err => alert('Error submitting review.'));
-        }
-
-        function toggleHelpful(reviewId, element) {
-            if (element.style.pointerEvents === 'none') return;
-            element.style.pointerEvents = 'none';
-
-            fetch(`/api/reviews/${reviewId}/helpful`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-                .then(res => res.ok ? res.json() : Promise.reject('Failed to update'))
-                .then(data => {
-                    element.querySelector('.helpful-count').textContent = data.helpfulCount;
-                    if (data.isLiked) { element.classList.add('liked'); } 
-                    else { element.classList.remove('liked'); }
-                })
-                .catch(() => alert('Failed to update. Please try again.'))
-                .finally(() => element.style.pointerEvents = 'auto');
-        }
-
-        function playVideo() { 
-            console.log("playing video");
-            const video = document.getElementById('intro-video');
-            const playButton = document.querySelector('.play-button');
-            const videoContainer = document.querySelector('.video-container');
-            
-            if (!course || !course.introVideoUrl) {
-                console.warn('No intro video URL available');
-                alert('No preview video available for this course.');
-                return;
-            }
-
-            const videoUrl = course.introVideoUrl;
-            
-            // Check if it's a YouTube URL
-            const youtubeId = getYouTubeVideoId(videoUrl);
-            
-            if (youtubeId) {
-                // Handle YouTube video
-                const youtubeEmbedUrl = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`;
-                const iframe = document.createElement('iframe');
-                iframe.src = youtubeEmbedUrl;
-                iframe.width = '100%';
-                iframe.height = '100%';
-                iframe.frameBorder = '0';
-                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                iframe.allowFullscreen = true;
-                
-                // Replace the video element with iframe
-                videoContainer.innerHTML = '';
-                videoContainer.appendChild(iframe);
-                if (playButton) playButton.style.display = 'none';
-                
-                console.log('Playing YouTube video:', youtubeEmbedUrl);
-            } else {
-                // Handle direct video file
-                video.src = videoUrl;
-                video.style.display = 'block';
-                video.play().catch(err => {
-                    console.error('Video play failed:', err);
-                    
-                    // If direct video fails, try to treat it as an embed URL
-                    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-                        const youtubeId = getYouTubeVideoId(videoUrl);
-                        if (youtubeId) {
-                            const youtubeEmbedUrl = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`;
-                            const iframe = document.createElement('iframe');
-                            iframe.src = youtubeEmbedUrl;
-                            iframe.width = '100%';
-                            iframe.height = '100%';
-                            iframe.frameBorder = '0';
-                            iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                            iframe.allowFullscreen = true;
-                            
-                            videoContainer.innerHTML = '';
-                            videoContainer.appendChild(iframe);
-                            if (playButton) playButton.style.display = 'none';
-                            return;
-                        }
-                    }
-                    
-                    alert('Unable to play video. The video format may not be supported or the URL may be invalid.');
-                });
-                if (playButton) playButton.style.display = 'none';
-            }
-        }
-
-        // Helper function to extract YouTube video ID from various URL formats
-        function getYouTubeVideoId(url) {
-            if (!url) return null;
-            
-            // Handle youtube.com URLs
-            const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-            const match = url.match(youtubeRegex);
-            
-            if (match && match[1]) {
-                return match[1];
-            }
-            
-            // Handle direct video IDs (11 characters)
-            if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
-                return url;
-            }
-            
-            return null;
-        }
-
-        // Curriculum Loader
-        class CurriculumLoader {
-            constructor() {
-                this.containerEl = document.getElementById('curriculum-container');
-                this.summaryEl = document.getElementById('curriculum-summary');
-                this.courseData = this.extractCourseData();
-            }
-            extractCourseData() {
-                try { return JSON.parse(document.getElementById('course-data').textContent); } 
-                catch (e) { return null; }
-            }
-            render() {
-                if (!this.courseData || !this.courseData.modules || this.courseData.modules.length === 0) {
-                    this.summaryEl.textContent = '0 modules • 0 lessons';
-                    this.containerEl.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--text-muted); background: var(--bg); border-radius: 12px; border: 1px dashed var(--border);">No curriculum available for this course yet.</div>`;
-                    return;
-                }
-                const modules = this.courseData.modules;
-                const totalResources = modules.reduce((sum, mod) => sum + (mod.submodules?.length || 0), 0);
-                this.summaryEl.textContent = `${modules.length} sections • ${totalResources} lectures`;
-                this.containerEl.innerHTML = modules.map((m, i) => this.createModuleElement(m, i)).join('');
-                
-                this.containerEl.addEventListener('click', e => {
-                    const header = e.target.closest('.curriculum-header');
-                    if (header) header.closest('.curriculum-item').classList.toggle('active');
+    if (!coursePrice || coursePrice <= 0) {
+        fetch('/api/enroll/free', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            credentials:'include', body: JSON.stringify({ courseId })
+        }).then(r => {
+            if (r.status === 401) {
+                return r.json().then(data => {
+                    restoreBtns();
+                    window.location.href = data.loginRedirectUrl;
+                    throw new Error('login_required');
                 });
             }
-            createModuleElement(module, i) {
-                const count = module.submodules?.length || 0;
-                return `
-                    <div class="curriculum-item">
-                        <div class="curriculum-header">
-                            <div class="curriculum-title">Section ${i + 1}: ${this.escapeHtml(module.unit)}</div>
-                            <div style="display:flex; align-items:center; gap:1rem;">
-                                <span class="curriculum-meta">${count} lecture${count !== 1 ? 's' : ''}</span>
-                                <span class="material-icons expand-icon">expand_more</span>
-                            </div>
-                        </div>
-                        <div class="curriculum-content">
-                            <div class="lesson-list">
-                                ${count === 0 ? '<p style="color:var(--text-muted); font-size:0.9rem;">No lectures yet.</p>' : 
-                                    module.submodules.map(l => `
-                                    <div class="lesson-item">
-                                        <div class="lesson-info">
-                                            <span class="material-icons lesson-icon">${l.type === 'Video' ? 'play_circle' : 'description'}</span>
-                                            <span>${this.escapeHtml(l.title)}</span>
-                                        </div>
-                                        <span class="lesson-duration">${l.duration ? l.duration + ' min' : ''}</span>
-                                    </div>`).join('')}
-                            </div>
-                        </div>
-                    </div>`;
-            }
-            escapeHtml(t) { return (t || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' })[m]); }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            new CurriculumLoader().render();
-            loadReviews();
-            const firstHeader = document.querySelector('.curriculum-item .curriculum-header');
-            if (firstHeader) firstHeader.click();
+            return r.json();
+        }).then(d => {
+            if (d.requiresLogin) { restoreBtns(); window.location.href = d.loginRedirectUrl; return; }
+            if (d.success) { showSuccessModal(() => window.location.href = '/my-courses'); } 
+            else { restoreBtns(); alert(d.message || 'Enrollment failed.'); }
+        }).catch(err => {
+            if (err.message === 'login_required') return;
+            restoreBtns(); alert('Enrollment failed: ' + (err.message || 'Unknown error'));
         });
+        return;
+    }
 
-        // Razorpay Enrollment
-        function enrollNow() {
-            const courseId = '<%= typeof course !== "undefined" ? course._id : "" %>';
-            const coursePrice = <%= typeof course !== "undefined" ? (course.price || 0) : 0 %>;
-            if (!coursePrice || coursePrice <= 0) {
-                alert('This course is not available for purchase');
-                return;
-            }
-
-            const btn = event.target; const origText = btn.innerHTML;
-            btn.innerHTML = 'Processing...'; btn.disabled = true;
-
-            fetch('/api/payments/initiate-payment', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ courseId })
-            }).then(res => res.json()).then(data => {
-                if (!data.success) throw new Error(data.error || 'Failed to initiate payment');
-                const options = {
-                    key: data.keyId, amount: data.amount, currency: data.currency,
-                    name: 'Premium Learning', description: data.courseName, order_id: data.orderId,
-                    prefill: { name: data.studentName, email: data.studentEmail },
-                    handler: function(res) {
-                        fetch('/api/payments/verify-payment', {
-                            method: 'POST', headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ orderId: data.orderId, paymentId: res.razorpay_payment_id, signature: res.razorpay_signature, paymentDocumentId: data.paymentId })
-                        }).then(r => r.json()).then(d => {
-                            if (d.success) { 
-                                showSuccessModal(() => window.location.href = '/my-courses');
-                            } 
-                            else throw new Error(d.error || 'Verification failed');
-                        }).catch(e => { 
-                            alert('Verification failed: ' + e.message); 
-                            btn.innerHTML = origText; 
-                            btn.disabled = false; 
-                        });
-                    },
-                    modal: { ondismiss: function() { btn.innerHTML = origText; btn.disabled = false; } }
-                };
-                new Razorpay(options).open();
-            }).catch(e => { alert('Error: ' + e.message); btn.innerHTML = origText; btn.disabled = false; });
+    fetch('/api/payments/initiate-payment', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        credentials:'include', body: JSON.stringify({ courseId })
+    }).then(r => {
+        if (r.status === 401) {
+            return r.json().then(data => {
+                restoreBtns(); window.location.href = data.loginRedirectUrl;
+                throw new Error('login_required');
+            });
         }
-    </script>
+        return r.json();
+    }).then(data => {
+        if (data.requiresLogin) { restoreBtns(); window.location.href = data.loginRedirectUrl; return; }
+        if (!data.success) { restoreBtns(); alert(data.error || 'Payment initiation failed.'); return; }
 
-    <!-- Custom Success Modal -->
-    <div class="success-modal-overlay" id="successModal">
-        <div class="success-modal">
-            <div class="success-icon">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            <h2>Enrollment Successful! 🎉</h2>
-            <p>You have successfully enrolled in this course. Redirecting to your courses...</p>
-            <div class="success-progress">
-                <div class="success-progress-bar"></div>
-            </div>
-        </div>
-    </div>
+        const rzp = new Razorpay({
+            key:         data.keyId,
+            amount:      data.amount,
+            currency:    data.currency,
+            name:        'Vidyari',
+            description: data.courseName,
+            order_id:    data.orderId,
+            prefill:     { name: data.studentName, email: data.studentEmail },
+            theme:       { color: '#0F4C81' },
+            handler: function(res) {
+                allBtns.forEach(b => b.innerHTML = '<i class="fa-solid fa-shield-check"></i> Verifying…');
+                fetch('/api/payments/verify-payment', {
+                    method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+                    body: JSON.stringify({
+                        orderId: data.orderId, paymentId: res.razorpay_payment_id,
+                        signature: res.razorpay_signature, paymentDocumentId: data.paymentId
+                    })
+                }).then(r => r.json()).then(d => {
+                    if (d.success) showSuccessModal(() => window.location.href = '/my-courses');
+                    else { alert('Verification failed: ' + (d.error || '')); restoreBtns(); }
+                }).catch(() => { alert('Verification error.'); restoreBtns(); });
+            },
+            modal: { ondismiss: () => restoreBtns() }
+        });
+        rzp.open();
+    }).catch(err => {
+        if (err.message === 'login_required') return;
+        restoreBtns(); alert('Error: ' + (err.message || 'Unknown error'));
+    });
+}
 
-    <script>
-        function showSuccessModal(callback) {
-            const modal = document.getElementById('successModal');
-            modal.classList.add('show');
-            setTimeout(() => {
-                if (callback) callback();
-            }, 2000);
-        }
-    </script>
+function showSuccessModal(cb) {
+    const modal = document.getElementById('successModal');
+    modal.classList.add('show');
+    setTimeout(() => { if (cb) cb(); }, 2100);
+}
+</script>
+
+<%- include('footer') %>
 </body>
 </html>
-<%-include('footer')%>

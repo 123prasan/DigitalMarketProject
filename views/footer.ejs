@@ -1,3 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidyari Footer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+<!-- For demo only: page background -->
+<style>
+body { background: #f9fafb; margin: 0;  }
+.demo-spacer { text-align: center; font-family: 'DM Sans', sans-serif; color: #b4b8c4; font-size: 0.85rem; padding-bottom: 40px; }
+</style>
+</head>
+<body>
+
+<div class="demo-spacer">↑ Page content above ↑</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     VIDYARI FOOTER — LUXURY EDITORIAL WHITE THEME
+     Drop the <style> + <footer> block into your EJS template.
+     Replace <%= new Date().getFullYear() %> with your EJS tag.
+     ═══════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── FOOTER DESIGN TOKENS (inherits from page if already set) ── */
+.vf {
+    --ink:        #0e0f11;
+    --ink-2:      #3a3d44;
+    --ink-3:      #7a7e8a;
+    --ink-4:      #b4b8c4;
+    --rule:       #e8eaee;
+    --rule-light: #f4f5f7;
+    --surface:    #ffffff;
+    --bg:         #f9fafb;
+    --accent:     #1a56f0;
+    --accent-2:   #f0f4ff;
+    --green:      #0b7a45;
+    --serif:      'DM Serif Display', Georgia, serif;
+    --sans:       'DM Sans', system-ui, sans-serif;
+    --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── FOOTER SHELL ── */
+.vf {
+    font-family: var(--sans);
+    background: var(--surface);
+    border-top: 1px solid var(--rule);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+}
+
+.vf-inner {
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 3vw, 40px);
+}
+
+/* ── TOP BAND ── */
+.vf-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 48px;
+    padding: 56px 0 48px;
+    border-bottom: 1px solid var(--rule-light);
+}
+
+/* ── BRAND COLUMN ── */
+.vf-brand {}
+.vf-logo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-bottom: 18px;
+}
+.vf-logo-img { height: 36px; width: auto; }
+.vf-brand-name {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+}
+
+.vf-tagline {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--ink-2);
+    line-height: 1.65;
+    max-width: 240px;
+    margin-bottom: 24px;
+}
+
+.vf-email-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 8px 14px;
+    background: var(--accent-2);
+    border: 1px solid rgba(26,86,240,0.15);
+    border-radius: 8px;
+    transition: all 0.2s var(--ease-out);
+}
+.vf-email-link:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26,86,240,0.25);
+}
+.vf-email-link i { font-size: 0.8rem; }
+
+/* ── LINKS COLUMN ── */
+.vf-links-col {}
+.vf-col-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 20px;
+}
+
+.vf-nav-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.vf-nav-link {
+    display: inline-block;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--ink-2);
+    text-decoration: none;
+    padding: 5px 0;
+    transition: color 0.15s;
+    position: relative;
+}
+.vf-nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 3px;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.2s var(--ease-out);
+}
+.vf-nav-link:hover { color: var(--accent); }
+.vf-nav-link:hover::after { width: 100%; }
+
+/* ── CONNECT COLUMN ── */
+.vf-connect {}
+
+.vf-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    margin-bottom: 24px;
+}
+.vf-location i { color: var(--accent); }
+
+.vf-socials-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+}
+
+.vf-socials {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0; margin: 0 0 28px;
+}
+
+.vf-social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    color: var(--ink-2);
+    background: var(--rule-light);
+    border: 1px solid var(--rule);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s var(--ease-out);
+}
+.vf-social-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(26,86,240,0.2);
+}
+
+/* Individual brand colors on hover */
+.vf-social-btn.x:hover      { background: #000; border-color: #000; }
+.vf-social-btn.li:hover     { background: #0a66c2; border-color: #0a66c2; }
+.vf-social-btn.ig:hover     { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); border-color: #dc2743; }
+.vf-social-btn.yt:hover     { background: #ff0000; border-color: #ff0000; }
+
+/* ── TRUST BADGES ── */
+.vf-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.vf-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--ink-3);
+    background: var(--rule-light);
+    border: 1px solid var(--rule);
+    padding: 6px 12px;
+    border-radius: 8px;
+    width: fit-content;
+}
+.vf-badge i { color: var(--green); font-size: 0.8rem; }
+
+/* ── BOTTOM BAR ── */
+.vf-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.vf-copyright {
+    font-size: 0.82rem;
+    color: var(--ink-4);
+}
+.vf-copyright strong { color: var(--ink-3); font-weight: 500; }
+
+.vf-bottom-links {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    padding: 0; margin: 0;
+}
+.vf-bottom-link {
+    font-size: 0.78rem;
+    color: var(--ink-4);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+.vf-bottom-link:hover { color: var(--accent); }
+
+.vf-made-in {
+    font-size: 0.78rem;
+    color: var(--ink-4);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.vf-made-in .flag { font-size: 1rem; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+    .vf-top { grid-template-columns: 1fr 1fr; }
+    .vf-connect { grid-column: 1 / -1; border-top: 1px solid var(--rule-light); padding-top: 32px; }
+    .vf-socials { }
+    .vf-badges { flex-direction: row; flex-wrap: wrap; }
+}
+
+@media (max-width: 640px) {
+    .vf-top { grid-template-columns: 1fr; gap: 36px; }
+    .vf-connect { grid-column: auto; border-top: 1px solid var(--rule-light); padding-top: 32px; }
+    .vf-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .vf-bottom-links { flex-wrap: wrap; gap: 12px; }
+    .vf-tagline { max-width: none; }
+}
+</style>
+
+<footer class="vf">
+    <div class="vf-inner">
+
+        <!-- TOP BAND -->
+        <div class="vf-top">
+
+            <!-- Brand -->
+            <div class="vf-brand">
+                <a href="/" class="vf-logo-link" aria-label="Vidyari Home">
+                    <img src="/images/logo.svg" alt="Vidyari" class="vf-logo-img"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <!-- Fallback logotype if SVG fails -->
+                    <span style="display:none; align-items:center; gap:6px;">
+                        <span style="width:32px;height:32px;background:#1a56f0;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                            <span style="color:white;font-family:'DM Serif Display',serif;font-size:1rem;">V</span>
+                        </span>
+                    </span>
+                    <span class="vf-brand-name">Vidyari</span>
+                </a>
+                <p class="vf-tagline">The premier peer-to-peer knowledge marketplace for students and creators.</p>
+                <a href="mailto:vidyari.inc@gmail.com" class="vf-email-link">
+                    <i class="fa-regular fa-envelope"></i>
+                    vidyari.inc@gmail.com
+                </a>
+            </div>
+
+            <!-- Navigation links -->
+            <div class="vf-links-col">
+                <div class="vf-col-title">Navigate</div>
+                <ul class="vf-nav-grid">
+                    <li><a href="/privacy-policy" class="vf-nav-link">Privacy Policy</a></li>
+                    <li><a href="/refund-policy" class="vf-nav-link">Refund Policy</a></li>
+                    <li><a href="/terms-and-conditions" class="vf-nav-link">Terms & Conditions</a></li>
+                    <li><a href="/payment-terms" class="vf-nav-link">Payment Terms</a></li>
+                    <li><a href="/return-cancellation" class="vf-nav-link">Return & Cancellation</a></li>
+                    <li><a href="/disclaimer" class="vf-nav-link">Disclaimer</a></li>
+                    <li><a href="/acceptable-use" class="vf-nav-link">Acceptable Use</a></li>
+                    <li><a href="/intellectual-property" class="vf-nav-link">IP Policy</a></li>
+                    <li><a href="/contact" class="vf-nav-link">Contact & Support</a></li>
+                    <li><a href="/help/user/vidyari-guid" class="vf-nav-link">User Manual</a></li>
+                    <li><a href="/help/user/dashboard" class="vf-nav-link">Dashboard Guide</a></li>
+                </ul>
+            </div>
+
+            <!-- Connect -->
+            <div class="vf-connect">
+                <div class="vf-location">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Bengaluru, Karnataka, India
+                </div>
+
+                <div class="vf-socials-title">Follow us</div>
+                <ul class="vf-socials" aria-label="Social Media">
+                    <li>
+                        <a href="https://x.com/vidyari_" target="_blank" rel="noopener noreferrer"
+                           class="vf-social-btn x" aria-label="X (Twitter)">
+                            <i class="fa-brands fa-x-twitter"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.linkedin.com/company/vidyari" target="_blank" rel="noopener noreferrer"
+                           class="vf-social-btn li" aria-label="LinkedIn">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.instagram.com/vidyari_/" target="_blank" rel="noopener noreferrer"
+                           class="vf-social-btn ig" aria-label="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.youtube.com/@vidyari" target="_blank" rel="noopener noreferrer"
+                           class="vf-social-btn yt" aria-label="YouTube">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="vf-badges">
+                    <div class="vf-badge"><i class="fa-solid fa-shield-halved"></i> Secure Payments</div>
+                    <div class="vf-badge"><i class="fa-solid fa-circle-check"></i> Verified Instructors</div>
+                    <div class="vf-badge"><i class="fa-solid fa-lock"></i> SSL Encrypted</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM BAR -->
+        <div class="vf-bottom">
+            <p class="vf-copyright">© <strong>2025 Vidyari Inc.</strong> All rights reserved.</p>
+
+            <ul class="vf-bottom-links">
+                <li><a href="/privacy-policy" class="vf-bottom-link">Privacy</a></li>
+                <li><a href="/terms-and-conditions" class="vf-bottom-link">Terms</a></li>
+                <li><a href="/contact" class="vf-bottom-link">Support</a></li>
+            </ul>
+
+            <div class="vf-made-in">
+                <span class="flag">🇮🇳</span> Made with care in India
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+<!-- JSON-LD structured data (unchanged) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -25,236 +426,6 @@
   ]
 }
 </script>
-<style>
-    /* ==========================================================================
-       VIDYARI FOOTER: GEMINI / MATERIAL 3 THEME
-       ========================================================================== */
-    .v-footer-master {
-        --v-bg-footer: #f8fafd;        /* Soft Google Gray/Blue for footer */
-        --v-text-main: #1f1f1f;
-        --v-text-muted: #5f6368;       /* Google Secondary Gray */
-        
-        --v-primary: #0b57d0;          /* Google Blue */
-        --v-primary-bg: #e8f0fe;
-        
-        --v-border: #dadce0;           /* Google Border Gray */
-        
-        --v-font-display: 'Outfit', sans-serif;
-        --v-font-sans: 'Inter', sans-serif;
-        
-        --v-transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-
-        font-family: var(--v-font-sans);
-        background-color: var(--v-bg-footer);
-        color: var(--v-text-main);
-        border-top: 1px solid var(--v-border);
-        padding: 48px 24px 32px 24px;
-        margin-top: auto;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    .v-footer-master * {
-        box-sizing: border-box;
-    }
-
-    .v-footer-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 1fr 2fr 1fr;
-        gap: 40px;
-        align-items: start;
-    }
-
-    /* --- Left: Branding --- */
-    .v-footer-brand {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-    .v-footer-logo-link {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-decoration: none;
-        transition: var(--v-transition);
-    }
-    .v-footer-logo-link:hover {
-        opacity: 0.8;
-    }
-    .v-footer-logo-img {
-        height: 40px;
-        width: auto;
-    }
-    .v-footer-brand-name {
-        font-family: var(--v-font-display);
-        font-weight: 600;
-        font-size: 1.5rem;
-        color: var(--v-text-main);
-        letter-spacing: -0.5px;
-    }
-    .v-footer-copyright {
-        color: var(--v-text-muted);
-        font-size: 0.85rem;
-        font-weight: 400;
-        margin: 0;
-    }
-
-    /* --- Center: Navigation Links --- */
-    .v-footer-nav {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        column-gap: 32px;
-        row-gap: 16px;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .v-footer-link {
-        color: var(--v-text-muted);
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 500;
-        transition: var(--v-transition);
-        padding: 4px 8px;
-        border-radius: 4px;
-    }
-    .v-footer-link:hover {
-        color: var(--v-primary);
-        background-color: var(--v-primary-bg);
-    }
-
-    /* --- Right: Contact & Socials --- */
-    .v-footer-contact {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 16px;
-        text-align: right;
-    }
-    
-    .v-footer-socials {
-        display: flex;
-        gap: 8px;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .v-social-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        color: var(--v-text-muted);
-        background: transparent;
-        font-size: 1.1rem;
-        text-decoration: none;
-        transition: var(--v-transition);
-    }
-    .v-social-icon:hover {
-        color: var(--v-primary);
-        background-color: var(--v-primary-bg);
-        transform: translateY(-2px);
-    }
-
-    .v-footer-location {
-        color: var(--v-text-muted);
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-    .v-footer-email {
-        color: var(--v-text-main);
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 0.9rem;
-        transition: var(--v-transition);
-    }
-    .v-footer-email:hover {
-        color: var(--v-primary);
-        text-decoration: underline;
-    }
-
-    /* --- Responsive Adjustments --- */
-    @media (max-width: 992px) {
-        .v-footer-container {
-            grid-template-columns: 1fr;
-            text-align: center;
-            gap: 40px;
-        }
-        .v-footer-brand {
-            align-items: center;
-        }
-        .v-footer-contact {
-            align-items: center;
-            text-align: center;
-        }
-    }
-</style>
-
-<div class="v-footer-master">
-    <div class="v-footer-container">
-        
-        <div class="v-footer-brand">
-            <a href="/" class="v-footer-logo-link" aria-label="Vidyari Home">
-                <img src="/images/logo.svg" alt="Vidyari Logo" class="v-footer-logo-img">
-                <span class="v-footer-brand-name">Vidyari</span>
-            </a>
-            <p class="v-footer-copyright">© <%= new Date().getFullYear() %> Vidyari Inc. All Rights Reserved.</p>
-        </div>
-        
-        <nav aria-label="Footer Navigation">
-            <ul class="v-footer-nav">
-                <li><a href="/privacy-policy" class="v-footer-link">Privacy Policy</a></li>
-                <li><a href="/refund-policy" class="v-footer-link">Refund Policy</a></li>
-                <li><a href="/terms-and-conditions" class="v-footer-link">Terms & Conditions</a></li>
-                <li><a href="/payment-terms" class="v-footer-link">Payment Terms</a></li>
-                <li><a href="/return-cancellation" class="v-footer-link">Return & Cancellation</a></li>
-                <li><a href="/disclaimer" class="v-footer-link">Disclaimer</a></li>
-                <li><a href="/acceptable-use" class="v-footer-link">Acceptable Use</a></li>
-                <li><a href="/intellectual-property" class="v-footer-link">IP Policy</a></li>
-                <li><a href="/contact" class="v-footer-link">Contact & Support</a></li>
-                <li><a href="/help/user/vidyari-guid" class="v-footer-link">User Manual</a></li>
-                <li><a href="/help/user/dashboard" class="v-footer-link">Dashboard Guide</a></li>
-            </ul>
-        </nav>
-        
-        <div class="v-footer-contact">
-            <ul class="v-footer-socials" aria-label="Social Media Links">
-                <li>
-                    <a href="https://x.com/vidyari_" target="_blank" rel="noopener noreferrer" class="v-social-icon" aria-label="Follow us on X (Twitter)">
-                        <i class="fa-brands fa-x-twitter"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.linkedin.com/company/vidyari" target="_blank" rel="noopener noreferrer" class="v-social-icon" aria-label="Follow us on LinkedIn">
-                        <i class="fa-brands fa-linkedin-in"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.instagram.com/vidyari_/" target="_blank" rel="noopener noreferrer" class="v-social-icon" aria-label="Follow us on Instagram">
-                        <i class="fa-brands fa-instagram"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.youtube.com/@vidyari" target="_blank" rel="noopener noreferrer" class="v-social-icon" aria-label="Subscribe to our YouTube channel">
-                        <i class="fa-brands fa-youtube"></i>
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="v-footer-location">
-                <i class="fa-solid fa-location-dot me-1"></i> Bengaluru, Karnataka, India
-            </div>
-            <div>
-                <a href="mailto:vidyari.inc@gmail.com" class="v-footer-email">vidyari.inc@gmail.com</a>
-            </div>
-        </div>
-
-    </div>
-</div>
 
 </body>
 </html>

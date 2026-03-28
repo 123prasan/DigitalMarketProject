@@ -1476,7 +1476,7 @@ let token;
 const Adminbal = require("./models/admin/adminBal.js");
 
 // Razorpay Payment Verification - No auth needed (public)
-app.post("/verify-payment", authenticateJWT_user, async (req, res) => {
+app.post("/verify-payment", authenticateJWT_user, requireAuth, async (req, res) => {
   const {
     razorpay_order_id,
     razorpay_payment_id,
@@ -3601,23 +3601,31 @@ app.get('/courses', authenticateJWT_user, async (req, res) => {
             const totalPages = Math.ceil(totalCourses / limit);
 
             // Format course output securely for the frontend
-            const formattedCourses = rawCourses.map(course => ({
-                _id: course._id,
-                slug: course.slug,
-                title: course.title,
-                instructor: course.userId?.fullName || 'Premium Instructor',
-                instructorAvatar: course.userId?.profilePicUrl,
-                category: course.category,
-                level: course.level || 'All Levels',
-                price: course.price || 0,
-                discountPrice: course.discountPrice,
-                rating: course.rating || 0,
-                enrollCount: course.enrollCount || 0,
-                duration: course.duration || 0,
-                thumbnailUrl: course.thumbnailUrl,
-                tags: course.tags || [],
-                createdAt: course.createdAt
-            }));
+            const formattedCourses = rawCourses.map(course => {
+                // Ensure instructor name falls back to username if fullName is missing
+                const instructorName = course.userId?.fullName || course.userId?.username || 'Premium Instructor';
+                const instructorAvatar = course.userId?.profilePicUrl || null;
+                // Use enrollCount if available, otherwise count enrolledStudents array
+                const enrollCount = course.enrollCount || (course.enrolledStudents ? course.enrolledStudents.length : 0);
+                
+                return {
+                    _id: course._id,
+                    slug: course.slug,
+                    title: course.title,
+                    instructor: instructorName,
+                    instructorAvatar: instructorAvatar,
+                    category: course.category,
+                    level: course.level || 'All Levels',
+                    price: course.price || 0,
+                    discountPrice: course.discountPrice,
+                    rating: course.rating || 0,
+                    enrollCount: enrollCount,
+                    duration: course.duration || 0,
+                    thumbnailUrl: course.thumbnailUrl,
+                    tags: course.tags || [],
+                    createdAt: course.createdAt
+                };
+            });
 
             return res.json({
                 success: true,
@@ -3642,23 +3650,31 @@ app.get('/courses', authenticateJWT_user, async (req, res) => {
                 .limit(50) 
                 .lean();
 
-            const formattedCourses = rawCourses.map(course => ({
-                _id: course._id,
-                slug: course.slug,
-                title: course.title,
-                instructor: course.userId?.fullName || 'Premium Instructor',
-                instructorAvatar: course.userId?.profilePicUrl,
-                category: course.category,
-                level: course.level || 'All Levels',
-                price: course.price || 0,
-                discountPrice: course.discountPrice,
-                rating: course.rating || 0,
-                enrollCount: course.enrollCount || 0,
-                duration: course.duration || 0,
-                thumbnailUrl: course.thumbnailUrl,
-                tags: course.tags || [],
-                createdAt: course.createdAt
-            }));
+            const formattedCourses = rawCourses.map(course => {
+                // Ensure instructor name falls back to username if fullName is missing
+                const instructorName = course.userId?.fullName || course.userId?.username || 'Premium Instructor';
+                const instructorAvatar = course.userId?.profilePicUrl || null;
+                // Use enrollCount if available, otherwise count enrolledStudents array
+                const enrollCount = course.enrollCount || (course.enrolledStudents ? course.enrolledStudents.length : 0);
+                
+                return {
+                    _id: course._id,
+                    slug: course.slug,
+                    title: course.title,
+                    instructor: instructorName,
+                    instructorAvatar: instructorAvatar,
+                    category: course.category,
+                    level: course.level || 'All Levels',
+                    price: course.price || 0,
+                    discountPrice: course.discountPrice,
+                    rating: course.rating || 0,
+                    enrollCount: enrollCount,
+                    duration: course.duration || 0,
+                    thumbnailUrl: course.thumbnailUrl,
+                    tags: course.tags || [],
+                    createdAt: course.createdAt
+                };
+            });
 
             res.render('courses', { 
                 courses: formattedCourses,

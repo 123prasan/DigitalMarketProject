@@ -463,9 +463,27 @@
                 const res = await fetch('/create-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({ fileId: fileId, price: activeData.total, filename: "<%= file.filename %>", couponCode: couponInput.value.trim() })
                 });
+                
                 const order = await res.json();
+                console.log('Order response:', res.status, order);
+                
+                // CHECK LOGIN REQUIRED FIRST (for 401 status)
+                if (res.status === 401 || order.requiresLogin) {
+                    payButton.innerHTML = originalContent;
+                    payButton.disabled = false;
+                    window.location.href = order.loginRedirectUrl;
+                    return;
+                }
+                
+                if (!res.ok || !order.success || order.error) {
+                    payButton.innerHTML = originalContent;
+                    payButton.disabled = false;
+                    showToast(order.error || "Failed to create order", "error");
+                    return;
+                }
                 
                 const options = {
                     key: order.key,
@@ -480,6 +498,7 @@
                         const verify = await fetch('/verify-payment', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
                             body: JSON.stringify({
                                 razorpay_order_id: response.razorpay_order_id,
                                 razorpay_payment_id: response.razorpay_payment_id,
@@ -489,10 +508,24 @@
                             })
                         });
                         const d = await verify.json();
+                        console.log('Verify response:', verify.status, d);
+                        
+                        // Handle login required in verification
+                        if (verify.status === 401 || d.requiresLogin) {
+                            payButton.innerHTML = originalContent;
+                            payButton.disabled = false;
+                            window.location.href = d.loginRedirectUrl;
+                            return;
+                        }
+                        
                         if(d.success) {
                             payButton.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
                             payButton.style.background = 'var(--v-success)';
                             window.location.href = d.downloadUrl;
+                        } else {
+                            showToast(d.message || "Verification failed", "error");
+                            payButton.innerHTML = originalContent;
+                            payButton.disabled = false;
                         }
                     },
                     modal: { 
@@ -504,9 +537,10 @@
                 };
                 new Razorpay(options).open();
             } catch (err) { 
-                showToast("Failed to initialize gateway.", "error");
+                console.error('Payment error:', err);
                 payButton.disabled = false; 
                 payButton.innerHTML = originalContent;
+                showToast(err.message || "Failed to initialize payment. Please try again.", "error");
             }
         };
     }

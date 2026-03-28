@@ -333,12 +333,31 @@
             const payNowBtn = document.getElementById('payNowBtn');
             if (payNowBtn) {
                 payNowBtn.onclick = async function (e) {
+                    const originalHTML = payNowBtn.innerHTML;
+                    payNowBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+                    payNowBtn.disabled = true;
+
                     try {
-                        const response = await fetch('/subscription/pay-now', { method: 'POST' });
+                        const response = await fetch('/subscription/pay-now', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include'
+                        });
                         const data = await response.json();
+                        console.log('Subscription pay-now response:', response.status, data);
+
+                        // Handle login required (check status first)
+                        if (response.status === 401 || data.requiresLogin) {
+                            payNowBtn.innerHTML = originalHTML;
+                            payNowBtn.disabled = false;
+                            window.location.href = data.loginRedirectUrl;
+                            return;
+                        }
 
                         if (!data.success) {
-                            alert("Failed to initialize payment. Please try again.");
+                            payNowBtn.innerHTML = originalHTML;
+                            payNowBtn.disabled = false;
+                            alert(data.error || "Failed to initialize payment. Please try again.");
                             return;
                         }
 
@@ -355,13 +374,25 @@
                                 const verifyRes = await fetch('/subscription/verify-payment', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
                                     body: JSON.stringify(response)
                                 });
                                 const result = await verifyRes.json();
+                                
+                                // Handle login required in verification
+                                if (result.requiresLogin) {
+                                    payNowBtn.innerHTML = originalHTML;
+                                    payNowBtn.disabled = false;
+                                    window.location.href = result.loginRedirectUrl;
+                                    return;
+                                }
+                                
                                 if (result.success) {
                                     window.location.href = "/dashboard?status=pro_active";
                                 } else {
-                                    alert("Payment verification failed. Please contact support.");
+                                    payNowBtn.innerHTML = originalHTML;
+                                    payNowBtn.disabled = false;
+                                    alert(result.message || "Payment verification failed. Please contact support.");
                                 }
                             },
                             "prefill": {
@@ -369,12 +400,20 @@
                                 "email": data.user.email,
                                 "contact": data.user.contact
                             },
-                            "theme": { "color": "#ff66a3" } // Vidyari Pink
+                            "theme": { "color": "#ff66a3" }, // Vidyari Pink
+                            "modal": {
+                                "ondismiss": () => {
+                                    payNowBtn.innerHTML = originalHTML;
+                                    payNowBtn.disabled = false;
+                                }
+                            }
                         };
                         const rzp = new Razorpay(options);
                         rzp.open();
                     } catch (error) {
                         console.error("Error initiating payment:", error);
+                        payNowBtn.innerHTML = originalHTML;
+                        payNowBtn.disabled = false;
                         alert("An error occurred. Please try again later.");
                     }
                 };
