@@ -522,13 +522,17 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
       const categoryMap = {};
       const searchKeywords = [];
 
+      const userId = req.user._id;
+      console.log('🔍 [RECOMMEND-ASSETS] Generating recommendations for userId:', userId);
+
       // ═══════════════════════════════════════════════════════════
       // 1. GET DIRECT INTERESTS (file/course views and interactions)
       // ═══════════════════════════════════════════════════════════
-      console.log('📚 [RECOMMEND-ASSETS] Fetching user interests...');
-      const userInterests = await userActivity.getUserInterests(req.user._id, 50);
+      console.log('📚 [RECOMMEND-ASSETS] Fetching user interests for:', userId);
+      const userInterests = await userActivity.getUserInterests(userId, 50);
       console.log('📚 [RECOMMEND-ASSETS] User interests found:', {
         count: userInterests.length,
+        userId,
         sample: userInterests.slice(0, 2)
       });
 
@@ -551,17 +555,19 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
       }
 
       // ═══════════════════════════════════════════════════════════
-      // 2. GET SEARCH KEYWORDS (from all search activities)
+      // 2. GET SEARCH KEYWORDS (from THIS user's search activities ONLY)
       // ═══════════════════════════════════════════════════════════
+      console.log('🔍 [RECOMMEND-ASSETS] Fetching search history for userId:', userId);
       const searchActivities = await userActivity
         .find({
-          userId: req.user._id,
+          userId: userId, // STRICT: Only this user's searches
           activityType: 'search',
           searchQuery: { $exists: true, $ne: null },
         })
         .sort({ createdAt: -1 })
         .limit(20)
-        .select('searchQuery');
+        .select('searchQuery')
+        .lean();
 
       const uniqueSearches = {};
       searchActivities.forEach((activity) => {
@@ -576,16 +582,19 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
         .slice(0, 10)
         .map(([query]) => query);
 
+      console.log('🔍 [RECOMMEND-ASSETS] Top searches for user:', { userId, topSearches });
+
       // ═══════════════════════════════════════════════════════════
-      // 3. GET DOWNLOAD & TIME SPENT PATTERNS
+      // 3. GET DOWNLOAD & TIME SPENT PATTERNS (THIS user ONLY)
       // ═══════════════════════════════════════════════════════════
       const downloadActivities = await userActivity
         .find({
-          userId: req.user._id,
+          userId: userId, // STRICT: Only this user's downloads
           activityType: 'file_download',
         })
         .limit(20)
-        .select('fileId');
+        .select('fileId')
+        .lean();
 
       const downloadedFileIds = downloadActivities
         .map((a) => a.fileId)
@@ -593,12 +602,13 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
 
       const timeSpentActivities = await userActivity
         .find({
-          userId: req.user._id,
+          userId: userId, // STRICT: Only this user's time spent
           pageType: 'file',
-          timeSpentSeconds: { $gt: 30 }, // Users who spent more than 30 seconds
+          timeSpentSeconds: { $gt: 30 },
         })
         .limit(20)
-        .select('fileId');
+        .select('fileId')
+        .lean();
 
       const viewedFileIds = timeSpentActivities
         .map((a) => a.fileId)
@@ -606,7 +616,14 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
 
       const allRelevantFileIds = [...downloadedFileIds, ...viewedFileIds, ...Object.values(userInterests).filter(i => i._id.fileId).map(i => i._id.fileId)];
 
-      // Get similar files based on downloads/views
+      console.log('📊 [RECOMMEND-ASSETS] Activity summary for user:', {
+        userId,
+        downloadCount: downloadedFileIds.length,
+        viewCount: viewedFileIds.length,
+        categoriesIdentified: Object.keys(categoryMap).length,
+      });
+
+      // Get similar files based on THIS user's downloads/views
       if (allRelevantFileIds.length > 0) {
         try {
           const relevantFiles = await File.find({ _id: { $in: allRelevantFileIds } })
@@ -615,7 +632,7 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
           
           relevantFiles.forEach((file) => {
             if (file.category) {
-              categoryMap[file.category] = (categoryMap[file.category] || 0) + 2; // Weight downloads/views higher
+              categoryMap[file.category] = (categoryMap[file.category] || 0) + 2;
             }
           });
         } catch (e) {
@@ -624,15 +641,28 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
       }
 
       // ═══════════════════════════════════════════════════════════
-      // 4. BUILD FINAL RECOMMENDATIONS
+      // 4. BUILD FINAL RECOMMENDATIONS (ONLY IF USER HAS ACTIVITY)
       // ═══════════════════════════════════════════════════════════
 
       const categories = Object.keys(categoryMap);
       const alreadyInteractedIds = new Set([...allRelevantFileIds, ...userInterests.filter(i => i._id.fileId).map(i => i._id.fileId).filter(id => id)]);
 
-      if (assetType === 'files' || assetType === 'both') {
-        // Get files by category
-        if (categories.length > 0) {
+      console.log('🎯 [RECOMMEND-ASSETS] Recommendation check for user:', {
+        userId,
+        hasCategoriesOfInterest: categories.length > 0,
+        categories: categories.length > 0 ? categories : 'NONE',
+        userInterestsCount: userInterests.length,
+        downloadCount: downloadedFileIds.length,
+        viewCount: viewedFileIds.length,
+        topSearchesCount: topSearches.length,
+      });
+
+      // STRICT: Only show personalized recommendations if user has activity
+      if (categories.length > 0) {
+        console.log('✅ [RECOMMEND-ASSETS] User has activity, generating personalized recommendations for userId:', userId);
+        
+        if (assetType === 'files' || assetType === 'both') {
+          // Get files by category THIS user is interested in
           const recommedFilesByCategory = await File.find({
             category: { $in: categories },
             _id: { $nin: Array.from(alreadyInteractedIds) },
@@ -642,10 +672,16 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
             .select('title slug category price userId downloadCount likes fileType filename user imageType rating _id')
             .lean();
 
+          console.log('📁 [RECOMMEND-ASSETS] Files found by category:', {
+            userId,
+            categories: categories.length,
+            filesFound: recommedFilesByCategory.length,
+          });
+
           recommendations.push(...recommedFilesByCategory);
         }
 
-        // Get files matching search keywords if categories are not enough
+        // Get files matching THIS user's search keywords
         if (topSearches.length > 0 && recommendations.length < limit) {
           const filesBySearch = await File.find({
             $or: [
@@ -659,6 +695,12 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
             .select('title slug category price userId downloadCount likes fileType filename user imageType rating _id')
             .lean();
 
+          console.log('🔍 [RECOMMEND-ASSETS] Files found by search:', {
+            userId,
+            searchQueries: topSearches.length,
+            filesFound: filesBySearch.length,
+          });
+
           const recommendedIds = new Set(recommendations.map(r => r._id.toString()));
           filesBySearch.forEach(f => {
             if (!recommendedIds.has(f._id.toString())) {
@@ -669,7 +711,7 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
       }
 
       if (assetType === 'courses' || assetType === 'both') {
-        // Get courses by category
+        // Get courses by category THIS user is interested in
         if (categories.length > 0) {
           const userCourseIds = userInterests
             .filter(i => i._id.courseId)
@@ -686,54 +728,62 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
             .select('title slug category price rating enrollCount instructor')
             .lean();
 
+          console.log('📚 [RECOMMEND-ASSETS] Courses found:', {
+            userId,
+            coursesFound: recommendedCourses.length,
+          });
+
           recommendations.push(...recommendedCourses);
         }
       }
 
       // ═══════════════════════════════════════════════════════════
-      // 5. FALLBACK FOR NEW USERS (NO ACTIVITY HISTORY)
+      // 5. FALLBACK FOR NEW USERS - ONLY IF NO ACTIVITY
       // ═══════════════════════════════════════════════════════════
       if (recommendations.length === 0) {
-        console.log('📭 [RECOMMEND-ASSETS] No personalized recommendations, showing trending items...');
+        // User has NO activity - show trending as fallback
+        console.log('📭 [RECOMMEND-ASSETS] User has NO activity, showing trending fallback for userId:', userId);
         
         if (assetType === 'files' || assetType === 'both') {
-          // Get trending/popular files for new users
-          const trendingFiles = await File.find({
-            _id: { $nin: Array.from(alreadyInteractedIds) },
-          })
+          const trendingFiles = await File.find({})
             .sort({ downloadCount: -1, likes: -1 })
             .limit(limit)
             .select('title slug category price userId downloadCount likes fileType filename user imageType rating _id')
             .lean();
 
+          console.log('🔥 [RECOMMEND-ASSETS] Trending files for new user:', {
+            userId,
+            trendingFilesFound: trendingFiles.length,
+          });
+
           recommendations.push(...trendingFiles);
         }
 
         if ((assetType === 'courses' || assetType === 'both') && recommendations.length < limit) {
-          // Get trending courses for new users
-          const userCourseIds = userInterests
-            .filter(i => i._id.courseId)
-            .map(i => i._id.courseId)
-            .filter(id => id);
-
-          const trendingCourses = await Course.find({
-            _id: { $nin: userCourseIds },
-            published: true,
-          })
+          const trendingCourses = await Course.find({ published: true })
             .sort({ enrollCount: -1, rating: -1 })
             .limit(limit)
             .select('title slug category price rating enrollCount instructor')
             .lean();
 
+          console.log('🔥 [RECOMMEND-ASSETS] Trending courses for new user:', {
+            userId,
+            trendingCoursesFound: trendingCourses.length,
+          });
+
           recommendations.push(...trendingCourses);
         }
+      } else {
+        // User HAS activity - recommendations based on their activity
+        console.log('✨ [RECOMMEND-ASSETS] Personalized recommendations generated for userId:', {
+          userId,
+          recommendationsGenerated: recommendations.length,
+        });
       }
 
       // ═══════════════════════════════════════════════════════════
-      // 6. SHUFFLE RECOMMENDATIONS FOR VARIETY
+      // 6. SHUFFLE FOR VARIETY (only if recommendations exist)
       // ═══════════════════════════════════════════════════════════
-      // Shuffle the recommendations array to show different items each time
-      // while keeping the top results slightly favored
       const shuffle = (arr) => {
         for (let i = arr.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -743,7 +793,6 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
       };
 
       if (recommendations.length > limit) {
-        // Shuffle and take top items for variety
         recommendations = shuffle(recommendations).slice(0, limit);
       }
 
@@ -755,24 +804,20 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
         topSearches: topSearches.slice(0, 5),
         recommendations: recommendations.slice(0, limit).map(rec => ({
           ...rec,
-          // Generate preview URL the same way /files endpoint does
           previewUrl: `https://d3epchi0htsp3c.cloudfront.net/files-previews/images/${rec._id}.${rec.imageType || 'jpg'}`
         })),
-        message: 'Recommendations based on your searches, downloads, and interests',
+        message: recommendations.length > 0 
+          ? 'Recommendations based on your searches, downloads, and interests'
+          : 'Trending items to explore',
       });
 
       console.log('✅ [RECOMMEND-ASSETS] Recommendations sent successfully', {
+        userId,
         totalRecommendations: recommendations.length,
         recommendationsSent: recommendations.slice(0, limit).length,
-        sample: recommendations.slice(0, 1).map(r => ({
-          id: r._id,
-          title: r.title || r.filename,
-          previewUrl: r.previewUrl ? 'present' : 'MISSING',
-          fileType: r.fileType
-        })),
+        basedOnUserActivity: categories.length > 0,
         topCategories: Object.keys(categoryMap).length,
         topSearches: topSearches.length,
-        userId: req.user._id
       });
     } catch (innerError) {
       console.error('❌ [RECOMMEND-ASSETS] Error generating recommendations:', innerError.message, {
