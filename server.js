@@ -416,6 +416,28 @@ app.get("/my-courses", authenticateJWT_user, async (req, res) => {
   }
 });
 
+// Handle /analytics-dashboard route
+app.get("/analytics-dashboard", authenticateJWT_user, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.redirect("/user-login");
+    }
+
+    res.render("analytics-dashboard", {
+      isLoggedin: !!req.user,
+      username: req.user?.username || req.user?.email,
+      useremail: req.user?.email,
+      uId: req.user?._id,
+      profileUrl: req.user?.profilePicUrl || '/images/avatar.jpg',
+    });
+  } catch (error) {
+    console.error("Error rendering analytics dashboard:", error);
+    res.status(500).render("500", {
+      error: "Failed to load analytics dashboard",
+    });
+  }
+});
+
 const apiRoutes = require('./routes/Adanalytics.js');
 
 app.use('/api/creator', apiRoutes);

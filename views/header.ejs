@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-user-id="<%= typeof uId !== 'undefined' && uId ? uId : '' %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -591,32 +591,24 @@
     <% } %>
 
     <!-- Activity Tracking for Personalized Recommendations -->
-    <div style="display:none;" data-user-id="<%= typeof user !== 'undefined' && user ? user._id : '' %>"></div>
     <script src="/js/activity-tracker.js" defer></script>
-    <script>
+    <script defer>
+        // Wait for ActivityTracker class to load, then create and initialize global instance
         document.addEventListener('DOMContentLoaded', function() {
             try {
-                if (typeof ActivityTracker_Instance !== 'undefined') {
-                    ActivityTracker_Instance.init({
-                        autoTrack: true,
-                        batchInterval: 10000,
-                        trackElements: [
-                            'a[href]',
-                            'button',
-                            '.download-btn',
-                            '.like-btn',
-                            '.review-btn',
-                            '.enroll-btn',
-                            '.add-to-cart',
-                            '.filter-btn',
-                            '.search-form input',
-                            '[data-track]'
-                        ]
-                    });
+                if (typeof ActivityTracker !== 'undefined') {
+                    // Create the global instance
+                    window.ActivityTracker_Instance = new ActivityTracker();
+                    
+                    // Now initialize it with autoTrack enabled
+                    window.ActivityTracker_Instance.init({ autoTrack: true });
+                    
+                    console.log('✅ [Header] ActivityTracker_Instance created and initialized');
+                } else {
+                    console.warn('⚠️  [Header] ActivityTracker class not available');
                 }
             } catch (error) {
-                // Silently ignore activity tracker initialization errors
-                console.debug('Activity tracker init error (non-critical):', error.message);
+                console.error('❌ [Header] Activity tracker initialization error:', error.message);
             }
         });
     </script>

@@ -1,6 +1,6 @@
 <%- include("header") %>
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth" data-file-id="<%= file._id %>" data-user-id="<%= uId || '' %>">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
@@ -966,9 +966,120 @@ const isFree = Number(priceDetails.total) === 0;
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
+// Activity Tracker already loaded in header.ejs
 const FILE_ID   = "<%= file._id %>";
 const FILE_NAME = "<%- (file.filename || 'Resource').replace(/"/g,'&quot;') %>";
 let   activeTotal = <%= priceDetails.total %>;
+
+// Wait for tracker to be ready, then initialize for this page
+if (typeof window.ActivityTracker_Instance !== 'undefined') {
+  console.log('📍 [file-details] Tracker found, initializing...');
+  window.ActivityTracker_Instance.init({ autoTrack: true });
+  console.log('✅ [file-details] Tracker initialized');
+} else {
+  console.warn('⚠️  [file-details] Tracker not available yet, will retry...');
+  // Retry after short delay
+  setTimeout(() => {
+    if (typeof window.ActivityTracker_Instance !== 'undefined') {
+      console.log('📍 [file-details] Retrying tracker initialization...');
+      window.ActivityTracker_Instance.init({ autoTrack: true });
+    } else {
+      console.error('❌ [file-details] Tracker failed to initialize');
+    }
+  }, 500);
+}
+
+/* ════════ ACTIVITY TRACKING ════════ */
+// Track downloads when user clicks download button
+document.addEventListener('click', (e) => {
+  const downloadBtn = e.target.closest('a[href*="/download"]');
+  if (downloadBtn && window.ActivityTracker_Instance) {
+    window.ActivityTracker_Instance.trackActivity({
+      activityType: 'file_download',
+      pageType: 'file',
+      fileId: FILE_ID,
+      elementClicked: 'download-btn',
+      metadata: { fileName: FILE_NAME }
+    });
+    
+    // Track cart interaction (file added to cart/download)
+    window.ActivityTracker_Instance.trackCartInteraction('add', {
+      fileId: FILE_ID,
+      fileName: FILE_NAME,
+      price: activeTotal
+    });
+  }
+});
+
+// Track purchase/checkout button
+const payBtn = document.getElementById('payBtn');
+if (payBtn && window.ActivityTracker_Instance) {
+  payBtn.addEventListener('click', () => {
+    // Track checkout start for cart abandonment detection
+    window.ActivityTracker_Instance.trackCartInteraction('checkout_start', {
+      fileId: FILE_ID,
+      fileName: FILE_NAME,
+      amount: activeTotal
+    });
+    
+    window.ActivityTracker_Instance.trackActivity({
+      activityType: 'purchase_view',
+      pageType: 'file',
+      fileId: FILE_ID,
+      metadata: { fileName: FILE_NAME, amount: activeTotal }
+    });
+  });
+}
+
+// Track like button
+const likeBtn = document.getElementById('likeBtn');
+if (likeBtn && window.ActivityTracker_Instance) {
+  likeBtn.addEventListener('click', () => {
+    window.ActivityTracker_Instance.trackActivity({
+      activityType: 'click',
+      pageType: 'file',
+      fileId: FILE_ID,
+      elementClicked: 'like-btn',
+      metadata: { fileName: FILE_NAME }
+    });
+  });
+}
+
+// Track review modal open and review submissions
+const origOpenReviewModal = window.openReviewModal;
+window.openReviewModal = function() {
+  if (window.ActivityTracker_Instance) {
+    window.ActivityTracker_Instance.trackReviewInteraction(FILE_ID, 'view');
+  }
+  origOpenReviewModal?.call(this);
+};
+
+// Track review form submission
+const reviewForm = document.getElementById('reviewForm');
+if (reviewForm && window.ActivityTracker_Instance) {
+  reviewForm.addEventListener('submit', (e) => {
+    const ratingInput = reviewForm.querySelector('input[type="range"]');
+    const reviewText = reviewForm.querySelector('textarea');
+    
+    const rating = ratingInput ? parseInt(ratingInput.value) : null;
+    const text = reviewText ? reviewText.value : null;
+    
+    window.ActivityTracker_Instance.trackReviewInteraction(FILE_ID, 'submit', rating, text);
+  });
+}
+
+// Track category affinity when page loads
+if (window.ActivityTracker_Instance && typeof FILE_CATEGORY !== 'undefined') {
+  window.ActivityTracker_Instance.trackCategoryAffinity(FILE_CATEGORY, 0);
+}
+
+// Track helpful review clicks
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.helpful-btn') && window.ActivityTracker_Instance) {
+    window.ActivityTracker_Instance.trackReviewInteraction(FILE_ID, 'helpful');
+  }
+});
+
 
 /* ════════ TOAST ════════ */
 function showToast(msg, type='success') {

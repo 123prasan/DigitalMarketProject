@@ -44,15 +44,32 @@ class ActivityTracker {
     this.options = { ...defaults, ...options };
     this.userId = this.getUserIdFromDOM();
 
+    console.log('🚀 [ActivityTracker] Initializing...', {
+      userId: this.userId,
+      dataFileId: document.documentElement.getAttribute('data-file-id'),
+      dataUserId: document.documentElement.getAttribute('data-user-id'),
+      sessionId: this.sessionId,
+      autoTrack: this.options.autoTrack
+    });
+
     if (this.options.autoTrack) {
       this.setupAutoTracking();
     }
 
     this.isInitialized = true;
+    
+    // Initialize advanced tracking mechanisms
+    this.initializeAdvancedTracking();
+    
     if (this.userId) {
-      console.log('✓ ActivityTracker initialized - User ID:', this.userId.substring(0, 8) + '...');
+      console.log('✅ ActivityTracker initialized - User ID:', this.userId.substring(0, 8) + '...');
+      console.log('📊 Advanced tracking enabled: Reviews, Categories, Device, Browsing Paths, Cart Abandonment');
     } else {
-      console.log('⚠ ActivityTracker initialized - No user ID (guest user)');
+      console.error('❌ ActivityTracker initialized - NO USER ID! Activities will NOT be tracked.');
+      console.log('   Debug info:');
+      console.log('   - localStorage.userId:', localStorage.getItem('userId'));
+      console.log('   - DOM data-user-id:', document.documentElement.getAttribute('data-user-id'));
+      console.log('   - [data-user-id] elements:', document.querySelectorAll('[data-user-id]').length);
     }
   }
 
@@ -132,11 +149,39 @@ class ActivityTracker {
    * Get user ID from DOM
    */
   getUserIdFromDOM() {
+    // First try to get from html element data-user-id
+    const htmlElement = document.documentElement;
+    const htmlUserId = htmlElement.getAttribute('data-user-id');
+    if (htmlUserId && htmlUserId.trim() !== '') {
+      console.log('✅ [getUserIdFromDOM] Found in html element:', htmlUserId.substring(0, 8) + '...');
+      return htmlUserId;
+    }
+    
+    // Then try any element with data-user-id
     const userElement = document.querySelector('[data-user-id]');
     if (userElement) {
-      return userElement.getAttribute('data-user-id');
+      const userId = userElement.getAttribute('data-user-id');
+      if (userId && userId.trim() !== '') {
+        console.log('✅ [getUserIdFromDOM] Found in DOM element:', userId.substring(0, 8) + '...');
+        return userId;
+      }
     }
-    return localStorage.getItem('userId') || null;
+    
+    // Fall back to localStorage
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      console.log('✅ [getUserIdFromDOM] Found in localStorage:', storedUserId.substring(0, 8) + '...');
+      return storedUserId;
+    }
+    
+    console.error('❌ [getUserIdFromDOM] No userId found!', {
+      html_data_user_id: htmlUserId,
+      dom_data_user_id: userElement ? userElement.getAttribute('data-user-id') : null,
+      localStorage_userId: localStorage.getItem('userId'),
+      all_data_user_id_elements: Array.from(document.querySelectorAll('[data-user-id]')).length
+    });
+    
+    return null;
   }
 
   /**
@@ -148,20 +193,44 @@ class ActivityTracker {
     let courseId = null;
     let fileId = null;
 
-    // Detect page type from URL
-    if (path.includes('/course/')) {
-      pageType = 'course';
-      courseId = this.extractIdFromUrl(/\/course\/([a-f0-9]+)/);
-    } else if (path.includes('/file/') || path.includes('/files/')) {
+    // First, check for data attributes on page (more reliable)
+    const fileIdAttr = document.documentElement.getAttribute('data-file-id');
+    const courseIdAttr = document.documentElement.getAttribute('data-course-id');
+    
+    if (fileIdAttr) {
+      fileId = fileIdAttr;
       pageType = 'file';
-      fileId = this.extractIdFromUrl(/\/file(?:s)?\/([a-f0-9]+)/);
-    } else if (path.includes('/search')) {
+    }
+    if (courseIdAttr) {
+      courseId = courseIdAttr;
+      pageType = 'course';
+    }
+
+    // If not found in attributes, detect from URL
+    if (!fileId && path.includes('/file/')) {
+      pageType = 'file';
+      // File URL format: /file/:slug/:id - capture the last segment (after last /)
+      const fileMatch = path.match(/\/file\/[^\/]+\/([a-f0-9]+)$/i);
+      fileId = fileMatch ? fileMatch[1] : null;
+    }
+    
+    if (!courseId && path.includes('/course/')) {
+      pageType = 'course';
+      // Course URL format: /course/:id
+      const courseMatch = path.match(/\/course\/([a-f0-9]+)/i);
+      courseId = courseMatch ? courseMatch[1] : null;
+    }
+    
+    if (path.includes('/search')) {
       pageType = 'search';
-    } else if (path.includes('/profile')) {
+    }
+    if (path.includes('/profile')) {
       pageType = 'profile';
-    } else if (path === '/' || path.includes('/dashboard')) {
+    }
+    if (path === '/' || path.includes('/dashboard')) {
       pageType = 'home';
-    } else if (path.includes('/category')) {
+    }
+    if (path.includes('/category')) {
       pageType = 'category';
     }
 
@@ -377,12 +446,13 @@ class ActivityTracker {
   async trackActivity(activityData) {
     try {
       if (!this.isInitialized) {
+        console.warn('⚠️  ActivityTracker not initialized, skipping activity');
         return; // Silently skip if not initialized
       }
 
       // Skip tracking if user is not authenticated
       if (!this.userId) {
-        console.debug('Activity tracking skipped: User not authenticated');
+        console.warn('⚠️  No userId, activity tracking disabled (guest user)');
         return; // Silently skip for guests
       }
 
@@ -390,7 +460,17 @@ class ActivityTracker {
         const payload = {
           ...activityData,
           sessionId: this.sessionId,
+          userId: this.userId,
         };
+
+        console.log('📤 [ActivityTracker] Sending activity to server:', {
+          type: activityData.activityType,
+          pageType: activityData.pageType || 'unknown',
+          fileId: activityData.fileId || 'N/A',
+          searchQuery: activityData.searchQuery || 'N/A',
+          userId: this.userId.substring(0, 8) + '...',
+          sessionId: this.sessionId.substring(0, 8) + '...'
+        });
 
         // Send activity to server without blocking
         fetch('/api/track-activity', {
@@ -401,15 +481,22 @@ class ActivityTracker {
           body: JSON.stringify(payload),
         }).then(response => {
           if (response.ok) {
-            console.debug('✓ Activity sent:', { type: activityData.activityType, userId: this.userId });
+            console.log('✅ Activity tracked:', { type: activityData.activityType, status: response.status });
+          } else {
+            console.error('❌ Activity tracking failed:', { type: activityData.activityType, status: response.status });
+          }
+          return response.json();
+        }).then(data => {
+          if (data && data.message) {
+            console.log('📬 Server response:', data.message);
           }
         }).catch(err => {
           // Silently ignore network errors - don't disrupt user experience
-          console.debug('Activity tracking network error (non-critical):', err.message);
+          console.error('❌ Activity tracking network error:', err.message);
         });
       } catch (error) {
         // Silently fail - don't disrupt user experience
-        console.debug('Activity tracking error (non-critical):', error.message);
+        console.error('❌ Activity tracking error:', error.message);
       }
     } catch (error) {
       // Outer try-catch for any unexpected errors
@@ -464,6 +551,342 @@ class ActivityTracker {
   }
 
   /**
+   * ============================================
+   * ADVANCED TRACKING MECHANISMS
+   * ============================================
+   */
+
+  /**
+   * Track review/rating interaction
+   * @param {string} fileId - File or course ID
+   * @param {string} action - 'view', 'submit', 'helpful', 'report'
+   * @param {number} rating - Star rating (1-5)
+   * @param {string} reviewText - Review content (optional)
+   */
+  trackReviewInteraction(fileId, action = 'view', rating = null, reviewText = null) {
+    const timestamp = Date.now();
+    this.trackActivity({
+      activityType: 'review_interaction',
+      reviewAction: action,
+      fileId,
+      rating,
+      reviewLength: reviewText ? reviewText.length : 0,
+      pageType: 'file',
+      timestamp,
+    });
+
+    // Also track segment
+    localStorage.setItem(`review_${fileId}`, JSON.stringify({
+      lastAction: action,
+      lastRating: rating,
+      timestamp,
+    }));
+  }
+
+  /**
+   * Track category affinity - time spent in each category
+   * @param {string} category - Category name/ID
+   * @param {number} timeSpentSeconds - Time spent in category
+   */
+  trackCategoryAffinity(category, timeSpentSeconds) {
+    // Get existing category affinity from localStorage
+    const affinityData = JSON.parse(localStorage.getItem('categoryAffinity') || '{}');
+    
+    if (!affinityData[category]) {
+      affinityData[category] = { visits: 0, totalTime: 0 };
+    }
+    
+    affinityData[category].visits++;
+    affinityData[category].totalTime += timeSpentSeconds;
+    affinityData[category].lastVisit = Date.now();
+    
+    localStorage.setItem('categoryAffinity', JSON.stringify(affinityData));
+
+    this.trackActivity({
+      activityType: 'category_affinity',
+      category,
+      timeSpentSeconds,
+      categoryData: affinityData[category],
+      pageType: 'category',
+    });
+  }
+
+  /**
+   * Get device information and track device type
+   * @returns {Object} Device information
+   */
+  getDeviceInfo() {
+    const ua = navigator.userAgent;
+    const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase());
+    const isTablet = /ipad|android(?!.*mobi)|windows phone/i.test(ua.toLowerCase());
+    const deviceType = isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop';
+    
+    // Get browser info
+    let browser = 'unknown';
+    if (ua.indexOf('Firefox') > -1) browser = 'Firefox';
+    else if (ua.indexOf('Chrome') > -1) browser = 'Chrome';
+    else if (ua.indexOf('Safari') > -1) browser = 'Safari';
+    else if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) browser = 'Opera';
+    else if (ua.indexOf('Edge') > -1) browser = 'Edge';
+
+    // Get OS info
+    let os = 'unknown';
+    if (ua.indexOf('Win') > -1) os = 'Windows';
+    else if (ua.indexOf('Mac') > -1) os = 'MacOS';
+    else if (ua.indexOf('Linux') > -1) os = 'Linux';
+    else if (ua.indexOf('Android') > -1) os = 'Android';
+    else if (ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1) os = 'iOS';
+
+    const deviceInfo = {
+      deviceType,
+      browser,
+      os,
+      screenResolution: `${window.screen.width}x${window.screen.height}`,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language,
+      connectionSpeed: navigator.connection?.effectiveType || 'unknown',
+    };
+
+    // Store device info in session
+    sessionStorage.setItem('deviceInfo', JSON.stringify(deviceInfo));
+    return deviceInfo;
+  }
+
+  /**
+   * Track device type and context
+   */
+  trackDeviceContext() {
+    const deviceInfo = this.getDeviceInfo();
+    
+    this.trackActivity({
+      activityType: 'device_context',
+      ...deviceInfo,
+      pageType: this.getPageContext().pageType,
+    });
+
+    console.log('📱 [ActivityTracker] Device tracked:', deviceInfo);
+  }
+
+  /**
+   * Track browsing path - sequence of pages visited
+   */
+  trackBrowsingPath() {
+    // Initialize or get browsing path from session storage
+    let browsingPath = JSON.parse(sessionStorage.getItem('browsingPath') || '[]');
+    
+    const pageContext = this.getPageContext();
+    const pathEntry = {
+      timestamp: Date.now(),
+      pageType: pageContext.pageType,
+      fileId: pageContext.fileId,
+      courseId: pageContext.courseId,
+      referrer: document.referrer,
+      url: window.location.pathname,
+    };
+
+    browsingPath.push(pathEntry);
+    
+    // Keep last 50 pages in path
+    if (browsingPath.length > 50) {
+      browsingPath = browsingPath.slice(-50);
+    }
+
+    sessionStorage.setItem('browsingPath', JSON.stringify(browsingPath));
+
+    this.trackActivity({
+      activityType: 'browsing_path',
+      pathLength: browsingPath.length,
+      currentPath: pathEntry.pageType,
+      previousPath: browsingPath.length > 1 ? browsingPath[browsingPath.length - 2].pageType : null,
+      ...pageContext,
+    });
+
+    console.log('🛤️ [ActivityTracker] Browsing path tracked:', {
+      length: browsingPath.length,
+      current: pathEntry.pageType,
+      sequence: browsingPath.slice(-3).map(p => p.pageType),
+    });
+  }
+
+  /**
+   * Track cart-related activity for abandonment detection
+   * @param {string} action - 'add', 'remove', 'view', 'checkout_start', 'checkout_complete'
+   * @param {Object} itemData - Item information (fileId, price, etc.)
+   */
+  trackCartInteraction(action = 'view', itemData = {}) {
+    const cartData = JSON.parse(localStorage.getItem('cartSession') || '{}');
+    
+    const interaction = {
+      action,
+      itemData,
+      timestamp: Date.now(),
+      sessionId: this.sessionId,
+    };
+
+    // Track cart abandonment risk
+    if (action === 'checkout_start') {
+      cartData.lastCheckoutStart = Date.now();
+      cartData.checkoutAttempts = (cartData.checkoutAttempts || 0) + 1;
+    }
+
+    if (action === 'checkout_complete') {
+      cartData.completed = true;
+      cartData.completedAt = Date.now();
+      delete cartData.lastCheckoutStart;
+    }
+
+    if (action === 'add') {
+      if (!cartData.items) cartData.items = [];
+      cartData.items.push(itemData);
+    }
+
+    if (action === 'remove') {
+      if (cartData.items) {
+        cartData.items = cartData.items.filter(item => item.fileId !== itemData.fileId);
+      }
+    }
+
+    localStorage.setItem('cartSession', JSON.stringify(cartData));
+
+    // Calculate abandonment risk
+    const abandonmentRisk = {
+      checkoutAttempts: cartData.checkoutAttempts || 0,
+      itemsInCart: cartData.items ? cartData.items.length : 0,
+      timeSinceCheckoutStart: cartData.lastCheckoutStart 
+        ? Math.round((Date.now() - cartData.lastCheckoutStart) / 1000) 
+        : 0,
+      completed: cartData.completed || false,
+    };
+
+    this.trackActivity({
+      activityType: 'cart_interaction',
+      cartAction: action,
+      ...abandonmentRisk,
+      ...itemData,
+      pageType: 'checkout',
+    });
+
+    console.log('🛒 [ActivityTracker] Cart interaction tracked:', {
+      action,
+      itemsInCart: abandonmentRisk.itemsInCart,
+      checkoutAttempts: abandonmentRisk.checkoutAttempts,
+      completed: abandonmentRisk.completed,
+    });
+  }
+
+  /**
+   * Setup cart abandonment auto-tracking
+   */
+  setupCartAbandonmentTracking() {
+    try {
+      // Track add to cart
+      document.addEventListener('click', (e) => {
+        if (e.target.matches('.add-to-cart, [data-action="add-to-cart"]')) {
+          const fileId = e.target.getAttribute('data-file-id') 
+            || e.target.closest('[data-file-id]')?.getAttribute('data-file-id')
+            || document.documentElement.getAttribute('data-file-id');
+          
+          const fileName = e.target.getAttribute('data-file-name') 
+            || e.target.closest('[data-file-name]')?.getAttribute('data-file-name');
+          
+          const price = e.target.getAttribute('data-price') 
+            || e.target.closest('[data-price]')?.getAttribute('data-price');
+
+          this.trackCartInteraction('add', { fileId, fileName, price });
+        }
+
+        if (e.target.matches('.checkout-btn, [data-action="checkout"]')) {
+          this.trackCartInteraction('checkout_start', {});
+        }
+      });
+
+      // Detect checkout completion (purchase successful)
+      if (window.location.pathname.includes('/checkout-success') 
+          || window.location.pathname.includes('/payment-success')
+          || document.querySelector('[data-event="purchase-complete"]')) {
+        this.trackCartInteraction('checkout_complete', {});
+      }
+
+      console.log('🛒 [ActivityTracker] Cart abandonment tracking setup complete');
+    } catch (error) {
+      console.warn('Cart abandonment tracking setup failed:', error);
+    }
+  }
+
+  /**
+   * Setup review interaction auto-tracking
+   */
+  setupReviewTracking() {
+    try {
+      // Track review submissions
+      document.addEventListener('submit', (e) => {
+        if (e.target.matches('[data-form="review-form"], .review-form, [class*="review"][class*="form"]')) {
+          e.preventDefault(); // Let form submit, but track first
+          
+          const fileId = document.documentElement.getAttribute('data-file-id');
+          const ratingInput = e.target.querySelector('[name="rating"], input[type="range"]');
+          const reviewText = e.target.querySelector('[name="review"], textarea');
+          
+          const rating = ratingInput ? parseInt(ratingInput.value) : null;
+          const text = reviewText ? reviewText.value : null;
+
+          this.trackReviewInteraction(fileId, 'submit', rating, text);
+          
+          // Re-submit form
+          setTimeout(() => e.target.submit(), 100);
+        }
+      });
+
+      // Track review view/hover
+      document.addEventListener('mouseover', (e) => {
+        if (e.target.matches('[data-review-id], .review-item, [class*="review"]')) {
+          const reviewId = e.target.getAttribute('data-review-id');
+          if (reviewId && !e.target.hasAttribute('data-tracked-view')) {
+            const rating = e.target.querySelector('[class*="rating"], [data-rating]')?.getAttribute('data-rating');
+            this.trackReviewInteraction(reviewId, 'view', rating);
+            e.target.setAttribute('data-tracked-view', 'true');
+          }
+        }
+      });
+
+      console.log('⭐ [ActivityTracker] Review interaction tracking setup complete');
+    } catch (error) {
+      console.warn('Review tracking setup failed:', error);
+    }
+  }
+
+  /**
+   * Initialize all advanced tracking
+   */
+  initializeAdvancedTracking() {
+    try {
+      // Initialize device tracking
+      this.trackDeviceContext();
+
+      // Initialize browsing path tracking
+      this.trackBrowsingPath();
+
+      // Setup cart abandonment detection
+      this.setupCartAbandonmentTracking();
+
+      // Setup review interaction tracking
+      this.setupReviewTracking();
+
+      // Track category affinity every 30 seconds
+      setInterval(() => {
+        const category = this.getPageContext().pageType;
+        if (category) {
+          this.trackCategoryAffinity(category, 30);
+        }
+      }, 30000);
+
+      console.log('🚀 [ActivityTracker] Advanced tracking initialized');
+    } catch (error) {
+      console.warn('Advanced tracking initialization failed:', error);
+    }
+  }
+
+  /**
    * Get user interests
    */
   async getUserInterests(limit = 10) {
@@ -498,6 +921,13 @@ class ActivityTracker {
    */
   async getRecommendations(limit = 10, assetType = 'both') {
     try {
+      console.log('🔄 [ActivityTracker] Fetching recommendations...', {
+        limit,
+        assetType,
+        userId: this.userId ? this.userId.substring(0, 8) + '...' : 'NO_USER',
+        initialized: this.isInitialized
+      });
+
       const response = await fetch('/api/recommend-assets', {
         method: 'POST',
         headers: {
@@ -505,12 +935,32 @@ class ActivityTracker {
         },
         body: JSON.stringify({ limit, assetType }),
       });
+
+      console.log('📨 [ActivityTracker] API Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       if (response.ok) {
-        return await response.json();
+        const data = await response.json();
+        console.log('✅ [ActivityTracker] Recommendations received:', {
+          count: data.recommendations ? data.recommendations.length : 0,
+          topCategories: data.topCategories ? data.topCategories.length : 0,
+          topSearches: data.topSearches ? data.topSearches.length : 0,
+          message: data.message
+        });
+        return data;
+      } else {
+        console.error('❌ [ActivityTracker] API returned error:', {
+          status: response.status,
+          statusText: response.statusText
+        });
       }
     } catch (error) {
-      console.debug('Error fetching recommendations:', error.message);
+      console.error('❌ [ActivityTracker] Error fetching recommendations:', error.message, error.stack);
     }
+    console.log('📭 [ActivityTracker] Returning empty recommendations (error or no data)');
     return { recommendations: [], topCategories: [] };
   }
 

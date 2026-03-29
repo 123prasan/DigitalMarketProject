@@ -394,6 +394,333 @@
         .v-page-btn.is-active { background: var(--v-primary); color: white; border-color: transparent; box-shadow: 0 4px 12px rgba(11,87,208,0.2);}
         .v-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+        /* 16. Recommendations Section */
+        /* ═════ RECOMMENDATIONS SECTION (PREMIUM STYLE) ═════ */
+        .v-recommendations-section {
+            animation: fadeIn 0.6s ease-out;
+            margin-bottom: 80px;
+            padding: 48px 32px;
+            background: linear-gradient(135deg, #0b57d0 0%, #1a5ddc 50%, #0f3a9f 100%);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(11, 87, 208, 0.15);
+        }
+
+        /* Decorative background elements */
+        .v-recommendations-section::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        .v-recommendations-section::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: -60px;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+        }
+
+        .v-recommendations-section > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .v-recommendations-section-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .v-recommendations-section-title {
+            font-family: var(--v-font-display);
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .v-recommendations-section-title i {
+            font-size: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+            color: #ffd700;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .v-recommendations-section-subtitle {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.05rem;
+            margin: 0;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .v-recommendations-section .v-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        /* Recommendations card special styling */
+        .v-recommendations-section .v-card {
+            transition: all 0.35s cubic-bezier(0.2, 0, 0, 1);
+            transform-origin: center;
+        }
+
+        .v-recommendations-section .v-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(11, 87, 208, 0.2);
+        }
+
+        /* Badge enhancements for recommendations */
+        .v-recommendations-section .v-badge-category {
+            background: rgba(255, 255, 255, 0.98);
+            color: #0b57d0;
+            font-weight: 700;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .v-recommendations-section .v-badge-type {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #333;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Recommendation card content improvements */
+        .v-recommendations-section .v-card-content {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .v-recommendations-section .v-card-title {
+            color: #0b57d0;
+            font-weight: 700;
+        }
+
+        .v-recommendations-section .v-card-meta {
+            color: #5f6368;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .v-recommendations-section {
+                padding: 32px 20px;
+                margin-bottom: 60px;
+            }
+            .v-recommendations-section-title {
+                font-size: 1.8rem;
+            }
+            .v-recommendations-section .v-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           POPULAR/TRENDING SECTION STYLES
+           ═══════════════════════════════════════════════════════════════ */
+        
+        .v-popular-section {
+            animation: fadeIn 0.6s ease-out;
+            margin-bottom: 80px;
+            padding: 48px 32px;
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ea580c 100%);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.15);
+        }
+
+        /* Decorative background elements for popular section */
+        .v-popular-section::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+        }
+
+        .v-popular-section::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: -60px;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .v-popular-section > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .v-popular-section-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .v-popular-section-title {
+            font-family: var(--v-font-display);
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .v-popular-section-title i {
+            font-size: 2rem;
+            animation: flicker 2.5s ease-in-out infinite;
+            color: #fff;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+        }
+
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 1;
+                filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
+            }
+            50% {
+                opacity: 0.7;
+                filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+            }
+        }
+
+        .v-popular-section-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.05rem;
+            margin: 0;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .v-popular-section .v-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        /* Popular card special styling */
+        .v-popular-section .v-card {
+            transition: all 0.35s cubic-bezier(0.2, 0, 0, 1);
+            transform-origin: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .v-popular-section .v-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 24px 48px rgba(245, 158, 11, 0.25);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Trending badge styling */
+        .v-popular-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #ff6b35, #ff4500);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 11;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Badge enhancements for popular */
+        .v-popular-section .v-badge-category {
+            background: rgba(255, 255, 255, 0.98);
+            color: #f59e0b;
+            font-weight: 700;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .v-popular-section .v-badge-type {
+            background: linear-gradient(135deg, #ff6b35, #ff8a50);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Popular card content improvements */
+        .v-popular-section .v-card-content {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .v-popular-section .v-card-title {
+            color: #f59e0b;
+            font-weight: 700;
+        }
+
+        .v-popular-section .v-card-meta {
+            color: #5f6368;
+        }
+
+        .v-popular-section .v-card-img {
+            border: 3px solid rgba(245, 158, 11, 0.2);
+        }
+
+        /* Responsive adjustments for popular section */
+        @media (max-width: 768px) {
+            .v-popular-section {
+                padding: 32px 20px;
+                margin-bottom: 60px;
+            }
+            .v-popular-section-title {
+                font-size: 1.8rem;
+            }
+            .v-popular-section .v-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         /* 16. Toasts */
         .v-toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; pointer-events: none;}
         .v-toast { 
@@ -506,6 +833,34 @@
 
             <div class="v-active-filters" id="vActiveFilters"></div>
 
+            <!-- Recommended For You Section - PREMIUM DESIGN -->
+            <section id="vRecommendations" class="v-recommendations-section" style="display: none;">
+                <div class="v-recommendations-section-header">
+                    <h2 class="v-recommendations-section-title">
+                        <i class="fa-solid fa-sparkles"></i>
+                        Recommended For You
+                    </h2>
+                    <p class="v-recommendations-section-subtitle">
+                        Curated selections based on your interests & activities
+                    </p>
+                </div>
+                <div class="v-grid" id="vRecommendationsGrid"></div>
+            </section>
+
+            <!-- Popular/Trending Section - PREMIUM DESIGN -->
+            <section id="vPopular" class="v-popular-section" style="display: none;">
+                <div class="v-popular-section-header">
+                    <h2 class="v-popular-section-title">
+                        <i class="fa-solid fa-fire"></i>
+                        Trending Now
+                    </h2>
+                    <p class="v-popular-section-subtitle">
+                        Most downloaded and loved by the community
+                    </p>
+                </div>
+                <div class="v-grid" id="vPopularGrid"></div>
+            </section>
+
             <div class="v-controls">
                 <div class="v-controls-meta">
                     <span id="vTotalCount">0</span> Resources Found
@@ -545,6 +900,8 @@
     <div class="v-toast-container" id="vToastContainer"></div>
 
     <%-include("footer")%>
+
+    <!-- Activity Tracker already loaded in header.ejs -->
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -1111,6 +1468,286 @@
             }
 
             Network.fetchFiles(true);
+
+            // --- 9. LOAD RECOMMENDATIONS ---
+            const loadRecommendations = async () => {
+                try {
+                    // Wait for activity tracker to load
+                    let attempts = 0;
+                    while (typeof window.ActivityTracker_Instance === 'undefined' && attempts < 50) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        attempts++;
+                    }
+
+                    if (typeof window.ActivityTracker_Instance === 'undefined') {
+                        console.log('⚠️ Activity tracker not available');
+                        return;
+                    }
+
+                    console.log('✓ Activity tracker available, fetching recommendations...');
+                    const result = await window.ActivityTracker_Instance.getRecommendations(12, 'both');
+                    console.log('📊 Recommendations response:', result);
+                    
+                    const { recommendations, topCategories, topSearches } = result;
+                    
+                    console.log(`📍 Found ${recommendations ? recommendations.length : 0} recommendations`);
+                    console.log('📂 Top categories:', topCategories);
+                    console.log('🔍 Top searches:', topSearches);
+                    
+                    // Only show section if there are recommendations
+                    if (recommendations && recommendations.length > 0) {
+                        const recGrid = document.getElementById('vRecommendationsGrid');
+                        
+                        console.log('🎯 Rendering', recommendations.length, 'recommendations...');
+                        
+                        recGrid.innerHTML = recommendations.map((item, index) => {
+                            const isFree = item.price === 0 || item.price === '0';
+                            const link = `/file/${item.slug || Utils.slugify(item.title || item.filename)}/${item._id}`;
+                            const fullLink = window.location.origin + link;
+                            
+                            // IMPORTANT: Generate fallback image with category or filename
+                            const categoryForImage = item.category || 'Resource';
+                            const textForImage = (item.title || item.filename || 'File').substring(0, 20);
+                            const fallbackImage = `https://placehold.co/400x250/e8f0fe/0b57d0?text=${encodeURIComponent(textForImage)}&font=Outfit`;
+                            
+                            // Use previewUrl if available and not empty, otherwise use fallback
+                            const previewImage = (item.previewUrl && item.previewUrl.trim() && item.previewUrl.trim() !== 'null' && item.previewUrl.trim() !== 'undefined')
+                                ? item.previewUrl 
+                                : fallbackImage;
+                            
+                            // Debug logging
+                            if (index === 0 || !item.previewUrl) {
+                                console.log('🖼️ [Recommendations] Image debug:', {
+                                    index: index,
+                                    title: item.title || item.filename,
+                                    hasPreviewUrl: !!item.previewUrl,
+                                    previewUrl: item.previewUrl || 'MISSING',
+                                    category: categoryForImage,
+                                    imageBeingUsed: previewImage.substring(0, 80) + '...',
+                                    isFallback: !item.previewUrl
+                                });
+                            }
+                            
+                            const fileIcon = Utils.getFileIcon(item.fileType);
+                            const authorInitial = item.user ? item.user.charAt(0).toUpperCase() : 'V';
+                            const rating = item.rating || '4.8';
+                            const downloads = item.downloadCount || Math.floor(Math.random() * 500) + 12;
+
+                            return `
+                                <a href="${link}" class="v-card v-card-recommended" style="animation: slideUp 0.5s cubic-bezier(0.23, 1, 0.320, 1) ${index * 0.06}s forwards; opacity: 0; transform: translateY(30px);">
+                                    <div class="v-card-img-box">
+                                        <div class="v-card-recommended-badge" style="position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; z-index: 11; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4); display: flex; align-items: center; gap: 4px;">
+                                            <i class="fa-solid fa-fire" style="font-size: 0.85rem;"></i> Recommended
+                                        </div>
+                                        <div class="v-card-badges">
+                                            <span class="v-badge-category">${item.category || 'Resource'}</span>
+                                            <span class="v-badge-type" title="${item.fileType || 'Document'}"><i class="fa-solid ${fileIcon}"></i></span>
+                                        </div>
+                                        <img src="${previewImage}" class="v-card-img" loading="lazy" onerror="this.src='/images/File_Demo.svg'" style="transition: transform 0.6s cubic-bezier(0.23, 1, 0.320, 1);">
+                                        <div class="v-card-overlay-gradient" style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%); opacity: 0; transition: opacity 0.4s ease;"></div>
+                                    </div>
+                                    
+                                    <div class="v-card-content">
+                                        <h3 class="v-card-title v-card-title-recommended" title="${item.title || item.filename}" style="color: #0b57d0; font-weight: 700; line-height: 1.3;">${item.title || item.filename}</h3>
+                                        
+                                        <div class="v-card-meta" style="display: flex; align-items: center; gap: 12px; margin: 10px 0;">
+                                            <span class="v-card-meta-item" style="display: flex; align-items: center; gap: 4px; color: #f59e0b;">
+                                                <i class="fa-solid fa-star"></i> ${rating}
+                                            </span>
+                                            <span style="color: #e0e6ed;">•</span>
+                                            <span class="v-card-meta-item" style="display: flex; align-items: center; gap: 4px; color: #5f6368;">
+                                                <i class="fa-solid fa-cloud-arrow-down"></i> ${downloads}
+                                            </span>
+                                        </div>
+
+                                        <div class="v-card-author-row" style="padding: 8px 0; border-top: 1px solid #e0e6ed;">
+                                            <div class="v-card-author">
+                                                <div class="v-card-author-avatar" style="background: linear-gradient(135deg, #0b57d0, #0842a0); color: white; font-weight: 700;">${authorInitial}</div>
+                                                <span style="font-size: 0.9rem; color: #202124; font-weight: 500;">${item.user || 'Vidyari'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="v-card-footer">
+                                        <div class="v-price ${isFree ? 'is-free' : ''}" style="font-weight: 700; font-size: 1.1rem;">${Utils.formatPrice(item.price)}</div>
+                                        <div class="v-card-action-group">
+                                            <button class="v-card-action-btn v-share-btn" data-share-link="${fullLink}" title="Copy Link" onclick="event.preventDefault(); EventManager.share('${fullLink}');">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                            <div class="v-card-action-btn main"><i class="fa-solid fa-arrow-right"></i></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            `;
+                        }).join('');
+                        
+                        // Show the section
+                        document.getElementById('vRecommendations').style.display = 'block';
+                        console.log('✅ Recommendations section displayed successfully');
+                    } else {
+                        console.log('ℹ️ No recommendations to display');
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading recommendations:', error);
+                    // Silently fail - don't show section if recommendations can't be loaded
+                }
+            };
+
+            // Load recommendations after a short delay to ensure context is ready
+            setTimeout(loadRecommendations, 500);
+
+            // --- 10. LOAD POPULAR/TRENDING ITEMS ---
+            const loadPopular = async () => {
+                try {
+                    console.log('🔥 Loading popular/trending items...');
+                    
+                    const response = await fetch('/api/trending-content?days=7&limit=12');
+                    const data = await response.json();
+                    
+                    console.log('📊 Raw trending API response:', data);
+                    
+                    // Transform trending data with more robust handling
+                    const trendingItems = (Array.isArray(data) ? data : []).map((item, idx) => {
+                        try {
+                            // Extract content - it can be nested or flat
+                            const content = item.content || item;
+                            
+                            // Get ID from various locations
+                            const itemId = content._id || item._id?.fileId || item._id?.courseId || item._id;
+                            
+                            // Get title from various locations
+                            const itemTitle = content.title || content.filename || item.title || item.filename;
+                            
+                            // Get slug, category, etc
+                            const itemSlug = content.slug || Utils.slugify(itemTitle);
+                            const itemCategory = content.category || 'Resource';
+                            const itemPrice = content.price || 0;
+                            
+                            // Get download/engagement count
+                            const itemDownloads = content.downloads || content.downloadCount || item._id?.count || item.count || Math.floor(Math.random() * 1000) + 100;
+                            
+                            // Get rating
+                            const itemRating = content.rating || item.rating || 4.8;
+                            
+                            // Get file type and user
+                            const itemFileType = content.fileType || item._id?.fileType || 'pdf';
+                            const itemUser = item.userId || content.user || item.user || 'Vidyari';
+                            
+                            // Get preview URL
+                            const itemPreviewUrl = content.previewUrl || (content.imageType ? `https://d3epchi0htsp3c.cloudfront.net/files-previews/images/${itemId}.${content.imageType}` : null);
+                            
+                            const transformed = {
+                                _id: itemId,
+                                title: itemTitle,
+                                filename: itemTitle,
+                                slug: itemSlug,
+                                category: itemCategory,
+                                price: itemPrice,
+                                downloadCount: itemDownloads,
+                                rating: itemRating,
+                                fileType: itemFileType,
+                                user: itemUser,
+                                previewUrl: itemPreviewUrl
+                            };
+                            
+                            console.log(`✓ Item ${idx}:`, transformed);
+                            return transformed;
+                        } catch (err) {
+                            console.error(`❌ Error transforming item ${idx}:`, err, item);
+                            return null;
+                        }
+                    }).filter(item => item && item._id && item.title);
+                    
+                    console.log(`📊 Found ${trendingItems.length} valid trending items (from ${data.length} total)`);
+                    
+                    // Only show section if there are trending items
+                    if (trendingItems && trendingItems.length > 0) {
+                        const popGrid = document.getElementById('vPopularGrid');
+                        
+                        console.log('🎯 Rendering', trendingItems.length, 'trending items...');
+                        
+                        popGrid.innerHTML = trendingItems.map((item, index) => {
+                            const isFree = item.price === 0 || item.price === '0';
+                            const link = `/file/${item.slug}/${item._id}`;
+                            const fullLink = window.location.origin + link;
+                            
+                            // Generate fallback image
+                            const textForImage = (item.title || 'File').substring(0, 20);
+                            const fallbackImage = `https://placehold.co/400x250/fee2e2/ea580c?text=${encodeURIComponent(textForImage)}&font=Outfit`;
+                            
+                            // Use previewUrl if available, otherwise use fallback
+                            const previewImage = (item.previewUrl && item.previewUrl.trim() && item.previewUrl.trim() !== 'null' && item.previewUrl.trim() !== 'undefined')
+                                ? item.previewUrl 
+                                : fallbackImage;
+                            
+                            const fileIcon = Utils.getFileIcon(item.fileType);
+                            const authorInitial = item.user ? String(item.user).charAt(0).toUpperCase() : 'V';
+                            const rating = parseFloat(item.rating) || 4.8;
+                            const downloads = parseInt(item.downloadCount) || Math.floor(Math.random() * 1000) + 100;
+
+                            return `
+                                <a href="${link}" class="v-card" style="animation: slideUp 0.5s cubic-bezier(0.23, 1, 0.320, 1) ${index * 0.06}s forwards; opacity: 0; transform: translateY(30px);">
+                                    <div class="v-card-img-box">
+                                        <div class="v-popular-badge">
+                                            <i class="fa-solid fa-fire"></i> Trending
+                                        </div>
+                                        <div class="v-card-badges">
+                                            <span class="v-badge-category">${item.category}</span>
+                                            <span class="v-badge-type" title="${item.fileType}"><i class="fa-solid ${fileIcon}"></i></span>
+                                        </div>
+                                        <img src="${previewImage}" class="v-card-img" loading="lazy" onerror="this.src='/images/File_Demo.svg'" style="transition: transform 0.6s cubic-bezier(0.23, 1, 0.320, 1);">
+                                        <div class="v-card-overlay-gradient" style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%); opacity: 0; transition: opacity 0.4s ease;"></div>
+                                    </div>
+                                    
+                                    <div class="v-card-content">
+                                        <h3 class="v-card-title" title="${item.title}">${item.title}</h3>
+                                        
+                                        <div class="v-card-meta" style="display: flex; align-items: center; gap: 12px; margin: 10px 0;">
+                                            <span class="v-card-meta-item" style="display: flex; align-items: center; gap: 4px; color: #f59e0b;">
+                                                <i class="fa-solid fa-star"></i> ${rating.toFixed(1)}
+                                            </span>
+                                            <span style="color: #e0e6ed;">•</span>
+                                            <span class="v-card-meta-item" style="display: flex; align-items: center; gap: 4px; color: #5f6368;">
+                                                <i class="fa-solid fa-fire"></i> ${downloads}
+                                            </span>
+                                        </div>
+
+                                        <div class="v-card-author-row" style="padding: 8px 0; border-top: 1px solid #e0e6ed;">
+                                            <div class="v-card-author">
+                                                <div class="v-card-author-avatar" style="background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; font-weight: 700;">${authorInitial}</div>
+                                                <span style="font-size: 0.9rem; color: #202124; font-weight: 500;">${item.user || 'Vidyari'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="v-card-footer">
+                                        <div class="v-price ${isFree ? 'is-free' : ''}" style="font-weight: 700; font-size: 1.1rem;">${Utils.formatPrice(item.price)}</div>
+                                        <div class="v-card-action-group">
+                                            <button class="v-card-action-btn v-share-btn" data-share-link="${fullLink}" title="Copy Link" onclick="event.preventDefault(); EventManager.share('${fullLink}');">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                            <div class="v-card-action-btn main"><i class="fa-solid fa-arrow-right"></i></div>
+                                        </div>
+                                    </div>
+                                </a>
+                            `;
+                        }).join('');
+                        
+                        // Show the section
+                        document.getElementById('vPopular').style.display = 'block';
+                        console.log('✅ Popular/Trending section displayed successfully');
+                    } else {
+                        console.log('ℹ️ No valid trending items to display');
+                        document.getElementById('vPopular').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading popular items:', error);
+                    document.getElementById('vPopular').style.display = 'none';
+                }
+            };
+
+            // Load popular items after recommendations
+            setTimeout(loadPopular, 1000);
 
         });
     </script>

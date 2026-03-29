@@ -11,10 +11,12 @@ const fileSchema = new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now },
   category: { type: String, default: 'Uncategorized' },
   imageType:{type:String},
+  previewUrl: { type: String, default: null }, // URL to preview image for file
   fileSize: Number,
   downloadCount: { type: Number, default: 0 },
   fileType: { type: String, enum: ["pdf", "docx", "pptx"]},
   likes: { type: Number, default: 0 },
+  rating: { type: Number, default: 0, min: 0, max: 5 }, // File rating/review score
   
   // Security fields
   securityHash: { type: String, default: null }, // SHA256 hash of file for integrity verification
