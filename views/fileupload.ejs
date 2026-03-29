@@ -5,6 +5,9 @@
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
+<!-- Security Validation Scripts -->
+<script src="/js/clientFileValidator.js"></script>
+
 <div class="v-upload-master">
 
   <div id="upload-form-app-container"></div>
@@ -165,8 +168,14 @@
             <circle class="upload-form__progress-spinner-circle" r="20" cy="50" cx="50"></circle>
           </svg>
         </div>
+        
+        <!-- Stage Indicator -->
+        <div class="upload-form__stage-badge">
+          <span id="stageIndicator" class="upload-form__stage-indicator">① Checking</span>
+        </div>
+        
         <h2 id="uploadHeading" class="upload-form__main-title" style="margin-bottom: 8px;">Uploading...</h2>
-        <p id="uploadStatusMessage" class="upload-form__progress-status">Initializing secure connection...</p>
+        <p id="uploadStatusMessage" class="upload-form__progress-status">🔍 Checking file...</p>
         
         <div class="upload-form__progress-bar-wrapper">
           <div class="upload-form__progress-bar-info">
@@ -425,6 +434,25 @@
   .upload-form__progress-loader { margin: 0 auto 24px auto; width: 64px; height: 64px; color: var(--v-primary); }
   .upload-form__progress-status { color: var(--v-text-muted); margin-bottom: 32px; font-weight: 500;}
   
+  /* Stage Indicator Badge */
+  .upload-form__stage-badge {
+    display: flex; justify-content: center; margin-bottom: 16px;
+  }
+  .upload-form__stage-indicator {
+    display: inline-block; padding: 8px 16px; border-radius: var(--v-radius-pill);
+    font-size: 0.85rem; font-weight: 600; color: white;
+    background: var(--v-text-muted); transition: background 0.3s ease; letter-spacing: 0.3px;
+  }
+  .upload-form__stage-indicator.stage-validation {
+    background: #f57c00; /* Orange for checking */
+  }
+  .upload-form__stage-indicator.stage-uploading {
+    background: var(--v-primary); /* Blue for uploading */
+  }
+  .upload-form__stage-indicator.stage-finalizing {
+    background: var(--v-success); /* Green for finalizing */
+  }
+  
   .upload-form__progress-bar-wrapper { margin-bottom: 24px; text-align: left;}
   .upload-form__progress-bar-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--v-text-muted);}
   .upload-form__progress-bar { 
@@ -480,15 +508,29 @@
   (function() {
     if (!document.querySelector('.v-upload-master')) return;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      if (typeof Quill === 'undefined') {
-        const quillJs = document.createElement('script');
-        quillJs.src = 'https://cdn.quilljs.com/1.3.6/quill.js';
-        quillJs.onload = () => initializeComponent(true);
-        document.body.appendChild(quillJs);
+    // Wait for clientFileValidator to load
+    function waitForValidator(callback, maxAttempts = 50) {
+      if (typeof window.fileValidator !== 'undefined') {
+        callback();
+      } else if (maxAttempts > 0) {
+        setTimeout(() => waitForValidator(callback, maxAttempts - 1), 100);
       } else {
-        initializeComponent(true);
+        console.warn('⚠️ ClientFileValidator failed to load after 5 seconds');
+        callback(); // Continue anyway
       }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      waitForValidator(() => {
+        if (typeof Quill === 'undefined') {
+          const quillJs = document.createElement('script');
+          quillJs.src = 'https://cdn.quilljs.com/1.3.6/quill.js';
+          quillJs.onload = () => initializeComponent(true);
+          document.body.appendChild(quillJs);
+        } else {
+          initializeComponent(true);
+        }
+      });
     });
 
     function initializeComponent(isQuillAvailable) {
@@ -529,18 +571,18 @@
       }
 
       class Uploader {
-        constructor() { this.CHUNK_SIZE_MB = 5; this.queue = []; this.currentIndex = 0; this.state = this._resetState(); this.MAX_RETRIES = 3; }
+        constructor() { this.CHUNK_SIZE_MB = 5; this.queue = []; this.currentIndex = 0; this.state = this._resetState(); this.MAX_RETRIES = 3; this.currentStage = 'idle'; }
         _resetState() { return { file: null, fileType: null, fileId: null, key: null, generatedFileName: null, uploadId: null, completedParts: [], bytesUploadedFromCompletedParts: 0, isUploading: false, isPaused: false, currentXhr: null, uploadStartTime: null }; }
         _saveState() { sessionStorage.setItem('uploadState', JSON.stringify({ queue: this.queue, currentIndex: this.currentIndex, state: this.state, timestamp: Date.now() })); }
         _restoreState() { const saved = sessionStorage.getItem('uploadState'); if (saved) { try { const data = JSON.parse(saved); if (Date.now() - data.timestamp < 3600000) { this.queue = data.queue; this.currentIndex = data.currentIndex; this.state = data.state; return true; } } catch(e) {} sessionStorage.removeItem('uploadState'); } return false; }
         _clearState() { sessionStorage.removeItem('uploadState'); }
         enqueueFiles(files) { this.queue = files; this.currentIndex = 0; }
-        async startNext(onSuccess, onFail, onProgressUpdate) { if (this.currentIndex >= this.queue.length) { if (onSuccess) onSuccess(); return; } this.state = this._resetState(); const currentFile = this.queue[this.currentIndex]; this.state.file = currentFile.file; this.state.fileType = currentFile.type; this.state.fileId = currentFile.id; try { onProgressUpdate({ type: 'status', message: `Preparing to upload ${this.state.file.name}...` }); const response = await fetch(`/start-multipart-upload`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fileName: this.state.file.name, contentType: this.state.file.type, fileType: this.state.fileType, fileId: this.state.fileId }) }); if (!response.ok) throw new Error("Failed to initiate multipart upload."); const data = await response.json(); this.state.uploadId = data.uploadId; this.state.key = data.key; this.state.generatedFileName = data.generatedFileName; this.state.uploadStartTime = Date.now(); await this._uploadChunks(onProgressUpdate); if (this.state.isPaused) { return; } await this._completeUpload(onProgressUpdate); this.currentIndex++; await this.startNext(onSuccess, onFail, onProgressUpdate); } catch (error) { if (onFail) onFail(error); } }
-        _uploadChunks(onProgressUpdate) { return new Promise(async (resolve, reject) => { this.state.isUploading = true; const chunkSize = this.CHUNK_SIZE_MB * 1024 * 1024; const totalChunks = Math.ceil(this.state.file.size / chunkSize); for (let partNumber = this.state.completedParts.length + 1; partNumber <= totalChunks; partNumber++) { if (this.state.isPaused) { this.state.isUploading = false; return resolve(); } const start = (partNumber - 1) * chunkSize; const end = Math.min(start + chunkSize, this.state.file.size); const chunk = this.state.file.slice(start, end); onProgressUpdate({ type: 'status', message: `Uploading ${this.state.file.name} (part ${partNumber} of ${totalChunks})...` }); try { await this._uploadPart(partNumber, chunk, onProgressUpdate); } catch (error) { this.state.isUploading = false; return reject(error); } } this.state.isUploading = false; resolve(); }); }
-        _uploadPart(partNumber, chunk, onProgressUpdate, retryCount = 0) { return new Promise(async (resolve, reject) => { try { const queryString = `?key=${encodeURIComponent(this.state.key)}&uploadId=${this.state.uploadId}&partNumber=${partNumber}&fileType=${this.state.fileType}`; const response = await fetch(`/get-presigned-part-url${queryString}`); if (!response.ok) return reject(new Error("Failed to get presigned URL.")); const { url } = await response.json(); const xhr = new XMLHttpRequest(); this.state.currentXhr = xhr; xhr.upload.onprogress = (e) => { const totalBytesUploaded = this.state.bytesUploadedFromCompletedParts + e.loaded; const totalProgress = (totalBytesUploaded / this.state.file.size) * 100; const elapsedTime = (Date.now() - this.state.uploadStartTime) / 1000; const speed = totalBytesUploaded / elapsedTime; const timeRemaining = speed > 0 ? (this.state.file.size - totalBytesUploaded) / speed : Infinity; onProgressUpdate({ type: 'progress', progress: totalProgress, speed, timeRemaining, uploadedBytes: totalBytesUploaded, totalBytes: this.state.file.size }); }; xhr.onload = () => { if (xhr.status === 200) { this.state.completedParts.push({ ETag: xhr.getResponseHeader("ETag"), PartNumber: partNumber }); this.state.bytesUploadedFromCompletedParts += chunk.size; this._saveState(); resolve(); } else { reject(new Error(`Part upload failed with status ${xhr.status}.`)); } }; xhr.onerror = async () => { if (retryCount < this.MAX_RETRIES) { const waitTime = 1000 * (retryCount + 1); onProgressUpdate({ type: 'status', message: `Network error. Retrying part ${partNumber}... (${retryCount + 1}/${this.MAX_RETRIES})` }); setTimeout(() => { this._uploadPart(partNumber, chunk, onProgressUpdate, retryCount + 1).then(resolve).catch(reject); }, waitTime); } else { reject(new Error(`Part ${partNumber} upload failed after ${this.MAX_RETRIES} retries.`)); } }; xhr.onabort = () => resolve(); xhr.open("PUT", url); xhr.setRequestHeader("Content-Type", "application/octet-stream"); xhr.send(chunk); } catch (error) { reject(error); } }); }
-        async _completeUpload(onProgressUpdate) { onProgressUpdate({ type: 'status', message: "Finalizing upload..." }); const response = await fetch("/complete-multipart-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: this.state.key, uploadId: this.state.uploadId, parts: this.state.completedParts, fileType: this.state.fileType, fileId: this.state.fileId, generatedFileName: this.state.generatedFileName, fileSize: this.state.file.size }), }); if (!response.ok) throw new Error("Failed to complete upload."); }
-        togglePause(onProgressUpdate) { this.state.isPaused = !this.state.isPaused; if(this.state.isPaused) { if (this.state.currentXhr) this.state.currentXhr.abort(); onProgressUpdate({ type: 'status', message: 'Upload paused.' }); } else { onProgressUpdate({ type: 'status', message: 'Resuming upload...' }); this._uploadChunks(onProgressUpdate); } }
-        cancel(onCancel) { if (this.state.currentXhr) this.state.currentXhr.abort(); this.state = this._resetState(); this.queue = []; this.currentIndex = 0; this._clearState(); if(onCancel) onCancel(); }
+        async startNext(onSuccess, onFail, onProgressUpdate) { if (this.currentIndex >= this.queue.length) { if (onSuccess) onSuccess(); return; } this.state = this._resetState(); const currentFile = this.queue[this.currentIndex]; this.state.file = currentFile.file; this.state.fileType = currentFile.type; this.state.fileId = currentFile.id; try { this.currentStage = 'validation'; onProgressUpdate({ type: 'status', message: `🔍 Checking file "${this.state.file.name}"...`, stage: 'validation' }); const response = await fetch(`/start-multipart-upload`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fileName: this.state.file.name, contentType: this.state.file.type, fileType: this.state.fileType, fileId: this.state.fileId }) }); if (!response.ok) throw new Error("Failed to initiate multipart upload."); const data = await response.json(); this.state.uploadId = data.uploadId; this.state.key = data.key; this.state.generatedFileName = data.generatedFileName; this.state.uploadStartTime = Date.now(); this.currentStage = 'uploading'; onProgressUpdate({ type: 'status', message: `📤 Uploading "${this.state.file.name}"...`, stage: 'uploading' }); await this._uploadChunks(onProgressUpdate); if (this.state.isPaused) { return; } this.currentStage = 'finalizing'; await this._completeUpload(onProgressUpdate); this.currentIndex++; await this.startNext(onSuccess, onFail, onProgressUpdate); } catch (error) { if (onFail) onFail(error); } }
+        _uploadChunks(onProgressUpdate) { return new Promise(async (resolve, reject) => { this.state.isUploading = true; const chunkSize = this.CHUNK_SIZE_MB * 1024 * 1024; const totalChunks = Math.ceil(this.state.file.size / chunkSize); for (let partNumber = this.state.completedParts.length + 1; partNumber <= totalChunks; partNumber++) { if (this.state.isPaused) { this.state.isUploading = false; return resolve(); } const start = (partNumber - 1) * chunkSize; const end = Math.min(start + chunkSize, this.state.file.size); const chunk = this.state.file.slice(start, end); try { await this._uploadPart(partNumber, chunk, totalChunks, onProgressUpdate); } catch (error) { this.state.isUploading = false; return reject(error); } } this.state.isUploading = false; resolve(); }); }
+        _uploadPart(partNumber, chunk, totalChunks, onProgressUpdate, retryCount = 0) { return new Promise(async (resolve, reject) => { try { const queryString = `?key=${encodeURIComponent(this.state.key)}&uploadId=${this.state.uploadId}&partNumber=${partNumber}&fileType=${this.state.fileType}`; const response = await fetch(`/get-presigned-part-url${queryString}`); if (!response.ok) return reject(new Error("Failed to get presigned URL.")); const { url } = await response.json(); const xhr = new XMLHttpRequest(); this.state.currentXhr = xhr; xhr.upload.onprogress = (e) => { const totalBytesUploaded = this.state.bytesUploadedFromCompletedParts + e.loaded; const totalProgress = (totalBytesUploaded / this.state.file.size) * 100; const elapsedTime = (Date.now() - this.state.uploadStartTime) / 1000; const speed = totalBytesUploaded / elapsedTime; const timeRemaining = speed > 0 ? (this.state.file.size - totalBytesUploaded) / speed : Infinity; onProgressUpdate({ type: 'progress', progress: totalProgress, speed, timeRemaining, uploadedBytes: totalBytesUploaded, totalBytes: this.state.file.size, stage: 'uploading', partNumber, totalChunks }); }; xhr.onload = () => { if (xhr.status === 200) { this.state.completedParts.push({ ETag: xhr.getResponseHeader("ETag"), PartNumber: partNumber }); this.state.bytesUploadedFromCompletedParts += chunk.size; this._saveState(); resolve(); } else { reject(new Error(`Part upload failed with status ${xhr.status}.`)); } }; xhr.onerror = async () => { if (retryCount < this.MAX_RETRIES) { const waitTime = 1000 * (retryCount + 1); onProgressUpdate({ type: 'status', message: `⚠️ Network error. Retrying part ${partNumber}/${totalChunks}... (${retryCount + 1}/${this.MAX_RETRIES})`, stage: 'uploading' }); setTimeout(() => { this._uploadPart(partNumber, chunk, totalChunks, onProgressUpdate, retryCount + 1).then(resolve).catch(reject); }, waitTime); } else { reject(new Error(`Part ${partNumber} upload failed after ${this.MAX_RETRIES} retries.`)); } }; xhr.onabort = () => resolve(); xhr.open("PUT", url); xhr.setRequestHeader("Content-Type", "application/octet-stream"); xhr.send(chunk); } catch (error) { reject(error); } }); }
+        async _completeUpload(onProgressUpdate) { onProgressUpdate({ type: 'status', message: "✅ Finalizing & saving...", stage: 'finalizing' }); const response = await fetch("/complete-multipart-upload", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key: this.state.key, uploadId: this.state.uploadId, parts: this.state.completedParts, fileType: this.state.fileType, fileId: this.state.fileId, generatedFileName: this.state.generatedFileName, fileSize: this.state.file.size }), }); if (!response.ok) throw new Error("Failed to complete upload."); }
+        togglePause(onProgressUpdate) { this.state.isPaused = !this.state.isPaused; if(this.state.isPaused) { if (this.state.currentXhr) this.state.currentXhr.abort(); onProgressUpdate({ type: 'status', message: '⏸️ Upload paused.', stage: this.currentStage }); } else { onProgressUpdate({ type: 'status', message: '▶️ Resuming upload...', stage: this.currentStage }); this._uploadChunks(onProgressUpdate); } }
+        cancel(onCancel) { if (this.state.currentXhr) this.state.currentXhr.abort(); this.state = this._resetState(); this.queue = []; this.currentIndex = 0; this._clearState(); this.currentStage = 'idle'; if(onCancel) onCancel(); }
       }
 
       const ui = new UIHandler('upload-form-app-container');
@@ -656,8 +698,20 @@
       const getWordCount = (text) => text.trim().split(/\s+/).filter(word => word.length > 0).length;
 
       const updateProgressUI = (event) => {
-        const status=document.getElementById('uploadStatusMessage'), progressText=document.getElementById('uploadProgressText'), progressBar=document.getElementById('uploadProgressBar'), bytesText=document.getElementById('uploadBytesText'), speedText=document.getElementById('uploadSpeed'), timeText=document.getElementById('uploadTime');
-        if (event.type === 'status' && status) status.textContent = event.message;
+        const status=document.getElementById('uploadStatusMessage'), progressText=document.getElementById('uploadProgressText'), progressBar=document.getElementById('uploadProgressBar'), bytesText=document.getElementById('uploadBytesText'), speedText=document.getElementById('uploadSpeed'), timeText=document.getElementById('uploadTime'), stageIndicator=document.getElementById('stageIndicator');
+        if (event.type === 'status' && status) {
+          status.textContent = event.message;
+          // Update stage indicator if element exists
+          if (stageIndicator) {
+            const stageNames = { 'validation': '① Checking', 'uploading': '② Uploading', 'finalizing': '③ Finalizing', 'idle': 'Ready' };
+            stageIndicator.textContent = stageNames[event.stage] || event.stage;
+            // Add color coding based on stage
+            stageIndicator.className = 'upload-form__stage-indicator';
+            if (event.stage === 'validation') stageIndicator.classList.add('stage-validation');
+            else if (event.stage === 'uploading') stageIndicator.classList.add('stage-uploading');
+            else if (event.stage === 'finalizing') stageIndicator.classList.add('stage-finalizing');
+          }
+        }
         if (event.type === 'progress') {
           if(progressBar) progressBar.value = event.progress;
           if(progressText) progressText.textContent = `${event.progress.toFixed(1)}%`;
@@ -748,7 +802,6 @@
           
           const setupDropArea = (areaId, inputId, textId) => {
             const area = document.getElementById(areaId), input = document.getElementById(inputId), text = document.getElementById(textId);
-            const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024 * 1024; // 8 GB
             
             // Keyboard accessibility
             area.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
@@ -757,14 +810,43 @@
             ['dragenter', 'dragover'].forEach(eName => area.addEventListener(eName, e => { e.preventDefault(); area.classList.add('dragover'); }));
             ['dragleave', 'drop'].forEach(eName => area.addEventListener(eName, e => { e.preventDefault(); area.classList.remove('dragover'); }));
             area.addEventListener('drop', e => { input.files = e.dataTransfer.files; input.dispatchEvent(new Event('change')); });
-            input.addEventListener('change', () => {
+            
+            input.addEventListener('change', async () => {
               if (input.files.length > 0) {
                 const file = input.files[0];
-                if (inputId === 'fileUploadInput' && file.size > MAX_FILE_SIZE_BYTES) {
-                  alert(`File is too large (${formatBytes(file.size)}). Maximum allowed size is 8 GB.`);
-                  input.value = ''; area.classList.remove('file-selected'); text.textContent = 'PDF, ZIP, PPT, DOCS';
+                const fileType = inputId === 'imageUploadInput' ? 'image' : 'file';
+                
+                // 🔒 SECURITY VALIDATION
+                console.log(`🔒 SECURITY CHECK: Validating ${fileType} - ${file.name}`);
+                
+                // Wait for validator to be available
+                if (typeof window.fileValidator === 'undefined') {
+                  console.warn('⚠️ File validator not loaded yet, skipping validation');
+                  text.textContent = truncateFilename(file.name);
+                  area.classList.add('file-selected');
+                  checkFormValidity();
                   return;
                 }
+                
+                const validation = await window.fileValidator.validateFile(file, fileType);
+                
+                if (!validation.isValid) {
+                  console.error(`❌ ${fileType.toUpperCase()} VALIDATION FAILED:`, validation.errors);
+                  const errorMsg = validation.errors.join('\n• ');
+                  alert(`❌ Security Check Failed:\n• ${errorMsg}\n\nPlease select a different file.`);
+                  input.value = '';
+                  area.classList.remove('file-selected');
+                  text.textContent = inputId === 'imageUploadInput' ? 'Click or drag image here' : 'PDF, ZIP, PPT, DOCS';
+                  return;
+                }
+                
+                // Show warnings if any
+                if (validation.warnings.length > 0) {
+                  console.warn(`⚠️ ${fileType.toUpperCase()} WARNINGS:`, validation.warnings);
+                }
+                
+                console.log(`✅ ${fileType.toUpperCase()} VALIDATION PASSED - Safe to upload`);
+                
                 text.textContent = truncateFilename(file.name);
                 area.classList.add('file-selected');
               }

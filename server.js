@@ -24,7 +24,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 
-// require("dotenv").config();
+require("dotenv").config();
 // const useLocalStorage = process.env.USE_LOCAL_STORAGE === 'true';
 const mongoose = require("mongoose");
 const dayjs = require("dayjs");
@@ -47,6 +47,8 @@ const paymentRoutes = require("./routes/paymentRoutes");
 const instructorPayoutRoutes = require("./routes/instructorPayoutRoutes");
 const adminPaymentRoutes = require("./routes/adminPaymentRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const fileSecurityValidator = require('./services/fileSecurityValidator');
+const activityTrackingRoutes = require('./routes/activityTrackingRoutes');
 const authenticateJWT_user = require("./routes/authentication/jwtAuth.js");
 const User = require("./models/userData");
 const UserDownloads = require("./models/userDownloads.js");
@@ -343,6 +345,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/file-reviews", fileReviewRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use('/api', activityTrackingRoutes);
 app.use("/api/instructor", instructorPayoutRoutes);
 // apply JWT authentication to all admin API routes so req.user is populated
 // and unauthorized calls respond with JSON instead of HTML
@@ -1988,7 +1991,11 @@ app.get("/admin-login", (req, res) => {
       return res.redirect("/admin");
     } catch (error) {
       // Token is invalid, clear it and proceed to login page to show error
-      res.clearCookie("jwt", { domain: ".vidyari.com" });
+      const clearOptions = {};
+      if (process.env.NODE_ENV === "production") {
+        clearOptions.domain = ".vidyari.com";
+      }
+      res.clearCookie("jwt", clearOptions);
     }
   }
   res.render("login", { error: null });
@@ -2012,14 +2019,18 @@ app.post("/login", async (req, res) => {
     );
 
     // Set the token as an HTTP-only cookie with 24h maxAge
-    // specify domain to cover both vidyari.com and www.vidyari.com
-    res.cookie("jwt", token, {
+    // specify domain to cover both vidyari.com and www.vidyari.com (only in production)
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
       sameSite: "Lax",
-      domain: ".vidyari.com",
-    });
+    };
+    // Only set domain for production (vidyari.com), not for localhost
+    if (process.env.NODE_ENV === "production") {
+      cookieOptions.domain = ".vidyari.com";
+    }
+    res.cookie("jwt", token, cookieOptions);
 
     // Redirect to admin page upon successful login
     res.redirect("/admin");
@@ -2031,8 +2042,12 @@ app.post("/login", async (req, res) => {
 
 // Logout Route - Clears the JWT cookie
 app.get("/logout", (req, res) => {
-  res.clearCookie("jwt", { domain: ".vidyari.com" }); // Clear the JWT cookie from the browser
-  res.redirect("/login"); // Redirect to login page
+  const clearOptions = {};
+  if (process.env.NODE_ENV === "production") {
+    clearOptions.domain = ".vidyari.com";
+  }
+  res.clearCookie("jwt", clearOptions); // Clear the JWT cookie from the browser
+  res.redirect("/admin-login"); // Redirect to login page
 });
 
 // Admin Dashboard (Protected by JWT)
@@ -2389,7 +2404,7 @@ app.post("/send-notification", authenticateJWT, async (req, res) => {
   }
 });
 
-// Upload File (Protected by JWT)
+// Upload File (Protected by JWT) - With Comprehensive Security Validation
 app.post(
   "/upload-file",
   upload.fields([
@@ -2402,62 +2417,176 @@ app.post(
       const { filename, filedescription, price, category } = req.body;
       const pdfFile = req.files["file"]?.[0];
       const imageFile = req.files["previewImage"]?.[0];
-      if (!pdfFile || !imageFile)
-        return res.status(400).send("PDF and image are required");
+      
+      if (!pdfFile || !imageFile) {
+        return res.status(400).json({ 
+          success: false, 
+          error: "PDF file and preview image are required" 
+        });
+      }
 
-    // 1. Upload PDF to AWS S3 (vidyarimain2 bucket)
-    const pdfS3Key = `main-files/${Date.now()}_${pdfFile.originalname}`;
-    await s3.putObject({
-      Bucket: 'vidyarimain2',
-      Key: pdfS3Key,
-      Body: pdfFile.buffer,
-      ContentType: pdfFile.mimetype,
-    }).promise();
+      console.log(`\n🔒 SECURITY CHECK: Validating uploaded files by user ${req.user?.username || 'unknown'}`);
 
-    // 3. Save metadata in MongoDB, including file size
-    // (We'll upload preview after, using the generated MongoDB _id)
-    // determine owner (req.user may be admin, fallback to vidyari.inc user)
-    let ownerUser = null;
-    if (req.user && req.user._id) {
-      ownerUser = await User.findById(req.user._id);
-    }
-    if (!ownerUser) {
-      ownerUser = await User.findOne({ email: 'vidyari.inc@gmail.com' });
-    }
-    const ownerId = ownerUser ? ownerUser._id : null;
-    const ownerName = ownerUser ? ownerUser.username : 'Admin';
+      // ==================== FILE SECURITY VALIDATION ====================
+      
+      // 1. Validate PDF File
+      console.log(`📄 Validating PDF: ${pdfFile.originalname}`);
+      const pdfValidation = await fileSecurityValidator.securityCheck(
+        pdfFile.buffer,
+        pdfFile.originalname,
+        pdfFile.mimetype,
+        'pdf'
+      );
 
-    const newFile = await File.create({
-      userId: ownerId,
-      filename: filename || 'Untitled',
-      filedescription,
-      price: price || 0,
-      category: category || 'Uncategorized',
-      fileUrl: pdfS3Key,
-      uploadedAt: new Date(),
-      user: ownerName,
-      fileSize: pdfFile.size,
-      imageType: 'jpg',
-    });
+      if (!pdfValidation.isValid) {
+        console.error(`❌ PDF VALIDATION FAILED:`, pdfValidation.errors);
+        return res.status(400).json({
+          success: false,
+          error: "PDF file failed security validation",
+          details: {
+            filename: pdfFile.originalname,
+            reasons: pdfValidation.errors,
+            hash: pdfValidation.details.hash
+          }
+        });
+      }
 
-    // 2. Upload preview image to AWS S3 using the generated MongoDB _id
-    const previewS3Key = `files-previews/images/${newFile._id}.jpg`;
-    await s3.putObject({
-      Bucket: 'vidyari3',
-      Key: previewS3Key,
-      Body: imageFile.buffer,
-      ContentType: imageFile.mimetype,
-    }).promise();
-    //notification update
-    const newMessage = new Message({
-      message: `New file uploaded: ${filename} by ${req.user ? req.user.username : "Admin"}`,
-    });
-    await newMessage.save();
+      // 2. Validate Preview Image
+      console.log(`🖼️  Validating preview image: ${imageFile.originalname}`);
+      const imageValidation = await fileSecurityValidator.securityCheck(
+        imageFile.buffer,
+        imageFile.originalname,
+        imageFile.mimetype,
+        'image'
+      );
 
-    res.redirect("/admin?fileUploaded=1");
+      if (!imageValidation.isValid) {
+        console.error(`❌ IMAGE VALIDATION FAILED:`, imageValidation.errors);
+        return res.status(400).json({
+          success: false,
+          error: "Preview image failed security validation",
+          details: {
+            filename: imageFile.originalname,
+            reasons: imageValidation.errors,
+            hash: imageValidation.details.hash
+          }
+        });
+      }
+
+      // Log validation success
+      console.log(`✅ PDF VALIDATION PASSED - Safe to upload`);
+      console.log(`✅ IMAGE VALIDATION PASSED - Safe to upload`);
+      
+      if (pdfValidation.warnings.length > 0) {
+        console.warn(`⚠️ PDF Warnings:`, pdfValidation.warnings);
+      }
+      if (imageValidation.warnings.length > 0) {
+        console.warn(`⚠️ Image Warnings:`, imageValidation.warnings);
+      }
+
+      // ==================== UPLOAD TO S3 ====================
+      
+      // Both files passed validation - safe to upload
+      console.log(`\n📤 Uploading validated files to AWS S3...`);
+
+      // Upload PDF to AWS S3 (vidyarimain2 bucket)
+      const sanitizedFilename = fileSecurityValidator.sanitizeFilename(pdfFile.originalname);
+      const pdfS3Key = `main-files/${Date.now()}_${sanitizedFilename}`;
+      
+      await s3.putObject({
+        Bucket: 'vidyarimain2',
+        Key: pdfS3Key,
+        Body: pdfFile.buffer,
+        ContentType: pdfFile.mimetype,
+        Metadata: {
+          'original-filename': pdfFile.originalname,
+          'file-hash': pdfValidation.details.hash,
+          'uploaded-by': req.user?.username || 'Admin',
+          'upload-timestamp': new Date().toISOString()
+        }
+      }).promise();
+
+      console.log(`✅ PDF uploaded to S3: ${pdfS3Key}`);
+
+      // Save metadata in MongoDB with security info
+      let ownerUser = null;
+      if (req.user && req.user._id) {
+        ownerUser = await User.findById(req.user._id);
+      }
+      if (!ownerUser) {
+        ownerUser = await User.findOne({ email: 'vidyari.inc@gmail.com' });
+      }
+      const ownerId = ownerUser ? ownerUser._id : null;
+      const ownerName = ownerUser ? ownerUser.username : 'Admin';
+
+      const newFile = await File.create({
+        userId: ownerId,
+        filename: filename || 'Untitled',
+        filedescription,
+        price: price || 0,
+        category: category || 'Uncategorized',
+        fileUrl: pdfS3Key,
+        uploadedAt: new Date(),
+        user: ownerName,
+        fileSize: pdfFile.size,
+        imageType: 'jpg',
+        // Security metadata
+        securityHash: pdfValidation.details.hash,
+        securityValidated: true,
+        validationTimestamp: new Date(),
+      });
+
+      // Upload preview image to AWS S3
+      const previewS3Key = `files-previews/images/${newFile._id}.jpg`;
+      const sanitizedPreviewName = fileSecurityValidator.sanitizeFilename(imageFile.originalname);
+      
+      await s3.putObject({
+        Bucket: 'vidyari3',
+        Key: previewS3Key,
+        Body: imageFile.buffer,
+        ContentType: imageFile.mimetype,
+        Metadata: {
+          'original-filename': sanitizedPreviewName,
+          'image-hash': imageValidation.details.hash,
+          'uploaded-by': req.user?.username || 'Admin',
+          'upload-timestamp': new Date().toISOString()
+        }
+      }).promise();
+
+      console.log(`✅ Preview image uploaded to S3: ${previewS3Key}`);
+
+      // Create notification
+      const newMessage = new Message({
+        message: `✅ SECURE FILE UPLOADED: ${filename} by ${ownerName} (Security: PASSED)`,
+      });
+      await newMessage.save();
+
+      console.log(`\n✅ FILE UPLOAD COMPLETE - All security checks passed\n`);
+
+      return res.json({
+        success: true,
+        message: "File uploaded successfully - All security checks passed",
+        file: {
+          id: newFile._id,
+          filename: newFile.filename,
+          size: pdfFile.size,
+          category: newFile.category
+        },
+        security: {
+          validated: true,
+          pdfHash: pdfValidation.details.hash,
+          imageHash: imageValidation.details.hash,
+          warnings: [...pdfValidation.warnings, ...imageValidation.warnings]
+        }
+      });
+
     } catch (err) {
-      console.error('File upload error:', err);
-      res.status(500).send(`Upload failed: ${err.message}`);
+      console.error('❌ FILE UPLOAD ERROR:', err);
+      return res.status(500).json({
+        success: false,
+        error: "Upload failed",
+        message: err.message
+      });
     }
   }
 );

@@ -13,8 +13,15 @@ const fileSchema = new mongoose.Schema({
   imageType:{type:String},
   fileSize: Number,
   downloadCount: { type: Number, default: 0 },
- fileType: { type: String, enum: ["pdf", "docx", "pptx"]},
+  fileType: { type: String, enum: ["pdf", "docx", "pptx"]},
   likes: { type: Number, default: 0 },
+  
+  // Security fields
+  securityHash: { type: String, default: null }, // SHA256 hash of file for integrity verification
+  securityValidated: { type: Boolean, default: false }, // Whether file passed security checks
+  validationTimestamp: { type: Date, default: null }, // When security validation occurred
+  validationErrors: [String], // Any errors during validation (if failed)
+  validationWarnings: [String], // Non-critical warnings
  
   // 1. ADD THE NEW SLUG FIELD
   slug: {

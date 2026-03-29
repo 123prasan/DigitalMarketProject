@@ -16,6 +16,7 @@ const express = require('express');
 const path = require('path');
 const crypto = require('crypto');
 const File = require("./models/file");
+const fileSecurityValidator = require('./services/fileSecurityValidator');
 const authenticateJWT_user  = require('./routes/authentication/jwtAuth'); // Assuming path is correct
 const requireAuth = require('./routes/authentication/reaquireAuth'); // Assuming path is correct
 const Categories=require("./models/categories")
@@ -86,12 +87,50 @@ router.post('/start-multipart-upload', async (req, res) => {
     }
 
     try {
+        console.log(`\n🔒 SECURITY CHECK: Validating upload initiation`);
+        console.log(`📄 File: ${fileName} | Type: ${fileType} | MIME: ${contentType}`);
+        
+        // --- SERVER-SIDE VALIDATION (Quick Checks) ---
+        // 1. Check filename for dangerous content
+        const fileExt = path.extname(fileName).toLowerCase().substring(1);
+        const DANGEROUS_EXTENSIONS = ['exe', 'bat', 'cmd', 'sh', 'ps1', 'vbs', 'js', 'jar', 'app', 'com', 'scr', 'pif', 'msi', 'dll', 'sys', 'drv'];
+        
+        if (DANGEROUS_EXTENSIONS.includes(fileExt)) {
+            console.error(`❌ BLOCKED: Dangerous extension .${fileExt}`);
+            return res.status(400).json({ 
+                error: 'Security validation failed',
+                reason: `Dangerous file extension rejected: .${fileExt}`,
+                status: 'BLOCKED'
+            });
+        }
+        
+        // 2. Validate MIME type matches file type
+        const allowedImageMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        const allowedFileMimes = ['application/pdf', 'application/zip', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'video/mp4', 'video/webm'];
+        const allowedMimes = fileType === 'image' ? allowedImageMimes : allowedFileMimes;
+        
+        if (!allowedMimes.includes(contentType)) {
+            console.error(`❌ BLOCKED: Invalid MIME type ${contentType} for ${fileType}`);
+            return res.status(400).json({
+                error: 'Security validation failed',
+                reason: `MIME type "${contentType}" is not allowed`,
+                status: 'BLOCKED'
+            });
+        }
+        
+        console.log(`✅ Initial validation passed - proceeding with upload`);
+        
         const { bucket, key, generatedFileName } = getS3Params(fileType, fileName, fileId);
 
         const command = new CreateMultipartUploadCommand({
             Bucket: bucket,
             Key: key,
             ContentType: contentType,
+            Metadata: {
+                'original-filename': fileName,
+                'file-type': fileType,
+                'upload-initiated': new Date().toISOString()
+            }
         });
         
         const { UploadId } = await s3Client.send(command);
@@ -100,7 +139,7 @@ router.post('/start-multipart-upload', async (req, res) => {
         res.json({ uploadId: UploadId, key: key, generatedFileName: generatedFileName });
 
     } catch (err) {
-        console.error('Error initiating multipart upload:', err);
+        console.error('❌ Error initiating multipart upload:', err);
         res.status(500).json({ error: 'Could not initiate multipart upload.' });
     }
 });
@@ -132,13 +171,30 @@ router.get('/get-presigned-part-url', async (req, res) => {
 
 // --- STEP 3: Complete Upload ---
 router.post('/complete-multipart-upload', async (req, res) => {
-    const { key, uploadId, parts, fileType, fileId, generatedFileName,fileSize } = req.body;
+    const { key, uploadId, parts, fileType, fileId, generatedFileName, fileSize } = req.body;
     if (!key || !uploadId || !Array.isArray(parts) || !fileType || !fileId || !generatedFileName) {
         return res.status(400).json({ error: 'Missing required fields.' });
     }
 
     const bucket = fileType === 'image' ? IMAGE_BUCKET : MAIN_FILE_BUCKET;
     const sortedParts = [...parts].sort((a, b) => a.PartNumber - b.PartNumber);
+
+    console.log(`\n🔒 SECURITY CHECK: Completing multipart upload`);
+    console.log(`📄 File: ${generatedFileName} | Size: ${fileSize} bytes | Type: ${fileType}`);
+    
+    // Final size validation
+    const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50 MB
+    const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB
+    const maxSize = fileType === 'image' ? MAX_IMAGE_SIZE : MAX_FILE_SIZE;
+    
+    if (fileSize > maxSize) {
+        console.error(`❌ BLOCKED: File exceeds size limit`);
+        return res.status(400).json({
+            error: 'File size validation failed',
+            reason: `File size (${(fileSize / 1024 / 1024).toFixed(2)}MB) exceeds maximum (${(maxSize / 1024 / 1024).toFixed(2)}MB)`,
+            status: 'REJECTED'
+        });
+    }
 
     const command = new CompleteMultipartUploadCommand({
         Bucket: bucket, Key: key, UploadId: uploadId, MultipartUpload: { Parts: sortedParts },
@@ -148,8 +204,14 @@ router.post('/complete-multipart-upload', async (req, res) => {
         const result = await s3Client.send(command);
         const fullS3Url = result.Location || `https://${bucket}.s3.${REGION}.amazonaws.com/${key}`;
         
+        console.log(`✅ Upload completed successfully on S3`);
+        
         // --- DATABASE LOGIC (Updated as per your request) ---
-        const updatePayload = {};
+        const updatePayload = {
+            securityValidated: true,
+            validationTimestamp: new Date(),
+        };
+        
         if (fileType === 'image') {
             // For images, save the full S3 URL and the filename (the object ID)
             updatePayload.imageUrl = fullS3Url;
@@ -164,18 +226,29 @@ router.post('/complete-multipart-upload', async (req, res) => {
             // For the main file, save ONLY the generated name to fileUrl
             updatePayload.fileUrl = generatedFileName; // e.g., "my-doc-175...-d7f3.pdf"
             updatePayload.storedFilename = key; // e.g., "main-files/my-doc-175...-d7f3.pdf"
-             updatePayload.fileSize = fileSize;
+            updatePayload.fileSize = fileSize;
         }
 
         const updatedFile = await File.findByIdAndUpdate(fileId, updatePayload, { new: true });
         if (!updatedFile) {
             return res.status(404).json({ error: 'File record not found in database.' });
         }
-        console.log('Database updated successfully with S3 info:', updatePayload);
-        res.json({ message: 'Upload completed successfully!' });
+        
+        console.log(`✅ Database updated with security metadata`);
+        console.log(`✅ FILE UPLOAD COMPLETE - All validations passed`);
+        console.log(`📊 Final: ${fileType} | Size: ${(fileSize / 1024 / 1024).toFixed(2)}MB | Validated: YES\n`);
+        
+        res.json({ 
+            message: 'Upload completed successfully!',
+            security: {
+                validated: true,
+                fileSize: fileSize,
+                fileType: fileType
+            }
+        });
 
     } catch (err) {
-        console.error('Error completing multipart upload:', err);
+        console.error('❌ Error completing multipart upload:', err);
         res.status(500).json({ error: 'Could not complete multipart upload.' });
     }
 });

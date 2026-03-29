@@ -589,5 +589,36 @@
         } catch (e) {}
     </script>
     <% } %>
+
+    <!-- Activity Tracking for Personalized Recommendations -->
+    <div style="display:none;" data-user-id="<%= typeof user !== 'undefined' && user ? user._id : '' %>"></div>
+    <script src="/js/activity-tracker.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                if (typeof ActivityTracker_Instance !== 'undefined') {
+                    ActivityTracker_Instance.init({
+                        autoTrack: true,
+                        batchInterval: 10000,
+                        trackElements: [
+                            'a[href]',
+                            'button',
+                            '.download-btn',
+                            '.like-btn',
+                            '.review-btn',
+                            '.enroll-btn',
+                            '.add-to-cart',
+                            '.filter-btn',
+                            '.search-form input',
+                            '[data-track]'
+                        ]
+                    });
+                }
+            } catch (error) {
+                // Silently ignore activity tracker initialization errors
+                console.debug('Activity tracker init error (non-critical):', error.message);
+            }
+        });
+    </script>
 </body>
 </html>
