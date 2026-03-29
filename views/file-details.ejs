@@ -232,51 +232,224 @@
             min-height: 90px;
         }
 
-        /* ── RELATED FILES ── */
-        .related-author-block { margin-bottom: 8px; }
+        /* ── ENHANCED RELATED FILES ── */
+        .related-section-premium {
+            background: var(--surface) !important;
+            margin-top: 40px !important;
+            border: 1px solid var(--rule) !important;
+            border-radius: var(--r-xl) !important;
+            padding: 36px 32px !important;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .related-header {
+            margin-bottom: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .related-title {
+            font-family: var(--serif);
+            font-size: 1.8rem;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .related-title i {
+            font-size: 1.3rem;
+            color: var(--accent);
+        }
+
+        .related-subtitle {
+            font-size: 0.95rem;
+            color: var(--ink-3);
+            margin: 0;
+        }
+
+        .related-grid-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* Group Author Label */
         .related-author-label {
-            font-size: 0.72rem; font-weight: 600;
-            letter-spacing: 0.08em; text-transform: uppercase;
-            color: var(--ink-3); margin-bottom: 12px;
-            display: flex; align-items: center; gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-2);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
+
         .related-author-label::after {
-            content: ''; flex: 1; height: 1px;
-            background: var(--rule-light);
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--rule);
         }
 
-        .related-scroll {
-            display: flex; gap: 14px;
-            overflow-x: auto; padding-bottom: 12px;
-            scrollbar-width: none; -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
+        /* The Grid / Mobile Carousel */
+        .related-author-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
         }
-        .related-scroll::-webkit-scrollbar { display: none; }
 
+        /* The Card */
         .related-item {
-            flex-shrink: 0; width: 120px;
-            text-decoration: none; color: inherit;
-            scroll-snap-align: start;
-            transition: transform 0.2s var(--ease-out);
-        }
-        .related-item:hover { transform: translateY(-3px); }
-        .related-item-thumb {
-            width: 100%; aspect-ratio: 3/4;
-            background: var(--rule-light);
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            background: var(--surface);
             border: 1px solid var(--rule);
-            border-radius: var(--r-md);
-            overflow: hidden; margin-bottom: 8px;
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            transition: all 0.3s var(--ease-out);
+            height: 100%;
+        }
+
+        .related-item:hover {
+            transform: translateY(-6px);
+            border-color: rgba(26,86,240,0.4);
+            box-shadow: 0 12px 24px rgba(14,15,17,0.06);
+        }
+
+        .related-item-thumb {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: var(--bg);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--rule-light);
+        }
+
+        .related-item-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s var(--ease-out);
+        }
+
+        .related-item:hover .related-item-thumb img {
+            transform: scale(1.05);
+        }
+
+        .related-item-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            padding: 5px 10px;
+            border-radius: var(--r-pill);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            color: var(--ink);
+            text-transform: uppercase;
             box-shadow: var(--shadow-xs);
+            z-index: 2;
         }
-        .related-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        .related-item-badge.free {
+            background: var(--green);
+            color: white;
+        }
+
+        .related-item-content {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
         .related-item-name {
-            font-size: 0.78rem; font-weight: 500; color: var(--ink);
-            line-height: 1.3; margin-bottom: 3px;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.4;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 2.8em;
         }
-        .related-item-author { font-size: 0.7rem; color: var(--ink-3); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .related-item-price { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
-        .related-item-price.free { color: var(--green); }
+
+        .related-item-author {
+            font-size: 0.8rem;
+            color: var(--ink-3);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .related-item-stats {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px dashed var(--rule);
+        }
+
+        .related-item-price {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .related-item-price.free {
+            color: var(--green);
+        }
+
+        .related-item-metrics {
+            font-size: 0.75rem;
+            color: var(--ink-3);
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Skeleton Loader Animation */
+        @keyframes pulse-shimmer {
+            0% { background-color: var(--rule-light); }
+            50% { background-color: var(--rule); }
+            100% { background-color: var(--rule-light); }
+        }
+        .skeleton-card {
+            border: 1px solid var(--rule);
+            border-radius: var(--r-lg);
+            height: 280px;
+            animation: pulse-shimmer 1.5s infinite ease-in-out;
+        }
+
+        /* Mobile Adjustments (Swipeable Carousel) */
+        @media (max-width: 768px) {
+            .related-section-premium { padding: 24px 20px !important; }
+            
+            .related-author-section {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 16px;
+                scrollbar-width: none; /* Firefox */
+                -webkit-overflow-scrolling: touch;
+            }
+            .related-author-section::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+            
+            .related-item, .skeleton-card {
+                flex: 0 0 240px;
+                scroll-snap-align: start;
+            }
+        }
 
         /* ── REVIEWS ── */
         .rating-summary-block {
@@ -681,11 +854,6 @@
             .file-hero, .content-card { padding: 20px 18px; }
             .rating-summary-block { flex-direction: column; align-items: flex-start; gap: 14px; }
         }
-
-        @media (min-width: 1025px) {
-            .related-scroll { flex-wrap: wrap; }
-            .related-item { width: 130px; }
-        }
     </style>
 </head>
 <body>
@@ -760,9 +928,12 @@ const isFree = Number(priceDetails.total) === 0;
             </div>
 
             <!-- RELATED -->
-            <div class="content-card">
-                <h2 class="content-card-title"><i class="fa-solid fa-layer-group"></i> You might also like</h2>
-                <div id="relatedArea"><p style="color:var(--ink-3);font-size:0.875rem;">Loading…</p></div>
+            <div class="content-card related-section-premium">
+                <div class="related-header">
+                    <h2 class="related-title"><i class="fa-solid fa-sparkles"></i> You Might Also Like</h2>
+                    <p class="related-subtitle">Handpicked recommendations based on this file</p>
+                </div>
+                <div id="relatedArea"><p style="color:var(--ink-3);font-size:0.875rem;text-align:center;padding:40px 20px;">Loading suggestions…</p></div>
             </div>
 
         </div><!-- /left-col -->
@@ -1338,31 +1509,98 @@ document.getElementById('reviewForm').addEventListener('submit', async e => {
 /* ════════ RELATED FILES ════════ */
 async function loadRelated() {
     const area = document.getElementById('relatedArea');
+    if (!area) return;
+
+    // 1. Show Premium Skeleton Loaders initially
+    area.innerHTML = `
+        <div class="related-grid-container">
+            <div class="related-author-section">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card" style="display:none;" media="(min-width: 768px)"></div>
+            </div>
+        </div>
+    `;
+
     try {
-        const res  = await fetch(`/products/related?fileId=${FILE_ID}`);
-        if (!res.ok) throw new Error();
+        const res = await fetch(`/products/related?fileId=${FILE_ID}`);
+        if (!res.ok) throw new Error('Failed to fetch');
         const docs = await res.json();
-        if (!docs?.length) { area.innerHTML = '<p style="color:var(--ink-3);font-size:0.875rem;">No related files found.</p>'; return; }
 
+        // 2. Empty State
+        if (!docs?.length) {
+            area.innerHTML = `
+                <div style="text-align:center;padding:40px 20px;">
+                    <i class="fa-solid fa-layer-group" style="font-size:2.5rem;color:var(--rule);margin-bottom:12px;display:block;"></i>
+                    <p style="color:var(--ink-3);font-size:0.95rem;margin:0;">No similar resources found yet.</p>
+                </div>`;
+            return;
+        }
+
+        // 3. Group by author
         const groups = {};
-        docs.forEach(d => { const a = d.user||'Vidyari'; if (!groups[a]) groups[a]=[]; groups[a].push(d); });
+        docs.forEach(d => {
+            const author = d.user || 'Vidyari Creator';
+            if (!groups[author]) groups[author] = [];
+            groups[author].push(d);
+        });
 
-        area.innerHTML = Object.entries(groups).map(([author, files]) => `
-            <div class="related-author-block">
-                <div class="related-author-label">More from ${author}</div>
-                <div class="related-scroll">
-                    ${files.map(f => `
-                        <a href="/file/${f.slug||f._id}/${f._id}" class="related-item">
-                            <div class="related-item-thumb">
-                                <img src="${f.previewUrl||'/images/File_Demo.svg'}" alt="${f.filename}" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
-                            </div>
-                            <div class="related-item-name">${f.filename}</div>
-                            <div class="related-item-author">${f.user||'Vidyari'}</div>
-                            <div class="related-item-price ${f.price==0?'free':''}">${f.price==0?'Free':'₹'+f.price}</div>
-                        </a>`).join('')}
-                </div>
-            </div>`).join('');
-    } catch { area.innerHTML = '<p style="color:var(--ink-3);font-size:0.875rem;">Unable to load suggestions.</p>'; }
+        // 4. Render Layout
+        area.innerHTML = `
+            <div class="related-grid-container">
+                ${Object.entries(groups).map(([author, files]) => `
+                    <div>
+                        <h3 class="related-author-label">Created by ${author}</h3>
+                        <div class="related-author-section">
+                            ${files.map(f => {
+                                const isFree = f.price === 0 || f.price === '0';
+                                const rating = (f.rating || 4.8).toFixed(1);
+                                const downloads = f.downloadCount || 0;
+                                const downDisplay = downloads > 1000 ? (downloads/1000).toFixed(1) + 'k' : downloads;
+                                
+                                return `
+                                    <a href="/file/${f.slug || f._id}/${f._id}" class="related-item">
+                                        <div class="related-item-thumb">
+                                            <img src="${f.previewUrl || '/images/File_Demo.svg'}" alt="${f.filename}" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
+                                            <span class="related-item-badge ${isFree ? 'free' : ''}">
+                                                ${isFree ? 'Free' : 'Premium'}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="related-item-content">
+                                            <div class="related-item-name">${f.filename}</div>
+                                            <div class="related-item-author">
+                                                <i class="fa-solid fa-circle-user"></i> ${author}
+                                            </div>
+                                            
+                                            <div class="related-item-stats">
+                                                <div class="related-item-price ${isFree ? 'free' : ''}">
+                                                    ${isFree ? 'Free' : '₹' + f.price}
+                                                </div>
+                                                <div class="related-item-metrics">
+                                                    <span title="Rating"><i class="fa-solid fa-star" style="color:var(--amber)"></i> ${rating}</span>
+                                                    <span title="Downloads"><i class="fa-solid fa-cloud-arrow-down"></i> ${downDisplay}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+    } catch (err) {
+        console.error('Error loading related:', err);
+        area.innerHTML = `
+            <div style="text-align:center;padding:40px 20px;color:var(--ink-3);">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;color:var(--rule);margin-bottom:12px;display:block;"></i>
+                <p>Unable to load suggestions right now.</p>
+            </div>`;
+    }
 }
 
 /* ════════ ADSENSE ════════ */
