@@ -690,6 +690,63 @@ router.post('/recommend-assets', requireAuth, async (req, res) => {
         }
       }
 
+      // ═══════════════════════════════════════════════════════════
+      // 5. FALLBACK FOR NEW USERS (NO ACTIVITY HISTORY)
+      // ═══════════════════════════════════════════════════════════
+      if (recommendations.length === 0) {
+        console.log('📭 [RECOMMEND-ASSETS] No personalized recommendations, showing trending items...');
+        
+        if (assetType === 'files' || assetType === 'both') {
+          // Get trending/popular files for new users
+          const trendingFiles = await File.find({
+            _id: { $nin: Array.from(alreadyInteractedIds) },
+          })
+            .sort({ downloadCount: -1, likes: -1 })
+            .limit(limit)
+            .select('title slug category price userId downloadCount likes fileType filename user imageType rating _id')
+            .lean();
+
+          recommendations.push(...trendingFiles);
+        }
+
+        if ((assetType === 'courses' || assetType === 'both') && recommendations.length < limit) {
+          // Get trending courses for new users
+          const userCourseIds = userInterests
+            .filter(i => i._id.courseId)
+            .map(i => i._id.courseId)
+            .filter(id => id);
+
+          const trendingCourses = await Course.find({
+            _id: { $nin: userCourseIds },
+            published: true,
+          })
+            .sort({ enrollCount: -1, rating: -1 })
+            .limit(limit)
+            .select('title slug category price rating enrollCount instructor')
+            .lean();
+
+          recommendations.push(...trendingCourses);
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════════
+      // 6. SHUFFLE RECOMMENDATIONS FOR VARIETY
+      // ═══════════════════════════════════════════════════════════
+      // Shuffle the recommendations array to show different items each time
+      // while keeping the top results slightly favored
+      const shuffle = (arr) => {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      };
+
+      if (recommendations.length > limit) {
+        // Shuffle and take top items for variety
+        recommendations = shuffle(recommendations).slice(0, limit);
+      }
+
       res.json({
         topCategories: Object.entries(categoryMap)
           .sort(([, a], [, b]) => b - a)
