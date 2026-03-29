@@ -346,6 +346,7 @@ app.use("/api/file-reviews", fileReviewRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use('/api', activityTrackingRoutes);
+app.use("/api/wishlist", require("./routes/wishlistRoutes"));
 app.use("/api/instructor", instructorPayoutRoutes);
 // apply JWT authentication to all admin API routes so req.user is populated
 // and unauthorized calls respond with JSON instead of HTML
@@ -4478,6 +4479,23 @@ app.get("/help/user/vidyari-guid", (req, res) => {
 app.get("/help/user/dashboard", (req, res) => {
   res.render("dashboardhelp.ejs")
 })
+
+// Wishlist page route
+app.get("/wishlist", authenticateJWT_user, (req, res) => {
+  try {
+    res.render("wishlist.ejs", {
+      uId: req.user?._id || req.userId,
+      username: req.user?.username || req.userUsername,
+      useremail: req.user?.email || req.userEmail,
+      isLoggedin: !!req.user,
+      profileUrl: req.user?.profilePicUrl || "/images/avatar.jpg"
+    });
+  } catch (error) {
+    console.error('Error rendering wishlist page:', error);
+    res.status(500).render("error", { message: "Failed to load wishlist" });
+  }
+});
+
 app.get(
   "/transactions",
   authenticateJWT_user,

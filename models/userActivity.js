@@ -32,6 +32,8 @@ const userActivitySchema = new mongoose.Schema(
         'cart_add',
         'filter_apply',
         'sort_apply',
+        'category_affinity',
+        'wishlist_add',
       ],
       required: true,
       index: true,

@@ -1205,11 +1205,22 @@
 
                         return `
                             <a href="${link}" class="v-card" style="animation: slideUp 0.4s ease-out ${index * 0.05}s forwards; opacity: 0; transform: translateY(20px);">
-                                <div class="v-card-img-box">
+                                <div class="v-card-img-box" style="position: relative;">
                                     <div class="v-card-badges">
                                         <span class="v-badge-category">${file.category || 'Resource'}</span>
                                         <span class="v-badge-type" title="${file.fileType || 'Document'}"><i class="fa-solid ${fileIcon}"></i></span>
                                     </div>
+                                    <button 
+                                        type="button"
+                                        class="v-card-wishlist-btn" 
+                                        data-wishlist-btn 
+                                        data-file-id="${file._id}" 
+                                        data-file-title="${file.filename.replace(/'/g, "'")}"
+                                        title="Add to wishlist"
+                                        style="position: absolute; top: 12px; right: 12px; z-index: 999; width: 36px; height: 36px; border-radius: 50%; background: white; border: 2px solid #f0f4f9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #ccc; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); pointer-events: auto; padding: 0;"
+                                    >
+                                        <i class="fa-regular fa-heart"></i>
+                                    </button>
                                     <img src="${previewImage}" class="v-card-img" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
                                 </div>
                                 
@@ -1535,10 +1546,21 @@
 
                             return `
                                 <a href="${link}" class="v-card v-card-recommended" style="animation: slideUp 0.5s cubic-bezier(0.23, 1, 0.320, 1) ${index * 0.06}s forwards; opacity: 0; transform: translateY(30px);">
-                                    <div class="v-card-img-box">
+                                    <div class="v-card-img-box" style="position: relative;">
                                         <div class="v-card-recommended-badge" style="position: absolute; top: 8px; right: 8px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; z-index: 11; box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4); display: flex; align-items: center; gap: 4px;">
                                             <i class="fa-solid fa-fire" style="font-size: 0.85rem;"></i> Recommended
                                         </div>
+                                        <button 
+                                            type="button"
+                                            class="v-card-wishlist-btn" 
+                                            data-wishlist-btn 
+                                            data-file-id="${item._id}" 
+                                            data-file-title="${(item.title || item.filename).replace(/'/g, "'")}"
+                                            title="Add to wishlist"
+                                            style="position: absolute; bottom: 12px; right: 12px; z-index: 999; width: 36px; height: 36px; border-radius: 50%; background: white; border: 2px solid #f0f4f9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #ccc; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); pointer-events: auto; padding: 0;"
+                                        >
+                                            <i class="fa-regular fa-heart"></i>
+                                        </button>
                                         <div class="v-card-badges">
                                             <span class="v-badge-category">${item.category || 'Resource'}</span>
                                             <span class="v-badge-type" title="${item.fileType || 'Document'}"><i class="fa-solid ${fileIcon}"></i></span>
@@ -1687,10 +1709,21 @@
 
                             return `
                                 <a href="${link}" class="v-card" style="animation: slideUp 0.5s cubic-bezier(0.23, 1, 0.320, 1) ${index * 0.06}s forwards; opacity: 0; transform: translateY(30px);">
-                                    <div class="v-card-img-box">
+                                    <div class="v-card-img-box" style="position: relative;">
                                         <div class="v-popular-badge">
                                             <i class="fa-solid fa-fire"></i> Trending
                                         </div>
+                                        <button 
+                                            type="button"
+                                            class="v-card-wishlist-btn" 
+                                            data-wishlist-btn 
+                                            data-file-id="${item._id}" 
+                                            data-file-title="${(item.title || 'File').replace(/'/g, "'")}"
+                                            title="Add to wishlist"
+                                            style="position: absolute; bottom: 12px; right: 12px; z-index: 999; width: 36px; height: 36px; border-radius: 50%; background: white; border: 2px solid #f0f4f9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #ccc; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); pointer-events: auto; padding: 0;"
+                                        >
+                                            <i class="fa-regular fa-heart"></i>
+                                        </button>
                                         <div class="v-card-badges">
                                             <span class="v-badge-category">${item.category}</span>
                                             <span class="v-badge-type" title="${item.fileType}"><i class="fa-solid ${fileIcon}"></i></span>

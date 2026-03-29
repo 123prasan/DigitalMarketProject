@@ -168,7 +168,112 @@
             height: 40px; 
             border-radius: 50%; 
             object-fit: cover;
-        } 
+        }
+        
+        /* Wishlist Heart Button */
+        .header-icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: transparent;
+            color: var(--text-main);
+            font-size: 18px;
+            transition: all var(--transition-smooth);
+            cursor: pointer;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .header-icon-btn:hover {
+            background-color: rgba(31, 31, 31, 0.08);
+            color: #ff4757;
+            transform: scale(1.1);
+        }
+        
+        .header-icon-btn.is-wishlisted {
+            color: #ff4757;
+        }
+        
+        .header-icon-btn.is-wishlisted i {
+            animation: heartPulse 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+        
+        .header-badge {
+            background-color: #ff4757 !important;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+        }
+        
+        /* Wishlist Toast Styles */
+        .v-wishlist-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+        
+        .v-wishlist-toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .v-wishlist-toast.success {
+            color: #07b944;
+            border-left: 4px solid #07b944;
+        }
+        
+        .v-wishlist-toast.error {
+            color: #ff4757;
+            border-left: 4px solid #ff4757;
+        }
+        
+        .v-wishlist-toast.info {
+            color: #0b57d0;
+            border-left: 4px solid #0b57d0;
+        }
+        
+        /* Animations */
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            20% { transform: scale(1.3); }
+            40% { transform: scale(1); }
+            60% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes heartBounce {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.4); }
+            50% { transform: scale(1); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
 
         /* ========================================================= */
         /* DROPDOWNS & MENUS                                         */
@@ -375,6 +480,12 @@
                           </div>
                         </div>
                     </div>
+                    
+                    <!-- Wishlist Button -->
+                    <a href="/wishlist" class="header-icon-btn" id="vWishlistBtn" title="My Wishlist" style="position: relative;">
+                        <i class="fa-regular fa-heart"></i>
+                        <span id="vWishlistBadge" class="header-badge" style="display: none; position: absolute; top: 0; right: 0; background: #ff4757; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold;">0</span>
+                    </a>
                     
                     <div class="dropdown">
                         <div class="header-avatar-container" data-bs-toggle="dropdown" aria-expanded="false">
@@ -592,6 +703,7 @@
 
     <!-- Activity Tracking for Personalized Recommendations -->
     <script src="/js/activity-tracker.js" defer></script>
+    <script src="/js/wishlist-manager.js" defer></script>
     <script defer>
         // Wait for ActivityTracker class to load, then create and initialize global instance
         document.addEventListener('DOMContentLoaded', function() {

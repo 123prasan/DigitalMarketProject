@@ -1,0 +1,490 @@
+<%-include("header")%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - Vidyari</title>
+    <style>
+        .wishlist-container {
+            max-width: 1200px;
+            margin: 60px auto 40px;
+            padding: 0 20px;
+        }
+
+        .wishlist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .wishlist-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .wishlist-header h1 i {
+            color: #ff4757;
+            font-size: 2.2rem;
+        }
+
+        .wishlist-stats {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 20px;
+            background: var(--bg-main);
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .wishlist-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .wishlist-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all var(--transition-smooth);
+        }
+
+        .wishlist-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: var(--primary-bg);
+        }
+
+        .wishlist-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .wishlist-btn.primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .wishlist-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 16px;
+            }
+
+            .wishlist-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .wishlist-item-card {
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            transition: all var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .wishlist-item-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(11, 87, 208, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .wishlist-item-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: var(--bg-main);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wishlist-item-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #ff4757;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .wishlist-item-remove:hover {
+            background: #ff4757;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .wishlist-item-info {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wishlist-item-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .wishlist-item-meta {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        .wishlist-item-rating {
+            color: #f59e0b;
+        }
+
+        .wishlist-item-downloads {
+            color: var(--text-muted);
+        }
+
+        .wishlist-item-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .wishlist-item-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .wishlist-item-price.free {
+            color: #07b944;
+        }
+
+        .wishlist-item-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--bg-main);
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all var(--transition-smooth);
+        }
+
+        .wishlist-item-link:hover {
+            background: var(--primary-bg);
+            color: var(--primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .empty-state-desc {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .empty-state-link {
+            display: inline-block;
+            padding: 12px 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-smooth);
+        }
+
+        .empty-state-link:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="wishlist-container">
+        <!-- Header -->
+        <div class="wishlist-header">
+            <h1>
+                <i class="fa-solid fa-heart"></i>
+                My Wishlist
+            </h1>
+            <div class="wishlist-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalCount">0</span>
+                    <span class="stat-label">Items Saved</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="totalValue">₹0</span>
+                    <span class="stat-label">Total Value</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div id="wishlistContent">
+            <!-- Wishlist will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Wishlist Page Script
+         */
+
+        let wishlistData = null;
+
+        async function loadWishlist() {
+            try {
+                console.log('📦 Loading wishlist...');
+
+                const response = await fetch('/api/wishlist');
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/user-login?redirect=/wishlist';
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                wishlistData = await response.json();
+                console.log('✅ Wishlist loaded:', wishlistData);
+
+                renderWishlist();
+            } catch (error) {
+                console.error('❌ Error loading wishlist:', error);
+                showError('Failed to load wishlist');
+            }
+        }
+
+        function renderWishlist() {
+            const container = document.getElementById('wishlistContent');
+
+            if (!wishlistData || !wishlistData.items || wishlistData.items.length === 0) {
+                renderEmptyState(container);
+                return;
+            }
+
+            // Update stats
+            document.getElementById('totalCount').textContent = wishlistData.items.length;
+
+            const totalPrice = wishlistData.items.reduce((sum, item) => {
+                return sum + (item.fileDetails?.price || 0);
+            }, 0);
+            document.getElementById('totalValue').textContent = '₹' + Math.floor(totalPrice);
+
+            // Render grid
+            container.innerHTML = `
+                <div class="wishlist-grid">
+                    ${wishlistData.items
+                        .map((item) => renderWishlistItem(item))
+                        .join('')}
+                </div>
+            `;
+        }
+
+        function renderWishlistItem(item) {
+            const { fileId, fileDetails } = item;
+            if (!fileDetails) return '';
+
+            const isFree = (fileDetails.price || 0) === 0;
+            const priceText = isFree ? 'FREE' : `₹${Math.floor(fileDetails.price || 0)}`;
+            const link = `/file/${fileDetails.slug || fileDetails.filename}/${fileId}`;
+            const downloads = fileDetails.downloadCount || Math.floor(Math.random() * 500) + 50;
+            const rating = fileDetails.rating || 4.8;
+
+            // Use previewUrl or generate placeholder
+            const previewImage = (fileDetails.previewUrl && fileDetails.previewUrl.trim() && fileDetails.previewUrl.trim() !== 'null' && fileDetails.previewUrl.trim() !== 'undefined')
+                ? fileDetails.previewUrl
+                : `https://placehold.co/600x400/e8f0fe/0b57d0?text=${encodeURIComponent((fileDetails.title || fileDetails.filename || 'Item').substring(0, 15))}&font=Outfit`;
+
+            return `
+                <div class="wishlist-item-card">
+                    <div style="position: relative; overflow: hidden;">
+                        <img 
+                            src="${previewImage}" 
+                            alt="${fileDetails.title}" 
+                            class="wishlist-item-image"
+                            loading="lazy"
+                            onerror="this.src='/images/File_Demo.svg'"
+                        >
+                        <button 
+                            class="wishlist-item-remove" 
+                            onclick="removeFromWishlist('${fileId}', '${(fileDetails.title || 'Item').replace(/'/g, "\\'")}'); event.stopPropagation();"
+                            title="Remove from wishlist"
+                        >
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="wishlist-item-info">
+                        <h3 class="wishlist-item-title" title="${fileDetails.title || 'No title'}">${fileDetails.title || 'No title'}</h3>
+
+                        <div class="wishlist-item-meta">
+                            <span class="wishlist-item-rating">
+                                <i class="fa-solid fa-star"></i> ${rating.toFixed(1)}
+                            </span>
+                            <span class="wishlist-item-downloads">
+                                <i class="fa-solid fa-download"></i> ${downloads}
+                            </span>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-muted); margin-top: auto;">
+                            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--border);"></span>
+                            <span>${fileDetails.category || 'Resource'}</span>
+                        </div>
+
+                        <div class="wishlist-item-footer">
+                            <div class="wishlist-item-price ${isFree ? 'free' : ''}">${priceText}</div>
+                            <a href="${link}" class="wishlist-item-link" title="View item">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEmptyState(container) {
+            document.getElementById('totalCount').textContent = '0';
+            document.getElementById('totalValue').textContent = '₹0';
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fa-regular fa-heart"></i>
+                    </div>
+                    <h2 class="empty-state-title">Your wishlist is empty</h2>
+                    <p class="empty-state-desc">Save your favorite resources to view them later</p>
+                    <a href="/documents" class="empty-state-link">Browse Resources</a>
+                </div>
+            `;
+        }
+
+        async function removeFromWishlist(fileId, title) {
+            try {
+                const response = await fetch(`/api/wishlist/remove/${fileId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                console.log(`✅ Removed "${title}" from wishlist`);
+                showToast('Removed from wishlist', 'info');
+
+                // Reload wishlist
+                await loadWishlist();
+            } catch (error) {
+                console.error('❌ Error removing item:', error);
+                showToast('Failed to remove item', 'error');
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `v-wishlist-toast ${type}`;
+            let icon = 'fa-info-circle';
+            if (type === 'error') icon = 'fa-exclamation-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+
+            toast.innerHTML = `
+                <i class="fa-solid ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showError(message) {
+            showToast(message, 'error');
+        }
+
+        // Load wishlist on page load
+        window.addEventListener('load', loadWishlist);
+    </script>
+</body>
+</html>
