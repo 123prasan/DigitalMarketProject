@@ -3,296 +3,623 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
-    
     <title>Purchase Successful | Vidyari</title>
-
     <meta name="robots" content="noindex, nofollow">
-
     <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
     <style>
-        /* ==========================================================================
-           VIDYARI THANK YOU PAGE: GEMINI / MATERIAL 3 THEME
-           ========================================================================== */
+        /* ============================================================
+           VIDYARI — THANK YOU PAGE  |  "Midnight Emerald" Theme
+           ============================================================ */
         :root {
-            --v-bg: #f0f4f9;           /* Gemini Soft Background */
-            --v-surface: #ffffff;      /* Clean White Cards */
-            
-            --v-text-main: #1f1f1f;
-            --v-text-muted: #444746;
-            
-            --v-primary: #0b57d0;      /* Google Blue */
-            --v-primary-hover: #1a73e8;
-            --v-primary-bg: #e8f0fe;
-            
-            --v-success: #146c2e;
-            --v-success-bg: #e6f4ea;
-            
-            --v-border: #e3e3e3;
-            
-            --v-font-display: 'Outfit', sans-serif;
-            --v-font-sans: 'Inter', sans-serif;
-            
-            --v-radius-sm: 12px;
-            --v-radius-md: 16px;
-            --v-radius-lg: 24px;
-            --v-radius-pill: 9999px;
-            
-            --v-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-            --v-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --v-shadow-float: 0 8px 24px rgba(11, 87, 208, 0.08);
-            
-            --v-transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            --bg:          #0c0f14;
+            --bg-card:     #12161d;
+            --bg-elevated: #181d26;
+            --border:      rgba(255,255,255,0.07);
+            --border-bright: rgba(255,255,255,0.13);
+
+            --emerald:     #34d399;
+            --emerald-dim: rgba(52,211,153,0.12);
+            --emerald-glow:rgba(52,211,153,0.25);
+            --sapphire:    #60a5fa;
+            --sapphire-dim:rgba(96,165,250,0.12);
+
+            --text-primary:  #f1f5f9;
+            --text-secondary:#94a3b8;
+            --text-tertiary: #64748b;
+
+            --font-display: 'Sora', sans-serif;
+            --font-body:    'DM Sans', sans-serif;
+
+            --r-sm: 10px;
+            --r-md: 16px;
+            --r-lg: 24px;
+            --r-xl: 32px;
+            --r-pill: 9999px;
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: var(--v-font-sans);
-            color: var(--v-text-main);
-            background-color: var(--v-bg);
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
-        .v-thankyou-master {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: clamp(24px, 5vw, 48px);
-            position: relative;
+        /* ── Mesh Background ── */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
             overflow: hidden;
         }
-
-        /* Subtle Background Glow */
-        .v-ambient-glow {
+        .bg-mesh::before {
+            content: '';
             position: absolute;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, rgba(230,244,234,0.8) 0%, rgba(240,244,249,0) 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(52,211,153,0.08) 0%, transparent 65%);
+            top: -100px; left: -100px;
+            animation: drift1 18s ease-in-out infinite alternate;
+        }
+        .bg-mesh::after {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(96,165,250,0.07) 0%, transparent 65%);
+            bottom: -80px; right: -80px;
+            animation: drift2 22s ease-in-out infinite alternate;
+        }
+        @keyframes drift1 { to { transform: translate(60px, 80px); } }
+        @keyframes drift2 { to { transform: translate(-50px, -60px); } }
+
+        /* ── Grid lines overlay ── */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
             z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+        }
+
+        /* ── Canvas for confetti ── */
+        #confettiCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
             pointer-events: none;
         }
 
-        /* Main Card */
-        .v-card {
-            background: var(--v-surface);
-            border: 1px solid var(--v-border);
-            border-radius: var(--v-radius-lg);
-            box-shadow: var(--v-shadow-md);
-            padding: clamp(32px, 6vw, 64px) clamp(24px, 5vw, 48px);
-            max-width: 640px;
-            width: 100%;
-            text-align: center;
+        /* ── Main Layout ── */
+        .page-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(20px, 5vw, 48px) clamp(16px, 4vw, 32px);
             position: relative;
             z-index: 1;
-            animation: slideUpFade 0.6s cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-xl);
+            width: 100%;
+            max-width: 520px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(255,255,255,0.03),
+                0 32px 64px rgba(0,0,0,0.5),
+                0 0 80px rgba(52,211,153,0.05);
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(32px) scale(0.98);
+            animation: cardReveal 0.8s var(--ease-out-expo) 0.1s forwards;
+        }
+        @keyframes cardReveal {
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        @keyframes slideUpFade {
-            to { opacity: 1; transform: translateY(0); }
+        /* ── Card top accent bar ── */
+        .card-accent {
+            height: 3px;
+            background: linear-gradient(90deg, var(--emerald), var(--sapphire), var(--emerald));
+            background-size: 200% 100%;
+            animation: shineBar 3s linear infinite;
+        }
+        @keyframes shineBar { to { background-position: -200% 0; } }
+
+        /* ── Card body ── */
+        .card-body {
+            padding: clamp(32px, 6vw, 52px) clamp(24px, 5vw, 44px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0;
         }
 
-        .v-success-icon-wrapper {
-            width: 80px;
-            height: 80px;
-            background-color: var(--v-success-bg);
-            color: var(--v-success);
+        /* ── Success Icon ── */
+        .success-ring {
+            position: relative;
+            width: 88px; height: 88px;
+            margin-bottom: 28px;
+            flex-shrink: 0;
+            opacity: 0;
+            animation: popIn 0.6s var(--ease-spring) 0.5s forwards;
+        }
+        @keyframes popIn { to { opacity: 1; } }
+
+        .success-ring svg.ring-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+        }
+        .ring-track {
+            fill: none;
+            stroke: var(--emerald-dim);
+            stroke-width: 3;
+        }
+        .ring-progress {
+            fill: none;
+            stroke: var(--emerald);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transform-origin: center;
+            transform: rotate(-90deg);
+            animation: drawRing 0.8s var(--ease-out-expo) 0.7s forwards;
+            filter: drop-shadow(0 0 6px var(--emerald-glow));
+        }
+        @keyframes drawRing { to { stroke-dashoffset: 0; } }
+
+        .success-icon-inner {
+            position: absolute;
+            inset: 8px;
+            background: var(--emerald-dim);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            margin: 0 auto 24px auto;
+            color: var(--emerald);
+            font-size: 1.7rem;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: iconPop 0.5s var(--ease-spring) 1.1s forwards;
         }
+        @keyframes iconPop { to { opacity: 1; transform: scale(1); } }
 
-        .v-hero-image {
-            width: 100%;
-            max-width: 240px;
-            margin: 0 auto 24px auto;
-            display: block;
+        /* ── Heading ── */
+        .v-label {
+            font-family: var(--font-body);
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--emerald);
+            background: var(--emerald-dim);
+            padding: 5px 14px;
+            border-radius: var(--r-pill);
+            border: 1px solid rgba(52,211,153,0.2);
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 0.5s var(--ease-out-expo) 1.3s forwards;
         }
 
         .v-title {
-            font-family: var(--v-font-display);
-            font-size: clamp(2rem, 4vw, 2.5rem);
-            font-weight: 600;
-            color: var(--v-text-main);
+            font-family: var(--font-display);
+            font-size: clamp(1.75rem, 4vw, 2.4rem);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
             margin-bottom: 12px;
-            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #f1f5f9 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            animation: fadeUp 0.5s var(--ease-out-expo) 1.45s forwards;
         }
 
         .v-subtitle {
-            font-size: 1.1rem;
-            color: var(--v-text-muted);
-            line-height: 1.6;
+            font-size: 0.97rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: 28px;
+            opacity: 0;
+            animation: fadeUp 0.5s var(--ease-out-expo) 1.55s forwards;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── File Chip ── */
+        .file-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-bright);
+            border-radius: var(--r-md);
+            padding: 10px 18px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-primary);
             margin-bottom: 32px;
+            max-width: 100%;
+            opacity: 0;
+            animation: fadeUp 0.5s var(--ease-out-expo) 1.65s forwards;
+        }
+        .file-chip-icon {
+            color: var(--sapphire);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .file-chip-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .v-filename {
-            font-weight: 600;
-            color: var(--v-text-main);
-            background: var(--v-bg);
-            padding: 4px 12px;
-            border-radius: var(--v-radius-sm);
-            display: inline-block;
-            margin-top: 4px;
+        /* ── Divider ── */
+        .v-divider {
+            width: 100%;
+            height: 1px;
+            background: var(--border);
+            margin-bottom: 28px;
+            opacity: 0;
+            animation: fadeUp 0.4s var(--ease-out-expo) 1.75s forwards;
         }
 
-        .v-download-section {
-            padding-top: 32px;
-            border-top: 1px solid var(--v-border);
-            margin-top: 16px;
+        /* ── Download Section ── */
+        .download-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeUp 0.5s var(--ease-out-expo) 1.85s forwards;
         }
 
-        /* Action Button */
-        .v-btn-primary {
+        /* ── Download Button ── */
+        .v-btn {
+            position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            background: var(--v-primary);
-            color: white;
-            border: none;
-            border-radius: var(--v-radius-pill);
-            padding: 16px 32px;
-            font-family: var(--v-font-sans);
-            font-size: 1.15rem;
-            font-weight: 500;
-            box-shadow: var(--v-shadow-float);
-            cursor: pointer;
-            transition: var(--v-transition);
-            text-decoration: none;
+            gap: 11px;
             width: 100%;
-            max-width: 320px;
+            padding: 17px 28px;
+            border: none;
+            border-radius: var(--r-lg);
+            background: linear-gradient(135deg, #2dd4bf, #34d399 50%, #6ee7b7);
+            background-size: 200% 200%;
+            color: #052e16;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s var(--ease-out-expo);
+            box-shadow:
+                0 0 0 1px rgba(52,211,153,0.4),
+                0 8px 24px rgba(52,211,153,0.25),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            overflow: hidden;
         }
-
-        .v-btn-primary:hover {
-            background: var(--v-primary-hover);
-            box-shadow: 0 10px 20px rgba(11,87,208,0.15);
+        .v-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .v-btn:hover {
             transform: translateY(-2px);
-            color: white;
+            box-shadow:
+                0 0 0 1px rgba(52,211,153,0.6),
+                0 12px 32px rgba(52,211,153,0.35),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+            color: #052e16;
+        }
+        .v-btn:hover::before { opacity: 1; }
+        .v-btn:active { transform: translateY(0); }
+
+        .v-btn i { font-size: 1.1rem; }
+
+        /* Shimmer sweep on button */
+        .v-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            animation: btnShimmer 2.5s ease-in-out 2.5s infinite;
+        }
+        @keyframes btnShimmer {
+            0% { left: -100%; }
+            40%, 100% { left: 120%; }
         }
 
-        .v-btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .v-btn-primary.disabled {
-            background: var(--v-border);
-            color: #9aa0a6;
+        /* ── Disabled State ── */
+        .v-btn.expired {
+            background: var(--bg-elevated);
+            color: var(--text-tertiary);
             box-shadow: none;
             cursor: not-allowed;
             transform: none;
+            border: 1px solid var(--border);
+        }
+        .v-btn.expired::before,
+        .v-btn.expired::after { display: none; }
+        .v-btn.expired:hover { transform: none; box-shadow: none; }
+
+        /* ── Countdown Timer ── */
+        .countdown-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
         }
 
-        /* Countdown Timer */
-        .v-countdown {
-            font-size: 0.95rem;
-            color: var(--v-text-muted);
-            margin-top: 24px;
-            background: var(--v-bg);
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: var(--v-radius-pill);
+        .countdown-bar-bg {
+            flex: 1;
+            height: 4px;
+            background: var(--bg-elevated);
+            border-radius: var(--r-pill);
+            overflow: hidden;
+        }
+        .countdown-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, var(--emerald), var(--sapphire));
+            border-radius: var(--r-pill);
+            transform-origin: left;
+            transition: transform 1s linear, background 0.5s;
         }
 
-        .v-countdown span {
-            color: var(--v-primary);
-            font-weight: 600;
-            font-family: var(--v-font-display);
-            font-size: 1.1rem;
+        .countdown-text {
+            font-size: 0.82rem;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
         }
+        .countdown-text.warning { color: #fbbf24; }
+        .countdown-text.expired { color: #f87171; }
+
+        /* ── Expired Banner ── */
+        .expired-banner {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: rgba(248, 113, 113, 0.08);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            border-radius: var(--r-md);
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #fca5a5;
+            width: 100%;
+            text-align: left;
+            line-height: 1.5;
+        }
+        .expired-banner.show { display: flex; }
+        .expired-banner i { font-size: 1rem; flex-shrink: 0; color: #f87171; }
+
+        /* ── Footer note ── */
+        .v-note {
+            font-size: 0.78rem;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+        .v-note a { color: var(--sapphire); text-decoration: none; }
+        .v-note a:hover { text-decoration: underline; }
+
     </style>
 </head>
 <body>
 
+    <div class="bg-mesh"></div>
+    <div class="bg-grid"></div>
+    <canvas id="confettiCanvas"></canvas>
 
-    <main class="v-thankyou-master">
-        <div class="v-ambient-glow"></div>
-        
-        <div class="v-card">
-            <div class="v-success-icon-wrapper">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            
-            <img src="./images/Confirmed-bro.svg" alt="Order Confirmed" class="v-hero-image">
-            
-            <h1 class="v-title">Purchase Complete!</h1>
-            <p class="v-subtitle">
-                Thank you for your order. Your secure access to the following resource is ready: <br>
-                <span class="v-filename"><i class="fa-regular fa-file-lines me-2"></i> <%= file.filename %></span>
-            </p>
+    <main class="page-wrap">
+        <div class="card">
+            <div class="card-accent"></div>
+            <div class="card-body">
 
-            <div class="v-download-section">
-                <a class="v-btn-primary" id="downloadButton">
-                    <i class="fa-solid fa-cloud-arrow-down" style="font-size: 1.3rem;"></i>
-                    <span>Download Now</span>
-                </a>
-                
-                <div class="v-countdown" id="countdownTimer">
-                    Link expires in <span id="timerDisplay">60</span> seconds
+                <!-- Animated success ring -->
+                <div class="success-ring">
+                    <svg class="ring-svg" viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="ring-track" cx="44" cy="44" r="40"/>
+                        <circle class="ring-progress" cx="44" cy="44" r="40"/>
+                    </svg>
+                    <div class="success-icon-inner">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
                 </div>
+
+                <span class="v-label">Order Confirmed</span>
+
+                <h1 class="v-title">You're all set!</h1>
+
+                <p class="v-subtitle">
+                    Your purchase was successful. Your file is ready<br>to download securely below.
+                </p>
+
+                <!-- File chip -->
+                <div class="file-chip">
+                    <i class="fa-regular fa-file-lines file-chip-icon"></i>
+                    <span class="file-chip-name"><%= file.filename %></span>
+                </div>
+
+                <div class="v-divider"></div>
+
+                <!-- Download area -->
+                <div class="download-section">
+
+                    <a class="v-btn" id="downloadBtn" href="#">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span id="btnLabel">Download Now</span>
+                    </a>
+
+                    <!-- Progress bar countdown -->
+                    <div class="countdown-wrap" id="countdownWrap">
+                        <div class="countdown-bar-bg">
+                            <div class="countdown-bar-fill" id="countdownBar"></div>
+                        </div>
+                        <div class="countdown-text" id="countdownText">60s left</div>
+                    </div>
+
+                    <!-- Expired message -->
+                    <div class="expired-banner" id="expiredBanner">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>This link has expired. Please contact <a href="mailto:support@vidyari.com">support@vidyari.com</a> if you need help accessing your file.</span>
+                    </div>
+
+                    <p class="v-note">Link expires after one-time use &nbsp;·&nbsp; <a href="#">Having trouble?</a></p>
+                </div>
+
             </div>
         </div>
     </main>
-  
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const downloadButton = document.getElementById('downloadButton');
-            const timerDisplay = document.getElementById('timerDisplay');
-            const countdownContainer = document.getElementById('countdownTimer');
-            
-            // Handle Download Click
-            downloadButton.onclick = (e) => {
-                if(downloadButton.classList.contains('disabled')) {
-                    e.preventDefault();
-                    return;
-                }
-                window.location.href = "/download/?file_id=<%=file._id%>";
-            };
-            
-            // Handle Countdown
-            let timeLeft = <%= typeof expiry !== 'undefined' ? expiry : 60 %>; 
+    /* ── Confetti burst ── */
+    (function () {
+        const canvas = document.getElementById('confettiCanvas');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
 
-            const countdownInterval = setInterval(() => {
-                timeLeft--;
-                
-                if (timerDisplay) {
-                    timerDisplay.textContent = timeLeft;
-                }
+        const COLORS = ['#34d399','#6ee7b7','#60a5fa','#93c5fd','#a78bfa','#fcd34d','#f0fdf4'];
+        const particles = [];
+        const TOTAL = 100;
 
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    
-                    // Handle Expiry UI State
-                    if (downloadButton) {
-                        downloadButton.classList.add('disabled');
-                        downloadButton.removeAttribute('href'); 
-                        downloadButton.innerHTML = `<i class="fa-solid fa-lock" style="font-size: 1.1rem;"></i> <span>Link Expired</span>`;
-                    }
-                    if (countdownContainer) {
-                        countdownContainer.textContent = 'Your secure download link has expired. Please refresh or contact support.';
-                        countdownContainer.style.color = '#b3261e'; // Material Danger
-                        countdownContainer.style.backgroundColor = '#fce8e6';
-                    }
+        function rand(a, b) { return Math.random() * (b - a) + a; }
+
+        for (let i = 0; i < TOTAL; i++) {
+            particles.push({
+                x: W / 2, y: H / 2,
+                vx: rand(-8, 8), vy: rand(-16, -4),
+                size: rand(5, 10),
+                color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                rotation: rand(0, Math.PI * 2),
+                rotationSpeed: rand(-0.15, 0.15),
+                gravity: 0.3,
+                opacity: 1,
+                shape: Math.random() > 0.5 ? 'rect' : 'circle',
+            });
+        }
+
+        let frame = 0;
+        function tick() {
+            ctx.clearRect(0, 0, W, H);
+            let alive = 0;
+            for (const p of particles) {
+                if (p.opacity <= 0) continue;
+                alive++;
+                p.vy += p.gravity;
+                p.x += p.vx; p.y += p.vy;
+                p.rotation += p.rotationSpeed;
+                if (p.y > H + 20) { p.opacity = 0; continue; }
+                p.opacity = Math.max(0, 1 - frame / 200);
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation);
+                ctx.globalAlpha = p.opacity;
+                ctx.fillStyle = p.color;
+                if (p.shape === 'rect') {
+                    ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, p.size / 2.5, 0, Math.PI * 2);
+                    ctx.fill();
                 }
-            }, 1000); 
+                ctx.restore();
+            }
+            frame++;
+            if (alive > 0 && frame < 260) requestAnimationFrame(tick);
+            else ctx.clearRect(0, 0, W, H);
+        }
+
+        // Start confetti after card reveal
+        setTimeout(tick, 1000);
+    })();
+
+    /* ── Countdown ── */
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn         = document.getElementById('downloadBtn');
+        const btnLabel    = document.getElementById('btnLabel');
+        const bar         = document.getElementById('countdownBar');
+        const textEl      = document.getElementById('countdownText');
+        const wrapEl      = document.getElementById('countdownWrap');
+        const banner      = document.getElementById('expiredBanner');
+
+        const TOTAL_TIME  = typeof expiry !== 'undefined' ? <%= typeof expiry !== 'undefined' ? expiry : 60 %> : 60;
+        let timeLeft      = TOTAL_TIME;
+
+        btn.addEventListener('click', (e) => {
+            if (btn.classList.contains('expired')) { e.preventDefault(); return; }
+            window.location.href = '/download/?file_id=<%= file._id %>';
         });
+
+        const interval = setInterval(() => {
+            timeLeft--;
+            const ratio = timeLeft / TOTAL_TIME;
+
+            // Progress bar
+            bar.style.transform = `scaleX(${Math.max(0, ratio)})`;
+
+            // Text + colour
+            if (timeLeft <= 0) {
+                textEl.textContent = 'Expired';
+                textEl.className = 'countdown-text expired';
+                bar.style.background = '#f87171';
+            } else if (timeLeft <= 10) {
+                textEl.textContent = `${timeLeft}s left`;
+                textEl.className = 'countdown-text warning';
+                bar.style.background = 'linear-gradient(90deg, #fbbf24, #f59e0b)';
+            } else {
+                textEl.textContent = `${timeLeft}s left`;
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                // Disable button
+                btn.classList.add('expired');
+                btnLabel.textContent = 'Link Expired';
+                btn.querySelector('i').className = 'fa-solid fa-lock';
+                // Show banner
+                wrapEl.style.display = 'none';
+                banner.classList.add('show');
+            }
+        }, 1000);
+    });
     </script>
 
 </body>

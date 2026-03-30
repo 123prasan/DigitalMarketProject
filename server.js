@@ -73,6 +73,13 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 const app = express();
+app.use(express.static(path.join(__dirname, "public"), {
+  setHeaders: (res, path) => {
+    if (path.endsWith(".svg") || path.match(/\.(png|jpg|jpeg|gif|webp)$/)) {
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    }
+  }
+}));
 app.use(cookieParser());
 
 app.use("/", UserChats);
@@ -335,27 +342,135 @@ app.use(express.urlencoded({ extended: false }));
 
 // ========== SEO & SECURITY HEADERS ==========
 // Add security headers with Helmet
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "https://cdn.jsdelivr.net", "https://cdn.tailwindcss.com", "https://cdn.quilljs.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
-      scriptSrcElem: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "https://cdn.jsdelivr.net", "https://cdn.tailwindcss.com", "https://cdn.quilljs.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
-      scriptSrcAttr: ["'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://cdn.quilljs.com"],
-      styleSrcElem: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://cdn.quilljs.com"],
-      imgSrc: ["'self'", "data:", "https:", "https://d3tonh6o5ach9f.cloudfront.net", "https://d3epchi0htsp3c.cloudfront.net", "https://d2q25uqlym20sh.cloudfront.net"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
-      connectSrc: ["'self'", "https://www.google-analytics.com", "https://www.googletagmanager.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
-    },
-  },
-  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
-  frameguard: { action: 'deny' },
-  noSniff: true,
-  xssFilter: true,
-  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
 
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",   // needed for ads + current setup
+          "'unsafe-eval'",     // optional (remove later if possible)
+          "https://cdn.jsdelivr.net",
+          "https://cdn.tailwindcss.com",
+          "https://cdn.quilljs.com",
+          "https://www.googletagmanager.com",
+          "https://www.google-analytics.com",
+          "https://pagead2.googlesyndication.com",
+          "https://tpc.googlesyndication.com",
+          "https://ep2.adtrafficquality.google",
+          "https://checkout.razorpay.com",
+          "https://api.razorpay.com",
+          "https://cdn.razorpay.com"
+        ],
+
+        // 🔥 FIX FOR YOUR ERROR
+        scriptSrcAttr: [
+          "'unsafe-inline'"   // allows onclick, onload, etc.
+        ],
+
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com",
+          "https://cdn.quilljs.com",
+          "https://checkout.razorpay.com"
+        ],
+
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https:",
+          "https://*.cloudfront.net",
+          "https://*.googleusercontent.com",
+          "https://pagead2.googlesyndication.com"
+        ],
+
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com",
+          "https://cdnjs.cloudflare.com"
+        ],
+
+        frameSrc: [
+          "'self'",
+          "https://checkout.razorpay.com",
+          "https://api.razorpay.com",
+          "https://www.razorpay.com",
+          "https://googleads.g.doubleclick.net",
+          "https://ep2.adtrafficquality.google",
+          "https://www.google.com",
+          "https://tpc.googlesyndication.com"
+        ],
+
+        connectSrc: [
+          "'self'",
+          "https://www.google-analytics.com",
+          "https://www.googletagmanager.com",
+          "https://pagead2.googlesyndication.com",
+          "https://ep1.adtrafficquality.google",
+          "https://ep2.adtrafficquality.google",
+          "https://checkout.razorpay.com",
+          "https://api.razorpay.com",
+          "https://lumberjack.razorpay.com",
+          "https://cdn.jsdelivr.net",
+          "https://cdnjs.cloudflare.com"
+        ],
+
+        mediaSrc: [
+          "'self'",
+          "https:",
+          "blob:"
+        ],
+
+        objectSrc: ["'none'"],
+
+        baseUri: ["'self'"],
+
+        frameAncestors: ["'self'"],
+
+        formAction: [
+          "'self'",
+          "https://checkout.razorpay.com"
+        ]
+      }
+    },
+
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true
+    },
+
+    frameguard: {
+      action: "sameorigin"
+    },
+
+    noSniff: true,
+
+    xssFilter: true,
+
+    referrerPolicy: {
+      policy: "strict-origin-when-cross-origin"
+    },
+
+    // 🔥 IMPORTANT FOR ADS + THIRD PARTY
+    crossOriginEmbedderPolicy: false,
+
+    // 🔥 FIXES YOUR IMAGE ERROR
+    crossOriginResourcePolicy: {
+      policy: "cross-origin"
+    }
+  })
+);
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  next();
+});
 // Compression middleware
 app.use(compression({
   level: 6,
@@ -373,19 +488,19 @@ app.use((req, res, next) => {
     res.set('Cache-Control', 'public, max-age=31536000, immutable');
     return next();
   }
-  
+
   // Course and file pages - cache for 1 hour
   if (req.path.match(/\/(course|file)\//) || req.path.match(/\/(courses|files)$/)) {
     res.set('Cache-Control', 'public, max-age=3600, s-maxage=3600');
     return next();
   }
-  
+
   // Home page - cache for 5 minutes
   if (req.path === '/' || req.path === '/index') {
     res.set('Cache-Control', 'public, max-age=300, s-maxage=300');
     return next();
   }
-  
+
   // User-specific pages - no cache
   if (req.path.match(/\/(dashboard|profile|settings|orders|downloads)\b/)) {
     res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -393,7 +508,7 @@ app.use((req, res, next) => {
     res.set('Expires', '0');
     return next();
   }
-  
+
   // Default - short cache
   res.set('Cache-Control', 'public, max-age=300');
   next();
@@ -419,11 +534,11 @@ app.use((req, res, next) => {
     metaTags: {},
     schemas: []
   };
-  
+
   res.locals.setMetaTags = (pageType, data = {}) => {
     const baseUrl = 'https://vidyari.com';
     const defaultImage = 'https://d3tonh6o5ach9f.cloudfront.net/og-image.jpg';
-    
+
     const metaTags = {
       home: {
         title: 'Online Courses & Digital Resources | Vidyari - Learn from Experts',
@@ -456,18 +571,18 @@ app.use((req, res, next) => {
         robots: 'index, follow'
       }
     };
-    
+
     res.locals.seo.metaTags = metaTags[pageType] || metaTags.home;
     res.locals.seo.baseUrl = baseUrl;
   };
-  
+
   res.locals.addSchema = (schema) => {
     res.locals.seo.schemas.push(schema);
   };
-  
+
   // Default to homepage meta tags
   res.locals.setMetaTags('home');
-  
+
   next();
 });
 
@@ -652,7 +767,7 @@ app.get("/api/courses/:courseId/enrolled-students", authenticateJWT_user, async 
 
     // Get progress for each enrolled student
     const UserProgress = require("./models/courseProgress");
-    
+
     const studentsWithProgress = await Promise.all(
       (course.enrolledStudents || []).map(async (student) => {
         try {
@@ -784,48 +899,48 @@ app.put("/api/instructor/courses/:courseId", authenticateJWT_user, async (req, r
     if (level) course.level = level;
     if (published !== undefined) course.published = published;
     if (thumbnail) {
-        // Delete old thumbnail from S3 if it exists
-        if (course.thumbnailUrl) {
-            try {
-                // Extract key from CloudFront URL: https://domain/courses/thumbnails/filename
-                const urlParts = course.thumbnailUrl.split('/');
-                const keyIndex = urlParts.findIndex(part => part === 'courses');
-                if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
-                    const s3Key = urlParts.slice(keyIndex).join('/');
-                    await s3.deleteObject({
-                        Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
-                        Key: s3Key
-                    }).promise();
-                    console.log(`Deleted old thumbnail: ${s3Key}`);
-                }
-            } catch (deleteError) {
-                console.warn('Failed to delete old thumbnail:', deleteError);
-                // Don't fail the update if deletion fails
-            }
+      // Delete old thumbnail from S3 if it exists
+      if (course.thumbnailUrl) {
+        try {
+          // Extract key from CloudFront URL: https://domain/courses/thumbnails/filename
+          const urlParts = course.thumbnailUrl.split('/');
+          const keyIndex = urlParts.findIndex(part => part === 'courses');
+          if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
+            const s3Key = urlParts.slice(keyIndex).join('/');
+            await s3.deleteObject({
+              Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+              Key: s3Key
+            }).promise();
+            console.log(`Deleted old thumbnail: ${s3Key}`);
+          }
+        } catch (deleteError) {
+          console.warn('Failed to delete old thumbnail:', deleteError);
+          // Don't fail the update if deletion fails
         }
-        course.thumbnailUrl = thumbnail;
+      }
+      course.thumbnailUrl = thumbnail;
     }
     if (introVideo) {
-        // Delete old intro video from S3 if it exists
-        if (course.introVideoUrl) {
-            try {
-                // Extract key from CloudFront URL
-                const urlParts = course.introVideoUrl.split('/');
-                const keyIndex = urlParts.findIndex(part => part === 'courses');
-                if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
-                    const s3Key = urlParts.slice(keyIndex).join('/');
-                    await s3.deleteObject({
-                        Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
-                        Key: s3Key
-                    }).promise();
-                    console.log(`Deleted old intro video: ${s3Key}`);
-                }
-            } catch (deleteError) {
-                console.warn('Failed to delete old intro video:', deleteError);
-                // Don't fail the update if deletion fails
-            }
+      // Delete old intro video from S3 if it exists
+      if (course.introVideoUrl) {
+        try {
+          // Extract key from CloudFront URL
+          const urlParts = course.introVideoUrl.split('/');
+          const keyIndex = urlParts.findIndex(part => part === 'courses');
+          if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
+            const s3Key = urlParts.slice(keyIndex).join('/');
+            await s3.deleteObject({
+              Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+              Key: s3Key
+            }).promise();
+            console.log(`Deleted old intro video: ${s3Key}`);
+          }
+        } catch (deleteError) {
+          console.warn('Failed to delete old intro video:', deleteError);
+          // Don't fail the update if deletion fails
         }
-        course.introVideoUrl = introVideo;
+      }
+      course.introVideoUrl = introVideo;
     }
     if (learningOutcomes && Array.isArray(learningOutcomes)) course.learningOutcomes = learningOutcomes;
     if (requirements && Array.isArray(requirements)) course.requirements = requirements;
@@ -838,7 +953,7 @@ app.put("/api/instructor/courses/:courseId", authenticateJWT_user, async (req, r
         const instructor = await User.findById(instructorId).select('fullName followers');
         if (instructor && instructor.followers && instructor.followers.length > 0) {
           const followerIds = instructor.followers.map(f => f.toString());
-          const notifications = followerIds.map(userId => 
+          const notifications = followerIds.map(userId =>
             sendNotification({
               userId,
               title: `New Course by ${instructor.fullName || 'Instructor'}`,
@@ -1030,29 +1145,29 @@ app.put("/api/instructor/courses/:courseId/modules/:moduleId/submodules/:submodu
     if (title) submodule.title = title;
     if (type) submodule.type = type;
     if (duration !== undefined) submodule.duration = duration;
-    
+
     // Only update file/external URLs if provided (don't clear existing ones)
     if (fileUrl !== undefined) {
-        // Delete old file from S3 if it exists and is not an external URL
-        if (submodule.fileUrl && submodule.fileUrl.includes('cloudfront.net') && fileUrl !== submodule.fileUrl) {
-            try {
-                // Extract key from CloudFront URL
-                const urlParts = submodule.fileUrl.split('/');
-                const keyIndex = urlParts.findIndex(part => part === 'courses');
-                if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
-                    const s3Key = urlParts.slice(keyIndex).join('/');
-                    await s3.deleteObject({
-                        Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
-                        Key: s3Key
-                    }).promise();
-                    console.log(`Deleted old lesson file: ${s3Key}`);
-                }
-            } catch (deleteError) {
-                console.warn('Failed to delete old lesson file:', deleteError);
-                // Don't fail the update if deletion fails
-            }
+      // Delete old file from S3 if it exists and is not an external URL
+      if (submodule.fileUrl && submodule.fileUrl.includes('cloudfront.net') && fileUrl !== submodule.fileUrl) {
+        try {
+          // Extract key from CloudFront URL
+          const urlParts = submodule.fileUrl.split('/');
+          const keyIndex = urlParts.findIndex(part => part === 'courses');
+          if (keyIndex !== -1 && urlParts.length > keyIndex + 2) {
+            const s3Key = urlParts.slice(keyIndex).join('/');
+            await s3.deleteObject({
+              Bucket: process.env.AWS_BUCKET_NAME || 'vidyarimain2',
+              Key: s3Key
+            }).promise();
+            console.log(`Deleted old lesson file: ${s3Key}`);
+          }
+        } catch (deleteError) {
+          console.warn('Failed to delete old lesson file:', deleteError);
+          // Don't fail the update if deletion fails
         }
-        submodule.fileUrl = fileUrl;
+      }
+      submodule.fileUrl = fileUrl;
     }
     if (externalUrl !== undefined) submodule.externalUrl = externalUrl;
 
@@ -1127,7 +1242,7 @@ app.post("/api/courses/generate-presigned-url", authenticateJWT_user, async (req
 
     console.log(`Generated presigned URL for: ${fileName} -> ${s3Key}`);
 
-    res.json({ 
+    res.json({
       success: true,
       signedUrl,
       finalUrl,
@@ -1166,8 +1281,8 @@ app.post("/api/instructor/upload-course-file", authenticateJWT_user, upload.sing
 
       console.log(`File uploaded to S3: ${req.file.originalname} -> ${s3Key}`);
 
-      res.json({ 
-        success: true, 
+      res.json({
+        success: true,
         fileUrl,
         s3Key,
         fileName: req.file.originalname,
@@ -1187,9 +1302,9 @@ app.post("/api/instructor/upload-course-file", authenticateJWT_user, upload.sing
 // Helper function to extract S3 key from CloudFront URL
 function extractS3KeyFromUrl(url) {
   if (!url || typeof url !== 'string') return null;
-  
+
   // Try multiple extraction methods
-  
+
   // Method 1: CloudFront domain (https://d3tonh6o5ach9f.cloudfront.net/...)
   if (url.includes('cloudfront.net')) {
     const urlParts = url.split('/');
@@ -1198,7 +1313,7 @@ function extractS3KeyFromUrl(url) {
       return urlParts.slice(keyIndex).join('/');
     }
   }
-  
+
   // Method 2: Fallback - extract everything after domain
   try {
     const urlObj = new URL(url);
@@ -1207,12 +1322,12 @@ function extractS3KeyFromUrl(url) {
   } catch (e) {
     // Not a valid URL
   }
-  
+
   // Method 3: If it's already an S3 key (like courses/thumbnails/...)
   if (url.startsWith('courses/')) {
     return url;
   }
-  
+
   return null;
 }
 
@@ -1301,8 +1416,8 @@ app.delete("/api/instructor/courses/:courseId", authenticateJWT_user, async (req
       console.log(`⚠️  Failed deletions: ${failedDeletions.length}`);
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: "Course and all associated files deleted successfully",
       details: {
         courseTitle: course.title,
@@ -1373,12 +1488,12 @@ app.post("/save-location", async (req, res) => {
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Ensure DNS can resolve SRV records (some networks/VPNs block them)
-require('dns').setServers(['1.1.1.1','8.8.8.8']);
+require('dns').setServers(['1.1.1.1', '8.8.8.8']);
 
 // Connect to MongoDB with enhanced error handling
 mongoose
   .connect(process.env.MONGODB_URI, {
-    family:4,
+    family: 4,
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
     retryWrites: true,
@@ -1413,7 +1528,7 @@ app.use(express.json()); // Parse JSON bodies
 // Set views and static folder
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "public")));
+
 app.use("/api/chat", chatRoutes);
 
 
@@ -1528,7 +1643,7 @@ app.get("/dashboard", authenticateJWT_user, async (req, res) => {
       // Check if file is an image based on imageType
       const imageExtensions = ['jpeg', 'jpg', 'png', 'gif', 'webp', 'bmp', 'svg'];
       const isImage = file.imageType && imageExtensions.includes(file.imageType.toLowerCase());
-      
+
       return {
         id: file._id,
         filename: file.filename,
@@ -1560,7 +1675,7 @@ app.get("/dashboard", authenticateJWT_user, async (req, res) => {
   }
 });
 // Razorpay Order Creation - No auth needed (public)
-app.post("/create-order", authenticateJWT_user,requireAuth,async (req, res) => {
+app.post("/create-order", authenticateJWT_user, requireAuth, async (req, res) => {
   // console.log("data",req.user)
   console.log("-----------------------------")
   try {
@@ -1572,10 +1687,10 @@ app.post("/create-order", authenticateJWT_user,requireAuth,async (req, res) => {
         .json({ error: "Missing or invalid fileId, filename, or price" });
     }
     const amountInPaisa = Math.round(price * 100); // Razorpay expects amount in smallest currency unit (paisa)
-    
+
     // Generate receipt - must be 40 chars or less
     const receipt = `${fileId.toString().slice(-8)}_${Date.now().toString().slice(-6)}`;
-    
+
     const orderOptions = {
       amount: amountInPaisa,
       currency: "INR",
@@ -1747,7 +1862,7 @@ app.post("/verify-payment", authenticateJWT_user, requireAuth, async (req, res) 
     if (!file) {
       return res.status(404).json({ success: false, message: "File not found" });
     }
-    
+
     // Fetch the creator to check Pro status
     const creator = await User.findById(file.userId);
     if (!creator) {
@@ -1755,7 +1870,7 @@ app.post("/verify-payment", authenticateJWT_user, requireAuth, async (req, res) 
     }
 
     // --- VIDYARI PRO LOGIC STARTS HERE ---
-    
+
     // 1. Determine base split based on Pro status (10% vs 30% fee)
     const platformFeePercentage = creator.isPro ? 0.10 : 0.30;
     let platformCut = totalprice * platformFeePercentage;
@@ -1765,22 +1880,22 @@ app.post("/verify-payment", authenticateJWT_user, requireAuth, async (req, res) 
 
     // 2. Handle "Pay via Wallet" Pending Fees
     if (creator.isPro && creator.pendingSubscriptionFee > 0) {
-        if (sellerShare >= creator.pendingSubscriptionFee) {
-            // Seller made enough to clear the whole debt
-            subscriptionFeeDeducted = creator.pendingSubscriptionFee;
-            sellerShare -= creator.pendingSubscriptionFee;
-            platformCut += creator.pendingSubscriptionFee; // Admin keeps the sub fee
-            creator.pendingSubscriptionFee = 0; // Debt cleared
-        } else {
-            // Seller didn't make enough, take all earnings toward debt
-            subscriptionFeeDeducted = sellerShare;
-            creator.pendingSubscriptionFee -= sellerShare;
-            platformCut += sellerShare; // Admin takes what they made
-            sellerShare = 0; // Seller gets 0 this time
-        }
-        
-        // Save the creator's updated pending fee
-        await creator.save(); 
+      if (sellerShare >= creator.pendingSubscriptionFee) {
+        // Seller made enough to clear the whole debt
+        subscriptionFeeDeducted = creator.pendingSubscriptionFee;
+        sellerShare -= creator.pendingSubscriptionFee;
+        platformCut += creator.pendingSubscriptionFee; // Admin keeps the sub fee
+        creator.pendingSubscriptionFee = 0; // Debt cleared
+      } else {
+        // Seller didn't make enough, take all earnings toward debt
+        subscriptionFeeDeducted = sellerShare;
+        creator.pendingSubscriptionFee -= sellerShare;
+        platformCut += sellerShare; // Admin takes what they made
+        sellerShare = 0; // Seller gets 0 this time
+      }
+
+      // Save the creator's updated pending fee
+      await creator.save();
     }
     // --- VIDYARI PRO LOGIC ENDS HERE ---
 
@@ -1881,42 +1996,51 @@ app.post("/verify-payment", authenticateJWT_user, requireAuth, async (req, res) 
       }),
     ]);
 
-    // Fire-and-forget push notification
+    // Fire-and-forget push notification (wrapped in try-catch to prevent server crashes)
     (async () => {
-      
-      // Determine what to tell the creator
-      let sellerMessage = `🤑 You Earned Amount of ₹ ${sellerShare.toFixed(2)}`;
-      if (subscriptionFeeDeducted > 0) {
+      try {
+        // Determine what to tell the creator
+        let sellerMessage = `🤑 You Earned Amount of ₹ ${sellerShare.toFixed(2)}`;
+        if (subscriptionFeeDeducted > 0) {
           sellerMessage += ` (₹${subscriptionFeeDeducted.toFixed(2)} automatically applied to your Pro Subscription fee).`;
-      }
-
-      const notifications = [
-        sendNotification({
-          userId: req.user._id,
-          title: "Your product Purchase is Successful",
-          body: `You can see your Files in the My Downloads section. Your Product: ${file.filename}`,
-          image: imageUrl,
-          target_link: "/downloads",
-          notification_type: "purchase",
-        }),
-        sendNotification({
-          userId: file.userId,
-          title: `Someone Bought Your Product ${file.filename}`,
-          body: sellerMessage, // Send the dynamic message regarding their earnings/debt
-          image: imageUrl,
-          target_link: "/dashboard",
-          notification_type: "transaction",
-        }),
-      ];
-
-      const results = await Promise.allSettled(notifications);
-
-      results.forEach((result, index) => {
-        if (result.status === "rejected") {
-          const type = index === 0 ? "Purchase" : "Transaction";
-          console.error(`${type} notification failed:`, result.reason);
         }
-      });
+
+        // Only attempt notifications if sendNotification is available
+        if (typeof sendNotification === 'function') {
+          const notifications = [
+            sendNotification({
+              userId: req.user._id,
+              title: "Your product Purchase is Successful",
+              body: `You can see your Files in the My Downloads section. Your Product: ${file.filename}`,
+              image: imageUrl,
+              target_link: "/downloads",
+              notification_type: "purchase",
+            }),
+            sendNotification({
+              userId: file.userId,
+              title: `Someone Bought Your Product ${file.filename}`,
+              body: sellerMessage,
+              image: imageUrl,
+              target_link: "/dashboard",
+              notification_type: "transaction",
+            }),
+          ];
+
+          const results = await Promise.allSettled(notifications);
+
+          results.forEach((result, index) => {
+            if (result.status === "rejected") {
+              const type = index === 0 ? "Purchase" : "Transaction";
+              console.warn(`⚠️ ${type} notification failed:`, result.reason);
+            }
+          });
+        } else {
+          console.warn('⚠️ sendNotification function not available - skipping notifications');
+        }
+      } catch (notificError) {
+        // Log error but don't crash the server - notifications are non-critical
+        console.error('⚠️ Error sending post-payment notifications:', notificError.message);
+      }
     })();
 
 
@@ -1941,7 +2065,7 @@ app.post("/webhook", (req, res) => {
     const crypto = require('crypto');
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
     const signature = req.headers['x-razorpay-signature'];
-    
+
     if (!signature) {
       return res.status(400).json({ error: 'Missing signature' });
     }
@@ -1957,7 +2081,7 @@ app.post("/webhook", (req, res) => {
     }
 
     const eventData = req.body;
-    
+
     // Handle different webhook events
     if (eventData.event === 'payment.captured') {
       // Payment was captured/successful
@@ -2063,7 +2187,7 @@ app.get("/save", async (req, res) => {
     res.status(500).send("Failed to convert PDF");
   }
 });
-app.get("/pricing",authenticateJWT_user,async(req,res)=>{
+app.get("/pricing", authenticateJWT_user, async (req, res) => {
   // =============== SEO SETUP ===============
   res.locals.setMetaTags('pricing', {
     title: 'Affordable Pricing Plans - Vidyari',
@@ -2078,53 +2202,53 @@ app.get("/pricing",authenticateJWT_user,async(req,res)=>{
   // =============== END SEO SETUP ===============
 
   let profileUrl = null;
- let user = null;
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const cachedUser = pageCache.get(cacheKey);
+  let user = null;
+  if (req.user) {
+    const cacheKey = `user_${req.user._id}`;
+    const cachedUser = pageCache.get(cacheKey);
 
-      if (cachedUser) {
-        user = cachedUser;
-        profileUrl = cachedUser.profilePicUrl;
-      } else {
-        // Fetch minimal data for rendering
-        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-        if (user) {
-          // Convert to CloudFront if S3-based
-          if (user.profilePicUrl?.includes("s3.")) {
-            try {
-              const fileName = user.profilePicUrl.split("/").pop();
-              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-            } catch (err) {
-              console.warn("⚠️ Profile URL conversion failed:", err.message);
-            }
+    if (cachedUser) {
+      user = cachedUser;
+      profileUrl = cachedUser.profilePicUrl;
+    } else {
+      // Fetch minimal data for rendering
+      user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+      if (user) {
+        // Convert to CloudFront if S3-based
+        if (user.profilePicUrl?.includes("s3.")) {
+          try {
+            const fileName = user.profilePicUrl.split("/").pop();
+            user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+          } catch (err) {
+            console.warn("⚠️ Profile URL conversion failed:", err.message);
           }
-
-          // Cache for future requests
-          pageCache.set(cacheKey, user);
-          profileUrl = user.profilePicUrl;
         }
+
+        // Cache for future requests
+        pageCache.set(cacheKey, user);
+        profileUrl = user.profilePicUrl;
       }
     }
+  }
 
-    // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const ttl = pageCache.getTtl(cacheKey);
-      if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
-        pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
-      }
+  // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
+  if (req.user) {
+    const cacheKey = `user_${req.user._id}`;
+    const ttl = pageCache.getTtl(cacheKey);
+    if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
+      pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
     }
+  }
 
-  res.render("pricing",{
+  res.render("pricing", {
     isLoggedin: !!req.user,
-      profileUrl,
-      username: user?.username || null,
-      useremail: user?.email || null,
-      uId: user?._id?.toString() || null,
+    profileUrl,
+    username: user?.username || null,
+    useremail: user?.email || null,
+    uId: user?._id?.toString() || null,
   })
 })
-app.get("/About",authenticateJWT_user,async(req,res)=>{
+app.get("/About", authenticateJWT_user, async (req, res) => {
   // =============== SEO SETUP ===============
   res.locals.setMetaTags('about', {
     title: 'About Us - Vidyari',
@@ -2139,50 +2263,50 @@ app.get("/About",authenticateJWT_user,async(req,res)=>{
   // =============== END SEO SETUP ===============
 
   let profileUrl = null;
- let user = null;
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const cachedUser = pageCache.get(cacheKey);
+  let user = null;
+  if (req.user) {
+    const cacheKey = `user_${req.user._id}`;
+    const cachedUser = pageCache.get(cacheKey);
 
-      if (cachedUser) {
-        user = cachedUser;
-        profileUrl = cachedUser.profilePicUrl;
-      } else {
-        // Fetch minimal data for rendering
-        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-        if (user) {
-          // Convert to CloudFront if S3-based
-          if (user.profilePicUrl?.includes("s3.")) {
-            try {
-              const fileName = user.profilePicUrl.split("/").pop();
-              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-            } catch (err) {
-              console.warn("⚠️ Profile URL conversion failed:", err.message);
-            }
+    if (cachedUser) {
+      user = cachedUser;
+      profileUrl = cachedUser.profilePicUrl;
+    } else {
+      // Fetch minimal data for rendering
+      user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+      if (user) {
+        // Convert to CloudFront if S3-based
+        if (user.profilePicUrl?.includes("s3.")) {
+          try {
+            const fileName = user.profilePicUrl.split("/").pop();
+            user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+          } catch (err) {
+            console.warn("⚠️ Profile URL conversion failed:", err.message);
           }
-
-          // Cache for future requests
-          pageCache.set(cacheKey, user);
-          profileUrl = user.profilePicUrl;
         }
+
+        // Cache for future requests
+        pageCache.set(cacheKey, user);
+        profileUrl = user.profilePicUrl;
       }
     }
+  }
 
-    // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const ttl = pageCache.getTtl(cacheKey);
-      if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
-        pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
-      }
+  // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
+  if (req.user) {
+    const cacheKey = `user_${req.user._id}`;
+    const ttl = pageCache.getTtl(cacheKey);
+    if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
+      pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
     }
+  }
 
-  res.render("about",{
+  res.render("about", {
     isLoggedin: !!req.user,
-      profileUrl,
-      username: user?.username || null,
-      useremail: user?.email || null,
-      uId: user?._id?.toString() || null,
+    profileUrl,
+    username: user?.username || null,
+    useremail: user?.email || null,
+    uId: user?._id?.toString() || null,
   })
 })
 // Download PDF - No auth needed (public, post-payment)
@@ -2365,10 +2489,10 @@ app.get("/admin", authenticateJWT, async (req, res) => {
   const filesWithUrls = await Promise.all(
     files.map(async (file) => {
       try {
-            // Construct the S3 key (avoid double-prefixing if already present)
-            const key = file.fileUrl && String(file.fileUrl).startsWith('main-files/')
-              ? file.fileUrl
-              : `main-files/${file.fileUrl}`; // adapt if your file structure is different
+        // Construct the S3 key (avoid double-prefixing if already present)
+        const key = file.fileUrl && String(file.fileUrl).startsWith('main-files/')
+          ? file.fileUrl
+          : `main-files/${file.fileUrl}`; // adapt if your file structure is different
 
         // Generate pre-signed URL (valid for 5 minutes)
         const downloadUrl = s3.getSignedUrl("getObject", {
@@ -2528,13 +2652,13 @@ app.get("/admin", authenticateJWT, async (req, res) => {
 
   const categories = await getcategories(); // Fetch categories
   const allAddresses = await fetchaddress(); // Fetch last 100 addresses
-  
+
   // Fetch all users and their statistics
   const allUsers = await User.find({}).sort({ createdAt: -1 });
   const verifiedUsers = allUsers.filter(u => u.ISVERIFIED).length;
   const suspendedUsers = allUsers.filter(u => u.isSuspended).length;
   const bannedUsers = allUsers.filter(u => u.isBanned).length;
-  
+
   res.render("admin", {
     // include the authenticated admin's username for display in the header
     username: req.user?.username || "Admin",
@@ -2593,7 +2717,7 @@ function getCSSVariables() {
 
 app.post("/edit-file", authenticateJWT, async (req, res) => {
   const { fileId, filename, filedescription, price, couponCode } = req.body;
-  
+
   try {
     const updatedFile = await File.findByIdAndUpdate(fileId, {
       filename,
@@ -2626,7 +2750,7 @@ app.post("/edit-file", authenticateJWT, async (req, res) => {
       // remove coupon if empty
       await Coupon.deleteOne({ file: fileId });
     }
-    
+
     // Always return JSON for consistency
     res.json({ success: true, message: 'File updated successfully', file: updatedFile });
   } catch (error) {
@@ -2664,18 +2788,18 @@ app.post(
       const { filename, filedescription, price, category } = req.body;
       const pdfFile = req.files["file"]?.[0];
       const imageFile = req.files["previewImage"]?.[0];
-      
+
       if (!pdfFile || !imageFile) {
-        return res.status(400).json({ 
-          success: false, 
-          error: "PDF file and preview image are required" 
+        return res.status(400).json({
+          success: false,
+          error: "PDF file and preview image are required"
         });
       }
 
       console.log(`\n🔒 SECURITY CHECK: Validating uploaded files by user ${req.user?.username || 'unknown'}`);
 
       // ==================== FILE SECURITY VALIDATION ====================
-      
+
       // 1. Validate PDF File
       console.log(`📄 Validating PDF: ${pdfFile.originalname}`);
       const pdfValidation = await fileSecurityValidator.securityCheck(
@@ -2723,7 +2847,7 @@ app.post(
       // Log validation success
       console.log(`✅ PDF VALIDATION PASSED - Safe to upload`);
       console.log(`✅ IMAGE VALIDATION PASSED - Safe to upload`);
-      
+
       if (pdfValidation.warnings.length > 0) {
         console.warn(`⚠️ PDF Warnings:`, pdfValidation.warnings);
       }
@@ -2732,14 +2856,14 @@ app.post(
       }
 
       // ==================== UPLOAD TO S3 ====================
-      
+
       // Both files passed validation - safe to upload
       console.log(`\n📤 Uploading validated files to AWS S3...`);
 
       // Upload PDF to AWS S3 (vidyarimain2 bucket)
       const sanitizedFilename = fileSecurityValidator.sanitizeFilename(pdfFile.originalname);
       const pdfS3Key = `main-files/${Date.now()}_${sanitizedFilename}`;
-      
+
       await s3.putObject({
         Bucket: 'vidyarimain2',
         Key: pdfS3Key,
@@ -2786,7 +2910,7 @@ app.post(
       // Upload preview image to AWS S3
       const previewS3Key = `files-previews/images/${newFile._id}.jpg`;
       const sanitizedPreviewName = fileSecurityValidator.sanitizeFilename(imageFile.originalname);
-      
+
       await s3.putObject({
         Bucket: 'vidyari3',
         Key: previewS3Key,
@@ -2980,28 +3104,28 @@ function generateOptimizedSEOForFile(file) {
   const category = file.category || 'Study Material';
   const fileType = file.fileType || 'PDF';
   const price = file.price;
-  
+
   // Extract keywords from filename (course codes, year numbers, etc.)
   const keywordMatches = filename.match(/\b[A-Z]{2,}[0-9]{3,}\b/g) || [];
   const keywords = [filename];
-  
+
   // Add file type keywords
   if (filename.toLowerCase().includes('note')) keywords.push('notes', 'study notes');
   if (filename.toLowerCase().includes('paper')) keywords.push('paper', 'question paper');
   if (filename.toLowerCase().includes('solution')) keywords.push('solution', 'answers');
   if (filename.toLowerCase().includes('model')) keywords.push('model paper');
-  
+
   // Add price indicator
   if (price === 0) keywords.push('free download', 'free pdf');
   else keywords.push('paid', 'premium');
-  
+
   // Add educational related keywords
   keywords.push('pdf download', 'digital resource', category.toLowerCase());
-  
+
   // Generate optimized meta description (150-160 chars)
   const priceText = price === 0 ? 'Free' : `₹${Math.floor(price)}`;
   let metaDesc = `${filename} | ${priceText} Download`;
-  
+
   if (filename.toLowerCase().includes('note')) {
     metaDesc = `${filename} | Free & Paid Study Notes | Download PDF | ${category}`;
   } else if (filename.toLowerCase().includes('paper')) {
@@ -3009,7 +3133,7 @@ function generateOptimizedSEOForFile(file) {
   } else {
     metaDesc = `${filename} | Premium Digital Resource | ${priceText} on Vidyari | ${category}`;
   }
-  
+
   return {
     keywords: [...new Set(keywords)].slice(0, 10),
     metaDescription: metaDesc.substring(0, 160),
@@ -3022,10 +3146,10 @@ function generateOptimizedSEOForFile(file) {
 app.get("/sitemap.xml", async (req, res) => {
   try {
     const files = await File.find().select("slug _id updatedAt").lean();
-    
+
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-    
+
     // Home page
     xml += '  <url>\n';
     xml += '    <loc>https://vidyari.com/</loc>\n';
@@ -3033,7 +3157,7 @@ app.get("/sitemap.xml", async (req, res) => {
     xml += '    <changefreq>daily</changefreq>\n';
     xml += '    <priority>1.0</priority>\n';
     xml += '  </url>\n';
-    
+
     // Documents/Files page
     xml += '  <url>\n';
     xml += '    <loc>https://vidyari.com/documents</loc>\n';
@@ -3041,13 +3165,13 @@ app.get("/sitemap.xml", async (req, res) => {
     xml += '    <changefreq>daily</changefreq>\n';
     xml += '    <priority>0.9</priority>\n';
     xml += '  </url>\n';
-    
+
     // Individual file URLs
     files.forEach(file => {
-      const lastmod = file.updatedAt 
-        ? new Date(file.updatedAt).toISOString().split('T')[0] 
+      const lastmod = file.updatedAt
+        ? new Date(file.updatedAt).toISOString().split('T')[0]
         : '2024-01-01';
-      
+
       xml += '  <url>\n';
       xml += `    <loc>https://vidyari.com/file/${file.slug}/${file._id}</loc>\n`;
       xml += `    <lastmod>${lastmod}</lastmod>\n`;
@@ -3055,12 +3179,12 @@ app.get("/sitemap.xml", async (req, res) => {
       xml += '    <priority>0.8</priority>\n';
       xml += '  </url>\n';
     });
-    
+
     xml += '</urlset>';
-    
+
     res.set('Content-Type', 'application/xml');
     res.send(xml);
-    
+
     console.log(`✅ Sitemap generated with ${files.length + 2} URLs`);
   } catch (error) {
     console.error('❌ Sitemap generation error:', error);
@@ -3073,21 +3197,21 @@ app.get("/sitemap.xml", async (req, res) => {
 app.get("/api/related-files/:fileId", async (req, res) => {
   try {
     const file = await File.findById(req.params.fileId).select("category").lean();
-    
+
     if (!file) {
       return res.status(404).json({ error: 'File not found' });
     }
-    
+
     // Get 6 related files from same category (excluding current file)
     const relatedFiles = await File.find({
       category: file.category,
       _id: { $ne: file._id }
     })
-    .select("filename slug _id downloadCount price category")
-    .sort({ downloadCount: -1 })
-    .limit(6)
-    .lean();
-    
+      .select("filename slug _id downloadCount price category")
+      .sort({ downloadCount: -1 })
+      .limit(6)
+      .lean();
+
     res.json({ relatedFiles });
   } catch (error) {
     console.error('Error fetching related files:', error);
@@ -3118,7 +3242,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
     // =============== ENHANCED SEO SETUP ===============
     // Generate keyword-optimized SEO data
     const seoData = generateOptimizedSEOForFile(file);
-    
+
     res.locals.setMetaTags('file', {
       name: file.filename,
       description: seoData.metaDescription,
@@ -3127,7 +3251,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       downloadCount: file.downloadCount || 0,
       preview: await getValidFileUrl(file)
     });
-    
+
     // Add JSON-LD schema for EducationalResource (better for documents)
     const educationalSchema = {
       '@context': 'https://schema.org',
@@ -3153,7 +3277,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
         'availability': 'https://schema.org/InStock'
       }
     };
-    
+
     // Add download count if available
     if (file.downloadCount) {
       educationalSchema.aggregateRating = {
@@ -3163,9 +3287,9 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
         'name': 'Downloads'
       };
     }
-    
+
     res.locals.addSchema(educationalSchema);
-    
+
     // Add FAQ Schema for common questions about study materials
     const faqSchema = {
       '@context': 'https://schema.org',
@@ -3197,9 +3321,9 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
         }
       ]
     };
-    
+
     res.locals.addSchema(faqSchema);
-    
+
     // Add breadcrumb schema
     res.locals.addSchema({
       '@context': 'https://schema.org',
@@ -3299,18 +3423,18 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
 
     // Prepare price details for checkout display
     const priceDetails = GenCheckOutPrice(Number(file.price) || 0);
-    
+
     // Fetch related files from same category for internal linking
     const relatedFiles = await File.find({
       category: file.category,
       _id: { $ne: file._id }
     })
-    .select("filename slug _id downloadCount price")
-    .sort({ downloadCount: -1 })
-    .limit(4)
-    .lean();
-   
-   console.log(previewUrl, pdfUrl)
+      .select("filename slug _id downloadCount price")
+      .sort({ downloadCount: -1 })
+      .limit(4)
+      .lean();
+
+    console.log(previewUrl, pdfUrl)
     // 🎨 Render final optimized view
     res.render("file-details", {
       file,
@@ -3381,7 +3505,7 @@ app.post("/delete-file", authenticateJWT, async (req, res) => {
     // Try with stored imageType first, then fallback to common formats
     const imageFormats = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
     const storedType = file.imageType ? file.imageType.toLowerCase().replace('.', '') : null;
-    
+
     // Reorder to try stored type first
     const formatsToTry = storedType && imageFormats.includes(storedType)
       ? [storedType, ...imageFormats.filter(f => f !== storedType)]
@@ -3966,7 +4090,7 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
       'url': 'https://vidyari.com/documents'
     });
     // =============== END SEO SETUP ===============
-    
+
     // 🧠 Step 1: Try cached categories
     let categories = pageCache.get("categories");
     if (!categories) {
@@ -4143,348 +4267,348 @@ app.get('/files', async (req, res) => {
 
 // GET /courses - Display all available courses
 app.get('/courses', authenticateJWT_user, async (req, res) => {
-    try {
-        // =============== SEO SETUP ===============
-        res.locals.setMetaTags('home', {});
-        res.locals.addSchema({
-          '@context': 'https://schema.org',
-          '@type': 'CollectionPage',
-          'name': 'Browse Online Courses',
-          'description': 'Explore thousands of professional courses and learn from industry experts',
-          'url': 'https://vidyari.com/courses'
-        });
-        // =============== END SEO SETUP ===============
-        
-        let user = null;
-        let profileUrl = null;
+  try {
+    // =============== SEO SETUP ===============
+    res.locals.setMetaTags('home', {});
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      'name': 'Browse Online Courses',
+      'description': 'Explore thousands of professional courses and learn from industry experts',
+      'url': 'https://vidyari.com/courses'
+    });
+    // =============== END SEO SETUP ===============
 
-        // 1. User Caching Logic
-        if (req.user) {
-            const cacheKey = `user_${req.user._id}`;
-            const cachedUser = pageCache.get(cacheKey);
+    let user = null;
+    let profileUrl = null;
 
-            if (cachedUser) {
-                user = cachedUser;
-                profileUrl = cachedUser.profilePicUrl;
-            } else {
-                user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-                if (user) {
-                    if (user.profilePicUrl?.includes("s3.")) {
-                        try {
-                            const fileName = user.profilePicUrl.split("/").pop();
-                            user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-                        } catch (err) {
-                            console.warn("⚠️ Profile URL conversion failed:", err.message);
-                        }
-                    }
-                    pageCache.set(cacheKey, user);
-                    profileUrl = user.profilePicUrl;
-                }
+    // 1. User Caching Logic
+    if (req.user) {
+      const cacheKey = `user_${req.user._id}`;
+      const cachedUser = pageCache.get(cacheKey);
+
+      if (cachedUser) {
+        user = cachedUser;
+        profileUrl = cachedUser.profilePicUrl;
+      } else {
+        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+        if (user) {
+          if (user.profilePicUrl?.includes("s3.")) {
+            try {
+              const fileName = user.profilePicUrl.split("/").pop();
+              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+            } catch (err) {
+              console.warn("⚠️ Profile URL conversion failed:", err.message);
             }
+          }
+          pageCache.set(cacheKey, user);
+          profileUrl = user.profilePicUrl;
         }
-
-        // 2. Detect if request is AJAX/API or a standard page load
-        // This checks if the frontend used fetch() with JSON headers or passed a specific query parameter
-        const isAjaxRequest = req.xhr || 
-                              req.headers.accept?.includes('application/json') || 
-                              req.query.ajax === 'true' || 
-                              Object.keys(req.query).length > 0;
-
-        // 3. Build the MongoDB Query Object
-        const query = { published: true }; // Always only show published courses
-
-        // Text Search ($or across multiple fields)
-        if (req.query.search) {
-            const searchRegex = new RegExp(req.query.search, 'i'); // Case-insensitive
-            query.$or = [
-                { title: searchRegex },
-                { description: searchRegex },
-                { tags: searchRegex },
-                { category: searchRegex }
-            ];
-        }
-
-        // Category Filter (Handles both single string and array of strings)
-        if (req.query.category) {
-            const categories = Array.isArray(req.query.category) ? req.query.category : [req.query.category];
-            query.category = { $in: categories };
-        }
-
-        // Level Filter
-        if (req.query.level) {
-            const levels = Array.isArray(req.query.level) ? req.query.level : [req.query.level];
-            query.level = { $in: levels };
-        }
-
-        // Price Tier Filter
-        if (req.query.price) {
-            if (req.query.price === 'free') {
-                query.$or = [{ price: 0 }, { isFree: true }];
-            } else if (req.query.price === 'paid') {
-                query.price = { $gt: 0 };
-                query.isFree = { $ne: true };
-            }
-        }
-
-        // Minimum Rating Filter
-        if (req.query.minRating) {
-            query.rating = { $gte: parseFloat(req.query.minRating) };
-        }
-
-        // 4. Build the Sorting Object
-        let sortObj = { enrollCount: -1 }; // Default to most popular
-        switch (req.query.sort) {
-            case 'newest': sortObj = { createdAt: -1 }; break;
-            case 'rating': sortObj = { rating: -1 }; break;
-            case 'price-asc': sortObj = { price: 1 }; break;
-            case 'price-desc': sortObj = { price: -1 }; break;
-            case 'popular': sortObj = { enrollCount: -1 }; break;
-        }
-
-        // 5. Pagination Logic
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 12;
-        const skip = (page - 1) * limit;
-
-        // ==========================================
-        // ROUTE A: JSON RESPONSE (FOR DYNAMIC UI)
-        // ==========================================
-        if (isAjaxRequest) {
-            console.log(`🔍 API Filter triggered. Page: ${page}, Limit: ${limit}`);
-
-            // Run count and fetch concurrently for better performance
-            const [totalCourses, rawCourses] = await Promise.all([
-                Course.countDocuments(query),
-                Course.find(query)
-                    .populate('userId', 'fullName profilePicUrl username')
-                    .sort(sortObj)
-                    .skip(skip)
-                    .limit(limit)
-                    .lean()
-            ]);
-
-            const totalPages = Math.ceil(totalCourses / limit);
-
-            // Format course output securely for the frontend
-            const formattedCourses = rawCourses.map(course => {
-                // Ensure instructor name falls back to username if fullName is missing
-                const instructorName = course.userId?.fullName || course.userId?.username || 'Premium Instructor';
-                const instructorAvatar = course.userId?.profilePicUrl || null;
-                // Use enrollCount if available, otherwise count enrolledStudents array
-                const enrollCount = course.enrollCount || (course.enrolledStudents ? course.enrolledStudents.length : 0);
-                
-                return {
-                    _id: course._id,
-                    slug: course.slug,
-                    title: course.title,
-                    instructor: instructorName,
-                    instructorAvatar: instructorAvatar,
-                    category: course.category,
-                    level: course.level || 'All Levels',
-                    price: course.price || 0,
-                    discountPrice: course.discountPrice,
-                    rating: course.rating || 0,
-                    enrollCount: enrollCount,
-                    duration: course.duration || 0,
-                    thumbnailUrl: course.thumbnailUrl,
-                    tags: course.tags || [],
-                    createdAt: course.createdAt
-                };
-            });
-
-            return res.json({
-                success: true,
-                courses: formattedCourses, // Sent to frontend Render.grid()
-                totalCourses,
-                totalPages,
-                currentPage: page
-            });
-        } 
-        
-        // ==========================================
-        // ROUTE B: EJS RENDER (INITIAL PAGE LOAD)
-        // ==========================================
-        else {
-            console.log('🚀 Loading initial Courses page via EJS.');
-
-            // Fetch a generous base chunk (e.g., 50) of popular courses to inject into EJS 
-            // so the frontend immediately has data to parse for categories/levels without a loading screen.
-            const rawCourses = await Course.find({ published: true })
-                .populate('userId', 'fullName profilePicUrl username')
-                .sort({ enrollCount: -1 })
-                .limit(50) 
-                .lean();
-
-            const formattedCourses = rawCourses.map(course => {
-                // Ensure instructor name falls back to username if fullName is missing
-                const instructorName = course.userId?.fullName || course.userId?.username || 'Premium Instructor';
-                const instructorAvatar = course.userId?.profilePicUrl || null;
-                // Use enrollCount if available, otherwise count enrolledStudents array
-                const enrollCount = course.enrollCount || (course.enrolledStudents ? course.enrolledStudents.length : 0);
-                
-                return {
-                    _id: course._id,
-                    slug: course.slug,
-                    title: course.title,
-                    instructor: instructorName,
-                    instructorAvatar: instructorAvatar,
-                    category: course.category,
-                    level: course.level || 'All Levels',
-                    price: course.price || 0,
-                    discountPrice: course.discountPrice,
-                    rating: course.rating || 0,
-                    enrollCount: enrollCount,
-                    duration: course.duration || 0,
-                    thumbnailUrl: course.thumbnailUrl,
-                    tags: course.tags || [],
-                    createdAt: course.createdAt
-                };
-            });
-
-            res.render('courses', { 
-                courses: formattedCourses,
-                isLoggedin: !!req.user,
-                profileUrl,
-                username: user?.username || null,
-                useremail: user?.email || null,
-                uId: user?._id?.toString() || null,
-            });
-        }
-
-    } catch (error) {
-        console.error('❌ Error fetching courses:', error);
-        
-        if (req.xhr || req.headers.accept?.includes('application/json')) {
-            return res.status(500).json({ success: false, error: 'Failed to fetch courses.' });
-        }
-        res.status(500).render('500', { error: 'An unexpected error occurred while loading courses.' });
+      }
     }
+
+    // 2. Detect if request is AJAX/API or a standard page load
+    // This checks if the frontend used fetch() with JSON headers or passed a specific query parameter
+    const isAjaxRequest = req.xhr ||
+      req.headers.accept?.includes('application/json') ||
+      req.query.ajax === 'true' ||
+      Object.keys(req.query).length > 0;
+
+    // 3. Build the MongoDB Query Object
+    const query = { published: true }; // Always only show published courses
+
+    // Text Search ($or across multiple fields)
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i'); // Case-insensitive
+      query.$or = [
+        { title: searchRegex },
+        { description: searchRegex },
+        { tags: searchRegex },
+        { category: searchRegex }
+      ];
+    }
+
+    // Category Filter (Handles both single string and array of strings)
+    if (req.query.category) {
+      const categories = Array.isArray(req.query.category) ? req.query.category : [req.query.category];
+      query.category = { $in: categories };
+    }
+
+    // Level Filter
+    if (req.query.level) {
+      const levels = Array.isArray(req.query.level) ? req.query.level : [req.query.level];
+      query.level = { $in: levels };
+    }
+
+    // Price Tier Filter
+    if (req.query.price) {
+      if (req.query.price === 'free') {
+        query.$or = [{ price: 0 }, { isFree: true }];
+      } else if (req.query.price === 'paid') {
+        query.price = { $gt: 0 };
+        query.isFree = { $ne: true };
+      }
+    }
+
+    // Minimum Rating Filter
+    if (req.query.minRating) {
+      query.rating = { $gte: parseFloat(req.query.minRating) };
+    }
+
+    // 4. Build the Sorting Object
+    let sortObj = { enrollCount: -1 }; // Default to most popular
+    switch (req.query.sort) {
+      case 'newest': sortObj = { createdAt: -1 }; break;
+      case 'rating': sortObj = { rating: -1 }; break;
+      case 'price-asc': sortObj = { price: 1 }; break;
+      case 'price-desc': sortObj = { price: -1 }; break;
+      case 'popular': sortObj = { enrollCount: -1 }; break;
+    }
+
+    // 5. Pagination Logic
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const skip = (page - 1) * limit;
+
+    // ==========================================
+    // ROUTE A: JSON RESPONSE (FOR DYNAMIC UI)
+    // ==========================================
+    if (isAjaxRequest) {
+      console.log(`🔍 API Filter triggered. Page: ${page}, Limit: ${limit}`);
+
+      // Run count and fetch concurrently for better performance
+      const [totalCourses, rawCourses] = await Promise.all([
+        Course.countDocuments(query),
+        Course.find(query)
+          .populate('userId', 'fullName profilePicUrl username')
+          .sort(sortObj)
+          .skip(skip)
+          .limit(limit)
+          .lean()
+      ]);
+
+      const totalPages = Math.ceil(totalCourses / limit);
+
+      // Format course output securely for the frontend
+      const formattedCourses = rawCourses.map(course => {
+        // Ensure instructor name falls back to username if fullName is missing
+        const instructorName = course.userId?.fullName || course.userId?.username || 'Premium Instructor';
+        const instructorAvatar = course.userId?.profilePicUrl || null;
+        // Use enrollCount if available, otherwise count enrolledStudents array
+        const enrollCount = course.enrollCount || (course.enrolledStudents ? course.enrolledStudents.length : 0);
+
+        return {
+          _id: course._id,
+          slug: course.slug,
+          title: course.title,
+          instructor: instructorName,
+          instructorAvatar: instructorAvatar,
+          category: course.category,
+          level: course.level || 'All Levels',
+          price: course.price || 0,
+          discountPrice: course.discountPrice,
+          rating: course.rating || 0,
+          enrollCount: enrollCount,
+          duration: course.duration || 0,
+          thumbnailUrl: course.thumbnailUrl,
+          tags: course.tags || [],
+          createdAt: course.createdAt
+        };
+      });
+
+      return res.json({
+        success: true,
+        courses: formattedCourses, // Sent to frontend Render.grid()
+        totalCourses,
+        totalPages,
+        currentPage: page
+      });
+    }
+
+    // ==========================================
+    // ROUTE B: EJS RENDER (INITIAL PAGE LOAD)
+    // ==========================================
+    else {
+      console.log('🚀 Loading initial Courses page via EJS.');
+
+      // Fetch a generous base chunk (e.g., 50) of popular courses to inject into EJS 
+      // so the frontend immediately has data to parse for categories/levels without a loading screen.
+      const rawCourses = await Course.find({ published: true })
+        .populate('userId', 'fullName profilePicUrl username')
+        .sort({ enrollCount: -1 })
+        .limit(50)
+        .lean();
+
+      const formattedCourses = rawCourses.map(course => {
+        // Ensure instructor name falls back to username if fullName is missing
+        const instructorName = course.userId?.fullName || course.userId?.username || 'Premium Instructor';
+        const instructorAvatar = course.userId?.profilePicUrl || null;
+        // Use enrollCount if available, otherwise count enrolledStudents array
+        const enrollCount = course.enrollCount || (course.enrolledStudents ? course.enrolledStudents.length : 0);
+
+        return {
+          _id: course._id,
+          slug: course.slug,
+          title: course.title,
+          instructor: instructorName,
+          instructorAvatar: instructorAvatar,
+          category: course.category,
+          level: course.level || 'All Levels',
+          price: course.price || 0,
+          discountPrice: course.discountPrice,
+          rating: course.rating || 0,
+          enrollCount: enrollCount,
+          duration: course.duration || 0,
+          thumbnailUrl: course.thumbnailUrl,
+          tags: course.tags || [],
+          createdAt: course.createdAt
+        };
+      });
+
+      res.render('courses', {
+        courses: formattedCourses,
+        isLoggedin: !!req.user,
+        profileUrl,
+        username: user?.username || null,
+        useremail: user?.email || null,
+        uId: user?._id?.toString() || null,
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ Error fetching courses:', error);
+
+    if (req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.status(500).json({ success: false, error: 'Failed to fetch courses.' });
+    }
+    res.status(500).render('500', { error: 'An unexpected error occurred while loading courses.' });
+  }
 });
 
 // GET /course-detail - Display single course details
-app.get('/course-detail',authenticateJWT_user, async (req, res) => {
-    try {
-       // =============== SEO SETUP ===============
-       const { courseId } = req.query;
-       
-       if (!courseId) {
-           return res.status(400).render('404', { message: 'Course ID is required' });
-       }
+app.get('/course-detail', authenticateJWT_user, async (req, res) => {
+  try {
+    // =============== SEO SETUP ===============
+    const { courseId } = req.query;
 
-       // Validate MongoDB ObjectId format
-       if (!mongoose.Types.ObjectId.isValid(courseId)) {
-           return res.status(400).render('404', { message: 'Invalid course ID format' });
-       }
-
-       // Fetch course early for SEO setup
-       const course = await Course.findById(courseId)
-           .populate('userId', 'fullName profilePicUrl username email');
-
-       if (!course) {
-           return res.status(404).render('404', { message: 'Course not found' });
-       }
-
-       res.locals.setMetaTags('course', {
-           name: course.title,
-           description: course.description || 'Professional course on ' + course.title,
-           instructor: course.userId?.fullName || 'Expert Instructor',
-           rating: course.averageRating || 0,
-           numReviews: course.reviews?.length || 0,
-           price: course.price || 'Free'
-       });
-       
-       res.locals.addSchema({
-           '@context': 'https://schema.org',
-           '@type': 'Course',
-           'name': course.title,
-           'description': course.description || '',
-           'instructor': {
-               '@type': 'Person',
-               'name': course.userId?.fullName || 'Expert Instructor'
-           },
-           'aggregateRating': course.averageRating ? {
-               '@type': 'AggregateRating',
-               'ratingValue': course.averageRating,
-               'reviewCount': course.reviews?.length || 0
-           } : null,
-           'offers': {
-               '@type': 'Offer',
-               'priceCurrency': 'INR',
-               'price': course.price || 0
-           }
-       });
-
-       res.locals.addSchema({
-           '@context': 'https://schema.org',
-           '@type': 'BreadcrumbList',
-           'itemListElement': [
-               {
-                   '@type': 'ListItem',
-                   'position': 1,
-                   'name': 'Home',
-                   'item': 'https://vidyari.com'
-               },
-               {
-                   '@type': 'ListItem',
-                   'position': 2,
-                   'name': 'Courses',
-                   'item': 'https://vidyari.com/courses'
-               },
-               {
-                   '@type': 'ListItem',
-                   'position': 3,
-                   'name': course.title,
-                   'item': `https://vidyari.com/course-detail?courseId=${courseId}`
-               }
-           ]
-       });
-       // =============== END SEO SETUP ===============
-
-       let user = null;
-        let profileUrl = null;
-
-        // 1. User Caching Logic
-        if (req.user) {
-            const cacheKey = `user_${req.user._id}`;
-            const cachedUser = pageCache.get(cacheKey);
-
-            if (cachedUser) {
-                user = cachedUser;
-                profileUrl = cachedUser.profilePicUrl;
-            } else {
-                user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-                if (user) {
-                    if (user.profilePicUrl?.includes("s3.")) {
-                        try {
-                            const fileName = user.profilePicUrl.split("/").pop();
-                            user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-                        } catch (err) {
-                            console.warn("⚠️ Profile URL conversion failed:", err.message);
-                        }
-                    }
-                    pageCache.set(cacheKey, user);
-                    profileUrl = user.profilePicUrl;
-                }
-            }
-        }
-
-        console.log(`Loading course details for: ${course.title}`);
-
-        // Pass course data to view
-        res.render('course-detail', { 
-            course: course, 
-            title: course.title,
-            isLoggedin: !!req.user,
-                profileUrl,
-                username: user?.username || null,
-                useremail: user?.email || null,
-                uId: user?._id?.toString() || null, 
-        });
-
-    } catch (error) {
-        console.error('Error fetching course details:', error);
-        res.status(500).render('500', { error: error.message });
+    if (!courseId) {
+      return res.status(400).render('404', { message: 'Course ID is required' });
     }
+
+    // Validate MongoDB ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).render('404', { message: 'Invalid course ID format' });
+    }
+
+    // Fetch course early for SEO setup
+    const course = await Course.findById(courseId)
+      .populate('userId', 'fullName profilePicUrl username email');
+
+    if (!course) {
+      return res.status(404).render('404', { message: 'Course not found' });
+    }
+
+    res.locals.setMetaTags('course', {
+      name: course.title,
+      description: course.description || 'Professional course on ' + course.title,
+      instructor: course.userId?.fullName || 'Expert Instructor',
+      rating: course.averageRating || 0,
+      numReviews: course.reviews?.length || 0,
+      price: course.price || 'Free'
+    });
+
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      'name': course.title,
+      'description': course.description || '',
+      'instructor': {
+        '@type': 'Person',
+        'name': course.userId?.fullName || 'Expert Instructor'
+      },
+      'aggregateRating': course.averageRating ? {
+        '@type': 'AggregateRating',
+        'ratingValue': course.averageRating,
+        'reviewCount': course.reviews?.length || 0
+      } : null,
+      'offers': {
+        '@type': 'Offer',
+        'priceCurrency': 'INR',
+        'price': course.price || 0
+      }
+    });
+
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        {
+          '@type': 'ListItem',
+          'position': 1,
+          'name': 'Home',
+          'item': 'https://vidyari.com'
+        },
+        {
+          '@type': 'ListItem',
+          'position': 2,
+          'name': 'Courses',
+          'item': 'https://vidyari.com/courses'
+        },
+        {
+          '@type': 'ListItem',
+          'position': 3,
+          'name': course.title,
+          'item': `https://vidyari.com/course-detail?courseId=${courseId}`
+        }
+      ]
+    });
+    // =============== END SEO SETUP ===============
+
+    let user = null;
+    let profileUrl = null;
+
+    // 1. User Caching Logic
+    if (req.user) {
+      const cacheKey = `user_${req.user._id}`;
+      const cachedUser = pageCache.get(cacheKey);
+
+      if (cachedUser) {
+        user = cachedUser;
+        profileUrl = cachedUser.profilePicUrl;
+      } else {
+        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+        if (user) {
+          if (user.profilePicUrl?.includes("s3.")) {
+            try {
+              const fileName = user.profilePicUrl.split("/").pop();
+              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+            } catch (err) {
+              console.warn("⚠️ Profile URL conversion failed:", err.message);
+            }
+          }
+          pageCache.set(cacheKey, user);
+          profileUrl = user.profilePicUrl;
+        }
+      }
+    }
+
+    console.log(`Loading course details for: ${course.title}`);
+
+    // Pass course data to view
+    res.render('course-detail', {
+      course: course,
+      title: course.title,
+      isLoggedin: !!req.user,
+      profileUrl,
+      username: user?.username || null,
+      useremail: user?.email || null,
+      uId: user?._id?.toString() || null,
+    });
+
+  } catch (error) {
+    console.error('Error fetching course details:', error);
+    res.status(500).render('500', { error: error.message });
+  }
 });
 
 
@@ -4799,19 +4923,19 @@ app.get("/check/coupon", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-app.get("/vidyariPro",authenticateJWT_user,requireAuth, async (req,res)=>{
-    try {
-        // Fetch the latest user data to ensure 'isPro' and 'pendingSubscriptionFee' are accurate
-        const user = await User.findById(req.user._id);
+app.get("/vidyariPro", authenticateJWT_user, requireAuth, async (req, res) => {
+  try {
+    // Fetch the latest user data to ensure 'isPro' and 'pendingSubscriptionFee' are accurate
+    const user = await User.findById(req.user._id);
 
-        res.render('subscription', {
-            user: user,
-            pageTitle: 'Upgrade to Vidyari Pro'
-        });
-    } catch (err) {
-        console.error("Error loading subscription page:", err);
-        res.status(500).send('Internal Server Error');
-    }
+    res.render('subscription', {
+      user: user,
+      pageTitle: 'Upgrade to Vidyari Pro'
+    });
+  } catch (err) {
+    console.error("Error loading subscription page:", err);
+    res.status(500).send('Internal Server Error');
+  }
 
 })
 // app.post('/upgrade-to-pro',authenticateJWT_user, requireAuth,async (req, res) => {
@@ -4832,125 +4956,125 @@ app.get("/vidyariPro",authenticateJWT_user,requireAuth, async (req,res)=>{
 //     res.status(500).json({ error: "Upgrade failed" });
 //   }
 // });
-app.post('/subscription/pay-now', authenticateJWT_user, requireAuth,async (req, res) => {
-    try {
-        const amount = 499 * 100; // Razorpay works in paise (499 INR = 49900 paise)
-        
-        const options = {
-            amount: amount,
-            currency: "INR",
-            receipt: `rec_pro_${req.user._id}_${Date.now().toString().slice(-6)}`,
-        };
+app.post('/subscription/pay-now', authenticateJWT_user, requireAuth, async (req, res) => {
+  try {
+    const amount = 499 * 100; // Razorpay works in paise (499 INR = 49900 paise)
 
-        const order = await razorpayInstance.orders.create(options);
+    const options = {
+      amount: amount,
+      currency: "INR",
+      receipt: `rec_pro_${req.user._id}_${Date.now().toString().slice(-6)}`,
+    };
 
-        // Send this data to your EJS to trigger the Razorpay Modal
-        res.json({
-            success: true,
-            order_id: order.id,
-            amount: order.amount,
-            key_id: process.env.RAZORPAY_KEY_ID,
-            user: {
-                name: req.user.fullName,
-                email: req.user.email,
-                contact: req.user.ph
-            }
-        });
-    } catch (error) {
-        console.error("Razorpay Order Error:", error);
-        res.status(500).json({ success: false, message: "Could not create order" });
-    }
+    const order = await razorpayInstance.orders.create(options);
+
+    // Send this data to your EJS to trigger the Razorpay Modal
+    res.json({
+      success: true,
+      order_id: order.id,
+      amount: order.amount,
+      key_id: process.env.RAZORPAY_KEY_ID,
+      user: {
+        name: req.user.fullName,
+        email: req.user.email,
+        contact: req.user.ph
+      }
+    });
+  } catch (error) {
+    console.error("Razorpay Order Error:", error);
+    res.status(500).json({ success: false, message: "Could not create order" });
+  }
 });
 /**
  * @route   POST /subscription/pay-later
  * @desc    Instant upgrade to Pro, fee deducted from future sales
  */
 app.post('/subscription/pay-later', authenticateJWT_user, async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const user = await User.findById(userId);
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        // 1. Prevent double subscription
-        if (user.isPro) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "You are already a Vidyari Pro member!" 
-            });
-        }
-
-        // 2. Set Pro status and the "Wallet Debt"
-        user.isPro = true;
-        user.pendingSubscriptionFee = 499; // This will be checked in /verify-payment
-        user.proBillingCycleStart = new Date();
-        
-        // 3. Set expiration for 30 days from now
-        let expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + 30);
-        user.proBillingCycleEnd = expiryDate;
-
-        // 4. Update role to seller if they were just a buyer
-        if (user.role === "Buyer") {
-            user.role = "seller";
-        }
-
-        await user.save();
-
-        // 5. Send a system notification to the user
-        // Assuming your Usernotifications model is available
-        /* await Usernotifications.create({
-            userId: userId,
-            type: "system",
-            message: "Welcome to Vidyari Pro! You now keep 90% of your sales. The ₹499 subscription fee will be deducted from your next earnings.",
-        });
-        */
-
-        // 6. Return success (Frontend will redirect to dashboard)
-        return res.json({ 
-            success: true, 
-            message: "Welcome to Pro! Your earnings share is now 90%." 
-        });
-
-    } catch (err) {
-        console.error("Error in /pay-later:", err);
-        return res.status(500).json({ 
-            success: false, 
-            message: "Internal server error. Please try again later." 
-        });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
+
+    // 1. Prevent double subscription
+    if (user.isPro) {
+      return res.status(400).json({
+        success: false,
+        message: "You are already a Vidyari Pro member!"
+      });
+    }
+
+    // 2. Set Pro status and the "Wallet Debt"
+    user.isPro = true;
+    user.pendingSubscriptionFee = 499; // This will be checked in /verify-payment
+    user.proBillingCycleStart = new Date();
+
+    // 3. Set expiration for 30 days from now
+    let expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 30);
+    user.proBillingCycleEnd = expiryDate;
+
+    // 4. Update role to seller if they were just a buyer
+    if (user.role === "Buyer") {
+      user.role = "seller";
+    }
+
+    await user.save();
+
+    // 5. Send a system notification to the user
+    // Assuming your Usernotifications model is available
+    /* await Usernotifications.create({
+        userId: userId,
+        type: "system",
+        message: "Welcome to Vidyari Pro! You now keep 90% of your sales. The ₹499 subscription fee will be deducted from your next earnings.",
+    });
+    */
+
+    // 6. Return success (Frontend will redirect to dashboard)
+    return res.json({
+      success: true,
+      message: "Welcome to Pro! Your earnings share is now 90%."
+    });
+
+  } catch (err) {
+    console.error("Error in /pay-later:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error. Please try again later."
+    });
+  }
 });
-app.post('/subscription/verify-payment',authenticateJWT_user, requireAuth,async (req, res) => {
-    try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+app.post('/subscription/verify-payment', authenticateJWT_user, requireAuth, async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-        // Verify Signature
-        const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
-        hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
-        const generated_signature = hmac.digest('hex');
+    // Verify Signature
+    const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
+    hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+    const generated_signature = hmac.digest('hex');
 
-        if (generated_signature === razorpay_signature) {
-            // PAYMENT SUCCESSFUL - Update User to Pro
-            let expiry = new Date();
-            expiry.setDate(expiry.getDate() + 30);
+    if (generated_signature === razorpay_signature) {
+      // PAYMENT SUCCESSFUL - Update User to Pro
+      let expiry = new Date();
+      expiry.setDate(expiry.getDate() + 30);
 
-            await User.findByIdAndUpdate(req.user._id, {
-                isPro: true,
-                pendingSubscriptionFee: 0, 
-                proBillingCycleStart: new Date(),
-                proBillingCycleEnd: expiry
-            });
+      await User.findByIdAndUpdate(req.user._id, {
+        isPro: true,
+        pendingSubscriptionFee: 0,
+        proBillingCycleStart: new Date(),
+        proBillingCycleEnd: expiry
+      });
 
-            res.json({ success: true, message: "Subscription activated!" });
-        } else {
-            res.status(400).json({ success: false, message: "Invalid signature, payment failed" });
-        }
-    } catch (error) {
-        console.error("Verification Error:", error);
-        res.status(500).json({ success: false });
+      res.json({ success: true, message: "Subscription activated!" });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid signature, payment failed" });
     }
+  } catch (error) {
+    console.error("Verification Error:", error);
+    res.status(500).json({ success: false });
+  }
 });
 
 /**
@@ -4958,39 +5082,39 @@ app.post('/subscription/verify-payment',authenticateJWT_user, requireAuth,async 
  * @desc    Cancel Vidyari Pro and return to Standard tier
  */
 app.post("/subscription/cancel", authenticateJWT_user, async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id);
+  try {
+    const user = await User.findById(req.user._id);
 
-        if (!user.isPro) {
-            return res.status(400).json({ success: false, message: "No active subscription found." });
-        }
-
-        // Revert to Basic
-        user.isPro = false;
-        user.pendingSubscriptionFee = 0; // Clear any remaining debt
-        user.proBillingCycleStart = null;
-        user.proBillingCycleEnd = null;
-
-        await user.save();
-
-        // Create a notification for the user
-        await Usernotifications.create({
-            userId: req.user._id,
-            type: "system",
-            message: "Your Vidyari Pro subscription has been cancelled. You are now on the Standard (70/30) plan.",
-        });
-
-        return res.json({ 
-            success: true, 
-            message: "Subscription cancelled successfully. You are now a Standard Creator." 
-        });
-    } catch (err) {
-        console.error("Cancellation Error:", err);
-        return res.status(500).json({ success: false, message: "Internal server error." });
+    if (!user.isPro) {
+      return res.status(400).json({ success: false, message: "No active subscription found." });
     }
+
+    // Revert to Basic
+    user.isPro = false;
+    user.pendingSubscriptionFee = 0; // Clear any remaining debt
+    user.proBillingCycleStart = null;
+    user.proBillingCycleEnd = null;
+
+    await user.save();
+
+    // Create a notification for the user
+    await Usernotifications.create({
+      userId: req.user._id,
+      type: "system",
+      message: "Your Vidyari Pro subscription has been cancelled. You are now on the Standard (70/30) plan.",
+    });
+
+    return res.json({
+      success: true,
+      message: "Subscription cancelled successfully. You are now a Standard Creator."
+    });
+  } catch (err) {
+    console.error("Cancellation Error:", err);
+    return res.status(500).json({ success: false, message: "Internal server error." });
+  }
 });
-app.get("/analytics",(req,res)=>{
-    res.render("analytics")
+app.get("/analytics", (req, res) => {
+  res.render("analytics")
 })
 // Price generator
 function GenCheckOutPrice(price, options = {}) {
@@ -5104,7 +5228,7 @@ app.get(
         );
         if (user) {
           console.log("User profile pic URL:", user.profilePicUrl);
-          
+
         }
       }
 

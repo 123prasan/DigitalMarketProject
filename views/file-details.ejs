@@ -4,15 +4,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
-
     <title>
-        <% if(file.price == 0) { %>
-            <%= file.filename || 'Download' %> | Free on Vidyari
-        <% } else { %>
-            <%= file.filename || 'Checkout' %> | Secure Purchase | Vidyari
-        <% } %>
+        <% if(file.price == 0) { %><%= file.filename || 'Download' %> | Free on Vidyari
+        <% } else { %><%= file.filename || 'Checkout' %> | Secure Purchase | Vidyari<% } %>
     </title>
-
     <meta name="description" content="<%= seoMetaDescription || ('Download ' + file.filename + ' on Vidyari. ' + (priceDetails.total == 0 ? 'Free access' : '₹' + priceDetails.total) + ' — Verified creator, 4.8★ rating.') %>">
     <meta name="keywords" content="<%= seoKeywords || (file.filename + ', pdf, download, notes, study material') %>">
     <meta property="og:type" content="website">
@@ -25,875 +20,1155 @@
     <meta name="twitter:description" content="<%= seoMetaDescription %>">
     <meta name="twitter:image" content="<%= previewUrl || 'https://vidyari.com/images/logo.png' %>">
     <link rel="canonical" href="https://vidyari.com/file/<%= file.slug %>/<%= file._id %>">
-
-    <!-- SEO Schema Markup is generated server-side and included via header.ejs -->
-    <!-- Including: EducationalResource, FAQ, BreadcrumbList -->
-
     <link rel="icon" href="/images/logo.svg" type="image/svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
 
-    <style>
-        /* ============================================================
-           VIDYARI FILE CHECKOUT — LUXURY EDITORIAL WHITE THEME
-           ============================================================ */
-        :root {
-            --ink:        #0e0f11;
-            --ink-2:      #3a3d44;
-            --ink-3:      #7a7e8a;
-            --ink-4:      #b4b8c4;
-            --rule:       #e8eaee;
-            --rule-light: #f4f5f7;
-            --surface:    #ffffff;
-            --bg:         #f9fafb;
-            --accent:     #1a56f0;
-            --accent-2:   #f0f4ff;
-            --accent-ink: #0d37b8;
-            --green:      #0b7a45;
-            --green-bg:   #edfaf3;
-            --amber:      #e8811f;
-            --amber-bg:   #fef6ee;
-
-            --serif:  'DM Serif Display', Georgia, serif;
-            --sans:   'DM Sans', system-ui, sans-serif;
-
-            --r-sm:   8px;
-            --r-md:   14px;
-            --r-lg:   20px;
-            --r-xl:   28px;
-            --r-pill: 9999px;
-
-            --shadow-xs:    0 1px 2px rgba(14,15,17,0.05);
-            --shadow-sm:    0 2px 8px rgba(14,15,17,0.07);
-            --shadow-md:    0 6px 20px rgba(14,15,17,0.08);
-            --shadow-card:  0 0 0 1px rgba(14,15,17,0.06), 0 4px 16px rgba(14,15,17,0.06);
-            --shadow-float: 0 0 0 1px rgba(14,15,17,0.06), 0 20px 48px rgba(14,15,17,0.1);
-            --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; min-width: 0; }
-        html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
-        body {
-            font-family: var(--sans);
-            background: var(--bg);
-            color: var(--ink);
-            overflow-x: hidden;
-        }
-
-        /* ── LAYOUT ── */
-        .page-wrap {
-            max-width: 1380px;
-            margin: 0 auto;
-            padding: 0 clamp(16px, 3vw, 40px);
-        }
-
-        .back-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            font-size: 0.875rem; font-weight: 500;
-            color: var(--ink-3); text-decoration: none;
-            padding: 9px 16px;
-            background: var(--surface); border: 1px solid var(--rule);
-            border-radius: var(--r-pill); margin: 24px 0;
-            transition: all 0.2s var(--ease-out);
-            box-shadow: var(--shadow-xs);
-        }
-        .back-btn:hover { color: var(--accent); border-color: rgba(26,86,240,0.3); transform: translateX(-3px); }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 352px;
-            gap: 28px;
-            padding-bottom: 100px;
-            align-items: start;
-        }
-
-        /* ── LEFT COLUMN ── */
-        .left-col { display: flex; flex-direction: column; gap: 20px; }
-
-        /* ── HERO / TITLE AREA ── */
-        .file-hero {
-            background: var(--surface);
-            border: 1px solid var(--rule);
-            border-radius: var(--r-xl);
-            padding: 32px 36px;
-            box-shadow: var(--shadow-card);
-        }
-
-        .file-category-pill {
-            display: inline-flex; align-items: center; gap: 6px;
-            font-size: 0.7rem; font-weight: 600;
-            letter-spacing: 0.1em; text-transform: uppercase;
-            color: var(--accent);
-            background: var(--accent-2);
-            border: 1px solid rgba(26,86,240,0.15);
-            padding: 4px 12px; border-radius: var(--r-pill);
-            margin-bottom: 16px;
-        }
-
-        .file-title {
-            font-family: var(--serif);
-            font-size: clamp(1.6rem, 3vw, 2.3rem);
-            font-weight: 400; line-height: 1.15;
-            color: var(--ink);
-            margin-bottom: 20px;
-            overflow-wrap: break-word;
-        }
-
-        .creator-card {
-            display: inline-flex; align-items: center; gap: 11px;
-            padding: 8px 16px 8px 8px;
-            background: var(--rule-light);
-            border: 1px solid var(--rule);
-            border-radius: var(--r-pill);
-            text-decoration: none; color: inherit;
-            transition: all 0.2s var(--ease-out);
-            max-width: 100%;
-        }
-        .creator-card:hover { border-color: rgba(26,86,240,0.25); background: var(--accent-2); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-        .creator-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--rule); flex-shrink: 0; }
-        .creator-name { font-size: 0.9rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 6px; }
-        .creator-name img { width: 14px; flex-shrink: 0; }
-
-        /* ── PREVIEW IMAGE ── */
-        .preview-card {
-            background: var(--surface);
-            border: 1px solid var(--rule);
-            border-radius: var(--r-xl);
-            overflow: hidden;
-            box-shadow: var(--shadow-card);
-            position: relative;
-            cursor: zoom-in;
-        }
-        .preview-card img {
-            width: 100%; aspect-ratio: 16/10;
-            object-fit: cover; display: block;
-            transition: transform 0.5s var(--ease-out);
-        }
-        .preview-card:hover img { transform: scale(1.02); }
-        .preview-zoom-hint {
-            position: absolute; bottom: 16px; right: 16px;
-            background: rgba(14,15,17,0.7);
-            backdrop-filter: blur(8px);
-            color: white; font-size: 0.75rem; font-weight: 500;
-            padding: 6px 14px; border-radius: var(--r-pill);
-            opacity: 0; transition: opacity 0.2s;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .preview-card:hover .preview-zoom-hint { opacity: 1; }
-
-        /* ── CONTENT CARD ── */
-        .content-card {
-            background: var(--surface);
-            border: 1px solid var(--rule);
-            border-radius: var(--r-xl);
-            padding: 28px 32px;
-            box-shadow: var(--shadow-card);
-        }
-        .content-card-title {
-            font-family: var(--serif);
-            font-size: 1.25rem; font-weight: 400;
-            color: var(--ink);
-            margin-bottom: 18px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--rule-light);
-            display: flex; align-items: center; gap: 10px;
-        }
-        .content-card-title i { color: var(--accent); font-size: 1rem; }
-        .desc-text {
-            font-size: 0.96rem; font-weight: 300;
-            line-height: 1.75; color: var(--ink-2);
-            overflow-wrap: break-word;
-        }
-        .desc-text p { margin-bottom: 14px; }
-        .desc-text p:last-child { margin-bottom: 0; }
-        .desc-text strong { color: var(--ink); font-weight: 600; }
-        .desc-text img { max-width: 100% !important; height: auto !important; border-radius: var(--r-md); margin: 16px 0; }
-
-        /* ── AD ZONE ── */
-        .ad-zone {
-            width: 100%; overflow: hidden;
-            display: flex; justify-content: center;
-            background: var(--rule-light);
-            border: 1px dashed var(--rule);
-            border-radius: var(--r-lg);
-            min-height: 90px;
-        }
-
-        /* ── ENHANCED RELATED FILES ── */
-        .related-section-premium {
-            background: var(--surface) !important;
-            margin-top: 40px !important;
-            border: 1px solid var(--rule) !important;
-            border-radius: var(--r-xl) !important;
-            padding: 36px 32px !important;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .related-header {
-            margin-bottom: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .related-title {
-            font-family: var(--serif);
-            font-size: 1.8rem;
-            color: var(--ink);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .related-title i {
-            font-size: 1.3rem;
-            color: var(--accent);
-        }
-
-        .related-subtitle {
-            font-size: 0.95rem;
-            color: var(--ink-3);
-            margin: 0;
-        }
-
-        .related-grid-container {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-
-        /* Group Author Label */
-        .related-author-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--ink-2);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .related-author-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--rule);
-        }
-
-        /* The Grid / Mobile Carousel */
-        .related-author-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
-
-        /* The Card */
-        .related-item {
-            display: flex;
-            flex-direction: column;
-            text-decoration: none;
-            background: var(--surface);
-            border: 1px solid var(--rule);
-            border-radius: var(--r-lg);
-            overflow: hidden;
-            transition: all 0.3s var(--ease-out);
-            height: 100%;
-        }
-
-        .related-item:hover {
-            transform: translateY(-6px);
-            border-color: rgba(26,86,240,0.4);
-            box-shadow: 0 12px 24px rgba(14,15,17,0.06);
-        }
-
-        .related-item-thumb {
-            width: 100%;
-            aspect-ratio: 16/10;
-            background: var(--bg);
-            position: relative;
-            overflow: hidden;
-            border-bottom: 1px solid var(--rule-light);
-        }
-
-        .related-item-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s var(--ease-out);
-        }
-
-        .related-item:hover .related-item-thumb img {
-            transform: scale(1.05);
-        }
-
-        .related-item-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 0.65rem;
-            font-weight: 800;
-            letter-spacing: 0.05em;
-            padding: 5px 10px;
-            border-radius: var(--r-pill);
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(4px);
-            color: var(--ink);
-            text-transform: uppercase;
-            box-shadow: var(--shadow-xs);
-            z-index: 2;
-        }
-
-        .related-item-badge.free {
-            background: var(--green);
-            color: white;
-        }
-
-        .related-item-content {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .related-item-name {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--ink);
-            line-height: 1.4;
-            margin-bottom: 6px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            min-height: 2.8em;
-        }
-
-        .related-item-author {
-            font-size: 0.8rem;
-            color: var(--ink-3);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .related-item-stats {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: auto;
-            padding-top: 12px;
-            border-top: 1px dashed var(--rule);
-        }
-
-        .related-item-price {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--ink);
-        }
-
-        .related-item-price.free {
-            color: var(--green);
-        }
-
-        .related-item-metrics {
-            font-size: 0.75rem;
-            color: var(--ink-3);
-            display: flex;
-            gap: 10px;
-        }
-
-        /* Skeleton Loader Animation */
-        @keyframes pulse-shimmer {
-            0% { background-color: var(--rule-light); }
-            50% { background-color: var(--rule); }
-            100% { background-color: var(--rule-light); }
-        }
-        .skeleton-card {
-            border: 1px solid var(--rule);
-            border-radius: var(--r-lg);
-            height: 280px;
-            animation: pulse-shimmer 1.5s infinite ease-in-out;
-        }
-
-        /* Mobile Adjustments (Swipeable Carousel) */
-        @media (max-width: 768px) {
-            .related-section-premium { padding: 24px 20px !important; }
-            
-            .related-author-section {
-                display: flex;
-                overflow-x: auto;
-                scroll-snap-type: x mandatory;
-                padding-bottom: 16px;
-                scrollbar-width: none; /* Firefox */
-                -webkit-overflow-scrolling: touch;
-            }
-            .related-author-section::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-            
-            .related-item, .skeleton-card {
-                flex: 0 0 240px;
-                scroll-snap-align: start;
-            }
-        }
-
-        /* ── REVIEWS ── */
-        .rating-summary-block {
-            display: flex; align-items: center; gap: 24px;
-            padding: 20px 22px;
-            background: var(--rule-light);
-            border: 1px solid var(--rule);
-            border-radius: var(--r-lg);
-            margin-bottom: 20px;
-        }
-        .rating-num { font-family: var(--serif); font-size: 3.5rem; line-height: 1; color: var(--ink); }
-        .rating-stars-row { color: var(--amber); font-size: 1rem; letter-spacing: 1px; margin-bottom: 4px; }
-        .rating-count-label { font-size: 0.78rem; color: var(--ink-3); }
-
-        .rating-dist { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-        .dist-row { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: var(--ink-3); }
-        .dist-label { width: 36px; text-align: right; flex-shrink: 0; }
-        .dist-track { flex: 1; height: 6px; background: var(--rule); border-radius: 3px; overflow: hidden; }
-        .dist-fill { height: 100%; background: var(--amber); border-radius: 3px; transition: width 0.6s var(--ease-out); }
-        .dist-count { width: 24px; text-align: right; flex-shrink: 0; }
-
-        .write-review-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            font-family: var(--sans); font-size: 0.875rem; font-weight: 600;
-            color: var(--accent); background: var(--accent-2);
-            border: 1.5px solid rgba(26,86,240,0.2);
-            border-radius: var(--r-md); padding: 10px 20px;
-            cursor: pointer; transition: all 0.2s var(--ease-out);
-            margin-bottom: 20px;
-        }
-        .write-review-btn:hover { background: var(--accent); color: white; border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,86,240,0.25); }
-
-        .review-list { display: flex; flex-direction: column; gap: 12px; }
-        .review-item {
-            background: var(--surface); border: 1px solid var(--rule);
-            border-radius: var(--r-lg); padding: 18px 20px;
-            transition: box-shadow 0.2s;
-        }
-        .review-item:hover { box-shadow: var(--shadow-sm); }
-        .review-item-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .review-initials {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: var(--accent-2); color: var(--accent);
-            font-size: 0.8rem; font-weight: 700;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; border: 1.5px solid rgba(26,86,240,0.15);
-        }
-        .review-user-name { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
-        .review-user-date { font-size: 0.74rem; color: var(--ink-4); margin-top: 1px; }
-        .review-item-stars { color: var(--amber); font-size: 0.78rem; margin-left: auto; }
-        .review-item-stars .empty { color: var(--rule); }
-        .review-item-title { font-size: 0.875rem; font-weight: 600; color: var(--ink); margin-bottom: 5px; }
-        .review-item-body { font-size: 0.84rem; color: var(--ink-2); line-height: 1.65; margin-bottom: 12px; }
-        .review-helpful-row { display: flex; align-items: center; gap: 8px; }
-        .helpful-btn {
-            display: inline-flex; align-items: center; gap: 5px;
-            font-size: 0.75rem; font-weight: 500; color: var(--ink-3);
-            background: var(--rule-light); border: 1px solid var(--rule);
-            border-radius: var(--r-pill); padding: 4px 12px;
-            cursor: pointer; transition: all 0.15s; user-select: none;
-        }
-        .helpful-btn:hover, .helpful-btn.active { color: var(--accent); background: var(--accent-2); border-color: rgba(26,86,240,0.2); }
-        .helpful-label { font-size: 0.74rem; color: var(--ink-4); margin-right: auto; }
-
-        .no-reviews-state {
-            text-align: center; padding: 40px 20px;
-            background: var(--rule-light);
-            border: 1px solid var(--rule);
-            border-radius: var(--r-lg);
-        }
-        .no-reviews-state i { font-size: 2.5rem; color: var(--ink-4); margin-bottom: 12px; display: block; }
-        .no-reviews-state p { font-size: 0.9rem; color: var(--ink-3); }
-
-        /* ── SIDEBAR ── */
-        .right-col { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 14px; }
-
-        /* Price card dark header */
-        .checkout-card {
-            background: var(--surface);
-            border: 1px solid var(--rule);
-            border-radius: var(--r-xl);
-            overflow: hidden;
-            box-shadow: var(--shadow-float);
-        }
-
-        .price-hero {
-            background: linear-gradient(135deg, #0e0f11 0%, #1a2340 100%);
-            padding: 22px 22px 18px;
-            position: relative; overflow: hidden;
-        }
-        .price-hero::before {
-            content: ''; position: absolute; top: -24px; right: -24px;
-            width: 100px; height: 100px; border-radius: 50%;
-            background: rgba(26,86,240,0.18); pointer-events: none;
-        }
-        .price-hero::after {
-            content: ''; position: absolute; bottom: -16px; left: 16px;
-            width: 64px; height: 64px; border-radius: 50%;
-            background: rgba(26,86,240,0.08); pointer-events: none;
-        }
-        .price-thumb {
-            width: 100%; aspect-ratio: 16/9;
-            object-fit: cover; display: block;
-            border-radius: var(--r-md);
-            margin-bottom: 16px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .price-tag-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
-        .price-amount {
-            font-family: var(--serif);
-            font-size: 2.2rem; line-height: 1;
-            color: white;
-        }
-        .price-amount.free { color: #6ee7b7; font-size: 1.7rem; }
-        .price-original { font-size: 0.9rem; color: rgba(255,255,255,0.38); text-decoration: line-through; }
-        .price-badge-pill {
-            font-size: 0.68rem; font-weight: 700;
-            letter-spacing: 0.06em; text-transform: uppercase;
-            padding: 3px 9px; border-radius: var(--r-pill);
-            background: rgba(110,231,183,0.15);
-            color: #6ee7b7;
-            border: 1px solid rgba(110,231,183,0.3);
-        }
-        .price-note { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 5px; display: flex; align-items: center; gap: 5px; }
-        .price-note i { color: #fbbf24; font-size: 0.65rem; }
-
-        .checkout-body { padding: 20px 22px; }
-
-        /* Invoice rows */
-        .invoice-section { margin-bottom: 16px; }
-        .invoice-row {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.85rem; padding: 7px 0; color: var(--ink-3);
-        }
-        .invoice-row.total {
-            border-top: 1px dashed var(--rule);
-            margin-top: 10px; padding-top: 14px;
-            color: var(--ink); font-weight: 700; font-size: 1.05rem;
-        }
-        .invoice-discount-row {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.82rem; padding: 7px 10px; margin: 6px 0;
-            background: var(--green-bg); color: var(--green);
-            border-radius: var(--r-sm); font-weight: 500;
-        }
-
-        /* Coupon */
-        .coupon-wrap {
-            display: flex;
-            border: 1.5px solid var(--rule);
-            border-radius: var(--r-md);
-            overflow: hidden; margin: 14px 0;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background: var(--rule-light);
-        }
-        .coupon-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,86,240,0.1); }
-        .coupon-input {
-            flex: 1; border: none; padding: 10px 14px;
-            font-family: var(--sans); font-size: 0.875rem;
-            color: var(--ink); background: transparent; outline: none;
-            text-transform: uppercase; font-weight: 500;
-        }
-        .coupon-input::placeholder { text-transform: none; color: var(--ink-4); font-weight: 400; }
-        .coupon-apply-btn {
-            background: transparent; border: none; border-left: 1.5px solid var(--rule);
-            color: var(--accent); padding: 0 16px;
-            font-family: var(--sans); font-size: 0.82rem; font-weight: 600;
-            cursor: pointer; transition: background 0.15s; white-space: nowrap;
-        }
-        .coupon-apply-btn:hover { background: var(--accent-2); }
-
-        /* CTA Button */
-        .cta-btn {
-            width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px;
-            font-family: var(--sans); font-size: 1rem; font-weight: 700;
-            color: white; background: var(--accent);
-            border: none; border-radius: var(--r-lg);
-            padding: 15px; cursor: pointer; margin: 14px 0 10px;
-            transition: all 0.25s var(--ease-out);
-            box-shadow: 0 4px 20px rgba(26,86,240,0.35);
-            position: relative; overflow: hidden;
-            letter-spacing: 0.01em;
-        }
-        .cta-btn::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
-            opacity: 0; transition: opacity 0.2s;
-        }
-        .cta-btn:hover { background: var(--accent-ink); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,86,240,0.4); }
-        .cta-btn:hover::before { opacity: 1; }
-        .cta-btn:active { transform: translateY(0); }
-        .cta-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
-        .cta-btn.free-btn { background: var(--green); box-shadow: 0 4px 20px rgba(11,122,69,0.3); }
-        .cta-btn.free-btn:hover { background: #096636; box-shadow: 0 8px 28px rgba(11,122,69,0.35); }
-
-        .guarantee-row {
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            font-size: 0.76rem; color: var(--ink-3); margin-bottom: 16px;
-        }
-        .guarantee-row i { color: var(--green); }
-
-        /* Action row */
-        .action-row { display: flex; gap: 8px; margin-bottom: 16px; }
-        .action-pill {
-            flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
-            font-family: var(--sans); font-size: 0.82rem; font-weight: 500;
-            color: var(--ink-2); background: var(--rule-light);
-            border: 1px solid var(--rule); border-radius: var(--r-md);
-            padding: 9px; cursor: pointer;
-            transition: all 0.15s; user-select: none;
-        }
-        .action-pill:hover { background: var(--rule); color: var(--ink); }
-        .action-pill.liked { color: var(--accent); background: var(--accent-2); border-color: rgba(26,86,240,0.2); }
-
-        .divider { height: 1px; background: var(--rule-light); margin: 4px 0 16px; }
-
-        /* Specs list */
-        .specs-label {
-            font-size: 0.7rem; font-weight: 700;
-            letter-spacing: 0.1em; text-transform: uppercase;
-            color: var(--ink-3); margin-bottom: 10px;
-        }
-        .specs-list { list-style: none; }
-        .spec-row {
-            display: flex; align-items: center; gap: 12px;
-            padding: 9px 0; border-bottom: 1px solid var(--rule-light);
-        }
-        .spec-row:last-child { border-bottom: none; }
-        .spec-icon-wrap {
-            width: 36px; height: 36px; border-radius: var(--r-sm);
-            background: var(--rule-light); border: 1px solid var(--rule);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--ink-3); font-size: 0.85rem; flex-shrink: 0;
-        }
-        .spec-label { font-size: 0.74rem; color: var(--ink-3); }
-        .spec-value { font-size: 0.875rem; font-weight: 600; color: var(--ink); margin-top: 1px; }
-
-        /* Share card */
-        .share-card {
-            background: var(--surface); border: 1px solid var(--rule);
-            border-radius: var(--r-lg); padding: 18px;
-            box-shadow: var(--shadow-xs);
-        }
-        .share-label {
-            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-            text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px;
-        }
-        .share-row { display: flex; gap: 7px; flex-wrap: wrap; }
-        .share-pill {
-            display: inline-flex; align-items: center; gap: 5px;
-            font-size: 0.76rem; font-weight: 500;
-            color: var(--ink-2); background: var(--rule-light);
-            border: 1px solid var(--rule); border-radius: var(--r-pill);
-            padding: 6px 13px; cursor: pointer; transition: all 0.15s;
-            text-decoration: none;
-        }
-        .share-pill:hover { background: var(--rule); color: var(--ink); }
-
-        /* ── MOBILE STICKY BAR ── */
-        .mobile-cta-bar {
-            display: none;
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(255,255,255,0.96);
-            backdrop-filter: blur(16px);
-            border-top: 1px solid var(--rule);
-            padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
-            z-index: 800;
-            box-shadow: 0 -4px 20px rgba(14,15,17,0.08);
-        }
-        .mobile-cta-inner { display: flex; align-items: center; gap: 14px; }
-        .mobile-price {
-            font-family: var(--serif); font-size: 1.35rem;
-            color: var(--ink); white-space: nowrap;
-        }
-        .mobile-price.free { color: var(--green); }
-        .mobile-enroll-btn {
-            flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-family: var(--sans); font-size: 0.95rem; font-weight: 700;
-            color: white; background: var(--accent);
-            border: none; border-radius: var(--r-md);
-            padding: 13px; cursor: pointer;
-            transition: all 0.2s var(--ease-out);
-            box-shadow: 0 3px 12px rgba(26,86,240,0.3);
-        }
-        .mobile-enroll-btn.free-btn { background: var(--green); box-shadow: 0 3px 12px rgba(11,122,69,0.3); }
-        .mobile-enroll-btn:hover { transform: translateY(-1px); }
-
-        /* ── REVIEW MODAL ── */
-        .modal-veil {
-            position: fixed; inset: 0;
-            background: rgba(14,15,17,0.5);
-            backdrop-filter: blur(6px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 9000;
-        }
-        .modal-veil.open { display: flex; animation: fadeVeil 0.25s ease; }
-        @keyframes fadeVeil { from { opacity: 0; } to { opacity: 1; } }
-
-        .review-modal {
-            background: var(--surface); border-radius: var(--r-xl);
-            padding: 32px 28px; width: 90%; max-width: 460px;
-            box-shadow: var(--shadow-float);
-            animation: modalPop 0.35s var(--ease-out);
-        }
-        @keyframes modalPop { from { opacity:0; transform: translateY(16px) scale(0.97); } to { opacity:1; transform: none; } }
-
-        .modal-title { font-family: var(--serif); font-size: 1.3rem; color: var(--ink); margin-bottom: 6px; }
-        .modal-sub { font-size: 0.85rem; color: var(--ink-3); margin-bottom: 22px; }
-
-        /* Star picker in modal */
-        .modal-stars {
-            display: flex; justify-content: center; gap: 10px;
-            flex-direction: row-reverse; margin-bottom: 22px;
-        }
-        .modal-stars input { display: none; }
-        .modal-stars label {
-            font-size: 2.2rem; color: var(--rule);
-            cursor: pointer;
-            transition: color 0.15s, transform 0.2s var(--ease-out);
-        }
-        .modal-stars label:hover { color: var(--amber); transform: scale(1.2); }
-        .modal-stars label:hover ~ label { color: var(--amber); }
-        .modal-stars input:checked ~ label { color: var(--amber); }
-
-        .modal-input {
-            width: 100%; padding: 10px 13px;
-            font-family: var(--sans); font-size: 0.875rem; color: var(--ink);
-            background: var(--rule-light); border: 1.5px solid var(--rule);
-            border-radius: var(--r-md); outline: none; margin-bottom: 12px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .modal-input::placeholder { color: var(--ink-4); }
-        .modal-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,86,240,0.1); background: var(--surface); }
-        textarea.modal-input { resize: vertical; min-height: 90px; }
-
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
-        .modal-cancel-btn {
-            font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
-            color: var(--ink-2); background: var(--rule-light);
-            border: 1px solid var(--rule); border-radius: var(--r-md);
-            padding: 10px 20px; cursor: pointer; transition: all 0.15s;
-        }
-        .modal-cancel-btn:hover { background: var(--rule); }
-        .modal-submit-btn {
-            font-family: var(--sans); font-size: 0.875rem; font-weight: 700;
-            color: white; background: var(--amber);
-            border: none; border-radius: var(--r-md);
-            padding: 10px 24px; cursor: pointer;
-            transition: all 0.2s var(--ease-out);
-            box-shadow: 0 3px 10px rgba(232,129,31,0.3);
-        }
-        .modal-submit-btn:hover:not(:disabled) { background: #c96c10; transform: translateY(-1px); }
-        .modal-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-        /* ── TOAST ── */
-        #vToast {
-            position: fixed; top: 24px; left: 50%;
-            transform: translateX(-50%) translateY(-12px);
-            background: var(--ink); color: white;
-            padding: 12px 20px; border-radius: var(--r-pill);
-            font-family: var(--sans); font-size: 0.875rem; font-weight: 500;
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: var(--shadow-md);
-            opacity: 0; visibility: hidden;
-            transition: all 0.3s var(--ease-out);
-            z-index: 9999; white-space: nowrap;
-        }
-        #vToast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        #vToast .toast-icon.success { color: #6ee7b7; }
-        #vToast .toast-icon.error { color: #f87171; }
-
-        /* ── IMAGE MODAL ── */
-        .img-modal-veil {
-            position: fixed; inset: 0;
-            background: rgba(14,15,17,0.92);
-            backdrop-filter: blur(10px);
-            display: none; align-items: center; justify-content: center;
-            z-index: 9100;
-        }
-        .img-modal-veil.open { display: flex; }
-        .img-modal-veil img { max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: var(--r-lg); }
-        .img-modal-close {
-            position: absolute; top: 20px; right: 24px;
-            width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
-            color: white; font-size: 1rem;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: background 0.15s;
-        }
-        .img-modal-close:hover { background: rgba(255,255,255,0.2); }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 1024px) {
-            .main-grid { grid-template-columns: 1fr; }
-            .right-col { position: static; }
-            .checkout-card { max-width: 520px; }
-            .mobile-cta-bar { display: block; }
-            .checkout-body .cta-btn,
-            .checkout-body .guarantee-row { display: none; }
-        }
-        @media (max-width: 640px) {
-            .file-hero, .content-card { padding: 20px 18px; }
-            .rating-summary-block { flex-direction: column; align-items: flex-start; gap: 14px; }
-        }
-    </style>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   VIDYARI · FILE PAGE · GEMINI THEME — ENHANCED EDITION
+   ═══════════════════════════════════════════════════════════ */
+:root {
+    /* ── Core palette (unchanged) ── */
+    --ink:        #0e0f11;
+    --ink-2:      #3a3d44;
+    --ink-3:      #7a7e8a;
+    --ink-4:      #b4b8c4;
+    --rule:       #e8eaee;
+    --rule-light: #f4f5f7;
+    --surface:    #ffffff;
+    --bg:         #f9fafb;
+    --accent:     #1a56f0;
+    --accent-2:   #f0f4ff;
+    --accent-ink: #0d37b8;
+    --accent-glow:rgba(26,86,240,0.18);
+    --accent-glow-sm: rgba(26,86,240,0.10);
+    --green:      #0b7a45;
+    --green-bg:   #edfaf3;
+    --green-glow: rgba(11,122,69,0.18);
+    --amber:      #e8811f;
+    --amber-bg:   #fef6ee;
+    --red:        #e53e3e;
+
+    /* ── Typography ── */
+    --serif: 'DM Serif Display', Georgia, serif;
+    --sans:  'DM Sans', system-ui, sans-serif;
+
+    /* ── Radii ── */
+    --r-xs: 6px; --r-sm: 8px;  --r-md: 14px;
+    --r-lg: 20px; --r-xl: 24px;
+    --r-2xl: 32px; --r-pill: 9999px;
+
+    /* ── Shadows — layered for depth ── */
+    --shadow-xs:    0 1px 3px rgba(14,15,17,0.06);
+    --shadow-sm:    0 2px 10px rgba(14,15,17,0.08);
+    --shadow-md:    0 6px 24px rgba(14,15,17,0.09);
+    --shadow-card:  0 0 0 1px rgba(14,15,17,0.055),
+                    0 2px 8px rgba(14,15,17,0.04),
+                    0 8px 24px rgba(14,15,17,0.06);
+    --shadow-float: 0 0 0 1px rgba(14,15,17,0.055),
+                    0 8px 24px rgba(14,15,17,0.08),
+                    0 24px 56px rgba(14,15,17,0.11);
+    --shadow-accent: 0 4px 20px rgba(26,86,240,0.28),
+                     0 1px 4px rgba(26,86,240,0.15);
+    --shadow-green:  0 4px 20px rgba(11,122,69,0.28);
+
+    /* ── Easing ── */
+    --ease:        cubic-bezier(0.22,1,0.36,1);
+    --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+    --ease-out:    cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ── Reset ── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; min-width:0; }
+html { -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
+body { font-family:var(--sans); background:var(--bg); color:var(--ink); overflow-x:hidden; }
+
+/* ══════════════════════════════════════════
+   PAGE LOAD — FADE-IN SEQUENCE
+══════════════════════════════════════════ */
+body { animation: bodyReveal 0.4s var(--ease) both; }
+@keyframes bodyReveal { from { opacity:0 } to { opacity:1 } }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity 0.65s var(--ease-out), transform 0.65s var(--ease-out);
+}
+.reveal.in { opacity:1; transform:none; }
+.reveal-d1 { transition-delay:0.08s; }
+.reveal-d2 { transition-delay:0.16s; }
+.reveal-d3 { transition-delay:0.24s; }
+.reveal-d4 { transition-delay:0.32s; }
+
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
+.page-wrap { max-width:1400px; margin:0 auto; padding:0 clamp(14px,3vw,40px); }
+
+/* Back button */
+.back-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:.875rem; font-weight:500; color:var(--ink-3);
+    text-decoration:none; padding:8px 18px;
+    background:var(--surface); border:1px solid var(--rule);
+    border-radius:var(--r-pill); margin:24px 0;
+    transition:color .22s var(--ease), border-color .22s var(--ease),
+               transform .3s var(--ease), box-shadow .22s var(--ease);
+    box-shadow:var(--shadow-xs);
+    opacity:0; animation: slideRight .5s var(--ease-out) .2s forwards;
+}
+@keyframes slideRight {
+    from { opacity:0; transform:translateX(-16px); }
+    to   { opacity:1; transform:none; }
+}
+.back-btn:hover {
+    color:var(--accent); border-color:rgba(26,86,240,.3);
+    transform:translateX(-4px); box-shadow:var(--shadow-sm);
+}
+.back-btn i { transition:transform .25s var(--ease); }
+.back-btn:hover i { transform:translateX(-3px); }
+
+.main-grid {
+    display:grid;
+    grid-template-columns:1fr 368px;
+    gap:28px;
+    padding-bottom:100px;
+    align-items:start;
+}
+.left-col  { display:flex; flex-direction:column; gap:20px; }
+.right-col { position:sticky; top:24px; display:flex; flex-direction:column; gap:14px; }
+
+/* ══════════════════════════════════════════
+   FILE HERO — Enhanced
+══════════════════════════════════════════ */
+.file-hero {
+    background:var(--surface); border:1px solid var(--rule);
+    border-radius:var(--r-2xl); padding:32px 36px;
+    box-shadow:var(--shadow-card); position:relative; overflow:hidden;
+    transition:box-shadow .35s var(--ease);
+}
+.file-hero:hover { box-shadow:var(--shadow-float); }
+
+/* Decorative blob */
+.file-hero::before {
+    content:''; position:absolute;
+    top:-80px; right:-80px; width:220px; height:220px; border-radius:50%;
+    background:radial-gradient(circle, rgba(26,86,240,0.06) 0%, transparent 70%);
+    pointer-events:none; transition:transform .6s var(--ease);
+}
+.file-hero:hover::before { transform:scale(1.2); }
+/* Second accent blob */
+.file-hero::after {
+    content:''; position:absolute;
+    bottom:-40px; left:30px; width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(circle, rgba(11,122,69,0.05) 0%, transparent 70%);
+    pointer-events:none;
+}
+
+.file-category-pill {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--accent); background:var(--accent-2);
+    border:1px solid rgba(26,86,240,.15); padding:4px 12px;
+    border-radius:var(--r-pill); margin-bottom:16px;
+    animation:pillPop .55s var(--ease-spring) .3s both;
+}
+@keyframes pillPop {
+    from { opacity:0; transform:scale(.75) translateY(6px); }
+    to   { opacity:1; transform:none; }
+}
+
+.file-title {
+    font-family:var(--serif);
+    font-size:clamp(1.5rem,3vw,2.3rem);
+    font-weight:400; line-height:1.15; color:var(--ink);
+    margin-bottom:16px; overflow-wrap:break-word;
+    animation:titleSlide .55s var(--ease-out) .35s both;
+}
+.file-subtitle {
+    font-size:.93rem; font-weight:400; color:var(--ink-3);
+    margin-bottom:20px; line-height:1.55;
+    animation:titleSlide .55s var(--ease-out) .42s both;
+}
+@keyframes titleSlide {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:none; }
+}
+
+.creator-card {
+    display:inline-flex; align-items:center; gap:11px;
+    padding:8px 18px 8px 8px;
+    background:var(--rule-light); border:1px solid var(--rule);
+    border-radius:var(--r-pill); text-decoration:none; color:inherit;
+    transition:all .28s var(--ease); max-width:100%;
+    animation:titleSlide .55s var(--ease-out) .48s both;
+}
+.creator-card:hover {
+    border-color:rgba(26,86,240,.28);
+    background:var(--accent-2);
+    transform:translateY(-2px) scale(1.01);
+    box-shadow:var(--shadow-sm), 0 0 0 3px var(--accent-glow-sm);
+}
+.creator-avatar {
+    width:38px; height:38px; border-radius:50%; object-fit:cover;
+    border:2px solid var(--rule); flex-shrink:0;
+    transition:transform .3s var(--ease-spring);
+}
+.creator-card:hover .creator-avatar { transform:scale(1.1) rotate(-4deg); }
+.creator-name {
+    font-size:.88rem; font-weight:600; color:var(--ink);
+    display:flex; align-items:center; gap:6px;
+}
+.creator-name img { width:14px; flex-shrink:0; }
+
+/* ══════════════════════════════════════════
+   PREVIEW CARD — Enhanced
+══════════════════════════════════════════ */
+.preview-card {
+    background:var(--surface); border:1px solid var(--rule);
+    border-radius:var(--r-2xl); overflow:hidden;
+    box-shadow:var(--shadow-card); position:relative;
+    cursor:zoom-in; transition:box-shadow .35s var(--ease), border-color .3s;
+}
+.preview-card:hover {
+    box-shadow:var(--shadow-float);
+    border-color:rgba(26,86,240,.2);
+}
+.preview-card img {
+    width:100%; aspect-ratio:16/10; object-fit:cover; display:block;
+    transition:transform .7s var(--ease);
+}
+.preview-card:hover img { transform:scale(1.03); }
+.preview-overlay {
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(14,15,17,.35) 0%, transparent 55%);
+    opacity:0; transition:opacity .35s;
+}
+.preview-card:hover .preview-overlay { opacity:1; }
+.preview-zoom-hint {
+    position:absolute; bottom:18px; right:18px;
+    background:rgba(14,15,17,.72); backdrop-filter:blur(10px);
+    color:white; font-size:.75rem; font-weight:500;
+    padding:8px 18px; border-radius:var(--r-pill);
+    border:1px solid rgba(255,255,255,.12);
+    opacity:0; transform:translateY(8px) scale(.95);
+    transition:all .3s var(--ease-spring);
+    display:flex; align-items:center; gap:7px;
+}
+.preview-card:hover .preview-zoom-hint { opacity:1; transform:none; }
+.preview-zoom-hint i { font-size:.8rem; }
+
+/* ══════════════════════════════════════════
+   CONTENT CARD — Enhanced
+══════════════════════════════════════════ */
+.content-card {
+    background:var(--surface); border:1px solid var(--rule);
+    border-radius:var(--r-2xl); padding:28px 32px;
+    box-shadow:var(--shadow-card);
+    transition:box-shadow .3s var(--ease), border-color .3s;
+}
+.content-card:hover { box-shadow:var(--shadow-md); }
+
+.card-heading {
+    font-family:var(--serif); font-size:1.25rem; font-weight:400; color:var(--ink);
+    margin-bottom:18px; padding-bottom:14px;
+    border-bottom:1px solid var(--rule-light);
+    display:flex; align-items:center; gap:10px;
+}
+.card-heading-icon {
+    width:32px; height:32px; border-radius:var(--r-sm);
+    background:var(--accent-2); border:1px solid rgba(26,86,240,.12);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent); font-size:.85rem; flex-shrink:0;
+    transition:all .25s var(--ease-spring);
+}
+.content-card:hover .card-heading-icon { transform:rotate(-8deg) scale(1.1); background:var(--accent); color:white; }
+
+.desc-text { font-size:.95rem; font-weight:300; line-height:1.8; color:var(--ink-2); overflow-wrap:break-word; }
+.desc-text p { margin-bottom:14px; }
+.desc-text p:last-child { margin-bottom:0; }
+.desc-text strong { color:var(--ink); font-weight:600; }
+.desc-text img { max-width:100%!important; height:auto!important; border-radius:var(--r-md); margin:16px 0; }
+
+/* ── AD ZONE ── */
+.ad-zone {
+    width:100%; overflow:hidden; display:flex; justify-content:center;
+    background:var(--rule-light); border:1px dashed var(--rule);
+    border-radius:var(--r-lg); min-height:90px;
+}
+
+/* ══════════════════════════════════════════
+   FAQ — Enhanced accordion
+══════════════════════════════════════════ */
+.faq-item {
+    border:1.5px solid var(--rule); border-radius:var(--r-lg);
+    overflow:hidden; margin-bottom:8px;
+    transition:border-color .25s var(--ease), box-shadow .25s var(--ease),
+               transform .2s var(--ease);
+}
+.faq-item:hover { border-color:rgba(26,86,240,.22); transform:translateX(3px); }
+.faq-item.open {
+    border-color:rgba(26,86,240,.32);
+    box-shadow:0 4px 20px rgba(26,86,240,.08), 0 0 0 3px rgba(26,86,240,.05);
+    transform:none;
+}
+.faq-trigger {
+    width:100%; background:none; border:none;
+    padding:16px 20px; cursor:pointer; text-align:left;
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    font-family:var(--sans); font-size:.92rem; font-weight:500; color:var(--ink);
+    transition:background .15s;
+}
+.faq-trigger:hover { background:var(--rule-light); }
+.faq-item.open .faq-trigger { background:var(--accent-2); }
+.faq-icon-wrap {
+    width:26px; height:26px; border-radius:50%;
+    background:var(--rule-light); border:1px solid var(--rule);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent); flex-shrink:0;
+    transition:all .3s var(--ease-spring);
+}
+.faq-item.open .faq-icon-wrap {
+    background:var(--accent); color:white; border-color:var(--accent);
+    transform:rotate(45deg);
+}
+.faq-body {
+    max-height:0; overflow:hidden;
+    transition:max-height .45s var(--ease), padding .35s;
+    font-size:.88rem; color:var(--ink-2); line-height:1.75;
+    padding:0 20px;
+    border-top:0px solid var(--rule);
+    transition:max-height .45s var(--ease), padding .35s, border-top-width .2s;
+}
+.faq-item.open .faq-body {
+    max-height:260px; padding:14px 20px 18px;
+    border-top:1px solid var(--rule-light);
+}
+
+/* ══════════════════════════════════════════
+   SKELETON LOADING — Improved shimmer
+══════════════════════════════════════════ */
+@keyframes shimmer {
+    0%   { background-position:-600px 0; }
+    100% { background-position:600px 0; }
+}
+.skeleton {
+    background:linear-gradient(90deg,
+        var(--rule-light) 20%,
+        rgba(228,230,234,0.8) 50%,
+        var(--rule-light) 80%);
+    background-size:1200px 100%;
+    animation:shimmer 1.8s ease-in-out infinite;
+    border-radius:6px;
+}
+.skel-card { height:260px; border-radius:var(--r-lg); border:1px solid var(--rule); overflow:hidden; }
+.skel-card-inner { display:flex; flex-direction:column; height:100%; }
+.skel-thumb  { height:130px; border-radius:0; }
+.skel-text-wrap { padding:14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+.skel-line { height:10px; }
+.skel-line.w-80 { width:80%; }
+.skel-line.w-60 { width:60%; }
+.skel-line.w-40 { width:40%; }
+
+/* ══════════════════════════════════════════
+   REVIEWS — Enhanced
+══════════════════════════════════════════ */
+.rating-block {
+    display:flex; align-items:stretch; gap:0;
+    background:linear-gradient(135deg,#f9fafb,#f4f5f7);
+    border:1px solid var(--rule); border-radius:var(--r-xl);
+    overflow:hidden; margin-bottom:20px;
+    box-shadow:var(--shadow-xs);
+}
+.rating-score {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:28px 32px; border-right:1px solid var(--rule);
+    background:white; min-width:140px; flex-shrink:0; gap:4px;
+    position:relative; overflow:hidden;
+}
+.rating-score::before {
+    content:''; position:absolute; top:-20px; right:-20px;
+    width:80px; height:80px; border-radius:50%;
+    background:radial-gradient(circle, rgba(232,129,31,0.08), transparent 70%);
+}
+.rating-num {
+    font-family:var(--serif); font-size:4rem; line-height:1;
+    color:var(--ink); position:relative;
+    animation:countUp .8s var(--ease-spring) both;
+}
+@keyframes countUp {
+    from { opacity:0; transform:scale(.7) translateY(10px); }
+    to   { opacity:1; transform:none; }
+}
+.rating-stars { color:var(--amber); font-size:.95rem; letter-spacing:1px; margin-top:2px; }
+.rating-count { font-size:.75rem; color:var(--ink-3); margin-top:4px; }
+
+.dist-bars { flex:1; padding:22px 26px; display:flex; flex-direction:column; justify-content:center; gap:8px; }
+.dist-row { display:flex; align-items:center; gap:10px; font-size:.78rem; color:var(--ink-3); }
+.dist-label { width:36px; text-align:right; flex-shrink:0; font-weight:500; }
+.dist-track { flex:1; height:8px; background:var(--rule); border-radius:var(--r-pill); overflow:hidden; }
+.dist-fill {
+    height:100%; border-radius:var(--r-pill); width:0;
+    background:linear-gradient(90deg, var(--amber) 0%, #f5a623 100%);
+    transition:width 1.1s var(--ease-out);
+    position:relative; overflow:hidden;
+}
+.dist-fill::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,.35) 50%, transparent 100%);
+    background-size:200% 100%; animation:shimmer 2s ease-in-out infinite;
+}
+.dist-count { width:22px; text-align:right; flex-shrink:0; font-weight:600; color:var(--ink-2); }
+
+.write-review-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--sans); font-size:.875rem; font-weight:600;
+    color:var(--accent); background:var(--accent-2);
+    border:1.5px solid rgba(26,86,240,.2); border-radius:var(--r-md);
+    padding:10px 22px; cursor:pointer; margin-bottom:20px;
+    transition:all .28s var(--ease-spring);
+}
+.write-review-btn:hover {
+    background:var(--accent); color:white; border-color:var(--accent);
+    transform:translateY(-2px) scale(1.02);
+    box-shadow:var(--shadow-accent);
+}
+
+.review-list { display:flex; flex-direction:column; gap:10px; }
+.review-item {
+    background:var(--surface); border:1.5px solid var(--rule);
+    border-radius:var(--r-lg); padding:18px 20px;
+    transition:all .25s var(--ease);
+    animation:reviewIn .45s var(--ease) both;
+    position:relative; overflow:hidden;
+}
+.review-item::before {
+    content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+    background:linear-gradient(180deg, var(--accent), var(--accent-glow));
+    transform:scaleY(0); transform-origin:bottom;
+    transition:transform .3s var(--ease);
+}
+.review-item:hover { border-color:rgba(26,86,240,.2); box-shadow:var(--shadow-sm); transform:translateX(5px); }
+.review-item:hover::before { transform:scaleY(1); }
+@keyframes reviewIn {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:none; }
+}
+.review-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.review-initials {
+    width:38px; height:38px; border-radius:50%;
+    background:var(--accent-2); color:var(--accent);
+    font-size:.78rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; border:2px solid rgba(26,86,240,.15);
+    transition:transform .3s var(--ease-spring), box-shadow .3s;
+}
+.review-item:hover .review-initials { transform:scale(1.1); box-shadow:0 0 0 4px var(--accent-glow-sm); }
+.review-user-name { font-size:.875rem; font-weight:600; color:var(--ink); }
+.review-user-date { font-size:.73rem; color:var(--ink-4); margin-top:1px; }
+.review-stars { color:var(--amber); font-size:.78rem; margin-left:auto; }
+.review-stars .empty { color:var(--rule); }
+.review-title { font-size:.875rem; font-weight:600; color:var(--ink); margin-bottom:5px; }
+.review-body  { font-size:.84rem; color:var(--ink-2); line-height:1.7; margin-bottom:12px; }
+.helpful-row  { display:flex; align-items:center; gap:8px; }
+.helpful-btn {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:.74rem; font-weight:500; color:var(--ink-3);
+    background:var(--rule-light); border:1px solid var(--rule);
+    border-radius:var(--r-pill); padding:4px 12px;
+    cursor:pointer; transition:all .2s var(--ease-spring); user-select:none;
+}
+.helpful-btn:hover,.helpful-btn.active {
+    color:var(--accent); background:var(--accent-2); border-color:rgba(26,86,240,.2);
+    transform:scale(1.05);
+}
+.helpful-btn.active i { animation:thumbUp .4s var(--ease-spring); }
+@keyframes thumbUp { 0%,100%{transform:none} 50%{transform:translateY(-4px) rotate(-10deg)} }
+.helpful-label { font-size:.73rem; color:var(--ink-4); margin-right:auto; }
+
+.no-reviews-box {
+    text-align:center; padding:52px 24px;
+    background:var(--rule-light); border:1px dashed var(--rule);
+    border-radius:var(--r-xl);
+}
+.no-reviews-box i { font-size:3rem; color:var(--ink-4); margin-bottom:16px; display:block; }
+
+/* ══════════════════════════════════════════
+   RELATED FILES — Enhanced
+══════════════════════════════════════════ */
+.related-wrapper {
+    background:var(--surface); border:1px solid var(--rule);
+    border-radius:var(--r-2xl); padding:32px 28px;
+    box-shadow:var(--shadow-card);
+}
+.related-head { margin-bottom:28px; }
+.related-head-title {
+    font-family:var(--serif); font-size:1.6rem; color:var(--ink);
+    display:flex; align-items:center; gap:12px; margin-bottom:4px;
+}
+.related-head-title i { font-size:1.1rem; color:var(--accent); }
+.related-head-sub { font-size:.88rem; color:var(--ink-3); margin:0; }
+
+.related-group { margin-bottom:36px; }
+.related-group:last-child { margin-bottom:0; }
+.related-group-label {
+    font-size:.72rem; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-3); margin-bottom:16px;
+    display:flex; align-items:center; gap:12px;
+}
+.related-group-label::after { content:''; flex:1; height:1px; background:var(--rule); }
+.related-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(210px,1fr));
+    gap:16px;
+}
+
+/* Related card */
+.rel-card {
+    display:flex; flex-direction:column; text-decoration:none;
+    background:var(--surface); border:1.5px solid var(--rule);
+    border-radius:var(--r-lg); overflow:hidden;
+    transition:transform .35s var(--ease), border-color .3s, box-shadow .35s var(--ease);
+    height:100%; position:relative;
+}
+.rel-card::after {
+    content:''; position:absolute; inset:0; border-radius:var(--r-lg);
+    background:linear-gradient(135deg,rgba(26,86,240,.04),transparent 60%);
+    opacity:0; transition:opacity .3s; pointer-events:none; z-index:0;
+}
+.rel-card:hover {
+    transform:translateY(-8px) scale(1.015);
+    border-color:rgba(26,86,240,.35);
+    box-shadow:0 20px 48px rgba(14,15,17,.12), 0 0 0 3px var(--accent-glow-sm);
+}
+.rel-card:hover::after { opacity:1; }
+
+.rel-thumb {
+    width:100%; aspect-ratio:16/10;
+    background:var(--bg); position:relative; overflow:hidden;
+}
+.rel-thumb img {
+    width:100%; height:100%; object-fit:cover;
+    transition:transform .55s var(--ease);
+}
+.rel-card:hover .rel-thumb img { transform:scale(1.08); }
+.rel-badge {
+    position:absolute; top:10px; right:10px;
+    font-size:.62rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    padding:4px 10px; border-radius:var(--r-pill);
+    background:rgba(255,255,255,.92); backdrop-filter:blur(6px);
+    color:var(--ink); box-shadow:var(--shadow-xs); z-index:2;
+    transition:transform .2s var(--ease-spring);
+}
+.rel-badge.free { background:var(--green); color:white; }
+.rel-card:hover .rel-badge { transform:translateY(-2px); }
+
+.rel-body { padding:14px 16px; display:flex; flex-direction:column; flex:1; position:relative; z-index:1; }
+.rel-name {
+    font-size:.9rem; font-weight:600; color:var(--ink); line-height:1.4;
+    margin-bottom:5px; display:-webkit-box;
+    -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.5em;
+}
+.rel-author { font-size:.76rem; color:var(--ink-3); margin-bottom:10px; display:flex; align-items:center; gap:5px; }
+.rel-footer {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:auto; padding-top:10px; border-top:1px dashed var(--rule);
+}
+.rel-price { font-size:.98rem; font-weight:700; color:var(--ink); }
+.rel-price.free { color:var(--green); }
+.rel-meta { font-size:.73rem; color:var(--ink-3); display:flex; gap:8px; }
+.rel-meta i { color:var(--amber); }
+
+/* ══════════════════════════════════════════
+   CHECKOUT SIDEBAR — Polished Pro
+══════════════════════════════════════════ */
+.checkout-card {
+    background:var(--surface); border:1px solid var(--rule);
+    border-radius:var(--r-2xl); overflow:hidden;
+    box-shadow:var(--shadow-float);
+    transition:box-shadow .35s var(--ease), transform .35s var(--ease);
+}
+.checkout-card:hover {
+    box-shadow: 0 0 0 1px rgba(26,86,240,.1),
+                0 32px 72px rgba(14,15,17,.14);
+    transform:translateY(-2px);
+}
+
+/* Price hero — dark panel */
+.price-hero {
+    background:linear-gradient(155deg, #08090d 0%, #0d1525 55%, #0e1d3a 100%);
+    padding:22px 22px 20px; position:relative; overflow:hidden;
+}
+/* Animated top accent line */
+.price-hero-accent {
+    position:absolute; top:0; left:0; right:0; height:2.5px;
+    background:linear-gradient(90deg, var(--accent), #5a92f8, #34d399, var(--accent));
+    background-size:300% 100%;
+    animation:accentSlide 4s linear infinite;
+}
+@keyframes accentSlide { to { background-position:-300% 0; } }
+/* Glowing orbs */
+.price-hero::before {
+    content:''; position:absolute;
+    top:-60px; right:-60px; width:180px; height:180px; border-radius:50%;
+    background:radial-gradient(circle, rgba(26,86,240,.18) 0%, transparent 65%);
+    pointer-events:none; animation:orbPulse 6s ease-in-out infinite;
+}
+.price-hero::after {
+    content:''; position:absolute;
+    bottom:-30px; left:-20px; width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(circle, rgba(52,211,153,.08) 0%, transparent 65%);
+    pointer-events:none;
+}
+@keyframes orbPulse {
+    0%,100% { transform:scale(1); opacity:1; }
+    50%      { transform:scale(1.15); opacity:.7; }
+}
+
+.price-thumb {
+    width:100%; aspect-ratio:16/9; object-fit:cover; display:block;
+    border-radius:var(--r-md); margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.1);
+    transition:transform .5s var(--ease), box-shadow .4s;
+    box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+.checkout-card:hover .price-thumb { transform:scale(1.02); box-shadow:0 8px 28px rgba(0,0,0,.5); }
+
+.price-badge-pill {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:.65rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase;
+    padding:4px 12px; border-radius:var(--r-pill);
+    background:rgba(110,231,183,.15); color:#6ee7b7;
+    border:1px solid rgba(110,231,183,.25);
+}
+
+.price-tag-row { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+.price-amount {
+    font-family:var(--serif); font-size:2.5rem; line-height:1;
+    color:white; letter-spacing:-.02em;
+    animation:priceIn .65s var(--ease-spring) .2s both;
+}
+@keyframes priceIn {
+    from { opacity:0; transform:scale(.75) translateY(12px); }
+    to   { opacity:1; transform:none; }
+}
+.price-amount.free { color:#6ee7b7; font-size:1.8rem; }
+.price-original {
+    font-size:.9rem; color:rgba(255,255,255,.35);
+    text-decoration:line-through;
+}
+.price-note {
+    font-size:.73rem; color:rgba(255,255,255,.4); margin-top:6px;
+    display:flex; align-items:center; gap:6px;
+}
+.price-note i { color:#fbbf24; }
+
+/* Discount badge on price */
+.price-discount-badge {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:4px 10px; border-radius:var(--r-pill);
+    background:rgba(232,129,31,.2); color:#fbbf24;
+    border:1px solid rgba(232,129,31,.3);
+    font-size:.65rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+}
+
+/* Checkout body */
+.checkout-body { padding:22px 22px 18px; }
+
+.invoice-section { margin-bottom:14px; }
+.invoice-row {
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:.84rem; padding:8px 0; color:var(--ink-3);
+    border-bottom:1px solid var(--rule-light);
+    transition:background .15s, color .15s;
+}
+.invoice-row:last-child { border-bottom:none; }
+.invoice-row:hover { color:var(--ink); }
+.invoice-row.total {
+    border-top:1.5px dashed var(--rule); border-bottom:none;
+    margin-top:8px; padding-top:12px;
+    color:var(--ink); font-weight:700; font-size:1.05rem;
+}
+.invoice-row.total .total-amount {
+    color:var(--accent); font-family:var(--serif); font-size:1.2rem;
+}
+.invoice-discount {
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:.82rem; padding:9px 12px; margin:8px 0;
+    background:var(--green-bg); color:var(--green);
+    border-radius:var(--r-md); font-weight:500;
+    border-left:3px solid var(--green);
+    animation:discountSlide .45s var(--ease-spring) both;
+}
+@keyframes discountSlide {
+    from { opacity:0; transform:translateY(-10px) scale(.96); }
+    to   { opacity:1; transform:none; }
+}
+
+/* Coupon input */
+.coupon-wrap {
+    display:flex; border:1.5px solid var(--rule);
+    border-radius:var(--r-md); overflow:hidden;
+    margin:14px 0; transition:all .25s var(--ease);
+    background:var(--rule-light); position:relative;
+}
+.coupon-wrap:focus-within {
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(26,86,240,.1);
+    background:white;
+}
+.coupon-wrap.valid   { border-color:var(--green); box-shadow:0 0 0 3px rgba(11,122,69,.1); }
+.coupon-wrap.invalid { border-color:var(--red);   box-shadow:0 0 0 3px rgba(229,62,62,.1); }
+.coupon-input {
+    flex:1; border:none; padding:11px 14px;
+    font-family:var(--sans); font-size:.875rem; color:var(--ink);
+    background:transparent; outline:none;
+    text-transform:uppercase; font-weight:500; letter-spacing:.04em;
+}
+.coupon-input::placeholder { text-transform:none; color:var(--ink-4); font-weight:400; letter-spacing:0; }
+.coupon-apply-btn {
+    background:transparent; border:none; border-left:1.5px solid var(--rule);
+    color:var(--accent); padding:0 18px;
+    font-family:var(--sans); font-size:.82rem; font-weight:700;
+    cursor:pointer; transition:all .2s; white-space:nowrap;
+}
+.coupon-apply-btn:hover { background:var(--accent-2); }
+.coupon-apply-btn:disabled { color:var(--ink-4); cursor:default; }
+.coupon-msg {
+    font-size:.75rem; margin-top:-10px; margin-bottom:10px;
+    padding:0 4px; display:none;
+    animation:fadeUp .3s var(--ease) both;
+}
+.coupon-msg.show { display:block; }
+.coupon-msg.success { color:var(--green); }
+.coupon-msg.error   { color:var(--red); }
+@keyframes fadeUp {
+    from { opacity:0; transform:translateY(-5px); }
+    to   { opacity:1; transform:none; }
+}
+
+/* ══ CTA BUTTON — Hero interaction ══ */
+.cta-btn {
+    width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
+    font-family:var(--sans); font-size:1rem; font-weight:700;
+    color:white; background:var(--accent);
+    border:none; border-radius:var(--r-lg); padding:16px;
+    cursor:pointer; margin:14px 0 10px;
+    transition:background .28s var(--ease), transform .28s var(--ease),
+               box-shadow .28s var(--ease), opacity .2s;
+    box-shadow:var(--shadow-accent);
+    position:relative; overflow:hidden;
+    letter-spacing:.01em;
+}
+/* Shimmer sweep */
+.cta-btn::before {
+    content:''; position:absolute;
+    top:0; left:-100%; width:80%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+    transition:left .55s var(--ease);
+}
+.cta-btn:hover::before { left:120%; }
+.cta-btn:hover {
+    background:var(--accent-ink);
+    transform:translateY(-3px);
+    box-shadow: 0 8px 28px rgba(26,86,240,.42),
+                0 0 0 3px rgba(26,86,240,.15);
+}
+.cta-btn:active { transform:translateY(-1px) scale(.98); }
+.cta-btn:disabled { opacity:.65; cursor:not-allowed; transform:none; box-shadow:none; pointer-events:none; }
+.cta-btn.free-btn { background:var(--green); box-shadow:var(--shadow-green); }
+.cta-btn.free-btn:hover { background:#0a6638; box-shadow:0 8px 28px rgba(11,122,69,.38),0 0 0 3px rgba(11,122,69,.15); }
+
+/* Ripple effect */
+.cta-btn .ripple {
+    position:absolute; border-radius:50%;
+    background:rgba(255,255,255,.25);
+    transform:scale(0); animation:rippleAnim .55s linear;
+    pointer-events:none;
+}
+@keyframes rippleAnim { to { transform:scale(4); opacity:0; } }
+
+/* States */
+.cta-btn.state-loading   { background:#5b7fe8; pointer-events:none; }
+.cta-btn.state-verifying { background:#4e6ed4; pointer-events:none; }
+.cta-btn.state-success   { background:var(--green)!important; pointer-events:none; animation:successPop .55s var(--ease-spring); box-shadow:var(--shadow-green)!important; }
+.cta-btn.state-error     { background:var(--red)!important;   pointer-events:none; animation:shake .45s; box-shadow:0 4px 16px rgba(229,62,62,.3)!important; }
+@keyframes successPop { 0%,100%{transform:none} 35%{transform:scale(1.05)} 65%{transform:scale(.97)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-5px)} 40%,80%{transform:translateX(5px)} }
+
+/* Pulse on loading */
+@keyframes btnPulse {
+    0%,100% { box-shadow:0 4px 20px rgba(26,86,240,.3); }
+    50%      { box-shadow:0 4px 32px rgba(26,86,240,.55); }
+}
+.cta-btn.state-loading,.cta-btn.state-verifying { animation:btnPulse 1.2s ease-in-out infinite; }
+
+.guarantee-row {
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    font-size:.75rem; color:var(--ink-3); margin-bottom:16px;
+}
+.guarantee-row i { color:var(--green); }
+
+.divider { height:1px; background:var(--rule-light); margin:4px 0 16px; }
+
+/* Action pills */
+.action-row { display:flex; gap:8px; margin-bottom:16px; }
+.action-pill {
+    flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+    font-family:var(--sans); font-size:.82rem; font-weight:500; color:var(--ink-2);
+    background:var(--rule-light); border:1.5px solid var(--rule); border-radius:var(--r-md);
+    padding:9px; cursor:pointer;
+    transition:all .22s var(--ease-spring); user-select:none;
+}
+.action-pill:hover { background:var(--rule); color:var(--ink); transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+.action-pill:active { transform:scale(.95); }
+.action-pill.liked {
+    color:var(--red); background:rgba(229,62,62,.07);
+    border-color:rgba(229,62,62,.2);
+}
+.action-pill.liked i { animation:heartBeat .5s var(--ease-spring); }
+@keyframes heartBeat { 0%,100%{transform:none} 40%{transform:scale(1.4)} 70%{transform:scale(.9)} }
+
+/* Specs */
+.specs-label {
+    font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-3); margin-bottom:10px;
+}
+.specs-list { list-style:none; }
+.spec-row {
+    display:flex; align-items:center; gap:12px;
+    padding:10px 8px; border-bottom:1px solid var(--rule-light);
+    transition:all .2s var(--ease); border-radius:var(--r-sm);
+    cursor:default;
+}
+.spec-row:last-child { border-bottom:none; }
+.spec-row:hover { background:var(--rule-light); padding-left:12px; }
+.spec-icon-wrap {
+    width:36px; height:36px; border-radius:var(--r-sm);
+    background:var(--rule-light); border:1px solid var(--rule);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink-3); font-size:.85rem; flex-shrink:0;
+    transition:all .25s var(--ease-spring);
+}
+.spec-row:hover .spec-icon-wrap {
+    background:var(--accent-2); color:var(--accent);
+    border-color:rgba(26,86,240,.2);
+    transform:rotate(-8deg) scale(1.1);
+}
+.spec-label { font-size:.73rem; color:var(--ink-3); }
+.spec-value { font-size:.875rem; font-weight:600; color:var(--ink); margin-top:1px; }
+
+/* Share card */
+.share-card {
+    background:var(--surface); border:1px solid var(--rule);
+    border-radius:var(--r-lg); padding:18px;
+    box-shadow:var(--shadow-xs);
+    transition:box-shadow .3s var(--ease);
+}
+.share-card:hover { box-shadow:var(--shadow-sm); }
+.share-label {
+    font-size:.7rem; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-3); margin-bottom:10px;
+}
+.share-row { display:flex; gap:7px; flex-wrap:wrap; }
+.share-pill {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:.76rem; font-weight:500; color:var(--ink-2);
+    background:var(--rule-light); border:1px solid var(--rule);
+    border-radius:var(--r-pill); padding:7px 14px;
+    cursor:pointer; transition:all .22s var(--ease-spring);
+    text-decoration:none;
+}
+.share-pill:hover {
+    background:var(--ink); color:white; border-color:var(--ink);
+    transform:translateY(-3px) scale(1.04);
+    box-shadow:var(--shadow-sm);
+}
+.share-pill:active { transform:scale(.96); }
+
+/* ══════════════════════════════════════════
+   MOBILE STICKY BAR — Enhanced
+══════════════════════════════════════════ */
+.mobile-cta-bar {
+    display:none; position:fixed; bottom:0; left:0; right:0;
+    background:rgba(255,255,255,.97);
+    backdrop-filter:blur(20px) saturate(1.8);
+    border-top:1px solid var(--rule);
+    padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+    z-index:800; box-shadow:0 -6px 28px rgba(14,15,17,.1);
+    transform:translateY(100%);
+    animation:slideUpBar .5s var(--ease-out) .8s forwards;
+}
+@keyframes slideUpBar { to { transform:none; } }
+.mobile-cta-inner { display:flex; align-items:center; gap:14px; }
+.mobile-price { font-family:var(--serif); font-size:1.35rem; color:var(--ink); white-space:nowrap; }
+.mobile-price.free { color:var(--green); }
+.mobile-enroll-btn {
+    flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+    font-family:var(--sans); font-size:.95rem; font-weight:700;
+    color:white; background:var(--accent); border:none; border-radius:var(--r-md);
+    padding:14px; cursor:pointer; transition:all .25s var(--ease);
+    box-shadow:0 3px 16px rgba(26,86,240,.3);
+    position:relative; overflow:hidden;
+}
+.mobile-enroll-btn.free-btn { background:var(--green); box-shadow:0 3px 16px rgba(11,122,69,.3); }
+.mobile-enroll-btn:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(26,86,240,.4); }
+
+/* ══════════════════════════════════════════
+   SUCCESS OVERLAY — Polished
+══════════════════════════════════════════ */
+#successOverlay {
+    position:fixed; inset:0; z-index:10000;
+    background:linear-gradient(145deg, #0a5c38 0%, #0b7a45 50%, #0e6b3c 100%);
+    display:none; align-items:center; justify-content:center;
+    flex-direction:column; text-align:center; padding:40px;
+}
+#successOverlay.show { display:flex; animation:overlayIn .5s var(--ease-out); }
+@keyframes overlayIn { from { opacity:0; backdrop-filter:blur(0); } to { opacity:1; } }
+
+.success-icon-ring {
+    position:relative; width:88px; height:88px; margin:0 auto 28px;
+    animation:iconBounce .8s var(--ease-spring) .3s both;
+}
+.success-icon-ring svg { position:absolute; inset:0; width:100%; height:100%; }
+.success-ring-circle {
+    fill:none; stroke:rgba(255,255,255,.25); stroke-width:3;
+}
+.success-ring-progress {
+    fill:none; stroke:white; stroke-width:3; stroke-linecap:round;
+    stroke-dasharray:251.2; stroke-dashoffset:251.2;
+    transform:rotate(-90deg); transform-origin:center;
+    animation:drawRing .8s var(--ease-out) .8s forwards;
+    filter:drop-shadow(0 0 6px rgba(255,255,255,.4));
+}
+@keyframes drawRing { to { stroke-dashoffset:0; } }
+.success-icon-inner-wrap {
+    position:absolute; inset:8px; border-radius:50%;
+    background:rgba(255,255,255,.2);
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-size:2rem;
+}
+@keyframes iconBounce { from{opacity:0;transform:scale(0)} 60%{transform:scale(1.15)} to{opacity:1;transform:none} }
+
+.success-title { font-family:var(--serif); font-size:2.3rem; color:white; margin-bottom:12px; animation:titleSlide .5s var(--ease-out) .7s both; }
+.success-sub   { font-size:.95rem; color:rgba(255,255,255,.75); margin-bottom:36px; animation:titleSlide .5s var(--ease-out) .85s both; }
+.success-cta {
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--sans); font-size:1rem; font-weight:700;
+    color:var(--green); background:white; border:none;
+    border-radius:var(--r-lg); padding:15px 36px;
+    cursor:pointer; text-decoration:none;
+    transition:all .25s var(--ease-spring);
+    box-shadow:0 8px 28px rgba(0,0,0,.2);
+    animation:titleSlide .5s var(--ease-out) 1s both;
+}
+.success-cta:hover { transform:translateY(-3px) scale(1.04); box-shadow:0 14px 36px rgba(0,0,0,.28); }
+
+/* Confetti canvas */
+#confettiCanvas { position:fixed; inset:0; z-index:9999; pointer-events:none; display:none; }
+#confettiCanvas.show { display:block; }
+
+/* ══════════════════════════════════════════
+   REVIEW MODAL — Enhanced
+══════════════════════════════════════════ */
+.modal-veil {
+    position:fixed; inset:0; background:rgba(14,15,17,.55);
+    backdrop-filter:blur(10px); display:none;
+    align-items:center; justify-content:center; z-index:9000;
+}
+.modal-veil.open { display:flex; animation:fadeVeil .25s; }
+@keyframes fadeVeil { from { opacity:0; } to { opacity:1; } }
+.review-modal {
+    background:var(--surface); border-radius:var(--r-2xl);
+    padding:32px 28px; width:90%; max-width:460px;
+    box-shadow:var(--shadow-float); border:1px solid var(--rule);
+    animation:modalPop .4s var(--ease-spring);
+}
+@keyframes modalPop { from{opacity:0;transform:translateY(24px) scale(.95)} to{opacity:1;transform:none} }
+.modal-title { font-family:var(--serif); font-size:1.4rem; color:var(--ink); margin-bottom:4px; }
+.modal-sub   { font-size:.84rem; color:var(--ink-3); margin-bottom:22px; }
+
+.modal-stars { display:flex; justify-content:center; gap:6px; flex-direction:row-reverse; margin-bottom:22px; }
+.modal-stars input { display:none; }
+.modal-stars label {
+    font-size:2.5rem; color:var(--rule); cursor:pointer;
+    transition:color .12s, transform .25s var(--ease-spring);
+}
+.modal-stars label:hover { color:var(--amber); transform:scale(1.3) rotate(-6deg); }
+.modal-stars label:hover ~ label { color:var(--amber); }
+.modal-stars input:checked ~ label { color:var(--amber); }
+
+.modal-input {
+    width:100%; padding:11px 14px;
+    font-family:var(--sans); font-size:.875rem; color:var(--ink);
+    background:var(--rule-light); border:1.5px solid var(--rule);
+    border-radius:var(--r-md); outline:none; margin-bottom:12px;
+    transition:border-color .2s, box-shadow .2s, background .2s;
+}
+.modal-input::placeholder { color:var(--ink-4); }
+.modal-input:focus {
+    border-color:var(--accent); box-shadow:0 0 0 3px rgba(26,86,240,.1);
+    background:white;
+}
+textarea.modal-input { resize:vertical; min-height:92px; }
+.modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
+.modal-cancel {
+    font-family:var(--sans); font-size:.875rem; font-weight:500; color:var(--ink-2);
+    background:var(--rule-light); border:1px solid var(--rule); border-radius:var(--r-md);
+    padding:10px 20px; cursor:pointer; transition:all .15s;
+}
+.modal-cancel:hover { background:var(--rule); }
+.modal-submit {
+    font-family:var(--sans); font-size:.875rem; font-weight:700;
+    color:white; background:var(--amber); border:none; border-radius:var(--r-md);
+    padding:10px 24px; cursor:pointer;
+    transition:all .25s var(--ease);
+    box-shadow:0 3px 12px rgba(232,129,31,.3);
+}
+.modal-submit:hover:not(:disabled) { background:#c96c10; transform:translateY(-1px); box-shadow:0 6px 20px rgba(232,129,31,.38); }
+.modal-submit:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+/* ══ IMAGE MODAL ══ */
+.img-modal-veil {
+    position:fixed; inset:0; background:rgba(14,15,17,.93);
+    backdrop-filter:blur(14px); display:none;
+    align-items:center; justify-content:center; z-index:9100;
+}
+.img-modal-veil.open { display:flex; animation:fadeVeil .25s; }
+.img-modal-veil img {
+    max-width:95vw; max-height:90vh; object-fit:contain;
+    border-radius:var(--r-xl); animation:imgZoom .4s var(--ease-spring);
+    box-shadow:0 24px 80px rgba(0,0,0,.6);
+}
+@keyframes imgZoom { from{opacity:0;transform:scale(.88)} to{opacity:1;transform:none} }
+.img-modal-close {
+    position:absolute; top:20px; right:24px;
+    width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15);
+    color:white; font-size:1rem; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all .18s;
+}
+.img-modal-close:hover { background:rgba(255,255,255,.22); transform:scale(1.1); }
+
+/* ══ TOAST — Enhanced ══ */
+#vToast {
+    position:fixed; top:24px; left:50%;
+    transform:translateX(-50%) translateY(-20px);
+    background:var(--ink); color:white;
+    padding:12px 22px; border-radius:var(--r-pill);
+    font-family:var(--sans); font-size:.875rem; font-weight:500;
+    display:flex; align-items:center; gap:10px;
+    box-shadow:var(--shadow-md); opacity:0; visibility:hidden;
+    transition:all .35s var(--ease-spring); z-index:9999; white-space:nowrap;
+    border:1px solid rgba(255,255,255,.08);
+}
+#vToast.show { opacity:1; visibility:visible; transform:translateX(-50%) translateY(0); }
+.toast-icon.success { color:#6ee7b7; }
+.toast-icon.error   { color:#f87171; }
+.toast-icon.info    { color:#93c5fd; }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width:1024px) {
+    .main-grid { grid-template-columns:1fr; }
+    .right-col { position:static; }
+    .checkout-card { max-width:540px; }
+    .mobile-cta-bar { display:block; }
+    .checkout-body .cta-btn,
+    .checkout-body .guarantee-row { display:none; }
+}
+@media (max-width:768px) {
+    .related-grid { grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+    .rating-block { flex-direction:column; }
+    .rating-score {
+        border-right:none; border-bottom:1px solid var(--rule);
+        flex-direction:row; gap:16px; padding:18px 22px; min-width:auto;
+    }
+}
+@media (max-width:640px) {
+    .file-hero,.content-card { padding:20px 18px; }
+    .related-wrapper { padding:22px 18px; }
+    .related-grid {
+        display:flex; overflow-x:auto; scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling:touch; scrollbar-width:none;
+        padding-bottom:12px; gap:12px;
+    }
+    .related-grid::-webkit-scrollbar { display:none; }
+    .rel-card { flex:0 0 220px; scroll-snap-align:start; }
+}
+</style>
 </head>
 <body>
 
 <%
-const formatBytes = (bytes, decimals=2) => {
-    if (!+bytes) return 'N/A';
-    const k=1024, dm=decimals<0?0:decimals, sizes=['B','KB','MB','GB','TB'];
+const formatBytes = (bytes,decimals=2) => {
+    if(!+bytes) return 'N/A';
+    const k=1024,dm=decimals<0?0:decimals,sizes=['B','KB','MB','GB','TB'];
     const i=Math.floor(Math.log(bytes)/Math.log(k));
     return parseFloat((bytes/Math.pow(k,i)).toFixed(dm))+' '+sizes[i];
 };
 const isFree = Number(priceDetails.total) === 0;
 %>
 
+<!-- ══ SUCCESS OVERLAY ══ -->
+<canvas id="confettiCanvas"></canvas>
+<div id="successOverlay">
+    <div class="success-icon-ring">
+        <svg viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg">
+            <circle class="success-ring-circle" cx="44" cy="44" r="40"/>
+            <circle class="success-ring-progress" cx="44" cy="44" r="40"/>
+        </svg>
+        <div class="success-icon-inner-wrap">
+            <i class="fa-solid fa-check"></i>
+        </div>
+    </div>
+    <div class="success-title">Payment Successful!</div>
+    <p class="success-sub">Your file is ready. Redirecting you to download&hellip;</p>
+    <a id="successDownloadLink" href="#" class="success-cta">
+        <i class="fa-solid fa-cloud-arrow-down"></i> Download Now
+    </a>
+</div>
+
 <div class="page-wrap">
-    <a href="/files" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Files</a>
+    <a href="/documents" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Back to library
+    </a>
 
     <div class="main-grid">
 
-        <!-- ════════ LEFT COLUMN ════════ -->
+        <!-- ════ LEFT COLUMN ════ -->
         <div class="left-col">
 
             <!-- FILE HERO -->
-            <div class="file-hero">
+            <div class="file-hero reveal">
                 <div class="file-category-pill">
-                    <i class="fa-solid fa-folder-open"></i>
-                    <%= file.category || 'Resource' %>
+                    <i class="fa-solid fa-folder-open"></i> <%= file.category || 'Resource' %>
                 </div>
                 <h1 class="file-title"><%- file.title || file.filename %></h1>
-                <h2 style="font-size:1rem;font-weight:500;color:var(--ink-2);margin-bottom:16px;">
+                <h2 class="file-subtitle">
                     <% if(file.filename.toLowerCase().includes('note')) { %>
-                        Free & Paid Study Notes | <%= file.category %> | PDF Download
+                        Free & Paid Study Notes · <%= file.category %> · PDF Download
                     <% } else if(file.filename.toLowerCase().includes('paper')) { %>
-                        Question Papers & Solutions | <%= file.category %> | Download & Learn
+                        Question Papers & Solutions · <%= file.category %> · Download & Learn
                     <% } else if(file.filename.toLowerCase().includes('solution')) { %>
-                        Solutions & Answers | <%= file.category %> | Study Material
+                        Solutions & Answers · <%= file.category %> · Study Material
                     <% } else { %>
-                        Premium Learning Resource | <%= file.category %> | Trusted by Students
+                        Premium Learning Resource · <%= file.category %> · Trusted by Students
                     <% } %>
                 </h2>
                 <a href="/profile/<%= file.user || 'admin' %>" class="creator-card">
                     <img src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>"
-                         alt="Creator"
-                         class="creator-avatar"
-                         onerror="this.src='/images/avatar.jpg'">
+                         alt="Creator" class="creator-avatar" onerror="this.src='/images/avatar.jpg'">
                     <span class="creator-name">
                         <%= file.user || 'Vidyari Team' %>
-                        <% if (typeof ISVERIFIED !== 'undefined' && ISVERIFIED) { %>
+                        <% if(typeof ISVERIFIED !== 'undefined' && ISVERIFIED) { %>
                             <img src="/images/verify.png" alt="Verified" style="width:14px;">
                         <% } %>
                     </span>
@@ -901,115 +1176,184 @@ const isFree = Number(priceDetails.total) === 0;
             </div>
 
             <!-- PREVIEW -->
-            <div class="preview-card" onclick="openImgModal(this.querySelector('img').src)">
+            <div class="preview-card reveal reveal-d1" onclick="openImgModal(this.querySelector('img').src)">
                 <img src="<%= (previewUrl && previewUrl.trim()) ? previewUrl : '/images/File_Demo.svg' %>"
-                     alt="Preview of <%= file.filename %>"
-                     onerror="this.src='/images/File_Demo.svg'">
-                <div class="preview-zoom-hint"><i class="fa-solid fa-expand"></i> Tap to expand</div>
+                     alt="Preview of <%= file.filename %>" onerror="this.src='/images/File_Demo.svg'">
+                <div class="preview-overlay"></div>
+                <div class="preview-zoom-hint">
+                    <i class="fa-solid fa-expand"></i> Tap to expand
+                </div>
             </div>
 
             <!-- AD -->
-            <div class="ad-zone">
-                <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true" data-ad-client="ca-pub-3321203820490717"></ins>
+            <div class="ad-zone reveal reveal-d2">
+                <ins class="adsbygoogle" style="display:block" data-ad-format="auto"
+                     data-full-width-responsive="true" data-ad-client="ca-pub-3321203820490717"></ins>
             </div>
 
             <!-- DESCRIPTION -->
-            <% if (file.filedescription) { %>
-            <div class="content-card">
-                <h2 class="content-card-title"><i class="fa-solid fa-circle-info" style="color:var(--accent);"></i> About this resource</h2>
+            <% if(file.filedescription) { %>
+            <div class="content-card reveal">
+                <h2 class="card-heading">
+                    <span class="card-heading-icon"><i class="fa-solid fa-circle-info"></i></span>
+                    About this resource
+                </h2>
                 <div class="desc-text"><%- file.filedescription %></div>
             </div>
             <% } %>
 
             <!-- REPORT -->
-            <div class="mt-1"><%- include("reporttemplate") %></div>
+            <div class="mt-1 reveal"><%- include("reporttemplate") %></div>
+
+            <!-- FAQ -->
+            <div class="content-card reveal">
+                <h2 class="card-heading">
+                    <span class="card-heading-icon"><i class="fa-solid fa-circle-question"></i></span>
+                    Frequently Asked Questions
+                </h2>
+                <div id="faqList">
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span>
+                                <i class="fa-solid fa-cloud-arrow-down" style="margin-right:8px;color:var(--accent)"></i>
+                                How do I download <%= file.filename %>?
+                            </span>
+                            <span class="faq-icon-wrap"><i class="fa-solid fa-plus" style="font-size:.7rem"></i></span>
+                        </button>
+                        <div class="faq-body">
+                            Click the Download button<% if(file.price>0){%> or "Secure Checkout" to purchase<%}%> for instant access.
+                            <%= file.price===0?'No payment required — completely free!':'One-time payment, lifetime access.' %>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span>
+                                <i class="fa-solid fa-tag" style="margin-right:8px;color:var(--accent)"></i>
+                                Is <%= file.filename %> free or paid?
+                            </span>
+                            <span class="faq-icon-wrap"><i class="fa-solid fa-plus" style="font-size:.7rem"></i></span>
+                        </button>
+                        <div class="faq-body">
+                            <% if(file.price===0){ %>
+                                Completely free! No charges, no hidden fees. Just download and use.
+                            <% } else { %>
+                                A premium resource priced at ₹<%= file.price %>. Pay once, access forever.
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span>
+                                <i class="fa-solid fa-lock" style="margin-right:8px;color:var(--accent)"></i>
+                                Can I share this file?
+                            </span>
+                            <span class="faq-icon-wrap"><i class="fa-solid fa-plus" style="font-size:.7rem"></i></span>
+                        </button>
+                        <div class="faq-body">
+                            For personal and educational use only. Redistribution or commercial use is not permitted. Please respect the creator's intellectual property.
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-trigger" onclick="toggleFaq(this)">
+                            <span>
+                                <i class="fa-solid fa-file" style="margin-right:8px;color:var(--accent)"></i>
+                                What's included in this <%= file.fileType || 'file' %>?
+                            </span>
+                            <span class="faq-icon-wrap"><i class="fa-solid fa-plus" style="font-size:.7rem"></i></span>
+                        </button>
+                        <div class="faq-body">
+                            <% if(file.filedescription){ %>
+                                <%= file.filedescription.substring(0,200) %>…
+                            <% } else { %>
+                                A comprehensive <%= file.category %> resource designed to help you excel in your studies.
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- REVIEWS -->
-            <div class="content-card">
-                <h2 class="content-card-title"><i class="fa-solid fa-star" style="color:var(--accent);"></i> Student Reviews</h2>
-                <div id="reviewsArea"><p style="color:var(--ink-3);font-size:0.875rem;">Loading reviews…</p></div>
-            </div>
-
-            <!-- FAQ SECTION FOR SEO -->
-            <div class="content-card">
-                <h2 class="content-card-title"><i class="fa-solid fa-circle-question" style="color:var(--accent);"></i> Frequently Asked Questions</h2>
-                <div style="display:flex;flex-direction:column;gap:12px;">
-                    <div style="background:var(--rule-light);border-radius:var(--r-md);padding:14px;cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
-                        <strong style="color:var(--ink);"><i class="fa-solid fa-cloud-arrow-down" style="margin-right:8px;color:var(--accent);"></i> How do I download <%= file.filename %>?</strong>
-                    </div>
-                    <div style="padding:0 14px;display:none;color:var(--ink-2);font-size:0.9rem;line-height:1.6;">
-                        Click the Download button <% if(file.price > 0) { %>or "Secure Checkout" to purchase<% } %> and you'll get instant access to the file. <%= file.price === 0 ? 'No payment required!' : 'It\'s a one-time payment for lifetime access.' %>
-                    </div>
-                    
-                    <div style="background:var(--rule-light);border-radius:var(--r-md);padding:14px;cursor:pointer;margin-top:8px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
-                        <strong style="color:var(--ink);"><i class="fa-solid fa-tag" style="margin-right:8px;color:var(--accent);"></i> Is <%= file.filename %> free or paid?</strong>
-                    </div>
-                    <div style="padding:0 14px;display:none;color:var(--ink-2);font-size:0.9rem;line-height:1.6;">
-                        <% if(file.price === 0) { %>
-                            <%= file.filename %> is completely free! No charges, no hidden fees. Just download and use.
-                        <% } else { %>
-                            <%= file.filename %> is a premium resource priced at ₹<%= file.price %>. You pay once and get lifetime access.
-                        <% } %>
-                    </div>
-                    
-                    <div style="background:var(--rule-light);border-radius:var(--r-md);padding:14px;cursor:pointer;margin-top:8px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
-                        <strong style="color:var(--ink);"><i class="fa-solid fa-lock" style="margin-right:8px;color:var(--accent);"></i> Can I share this file after downloading?</strong>
-                    </div>
-                    <div style="padding:0 14px;display:none;color:var(--ink-2);font-size:0.9rem;line-height:1.6;">
-                        <%= file.filename %> is for personal and educational use. Redistribution or commercial use is not permitted. Please respect the creator's intellectual property.
-                    </div>
-                    
-                    <div style="background:var(--rule-light);border-radius:var(--r-md);padding:14px;cursor:pointer;margin-top:8px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
-                        <strong style="color:var(--ink);"><i class="fa-solid fa-file" style="margin-right:8px;color:var(--accent);"></i> What's included in this <%= file.fileType %>?</strong>
-                    </div>
-                    <div style="padding:0 14px;display:none;color:var(--ink-2);font-size:0.9rem;line-height:1.6;">
-                        <% if(file.filedescription) { %>
-                            <%= file.filedescription.substring(0, 200) %>...
-                        <% } else { %>
-                            <%= file.filename %> is a comprehensive <%= file.category %> resource designed to help you excel in your studies.
-                        <% } %>
+            <div class="content-card reveal">
+                <h2 class="card-heading">
+                    <span class="card-heading-icon"><i class="fa-solid fa-star"></i></span>
+                    Student Reviews
+                </h2>
+                <div id="reviewsArea">
+                    <!-- skeleton -->
+                    <div style="display:flex;gap:16px;">
+                        <div class="skeleton skel-thumb" style="width:120px;height:80px;border-radius:var(--r-lg);flex-shrink:0;"></div>
+                        <div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-top:4px;">
+                            <div class="skeleton skel-line w-80"></div>
+                            <div class="skeleton skel-line w-60"></div>
+                            <div class="skeleton skel-line w-40"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RELATED -->
-            <div class="content-card related-section-premium">
-                <div class="related-header">
-                    <h2 class="related-title"><i class="fa-solid fa-sparkles" style="color:var(--accent);"></i> You Might Also Like</h2>
-                    <p class="related-subtitle">Handpicked recommendations based on this file</p>
+            <!-- RELATED FILES -->
+            <div class="related-wrapper reveal">
+                <div class="related-head">
+                    <h2 class="related-head-title"><i class="fa-solid fa-sparkles"></i> You Might Also Like</h2>
+                    <p class="related-head-sub">Handpicked recommendations based on this file</p>
                 </div>
-                <div id="relatedArea"><p style="color:var(--ink-3);font-size:0.875rem;text-align:center;padding:40px 20px;">Loading suggestions…</p></div>
+                <div id="relatedArea">
+                    <div class="related-grid">
+                        <% for(let i=0;i<3;i++){ %>
+                        <div class="skel-card">
+                            <div class="skel-card-inner">
+                                <div class="skeleton skel-thumb"></div>
+                                <div class="skel-text-wrap">
+                                    <div class="skeleton skel-line w-80"></div>
+                                    <div class="skeleton skel-line w-60"></div>
+                                    <div class="skeleton skel-line w-40"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
             </div>
 
         </div><!-- /left-col -->
 
-        <!-- ════════ RIGHT SIDEBAR ════════ -->
+        <!-- ════ RIGHT SIDEBAR ════ -->
         <aside class="right-col">
 
             <!-- CHECKOUT CARD -->
-            <div class="checkout-card">
+            <div class="checkout-card reveal">
                 <div class="price-hero">
+                    <div class="price-hero-accent"></div>
                     <img src="<%= (previewUrl && previewUrl.trim()) ? previewUrl : '/images/File_Demo.svg' %>"
                          alt="Thumbnail" class="price-thumb" onerror="this.style.display='none'">
+
                     <div class="price-tag-row">
-                        <% if (isFree) { %>
+                        <% if(isFree){ %>
                             <div class="price-amount free">Free</div>
-                            <span class="price-badge-pill">Open Access</span>
+                            <span class="price-badge-pill">
+                                <i class="fa-solid fa-unlock" style="font-size:.6rem"></i> Open Access
+                            </span>
                         <% } else { %>
                             <div class="price-amount">₹<%= priceDetails.total.toFixed(0) %></div>
-                            <% if (priceDetails.originalPrice && priceDetails.originalPrice > priceDetails.total) { %>
+                            <% if(priceDetails.originalPrice && priceDetails.originalPrice > priceDetails.total){ %>
                                 <span class="price-original">₹<%= priceDetails.originalPrice.toFixed(0) %></span>
-                                <span class="price-badge-pill"><%= Math.round((1 - priceDetails.total / priceDetails.originalPrice) * 100) %>% OFF</span>
+                                <span class="price-discount-badge">
+                                    <i class="fa-solid fa-fire" style="font-size:.6rem"></i>
+                                    <%= Math.round((1-priceDetails.total/priceDetails.originalPrice)*100) %>% OFF
+                                </span>
                             <% } %>
                         <% } %>
                     </div>
-                    <% if (!isFree) { %>
-                        <div class="price-note"><i class="fa-solid fa-fire"></i> Limited-time price</div>
+
+                    <% if(!isFree){ %>
+                        <div class="price-note">
+                            <i class="fa-solid fa-clock"></i> Limited-time pricing &nbsp;·&nbsp;
+                            <i class="fa-solid fa-rotate" style="color:rgba(255,255,255,.4)"></i> Lifetime access
+                        </div>
                     <% } %>
                 </div>
 
                 <div class="checkout-body">
-                    <!-- Invoice breakdown -->
                     <div class="invoice-section">
                         <div class="invoice-row">
                             <span>Base price</span>
@@ -1017,23 +1361,24 @@ const isFree = Number(priceDetails.total) === 0;
                         </div>
                         <div class="invoice-row">
                             <span>Platform fee + GST</span>
-                            <span>₹<%= (priceDetails.serviceFee + priceDetails.gstTax).toFixed(2) %></span>
+                            <span>₹<%= (priceDetails.serviceFee+priceDetails.gstTax).toFixed(2) %></span>
                         </div>
                         <div id="discountRow"></div>
                         <div class="invoice-row total">
                             <span>Total</span>
-                            <span id="finalTotal">₹<%= priceDetails.total.toFixed(2) %></span>
+                            <span class="total-amount" id="finalTotal">₹<%= priceDetails.total.toFixed(2) %></span>
                         </div>
                     </div>
 
                     <!-- Coupon -->
-                    <div class="coupon-wrap">
-                        <input type="text" id="couponInput" class="coupon-input" placeholder="Promo code" autocomplete="off" spellcheck="false">
+                    <div class="coupon-wrap" id="couponWrap">
+                        <input type="text" id="couponInput" class="coupon-input"
+                               placeholder="Promo code" autocomplete="off" spellcheck="false">
                         <button id="couponApplyBtn" class="coupon-apply-btn">Apply</button>
                     </div>
+                    <div class="coupon-msg" id="couponMsg"></div>
 
-                    <!-- CTA -->
-                    <% if (isFree) { %>
+                    <% if(isFree){ %>
                         <a href="/download?file_id=<%= file._id %>" class="cta-btn free-btn" style="text-decoration:none;">
                             <i class="fa-solid fa-cloud-arrow-down"></i> Download Free
                         </a>
@@ -1049,18 +1394,21 @@ const isFree = Number(priceDetails.total) === 0;
 
                     <div class="divider"></div>
 
-                    <!-- Like + Share -->
+                    <!-- Action pills -->
                     <div class="action-row">
-                        <button class="action-pill" id="likeBtn" data-id="<%= file._id %>" data-count="<%= file.likes || 0 %>">
+                        <button class="action-pill" id="likeBtn"
+                                data-id="<%= file._id %>" data-count="<%= file.likes||0 %>">
                             <i class="fa-regular fa-heart"></i>
-                            <span id="likeCountLabel"><%= file.likes || 0 %></span>
+                            <span id="likeCountLabel"><%= file.likes||0 %></span>
                         </button>
-                        <div style="flex:1;display:flex;min-width:0;"><%- include("share") %></div>
+                        <div style="flex:1;display:flex;min-width:0;">
+                            <%- include("share") %>
+                        </div>
                     </div>
 
                     <div class="divider"></div>
 
-                    <!-- File specs -->
+                    <!-- Specs -->
                     <div class="specs-label">File details</div>
                     <ul class="specs-list">
                         <li class="spec-row">
@@ -1074,14 +1422,14 @@ const isFree = Number(priceDetails.total) === 0;
                             <div class="spec-icon-wrap"><i class="fa-solid fa-cloud-arrow-down"></i></div>
                             <div>
                                 <div class="spec-label">Downloads</div>
-                                <div class="spec-value"><%= (file.downloadCount || 0).toLocaleString() %></div>
+                                <div class="spec-value"><%= (file.downloadCount||0).toLocaleString() %></div>
                             </div>
                         </li>
                         <li class="spec-row">
                             <div class="spec-icon-wrap"><i class="fa-regular fa-file-code"></i></div>
                             <div>
                                 <div class="spec-label">Format</div>
-                                <div class="spec-value"><%= file.fileType || 'PDF' %></div>
+                                <div class="spec-value"><%= file.fileType||'PDF' %></div>
                             </div>
                         </li>
                         <li class="spec-row">
@@ -1096,18 +1444,18 @@ const isFree = Number(priceDetails.total) === 0;
             </div>
 
             <!-- SHARE CARD -->
-            <div class="share-card">
+            <div class="share-card reveal reveal-d1">
                 <div class="share-label">Share this file</div>
                 <div class="share-row">
-                    <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://vidyari.com/file/' + file.slug + '/' + file._id) %>&text=<%= encodeURIComponent(file.filename || '') %>"
+                    <a href="https://twitter.com/intent/tweet?url=<%= encodeURIComponent('https://vidyari.com/file/'+file.slug+'/'+file._id) %>&text=<%= encodeURIComponent(file.filename||'') %>"
                        target="_blank" class="share-pill">
                         <i class="fa-brands fa-x-twitter"></i> X
                     </a>
-                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= encodeURIComponent('https://vidyari.com/file/' + file.slug + '/' + file._id) %>"
+                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=<%= encodeURIComponent('https://vidyari.com/file/'+file.slug+'/'+file._id) %>"
                        target="_blank" class="share-pill">
                         <i class="fa-brands fa-linkedin-in"></i> LinkedIn
                     </a>
-                    <a href="https://wa.me/?text=<%= encodeURIComponent((file.filename || '') + ' - https://vidyari.com/file/' + file.slug + '/' + file._id) %>"
+                    <a href="https://wa.me/?text=<%= encodeURIComponent((file.filename||'')+' - https://vidyari.com/file/'+file.slug+'/'+file._id) %>"
                        target="_blank" class="share-pill">
                         <i class="fa-brands fa-whatsapp"></i> WhatsApp
                     </a>
@@ -1118,16 +1466,16 @@ const isFree = Number(priceDetails.total) === 0;
             </div>
 
         </aside>
+    </div>
+</div>
 
-    </div><!-- /main-grid -->
-</div><!-- /page-wrap -->
-
-<!-- MOBILE STICKY BAR -->
+<!-- MOBILE STICKY CTA -->
 <div class="mobile-cta-bar">
     <div class="mobile-cta-inner">
-        <% if (isFree) { %>
+        <% if(isFree){ %>
             <div class="mobile-price free">Free</div>
-            <a href="/download?file_id=<%= file._id %>" class="mobile-enroll-btn free-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+            <a href="/download?file_id=<%= file._id %>"
+               class="mobile-enroll-btn free-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
                 <i class="fa-solid fa-cloud-arrow-down"></i> Download Free
             </a>
         <% } else { %>
@@ -1149,7 +1497,7 @@ const isFree = Number(priceDetails.total) === 0;
 <div class="modal-veil" id="reviewModalVeil">
     <div class="review-modal" onclick="event.stopPropagation()">
         <div class="modal-title">Rate this Document</div>
-        <p class="modal-sub">Your review helps other students make better decisions.</p>
+        <p class="modal-sub">Your review helps other students make better choices.</p>
         <form id="reviewForm">
             <div class="modal-stars">
                 <input type="radio" name="rating" id="s5" value="5" required>
@@ -1163,11 +1511,11 @@ const isFree = Number(priceDetails.total) === 0;
                 <input type="radio" name="rating" id="s1" value="1">
                 <label for="s1">★</label>
             </div>
-            <input type="text" id="rvTitle" class="modal-input" placeholder="Review title" required>
-            <textarea id="rvText" class="modal-input" placeholder="What did you think? Was it helpful?" required></textarea>
+            <input type="text" id="rvTitle" class="modal-input" placeholder="Review title (e.g. Very helpful notes!)" required>
+            <textarea id="rvText" class="modal-input" placeholder="Share your experience. Was it helpful? Accurate?" required></textarea>
             <div class="modal-actions">
-                <button type="button" class="modal-cancel-btn" onclick="closeReviewModal()">Cancel</button>
-                <button type="submit" class="modal-submit-btn" id="rvSubmitBtn">Submit Review</button>
+                <button type="button" class="modal-cancel" onclick="closeReviewModal()">Cancel</button>
+                <button type="submit" class="modal-submit" id="rvSubmitBtn">Submit Review</button>
             </div>
         </form>
     </div>
@@ -1182,316 +1530,399 @@ const isFree = Number(priceDetails.total) === 0;
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-// Activity Tracker already loaded in header.ejs
+/* ════════════════════════════════════════════════════
+   VIDYARI · FILE PAGE SCRIPT — ENHANCED EDITION
+════════════════════════════════════════════════════ */
 const FILE_ID   = "<%= file._id %>";
 const FILE_NAME = "<%- (file.filename || 'Resource').replace(/"/g,'&quot;') %>";
 let   activeTotal = <%= priceDetails.total %>;
 
-// Wait for tracker to be ready, then initialize for this page
-if (typeof window.ActivityTracker_Instance !== 'undefined') {
-  console.log('📍 [file-details] Tracker found, initializing...');
-  window.ActivityTracker_Instance.init({ autoTrack: true });
-  console.log('✅ [file-details] Tracker initialized');
+/* ── Activity Tracker ── */
+if(typeof window.ActivityTracker_Instance !== 'undefined') {
+    window.ActivityTracker_Instance.init({ autoTrack:true });
 } else {
-  console.warn('⚠️  [file-details] Tracker not available yet, will retry...');
-  // Retry after short delay
-  setTimeout(() => {
-    if (typeof window.ActivityTracker_Instance !== 'undefined') {
-      console.log('📍 [file-details] Retrying tracker initialization...');
-      window.ActivityTracker_Instance.init({ autoTrack: true });
-    } else {
-      console.error('❌ [file-details] Tracker failed to initialize');
-    }
-  }, 500);
+    setTimeout(() => window.ActivityTracker_Instance?.init({ autoTrack:true }), 500);
 }
 
-/* ════════ ACTIVITY TRACKING ════════ */
-// Track downloads when user clicks download button
-document.addEventListener('click', (e) => {
-  const downloadBtn = e.target.closest('a[href*="/download"]');
-  if (downloadBtn && window.ActivityTracker_Instance) {
-    window.ActivityTracker_Instance.trackActivity({
-      activityType: 'file_download',
-      pageType: 'file',
-      fileId: FILE_ID,
-      elementClicked: 'download-btn',
-      metadata: { fileName: FILE_NAME }
+/* ══════════════════════════════════════════
+   SCROLL REVEAL — IntersectionObserver
+══════════════════════════════════════════ */
+const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if(e.isIntersecting) {
+            e.target.classList.add('in');
+            revealObs.unobserve(e.target);
+        }
     });
-    
-    // Track cart interaction (file added to cart/download)
-    window.ActivityTracker_Instance.trackCartInteraction('add', {
-      fileId: FILE_ID,
-      fileName: FILE_NAME,
-      price: activeTotal
-    });
-  }
-});
+}, { threshold:0.08, rootMargin:'0px 0px -36px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-// Track purchase/checkout button
-const payBtn = document.getElementById('payBtn');
-if (payBtn && window.ActivityTracker_Instance) {
-  payBtn.addEventListener('click', () => {
-    // Track checkout start for cart abandonment detection
-    window.ActivityTracker_Instance.trackCartInteraction('checkout_start', {
-      fileId: FILE_ID,
-      fileName: FILE_NAME,
-      amount: activeTotal
-    });
-    
-    window.ActivityTracker_Instance.trackActivity({
-      activityType: 'purchase_view',
-      pageType: 'file',
-      fileId: FILE_ID,
-      metadata: { fileName: FILE_NAME, amount: activeTotal }
-    });
-  });
-}
-
-// Track like button
-const likeBtn = document.getElementById('likeBtn');
-if (likeBtn && window.ActivityTracker_Instance) {
-  likeBtn.addEventListener('click', () => {
-    window.ActivityTracker_Instance.trackActivity({
-      activityType: 'click',
-      pageType: 'file',
-      fileId: FILE_ID,
-      elementClicked: 'like-btn',
-      metadata: { fileName: FILE_NAME }
-    });
-  });
-}
-
-// Track review modal open and review submissions
-const origOpenReviewModal = window.openReviewModal;
-window.openReviewModal = function() {
-  if (window.ActivityTracker_Instance) {
-    window.ActivityTracker_Instance.trackReviewInteraction(FILE_ID, 'view');
-  }
-  origOpenReviewModal?.call(this);
-};
-
-// Track review form submission
-const reviewForm = document.getElementById('reviewForm');
-if (reviewForm && window.ActivityTracker_Instance) {
-  reviewForm.addEventListener('submit', (e) => {
-    const ratingInput = reviewForm.querySelector('input[type="range"]');
-    const reviewText = reviewForm.querySelector('textarea');
-    
-    const rating = ratingInput ? parseInt(ratingInput.value) : null;
-    const text = reviewText ? reviewText.value : null;
-    
-    window.ActivityTracker_Instance.trackReviewInteraction(FILE_ID, 'submit', rating, text);
-  });
-}
-
-// Track category affinity when page loads
-if (window.ActivityTracker_Instance && typeof FILE_CATEGORY !== 'undefined') {
-  window.ActivityTracker_Instance.trackCategoryAffinity(FILE_CATEGORY, 0);
-}
-
-// Track helpful review clicks
-document.addEventListener('click', (e) => {
-  if (e.target.closest('.helpful-btn') && window.ActivityTracker_Instance) {
-    window.ActivityTracker_Instance.trackReviewInteraction(FILE_ID, 'helpful');
-  }
-});
-
-
-/* ════════ TOAST ════════ */
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
 function showToast(msg, type='success') {
     const el   = document.getElementById('vToast');
     const icon = el.querySelector('.toast-icon');
-    icon.className = `toast-icon ${type} ` + (type==='success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation');
+    icon.className = 'toast-icon ' + type + ' ' + {
+        success:'fa-solid fa-circle-check',
+        error:  'fa-solid fa-circle-exclamation',
+        info:   'fa-solid fa-circle-info'
+    }[type];
     document.getElementById('vToastText').textContent = msg;
     el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 4000);
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 4000);
 }
 
-/* ════════ IMAGE MODAL ════════ */
+/* ══════════════════════════════════════════
+   FAQ ACCORDION
+══════════════════════════════════════════ */
+function toggleFaq(btn) {
+    const item   = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if(!isOpen) item.classList.add('open');
+}
+
+/* ══════════════════════════════════════════
+   IMAGE MODAL
+══════════════════════════════════════════ */
 function openImgModal(src) {
     document.getElementById('imgModalSrc').src = src;
     document.getElementById('imgModalVeil').classList.add('open');
 }
 function closeImgModal() { document.getElementById('imgModalVeil').classList.remove('open'); }
 
-/* ════════ REVIEW MODAL ════════ */
+/* ══════════════════════════════════════════
+   REVIEW MODAL
+══════════════════════════════════════════ */
 function openReviewModal() { document.getElementById('reviewModalVeil').classList.add('open'); }
 function closeReviewModal() {
     document.getElementById('reviewModalVeil').classList.remove('open');
     document.getElementById('reviewForm').reset();
 }
 document.getElementById('reviewModalVeil').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeReviewModal();
+    if(e.target === e.currentTarget) closeReviewModal();
 });
 
-/* ════════ LIKE BUTTON ════════ */
-(function initLike() {
+/* ══════════════════════════════════════════
+   LIKE BUTTON
+══════════════════════════════════════════ */
+(function() {
     const btn    = document.getElementById('likeBtn');
-    if (!btn) return;
+    if(!btn) return;
     const fileId = btn.dataset.id;
-    let count    = parseInt(btn.dataset.count) || 0;
+    let   count  = parseInt(btn.dataset.count) || 0;
     const stored = JSON.parse(localStorage.getItem('vidyari_likes') || '{}');
-    let liked    = !!stored[fileId];
+    let   liked  = !!stored[fileId];
 
     const render = () => {
         btn.classList.toggle('liked', liked);
-        const icon = liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
-        btn.innerHTML = `<i class="${icon}"></i><span>${count}</span>`;
+        btn.innerHTML = `<i class="${liked?'fa-solid':'fa-regular'} fa-heart"></i><span>${count}</span>`;
     };
     render();
 
     btn.addEventListener('click', () => {
-        liked = !liked;
-        count += liked ? 1 : -1;
-        stored[fileId] = liked || undefined;
-        if (!liked) delete stored[fileId];
+        liked = !liked; count += liked ? 1 : -1;
+        if(!liked) delete stored[fileId]; else stored[fileId] = true;
         localStorage.setItem('vidyari_likes', JSON.stringify(stored));
         render();
-        fetch(`/files/impression/${fileId}/${liked ? 'like' : 'dislike'}`).catch(()=>{});
+        fetch(`/files/impression/${fileId}/${liked?'like':'dislike'}`).catch(()=>{});
+        window.ActivityTracker_Instance?.trackActivity({ activityType:'click', pageType:'file', fileId:FILE_ID, elementClicked:'like-btn' });
     });
 })();
 
-/* ════════ SHARE ════════ */
+/* ══════════════════════════════════════════
+   SHARE / COPY
+══════════════════════════════════════════ */
 function copyPageLink(e) {
     navigator.clipboard.writeText(location.href).then(() => {
-        const btn = e.currentTarget;
-        const orig = btn.innerHTML;
+        const btn  = e.currentTarget, orig = btn.innerHTML;
         btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-        setTimeout(() => btn.innerHTML = orig, 2000);
+        setTimeout(() => btn.innerHTML = orig, 2400);
+        showToast('Link copied to clipboard', 'success');
     });
 }
 
-/* ════════ COUPON ════════ */
+/* ══════════════════════════════════════════
+   COUPON — Enhanced feedback states
+══════════════════════════════════════════ */
 document.getElementById('couponApplyBtn')?.addEventListener('click', async () => {
-    const code = document.getElementById('couponInput').value.trim();
-    if (!code) return;
-    const btn = document.getElementById('couponApplyBtn');
+    const input = document.getElementById('couponInput');
+    const code  = input.value.trim();
+    if(!code) { showToast('Enter a promo code first.', 'info'); return; }
+
+    const btn  = document.getElementById('couponApplyBtn');
+    const wrap = document.getElementById('couponWrap');
+    const msg  = document.getElementById('couponMsg');
+
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    btn.disabled  = true;
+    wrap.classList.remove('valid','invalid');
+    msg.className  = 'coupon-msg';
+    msg.textContent = '';
 
     try {
         const res  = await fetch(`/check/coupon?fileId=${FILE_ID}&couponCode=${code}&quantity=1`);
         const data = await res.json();
-        if (data.valid) {
-            const p = data.priceDetails;
-            const saving = p.originalPrice - p.discountedPrice;
-            activeTotal  = p.total;
+
+        if(data.valid) {
+            const p       = data.priceDetails;
+            const saving  = p.originalPrice - p.discountedPrice;
+            activeTotal   = p.total;
+
+            /* Update totals */
             document.getElementById('finalTotal').textContent = `₹${p.total.toFixed(2)}`;
-            const mob = document.getElementById('mobileFinalPrice');
-            if (mob) mob.textContent = p.total.toFixed(0);
+            const mobPrice = document.getElementById('mobileFinalPrice');
+            if(mobPrice) mobPrice.textContent = p.total.toFixed(0);
+
+            /* Discount row */
             document.getElementById('discountRow').innerHTML = `
-                <div class="invoice-discount-row">
-                    <span><i class="fa-solid fa-tag" style="margin-right:6px;"></i>Promo Applied</span>
+                <div class="invoice-discount">
+                    <span><i class="fa-solid fa-tag" style="margin-right:6px"></i>Promo "<strong>${code}</strong>" applied</span>
                     <span>−₹${saving.toFixed(2)}</span>
                 </div>`;
-            showToast(`Code applied! Saved ₹${saving.toFixed(2)}`);
-            document.getElementById('couponInput').disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-            btn.disabled  = true;
+
+            /* Coupon wrap state */
+            wrap.classList.add('valid');
+            input.disabled = true;
+            btn.innerHTML  = '<i class="fa-solid fa-check"></i>';
+            btn.style.color = 'var(--green)';
+
+            /* Message */
+            msg.textContent = `✓ You saved ₹${saving.toFixed(2)}!`;
+            msg.className   = 'coupon-msg success show';
+
+            showToast(`Saved ₹${saving.toFixed(2)} with code "${code}"`, 'success');
         } else {
-            showToast(data.message || 'Invalid code.', 'error');
-            btn.textContent = 'Apply';
+            wrap.classList.add('invalid');
+            msg.textContent = data.message || 'Invalid promo code.';
+            msg.className   = 'coupon-msg error show';
+            showToast(data.message || 'Invalid promo code.', 'error');
+            btn.innerHTML   = 'Apply';
+            btn.disabled    = false;
+
+            /* Shake input */
+            input.style.animation = 'none';
+            setTimeout(() => { input.style.animation = 'shake .4s'; }, 10);
+            setTimeout(() => { wrap.classList.remove('invalid'); input.style.animation = ''; }, 1200);
         }
     } catch {
-        showToast('Server error.', 'error');
-        btn.textContent = 'Apply';
+        showToast('Server error. Try again.', 'error');
+        btn.innerHTML = 'Apply';
+        btn.disabled  = false;
     }
 });
 
-/* ════════ PAYMENT ════════ */
+/* ══════════════════════════════════════════
+   BUTTON RIPPLE EFFECT
+══════════════════════════════════════════ */
+document.querySelectorAll('.cta-btn, .mobile-enroll-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        const rect   = this.getBoundingClientRect();
+        const size   = Math.max(rect.width, rect.height);
+        const x      = e.clientX - rect.left - size / 2;
+        const y      = e.clientY - rect.top  - size / 2;
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.cssText = `width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    });
+});
+
+/* ══════════════════════════════════════════
+   CONFETTI ENGINE
+══════════════════════════════════════════ */
+function launchConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    canvas.classList.add('show');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx    = canvas.getContext('2d');
+    const colors = ['#1a56f0','#0b7a45','#e8811f','#e53e3e','#6ee7b7','#fbbf24','#a78bfa','#f9fafb'];
+
+    const pieces = Array.from({ length:130 }, () => ({
+        x:    Math.random() * canvas.width,
+        y:   -10 - Math.random() * 140,
+        r:    4 + Math.random() * 9,
+        c:    colors[Math.floor(Math.random() * colors.length)],
+        vx:   (Math.random() - 0.5) * 5,
+        vy:   2 + Math.random() * 4.5,
+        rot:  Math.random() * Math.PI * 2,
+        vr:   (Math.random() - 0.5) * 0.22,
+        alpha:1,
+        shape:Math.random() > 0.5 ? 'rect' : 'circle'
+    }));
+
+    let frame = 0, raf;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = 0;
+        pieces.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+            p.vy += 0.07; p.alpha -= 0.009;
+            if(p.y < canvas.height + 20 && p.alpha > 0) alive++;
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+            ctx.fillStyle = p.c;
+            if(p.shape === 'circle') {
+                ctx.beginPath(); ctx.arc(0, 0, p.r, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillRect(-p.r, -p.r * 0.45, p.r * 2, p.r * 0.9);
+            }
+            ctx.restore();
+        });
+        frame++;
+        if(alive > 0 && frame < 300) raf = requestAnimationFrame(draw);
+        else { canvas.classList.remove('show'); ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    }
+    draw();
+    setTimeout(() => { cancelAnimationFrame(raf); canvas.classList.remove('show'); }, 5500);
+}
+
+/* ══════════════════════════════════════════
+   CTA STATE HELPER
+══════════════════════════════════════════ */
+function setCTAState(btn, state, html) {
+    btn.className = 'cta-btn state-' + state;
+    btn.innerHTML = html;
+    btn.disabled  = (state !== 'idle');
+}
+
+/* ══════════════════════════════════════════
+   PAYMENT FLOW — Enhanced states
+══════════════════════════════════════════ */
 async function initiatePayment(btn) {
-    if (typeof Razorpay === 'undefined') { showToast('Payment gateway loading, please wait.', 'error'); return; }
-    const orig = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing…';
-    btn.disabled  = true;
+    if(typeof Razorpay === 'undefined') { showToast('Payment loading, please wait.', 'error'); return; }
+
+    setCTAState(btn, 'loading', '<i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Creating order…');
+    window.ActivityTracker_Instance?.trackCartInteraction('checkout_start', { fileId:FILE_ID, fileName:FILE_NAME, amount:activeTotal });
 
     try {
-        const res   = await fetch('/create-order', {
-            method: 'POST', headers: {'Content-Type':'application/json'}, credentials: 'include',
-            body: JSON.stringify({ fileId: FILE_ID, price: activeTotal, filename: FILE_NAME, couponCode: document.getElementById('couponInput')?.value.trim() || '' })
+        const res = await fetch('/create-order', {
+            method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+            body:JSON.stringify({ fileId:FILE_ID, price:activeTotal, filename:FILE_NAME, couponCode:document.getElementById('couponInput')?.value.trim() || '' })
         });
         const order = await res.json();
 
-        if (res.status === 401 || order.requiresLogin) { window.location.href = order.loginRedirectUrl || '/login'; return; }
-        if (!res.ok || !order.success) { btn.innerHTML = orig; btn.disabled = false; showToast(order.error || 'Order failed.', 'error'); return; }
+        if(res.status === 401 || order.requiresLogin) { window.location.href = order.loginRedirectUrl || '/login'; return; }
+
+        if(!res.ok || !order.success) {
+            setCTAState(btn, 'error', '<i class="fa-solid fa-circle-exclamation"></i>&nbsp; Order failed');
+            showToast(order.error || 'Order creation failed.', 'error');
+            setTimeout(() => { btn.className='cta-btn'; btn.innerHTML='<i class="fa-solid fa-lock"></i> Secure Checkout'; btn.disabled=false; }, 2200);
+            return;
+        }
+
+        /* Reset button for Razorpay modal */
+        btn.className = 'cta-btn'; btn.innerHTML = '<i class="fa-solid fa-lock"></i> Secure Checkout'; btn.disabled = false;
 
         const rzp = new Razorpay({
-            key: order.key, amount: order.amount, currency: 'INR',
-            name: 'Vidyari', image: 'https://www.vidyari.com/images/logo.svg',
-            description: FILE_NAME, order_id: order.order_id,
-            theme: { color: '#1a56f0' },
+            key:order.key, amount:order.amount, currency:'INR',
+            name:'Vidyari', image:'https://vidyari.com/images/logo.svg',
+            description:FILE_NAME, order_id:order.order_id,
+            theme:{ color:'#1a56f0' },
             handler: async function(resp) {
-                btn.innerHTML = '<i class="fa-solid fa-shield-check fa-fade"></i> Verifying…';
+                setCTAState(btn, 'verifying', '<i class="fa-solid fa-shield-halved fa-fade"></i>&nbsp; Verifying payment…');
                 try {
                     const vRes  = await fetch('/verify-payment', {
                         method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
-                        body: JSON.stringify({ razorpay_order_id: resp.razorpay_order_id, razorpay_payment_id: resp.razorpay_payment_id, razorpay_signature: resp.razorpay_signature, fileId: FILE_ID, totalprice: activeTotal })
+                        body:JSON.stringify({ razorpay_order_id:resp.razorpay_order_id, razorpay_payment_id:resp.razorpay_payment_id, razorpay_signature:resp.razorpay_signature, fileId:FILE_ID, totalprice:activeTotal })
                     });
                     const vData = await vRes.json();
-                    if (vRes.status === 401 || vData.requiresLogin) { window.location.href = vData.loginRedirectUrl || '/login'; return; }
-                    if (vData.success) {
-                        btn.innerHTML = '<i class="fa-solid fa-check"></i> Success!';
-                        btn.style.background = 'var(--green)';
-                        showToast('Payment successful!');
-                        setTimeout(() => window.location.href = vData.downloadUrl, 1200);
+                    if(vRes.status === 401 || vData.requiresLogin) { window.location.href = vData.loginRedirectUrl || '/login'; return; }
+
+                    if(vData.success) {
+                        setCTAState(btn, 'success', '<i class="fa-solid fa-check"></i>&nbsp; Payment Successful!');
+                        launchConfetti();
+                        setTimeout(() => {
+                            document.getElementById('successDownloadLink').href = vData.downloadUrl;
+                            document.getElementById('successOverlay').classList.add('show');
+                            setTimeout(() => window.location.href = vData.downloadUrl, 4800);
+                        }, 700);
+                        window.ActivityTracker_Instance?.trackCartInteraction('add', { fileId:FILE_ID, fileName:FILE_NAME, price:activeTotal });
                     } else throw new Error(vData.message || 'Verification failed.');
-                } catch (e) { showToast(e.message, 'error'); btn.innerHTML = orig; btn.disabled = false; btn.style.background = ''; }
+                } catch(e) {
+                    setCTAState(btn, 'error', '<i class="fa-solid fa-circle-exclamation"></i>&nbsp; Verification failed');
+                    showToast(e.message, 'error');
+                    setTimeout(() => { btn.className='cta-btn'; btn.innerHTML='<i class="fa-solid fa-lock"></i> Retry Checkout'; btn.disabled=false; }, 2500);
+                }
             },
-            modal: { ondismiss: () => { btn.innerHTML = orig; btn.disabled = false; } }
+            modal:{ ondismiss:() => {
+                btn.className='cta-btn'; btn.innerHTML='<i class="fa-solid fa-lock"></i> Secure Checkout'; btn.disabled=false;
+            }}
         });
         rzp.open();
-    } catch (e) { showToast('Connection error.', 'error'); btn.innerHTML = orig; btn.disabled = false; }
+    } catch(e) {
+        setCTAState(btn, 'error', '<i class="fa-solid fa-circle-exclamation"></i>&nbsp; Connection error');
+        showToast('Connection error. Please retry.', 'error');
+        setTimeout(() => { btn.className='cta-btn'; btn.innerHTML='<i class="fa-solid fa-lock"></i> Secure Checkout'; btn.disabled=false; }, 2500);
+    }
 }
 
 document.getElementById('payBtn')?.addEventListener('click', e => initiatePayment(e.currentTarget));
-document.getElementById('payBtnMobile')?.addEventListener('click', e => initiatePayment(document.getElementById('payBtn') || e.currentTarget));
+document.getElementById('payBtnMobile')?.addEventListener('click', () => {
+    const main = document.getElementById('payBtn');
+    if(main) initiatePayment(main);
+});
 
-/* ════════ REVIEWS ════════ */
+/* ══════════════════════════════════════════
+   REVIEWS
+══════════════════════════════════════════ */
 async function loadReviews() {
     const area = document.getElementById('reviewsArea');
     try {
         const res  = await fetch(`/api/file-reviews/file/${FILE_ID}`);
         const data = await res.json();
 
-        // Update rating display
-        if (data.averageRating) document.getElementById('avgRatingDisplay').textContent = `${data.averageRating.toFixed(1)} / 5.0`;
+        if(data.averageRating) {
+            document.getElementById('avgRatingDisplay').textContent = `${data.averageRating.toFixed(1)} / 5.0`;
+        }
 
-        const genStars = (n, cls='') => '★'.repeat(n) + `<span class="empty">${'★'.repeat(5-n)}</span>`;
+        const genStars = n => '★'.repeat(n) + `<span class="empty">${'★'.repeat(5-n)}</span>`;
 
-        if (data.count === 0) {
+        if(data.count === 0) {
             area.innerHTML = `
-                <div class="no-reviews-state">
+                <div class="no-reviews-box">
                     <i class="fa-regular fa-star"></i>
-                    <p style="font-weight:500;color:var(--ink);margin-bottom:6px;">No reviews yet</p>
-                    <p>Be the first to share your experience!</p>
-                    <button class="write-review-btn" style="margin:16px auto 0;display:inline-flex;" onclick="openReviewModal()">
+                    <p style="font-weight:600;color:var(--ink);margin-bottom:8px;">No reviews yet</p>
+                    <p style="color:var(--ink-3);font-size:.88rem;">Be the first to share your experience!</p>
+                    <button class="write-review-btn" style="margin:20px auto 0;display:inline-flex;" onclick="openReviewModal()">
                         <i class="fa-regular fa-pen-to-square"></i> Write a Review
                     </button>
                 </div>`;
             return;
         }
 
-        // Rating distribution
-        const maxC = Math.max(...Object.values(data.ratingDistribution), 1);
+        const maxC     = Math.max(...Object.values(data.ratingDistribution), 1);
         const distHTML = [5,4,3,2,1].map(s => `
             <div class="dist-row">
                 <span class="dist-label">${s} ★</span>
-                <div class="dist-track"><div class="dist-fill" style="width:${((data.ratingDistribution[s]||0)/maxC*100).toFixed(0)}%"></div></div>
+                <div class="dist-track">
+                    <div class="dist-fill" data-pct="${((data.ratingDistribution[s]||0)/maxC*100).toFixed(0)}"></div>
+                </div>
                 <span class="dist-count">${data.ratingDistribution[s]||0}</span>
             </div>`).join('');
 
-        const reviewsHTML = data.reviews.map(rv => `
-            <div class="review-item">
-                <div class="review-item-head">
-                    <div class="review-initials">${(rv.userId?.fullName||rv.userId?.username||'U').substring(0,2).toUpperCase()}</div>
+        const reviewsHTML = data.reviews.map((rv,i) => `
+            <div class="review-item" style="animation-delay:${i*0.07}s">
+                <div class="review-head">
+                    <div class="review-initials">
+                        ${(rv.userId?.fullName||rv.userId?.username||'U').substring(0,2).toUpperCase()}
+                    </div>
                     <div>
                         <div class="review-user-name">${rv.userId?.fullName||rv.userId?.username||'Anonymous'}</div>
-                        <div class="review-user-date">${new Date(rv.createdAt).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'})}</div>
+                        <div class="review-user-date">
+                            ${new Date(rv.createdAt).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'})}
+                        </div>
                     </div>
-                    <div class="review-item-stars">${genStars(rv.rating)}</div>
+                    <div class="review-stars">${genStars(rv.rating)}</div>
                 </div>
-                <div class="review-item-title">${rv.title||''}</div>
-                <div class="review-item-body">${rv.reviewText||''}</div>
-                <div class="review-helpful-row">
+                ${rv.title ? `<div class="review-title">${rv.title}</div>` : ''}
+                <div class="review-body">${rv.reviewText||''}</div>
+                <div class="helpful-row">
                     <span class="helpful-label">Was this helpful?</span>
                     <button class="helpful-btn" onclick="markHelpful('${rv._id}',this)">
                         <i class="fa-regular fa-thumbs-up"></i> ${rv.helpful||0}
@@ -1500,159 +1931,157 @@ async function loadReviews() {
             </div>`).join('');
 
         area.innerHTML = `
-            <div class="rating-summary-block">
-                <div>
+            <div class="rating-block">
+                <div class="rating-score">
                     <div class="rating-num">${data.averageRating.toFixed(1)}</div>
-                    <div class="rating-stars-row">${genStars(Math.round(data.averageRating))}</div>
-                    <div class="rating-count-label">${data.count} reviews</div>
+                    <div class="rating-stars">${genStars(Math.round(data.averageRating))}</div>
+                    <div class="rating-count">${data.count} review${data.count!==1?'s':''}</div>
                 </div>
-                <div class="rating-dist">${distHTML}</div>
+                <div class="dist-bars">${distHTML}</div>
             </div>
             <button class="write-review-btn" onclick="openReviewModal()">
                 <i class="fa-regular fa-pen-to-square"></i> Write a Review
             </button>
             <div class="review-list">${reviewsHTML}</div>`;
+
+        /* Animate dist bars after paint */
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                area.querySelectorAll('.dist-fill').forEach(el => {
+                    el.style.width = el.dataset.pct + '%';
+                });
+            }, 100);
+        });
+
     } catch {
-        area.innerHTML = '<p style="color:var(--ink-3);font-size:0.875rem;">Unable to load reviews.</p>';
+        area.innerHTML = '<p style="color:var(--ink-3);font-size:.875rem;padding:8px 0;">Unable to load reviews right now.</p>';
     }
 }
 
 async function markHelpful(id, btn) {
     try {
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         const res = await fetch(`/api/file-reviews/${id}/helpful`, { method:'POST', headers:{'Content-Type':'application/json'} });
-        if (res.ok) { btn.classList.add('active'); loadReviews(); }
+        if(res.ok) {
+            btn.classList.add('active');
+            showToast('Marked as helpful!', 'success');
+            loadReviews();
+        }
     } catch {}
 }
 
 document.getElementById('reviewForm').addEventListener('submit', async e => {
     e.preventDefault();
     const rating = document.querySelector('input[name="rating"]:checked')?.value;
-    if (!rating) { showToast('Please select a rating.', 'error'); return; }
-    const title = document.getElementById('rvTitle').value.trim();
-    const text  = document.getElementById('rvText').value.trim();
-    const btn   = document.getElementById('rvSubmitBtn');
+    if(!rating) { showToast('Please select a star rating.', 'error'); return; }
+    const btn = document.getElementById('rvSubmitBtn');
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting…';
     btn.disabled  = true;
     try {
         const res  = await fetch('/api/file-reviews/submit', {
             method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ fileId: FILE_ID, rating: +rating, title, reviewText: text })
+            body:JSON.stringify({ fileId:FILE_ID, rating:+rating, title:document.getElementById('rvTitle').value.trim(), reviewText:document.getElementById('rvText').value.trim() })
         });
         const data = await res.json();
-        if (res.ok) {
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> Submitted!';
+        if(res.ok) {
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Thank you!';
             btn.style.background = 'var(--green)';
-            showToast('Review submitted! Thank you.');
-            setTimeout(() => { closeReviewModal(); loadReviews(); }, 1500);
+            showToast('Review submitted! Thank you 🎉');
+            setTimeout(() => { closeReviewModal(); loadReviews(); }, 1600);
         } else {
             showToast(data.message || 'Submission failed.', 'error');
             btn.innerHTML = 'Submit Review'; btn.disabled = false; btn.style.background = '';
         }
-    } catch { showToast('Error. Try again.', 'error'); btn.innerHTML = 'Submit Review'; btn.disabled = false; }
+    } catch {
+        showToast('Error. Please try again.', 'error');
+        btn.innerHTML = 'Submit Review'; btn.disabled = false;
+    }
 });
 
-/* ════════ RELATED FILES ════════ */
+/* ══════════════════════════════════════════
+   RELATED FILES
+══════════════════════════════════════════ */
 async function loadRelated() {
     const area = document.getElementById('relatedArea');
-    if (!area) return;
-
-    // 1. Show Premium Skeleton Loaders initially
-    area.innerHTML = `
-        <div class="related-grid-container">
-            <div class="related-author-section">
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card" style="display:none;" media="(min-width: 768px)"></div>
-            </div>
-        </div>
-    `;
-
+    if(!area) return;
     try {
-        const res = await fetch(`/products/related?fileId=${FILE_ID}`);
-        if (!res.ok) throw new Error('Failed to fetch');
+        const res  = await fetch(`/products/related?fileId=${FILE_ID}`);
+        if(!res.ok) throw new Error();
         const docs = await res.json();
 
-        // 2. Empty State
-        if (!docs?.length) {
+        if(!docs?.length) {
             area.innerHTML = `
-                <div style="text-align:center;padding:40px 20px;">
-                    <i class="fa-solid fa-layer-group" style="font-size:2.5rem;color:var(--rule);margin-bottom:12px;display:block;"></i>
-                    <p style="color:var(--ink-3);font-size:0.95rem;margin:0;">No similar resources found yet.</p>
+                <div style="text-align:center;padding:44px 20px;">
+                    <i class="fa-solid fa-layer-group" style="font-size:2.5rem;color:var(--rule);margin-bottom:14px;display:block;"></i>
+                    <p style="color:var(--ink-3);font-size:.9rem;">No similar resources found yet.</p>
                 </div>`;
             return;
         }
 
-        // 3. Group by author
         const groups = {};
         docs.forEach(d => {
-            const author = d.user || 'Vidyari Creator';
-            if (!groups[author]) groups[author] = [];
-            groups[author].push(d);
+            const a = d.user || 'Vidyari Creator';
+            if(!groups[a]) groups[a] = [];
+            groups[a].push(d);
         });
 
-        // 4. Render Layout
-        area.innerHTML = `
-            <div class="related-grid-container">
-                ${Object.entries(groups).map(([author, files]) => `
-                    <div>
-                        <h3 class="related-author-label">Created by ${author}</h3>
-                        <div class="related-author-section">
-                            ${files.map(f => {
-                                const isFree = f.price === 0 || f.price === '0';
-                                const rating = (f.rating || 4.8).toFixed(1);
-                                const downloads = f.downloadCount || 0;
-                                const downDisplay = downloads > 1000 ? (downloads/1000).toFixed(1) + 'k' : downloads;
-                                
-                                return `
-                                    <a href="/file/${f.slug || f._id}/${f._id}" class="related-item">
-                                        <div class="related-item-thumb">
-                                            <img src="${f.previewUrl || '/images/File_Demo.svg'}" alt="${f.filename}" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
-                                            <span class="related-item-badge ${isFree ? 'free' : ''}">
-                                                ${isFree ? 'Free' : 'Premium'}
-                                            </span>
-                                        </div>
-                                        
-                                        <div class="related-item-content">
-                                            <div class="related-item-name">${f.filename}</div>
-                                            <div class="related-item-author">
-                                                <i class="fa-solid fa-circle-user"></i> ${author}
-                                            </div>
-                                            
-                                            <div class="related-item-stats">
-                                                <div class="related-item-price ${isFree ? 'free' : ''}">
-                                                    ${isFree ? 'Free' : '₹' + f.price}
-                                                </div>
-                                                <div class="related-item-metrics">
-                                                    <span title="Rating"><i class="fa-solid fa-star" style="color:var(--amber)"></i> ${rating}</span>
-                                                    <span title="Downloads"><i class="fa-solid fa-cloud-arrow-down"></i> ${downDisplay}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </a>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        area.innerHTML = Object.entries(groups).map(([author, files]) => `
+            <div class="related-group">
+                <h3 class="related-group-label">Created by ${author}</h3>
+                <div class="related-grid">
+                    ${files.map((f,i) => {
+                        const free    = f.price===0||f.price==='0';
+                        const rating  = (f.rating||4.8).toFixed(1);
+                        const dl      = f.downloadCount||0;
+                        const dlDisp  = dl > 999 ? (dl/1000).toFixed(1)+'k' : dl;
+                        return `
+                        <a href="/file/${f.slug||f._id}/${f._id}" class="rel-card" style="animation-delay:${i*.08}s">
+                            <div class="rel-thumb">
+                                <img src="${f.previewUrl||'/images/File_Demo.svg'}" alt="${f.filename}" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
+                                <span class="rel-badge ${free?'free':''}">${free?'Free':'Premium'}</span>
+                            </div>
+                            <div class="rel-body">
+                                <div class="rel-name">${f.filename}</div>
+                                <div class="rel-author"><i class="fa-solid fa-circle-user"></i> ${author}</div>
+                                <div class="rel-footer">
+                                    <div class="rel-price ${free?'free':''}">${free?'Free':'₹'+f.price}</div>
+                                    <div class="rel-meta">
+                                        <span><i class="fa-solid fa-star"></i> ${rating}</span>
+                                        <span><i class="fa-solid fa-cloud-arrow-down"></i> ${dlDisp}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>`;
+                    }).join('')}
+                </div>
+            </div>`).join('');
 
-    } catch (err) {
-        console.error('Error loading related:', err);
+    } catch {
         area.innerHTML = `
-            <div style="text-align:center;padding:40px 20px;color:var(--ink-3);">
-                <i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;color:var(--rule);margin-bottom:12px;display:block;"></i>
-                <p>Unable to load suggestions right now.</p>
+            <div style="text-align:center;padding:32px 20px;color:var(--ink-3);">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;margin-bottom:12px;display:block;color:var(--rule);"></i>
+                <p style="font-size:.88rem;">Unable to load suggestions right now.</p>
             </div>`;
     }
 }
 
-/* ════════ ADSENSE ════════ */
+/* ── Adsense ── */
 try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch {}
 
-/* ── INIT ── */
-document.addEventListener('DOMContentLoaded', () => { loadReviews(); loadRelated(); });
+/* ── Activity: downloads & reviews ── */
+document.addEventListener('click', e => {
+    if(!window.ActivityTracker_Instance) return;
+    if(e.target.closest('a[href*="/download"]'))
+        window.ActivityTracker_Instance.trackActivity({ activityType:'file_download', pageType:'file', fileId:FILE_ID, elementClicked:'download-btn', metadata:{fileName:FILE_NAME} });
+    if(e.target.closest('.helpful-btn'))
+        window.ActivityTracker_Instance.trackReviewInteraction(FILE_ID, 'helpful');
+});
+
+/* ── Init ── */
+document.addEventListener('DOMContentLoaded', () => {
+    loadReviews();
+    loadRelated();
+});
 </script>
 </body>
 </html>
