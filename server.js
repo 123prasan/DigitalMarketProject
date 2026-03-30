@@ -3241,12 +3241,25 @@ app.get("/sitemap.xml", async (req, res) => {
     // Static pages with high priority
     const staticPages = [
       { url: "/", priority: "1.0", changefreq: "daily" },
+      { url: "/documents", priority: "0.95", changefreq: "daily" },
       { url: "/courses", priority: "0.9", changefreq: "daily" },
       { url: "/pricing", priority: "0.8", changefreq: "weekly" },
-      { url: "/About", priority: "0.7", changefreq: "monthly" },
-      { url: "/contact", priority: "0.7", changefreq: "monthly" },
-      { url: "/privacy-policy", priority: "0.5", changefreq: "yearly" },
-      { url: "/terms-and-conditions", priority: "0.5", changefreq: "yearly" },
+      { url: "/about", priority: "0.7", changefreq: "monthly" },
+      { url: "/contact", priority: "0.8", changefreq: "monthly" },
+      { url: "/help", priority: "0.7", changefreq: "monthly" },
+      // Legal & Policy Pages
+      { url: "/privacy-policy", priority: "0.6", changefreq: "yearly" },
+      { url: "/terms&conditions", priority: "0.6", changefreq: "yearly" },
+      { url: "/refundpolicy", priority: "0.6", changefreq: "yearly" },
+      { url: "/refund-policy", priority: "0.6", changefreq: "yearly" },
+      { url: "/payment-terms", priority: "0.5", changefreq: "yearly" },
+      { url: "/return-cancellation", priority: "0.5", changefreq: "yearly" },
+      { url: "/disclaimer", priority: "0.5", changefreq: "yearly" },
+      { url: "/acceptable-use", priority: "0.6", changefreq: "yearly" },
+      { url: "/intellectual-property", priority: "0.5", changefreq: "yearly" },
+      // Help & Support Pages
+      { url: "/help/user/vidyari-guid", priority: "0.6", changefreq: "monthly" },
+      { url: "/help/user/dashboard", priority: "0.6", changefreq: "monthly" },
     ];
 
     staticPages.forEach((page) => {
