@@ -9,12 +9,18 @@ const authenticateJWT_user = async (req, res, next) => {
   try {
     let token;
 
-    // Check Authorization header or cookies
+    // Check Authorization header
     const authHeader = req.header("Authorization");
     if (authHeader?.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
-    } else if (req.cookies?.token) {
+    }
+
+    // Check both cookies to be safe
+    if (!token && req.cookies?.token) {
       token = req.cookies.token;
+    }
+    if (!token && req.cookies?.jwt) {
+      token = req.cookies.jwt;
     }
 
     if (!token) {
@@ -29,15 +35,8 @@ const authenticateJWT_user = async (req, res, next) => {
     const user = await User.findById(payload.userId).select("-password");
     req.user = user || null;
 
-    if (req.user) {
-      console.log("User authenticated:", req.user._id.toString());
-    } else {
-      console.log("Token valid, but user not found");
-    }
-
     next();
   } catch (err) {
-    console.error("Optional Auth Error:", err.message);
     req.user = null; // Invalid token → guest
     next();
   }

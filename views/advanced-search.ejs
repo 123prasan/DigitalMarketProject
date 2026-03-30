@@ -1,0 +1,809 @@
+<%- include("header") %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Search - Vidyari Marketplace</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #1a56db;
+            --ink: #1a1a1a;
+            --ink-3: #666666;
+            --rule: #e5e5e5;
+            --rule-light: #f5f5f5;
+            --green: #10b981;
+            --amber: #f59e0b;
+            --r-lg: 12px;
+            --r-xl: 16px;
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background: #f9f9f9;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .search-header {
+            background: linear-gradient(135deg, #1a56db 0%, #06b6d4 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 32px;
+        }
+
+        .search-header h1 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .search-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        /* SIDEBAR FILTERS */
+        .filters-panel {
+            background: white;
+            border-radius: var(--r-xl);
+            padding: 20px;
+            height: fit-content;
+            box-shadow: var(--shadow-xs);
+            border: 1px solid var(--rule);
+        }
+
+        .filters-panel h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--ink);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--rule-light);
+        }
+
+        .filter-group:last-child {
+            border-bottom: none;
+        }
+
+        .filter-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .filter-checkbox,
+        .filter-radio {
+            margin-right: 8px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--ink-3);
+        }
+
+        .checkbox-item:hover,
+        .radio-item:hover {
+            color: var(--ink);
+        }
+
+        .price-slider {
+            margin-top: 12px;
+        }
+
+        .price-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .price-inputs input {
+            padding: 8px;
+            border: 1px solid var(--rule);
+            border-radius: var(--r-lg);
+            font-size: 0.9rem;
+        }
+
+        .clear-filters {
+            background: none;
+            border: 1px solid var(--rule);
+            color: var(--ink-3);
+            padding: 8px 16px;
+            border-radius: var(--r-lg);
+            cursor: pointer;
+            font-size: 0.9rem;
+            width: 100%;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .clear-filters:hover {
+            background: var(--rule-light);
+            color: var(--ink);
+        }
+
+        /* MAIN RESULTS */
+        .results-section {
+            background: white;
+            border-radius: var(--r-xl);
+            padding: 24px;
+            box-shadow: var(--shadow-xs);
+            border: 1px solid var(--rule);
+        }
+
+        .results-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .results-count {
+            font-size: 0.9rem;
+            color: var(--ink-3);
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            border: 1px solid var(--rule);
+            border-radius: var(--r-lg);
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+            color: var(--ink);
+        }
+
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .filter-tag {
+            background: var(--rule-light);
+            border: 1px solid var(--rule);
+            padding: 6px 12px;
+            border-radius: var(--r-lg);
+            font-size: 0.85rem;
+            color: var(--ink-3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-tag button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--ink-3);
+            padding: 0;
+            font-size: 0.8rem;
+        }
+
+        .filter-tag button:hover {
+            color: var(--ink);
+        }
+
+        /* RESULTS GRID */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .result-card {
+            background: white;
+            border: 1px solid var(--rule);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(26, 86, 240, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .result-thumb {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: var(--rule-light);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .result-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .result-type-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .result-info {
+            padding: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--ink-3);
+            margin-bottom: 8px;
+        }
+
+        .result-rating {
+            color: var(--amber);
+            font-size: 0.8rem;
+        }
+
+        .result-price {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: auto;
+        }
+
+        .result-price.free {
+            color: var(--green);
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--rule);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--ink-3);
+            margin: 0;
+        }
+
+        /* PAGINATION */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 32px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--rule);
+            background: white;
+            color: var(--ink);
+            border-radius: var(--r-lg);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover {
+            background: var(--rule-light);
+        }
+
+        .pagination-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* SAVED SEARCHES */
+        .saved-searches {
+            background: var(--rule-light);
+            padding: 16px;
+            border-radius: var(--r-lg);
+            margin-bottom: 20px;
+        }
+
+        .saved-searches h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin-bottom: 12px;
+        }
+
+        .saved-search-btn {
+            display: inline-block;
+            background: white;
+            border: 1px solid var(--rule);
+            padding: 6px 12px;
+            border-radius: var(--r-lg);
+            font-size: 0.8rem;
+            color: var(--ink-3);
+            cursor: pointer;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .saved-search-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-panel {
+                position: sticky;
+                top: 20px;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .search-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- SEARCH HEADER -->
+    <div class="search-header">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 20px;">
+            <h1><i class="fa-solid fa-magnifying-glass"></i> Advanced Search</h1>
+            <p style="margin: 0; opacity: 0.9;">Find exactly what you're looking for</p>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <!-- FILTERS SIDEBAR -->
+        <aside class="filters-panel">
+            <h3><i class="fa-solid fa-sliders"></i> Filters</h3>
+
+            <!-- SEARCH INPUT -->
+            <div class="filter-group">
+                <input type="text" id="searchInput" placeholder="Search anything..." 
+                       style="width: 100%; padding: 10px; border: 1px solid var(--rule); border-radius: var(--r-lg); font-size: 0.9rem;">
+                <div id="searchSuggestions" style="display: none; position: absolute; background: white; border: 1px solid var(--rule); border-radius: var(--r-lg); width: 240px; max-height: 200px; overflow-y: auto; margin-top: 4px; z-index: 10;"></div>
+            </div>
+
+            <!-- ASSET TYPE -->
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-box"></i> Asset Type</label>
+                <label class="radio-item">
+                    <input type="radio" name="assetType" value="all" class="filter-radio" checked>
+                    All Items
+                </label>
+                <label class="radio-item">
+                    <input type="radio" name="assetType" value="files" class="filter-radio">
+                    Files Only
+                </label>
+                <label class="radio-item">
+                    <input type="radio" name="assetType" value="courses" class="filter-radio">
+                    Courses Only
+                </label>
+            </div>
+
+            <!-- CATEGORIES -->
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-tag"></i> Category</label>
+                <div id="categoryFilter"></div>
+            </div>
+
+            <!-- PRICE RANGE -->
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-tag"></i> Price Range</label>
+                <div class="price-inputs">
+                    <input type="number" id="priceMin" placeholder="Min" value="0">
+                    <input type="number" id="priceMax" placeholder="Max" value="10000">
+                </div>
+            </div>
+
+            <!-- RATING -->
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-star"></i> Minimum Rating</label>
+                <div id="ratingFilter"></div>
+            </div>
+
+            <!-- DATE RANGE -->
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-calendar"></i> Date Added</label>
+                <select id="dateRange" style="width: 100%; padding: 8px; border: 1px solid var(--rule); border-radius: var(--r-lg);">
+                    <option value="all">All Time</option>
+                    <option value="week">Past Week</option>
+                    <option value="month">Past Month</option>
+                    <option value="3months">Past 3 Months</option>
+                    <option value="6months">Past 6 Months</option>
+                    <option value="year">Past Year</option>
+                </select>
+            </div>
+
+            <!-- CLEAR FILTERS -->
+            <button class="clear-filters" onclick="clearFilters()">
+                <i class="fa-solid fa-redo"></i> Clear All Filters
+            </button>
+        </aside>
+
+        <!-- MAIN RESULTS -->
+        <div class="results-section">
+            <!-- SAVED SEARCHES -->
+            <div id="savedSearchesContainer" style="display: none;" class="saved-searches">
+                <h4><i class="fa-solid fa-heart"></i> Your Saved Searches</h4>
+                <div id="savedSearchesList"></div>
+            </div>
+
+            <!-- RESULTS TOOLBAR -->
+            <div class="results-toolbar">
+                <div class="results-count">Found <span id="resultCount">0</span> results</div>
+                <select id="sortBy" class="sort-select" onchange="performSearch()">
+                    <option value="relevance">Most Relevant</option>
+                    <option value="newest">Newest First</option>
+                    <option value="trending">Trending</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                </select>
+            </div>
+
+            <!-- ACTIVE FILTERS DISPLAY -->
+            <div id="activeFilters" class="active-filters"></div>
+
+            <!-- RESULTS GRID -->
+            <div id="resultsGrid" class="results-grid">
+                <div class="empty-state">
+                    <i class="fa-solid fa-search"></i>
+                    <h3>Start Searching</h3>
+                    <p>Enter a search term to find files and courses</p>
+                </div>
+            </div>
+
+            <!-- PAGINATION -->
+            <div id="paginationContainer" class="pagination-container"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let filterOptions = {};
+        let currentPage = 1;
+        const resultsPerPage = 12;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadFilterOptions();
+            loadSavedSearches();
+            setupEventListeners();
+        });
+
+        async function loadFilterOptions() {
+            try {
+                const res = await fetch('/api/search/filters-options');
+                filterOptions = await res.json();
+                renderFilters();
+            } catch (error) {
+                console.error('Error loading filters:', error);
+            }
+        }
+
+        function renderFilters() {
+            // Categories
+            const categoryContainer = document.getElementById('categoryFilter');
+            categoryContainer.innerHTML = filterOptions.categories?.map(cat => `
+                <label class="checkbox-item">
+                    <input type="checkbox" class="filter-checkbox" name="category" value="${cat}">
+                    ${cat}
+                </label>
+            `).join('') || '';
+
+            // Ratings
+            const ratingContainer = document.getElementById('ratingFilter');
+            ratingContainer.innerHTML = filterOptions.ratings?.map(rating => `
+                <label class="checkbox-item">
+                    <input type="checkbox" class="filter-checkbox" name="rating" value="${rating}">
+                    ${rating} <i class="fa-solid fa-star" style="color: var(--amber); margin-left: 4px;"></i> & up
+                </label>
+            `).join('') || '';
+        }
+
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', debounce(async (e) => {
+                if (e.target.value.length >= 2) {
+                    const res = await fetch(`/api/search/suggestions?q=${encodeURIComponent(e.target.value)}`);
+                    const data = await res.json();
+                    showSuggestions(data.suggestions, e.target.value);
+                } else {
+                    document.getElementById('searchSuggestions').style.display = 'none';
+                }
+            }, 300));
+
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    currentPage = 1;
+                    performSearch();
+                }
+            });
+
+            // Filter changes
+            document.querySelectorAll('.filter-checkbox, .filter-radio').forEach(filter => {
+                filter.addEventListener('change', () => {
+                    currentPage = 1;
+                    performSearch();
+                });
+            });
+
+            document.getElementById('priceMin').addEventListener('change', () => {
+                currentPage = 1;
+                performSearch();
+            });
+
+            document.getElementById('priceMax').addEventListener('change', () => {
+                currentPage = 1;
+                performSearch();
+            });
+
+            document.getElementById('dateRange').addEventListener('change', () => {
+                currentPage = 1;
+                performSearch();
+            });
+        }
+
+        function showSuggestions(suggestions, query) {
+            const container = document.getElementById('searchSuggestions');
+            if (suggestions.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = suggestions.map(s => `
+                <div style="padding: 10px; border-bottom: 1px solid var(--rule); cursor: pointer;" onclick="selectSuggestion('${s.text.replace(/'/g, "\\'")}')">
+                    <small style="color: var(--ink-3);">${s.category}</small><br>
+                    <strong>${s.text}</strong>
+                </div>
+            `).join('');
+            container.style.display = 'block';
+        }
+
+        function selectSuggestion(text) {
+            document.getElementById('searchInput').value = text;
+            document.getElementById('searchSuggestions').style.display = 'none';
+            currentPage = 1;
+            performSearch();
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            const categories = [...document.querySelectorAll('input[name="category"]:checked')].map(c => c.value);
+            const priceMin = document.getElementById('priceMin').value;
+            const priceMax = document.getElementById('priceMax').value;
+            const minRating = Math.max(...[...document.querySelectorAll('input[name="rating"]:checked')].map(r => parseFloat(r.value)), 0);
+            const sortBy = document.getElementById('sortBy').value;
+            const assetType = document.querySelector('input[name="assetType"]:checked').value;
+            const dateRange = document.getElementById('dateRange').value;
+
+            const params = new URLSearchParams({
+                q: query,
+                category: categories,
+                priceMin,
+                priceMax,
+                minRating,
+                sortBy,
+                assetType,
+                dateRange,
+                page: currentPage,
+                limit: resultsPerPage
+            });
+
+            try {
+                const res = await fetch(`/api/search/advanced?${params}`);
+                const data = await res.json();
+                displayResults(data);
+                updateActiveFilters(data.filters, query);
+            } catch (error) {
+                console.error('Search error:', error);
+            }
+        }
+
+        function displayResults(data) {
+            const grid = document.getElementById('resultsGrid');
+            const count = document.getElementById('resultCount');
+
+            count.textContent = data.pagination.total;
+
+            if (data.results.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fa-solid fa-inbox"></i>
+                        <h3>No Results Found</h3>
+                        <p>Try adjusting your filters or search terms</p>
+                    </div>
+                `;
+                document.getElementById('paginationContainer').innerHTML = '';
+                return;
+            }
+
+            grid.innerHTML = data.results.map(result => `
+                <a href="/file/${result._id}/${result._id}" class="result-card">
+                    <div class="result-thumb">
+                        <img src="${result.image || '/images/File_Demo.svg'}" alt="${result.title}" onerror="this.src='/images/File_Demo.svg'">
+                        <div class="result-type-badge">${result.type}</div>
+                    </div>
+                    <div class="result-info">
+                        <div class="result-title">${result.title}</div>
+                        <div class="result-meta">
+                            <span class="result-rating"><i class="fa-solid fa-star"></i> ${result.rating || 0}</span>
+                            <span>${result.interest || 0} interest</span>
+                        </div>
+                        <div class="result-price ${result.price === 0 ? 'free' : ''}">
+                            ${result.price === 0 ? 'Free' : '₹' + result.price}
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+
+            // Pagination
+            renderPagination(data.pagination);
+        }
+
+        function renderPagination(pagination) {
+            const container = document.getElementById('paginationContainer');
+            if (pagination.pages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            if (currentPage > 1) {
+                html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})"><i class="fa-solid fa-arrow-left"></i></button>`;
+            }
+
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(pagination.pages, currentPage + 2); i++) {
+                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+
+            if (currentPage < pagination.pages) {
+                html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})"><i class="fa-solid fa-arrow-right"></i></button>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            performSearch();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateActiveFilters(filters, query) {
+            const container = document.getElementById('activeFilters');
+            const tags = [];
+
+            if (query) tags.push({ label: `"${query}"`, clear: () => { document.getElementById('searchInput').value = ''; performSearch(); } });
+            if (filters.category?.length) tags.push({ label: `${filters.category.join(', ')}`, clear: () => { document.querySelectorAll('input[name="category"]').forEach(c => c.checked = false); performSearch(); } });
+            if (filters.minRating) tags.push({ label: `${filters.minRating}⭐+`, clear: () => { document.querySelectorAll('input[name="rating"]').forEach(c => c.checked = false); performSearch(); } });
+            if (filters.assetType !== 'all') tags.push({ label: filters.assetType, clear: () => { document.querySelector('input[value="all"]').checked = true; performSearch(); } });
+            if (filters.dateRange !== 'all') tags.push({ label: filters.dateRange, clear: () => { document.getElementById('dateRange').value = 'all'; performSearch(); } });
+
+            container.innerHTML = tags.map(tag => `
+                <div class="filter-tag">
+                    ${tag.label}
+                    <button onclick="this.closest('.active-filters').querySelectorAll('button').forEach((b, i) => { if (i === ${tags.indexOf(tag)}) b.click(); })">✕</button>
+                </div>
+            `).join('');
+        }
+
+        async function loadSavedSearches() {
+            try {
+                const res = await fetch('/api/search/saved');
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.searches?.length) {
+                    const container = document.getElementById('savedSearchesContainer');
+                    const list = document.getElementById('savedSearchesList');
+                    list.innerHTML = data.searches.map(s => `
+                        <button class="saved-search-btn" onclick="loadSearch('${s.query.replace(/'/g, "\\'")}')">
+                            ${s.searchName}
+                        </button>
+                    `).join('');
+                    container.style.display = 'block';
+                }
+            } catch (error) {
+                console.log('Not logged in or no saved searches');
+            }
+        }
+
+        function loadSearch(query) {
+            document.getElementById('searchInput').value = query;
+            currentPage = 1;
+            performSearch();
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.filter-checkbox').forEach(c => c.checked = false);
+            document.querySelectorAll('.filter-radio').forEach(r => r.checked = r.value === 'all');
+            document.getElementById('priceMin').value = '0';
+            document.getElementById('priceMax').value = '10000';
+            document.getElementById('dateRange').value = 'all';
+            document.getElementById('sortBy').value = 'relevance';
+            currentPage = 1;
+            performSearch();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+    </script>
+</body>
+</html>

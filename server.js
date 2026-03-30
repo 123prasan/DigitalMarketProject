@@ -14,6 +14,8 @@ const crypto = require("crypto");
 const path = require("path");
 const Order = require("./models/Order");
 const { fileroute } = require("./fileupload.js");
+const compression = require("compression");
+const helmet = require("helmet");
 
 const { authRouter } = require("./routes/authentication/googleAuth");
 // const pdfPoppler = require("pdf-poppler"); // Commented out in original, remains commented
@@ -330,13 +332,147 @@ wss.on('connection', (ws) => {
 // Make sure you have your standard middleware here
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// ========== SEO & SECURITY HEADERS ==========
+// Add security headers with Helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "https://cdn.jsdelivr.net", "https://cdn.tailwindcss.com", "https://cdn.quilljs.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
+      scriptSrcElem: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net", "https://cdn.jsdelivr.net", "https://cdn.tailwindcss.com", "https://cdn.quilljs.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://cdn.quilljs.com"],
+      styleSrcElem: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com", "https://cdn.quilljs.com"],
+      imgSrc: ["'self'", "data:", "https:", "https://d3tonh6o5ach9f.cloudfront.net", "https://d3epchi0htsp3c.cloudfront.net", "https://d2q25uqlym20sh.cloudfront.net"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
+      connectSrc: ["'self'", "https://www.google-analytics.com", "https://www.googletagmanager.com", "https://cdn.jsdelivr.net", "https://cdnjs.cloudflare.com"],
+    },
+  },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  frameguard: { action: 'deny' },
+  noSniff: true,
+  xssFilter: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
+}));
+
+// Compression middleware
+app.use(compression({
+  level: 6,
+  threshold: 1000,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
+
+// Cache control middleware
+app.use((req, res, next) => {
+  // Static assets - cache for 1 year
+  if (req.path.match(/\.(jpg|jpeg|png|gif|css|js|woff|woff2|ttf|eot|svg)$/i)) {
+    res.set('Cache-Control', 'public, max-age=31536000, immutable');
+    return next();
+  }
+  
+  // Course and file pages - cache for 1 hour
+  if (req.path.match(/\/(course|file)\//) || req.path.match(/\/(courses|files)$/)) {
+    res.set('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+    return next();
+  }
+  
+  // Home page - cache for 5 minutes
+  if (req.path === '/' || req.path === '/index') {
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=300');
+    return next();
+  }
+  
+  // User-specific pages - no cache
+  if (req.path.match(/\/(dashboard|profile|settings|orders|downloads)\b/)) {
+    res.set('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    return next();
+  }
+  
+  // Default - short cache
+  res.set('Cache-Control', 'public, max-age=300');
+  next();
+});
+
+// Response time tracking - simple version that logs only
+app.use((req, res, next) => {
+  const start = process.hrtime.bigint();
+  res.on('finish', () => {
+    const end = process.hrtime.bigint();
+    const duration = Number(end - start) / 1000000;
+    if (duration > 1000) {
+      console.warn(`⚠️ SLOW: ${req.method} ${req.path} - ${duration.toFixed(2)}ms`);
+    }
+  });
+  next();
+});
+
+// SEO meta tags middleware
+app.use((req, res, next) => {
+  res.locals = res.locals || {};
+  res.locals.seo = {
+    metaTags: {},
+    schemas: []
+  };
+  
+  res.locals.setMetaTags = (pageType, data = {}) => {
+    const baseUrl = 'https://vidyari.com';
+    const defaultImage = 'https://d3tonh6o5ach9f.cloudfront.net/og-image.jpg';
+    
+    const metaTags = {
+      home: {
+        title: 'Online Courses & Digital Resources | Vidyari - Learn from Experts',
+        description: 'Find thousands of professional online courses and digital resources. Learn new skills from industry experts. Affordable, accessible, and result-driven learning.',
+        keywords: 'online courses, digital learning, skill development, professional courses, educational resources',
+        ogTitle: 'Vidyari - Premium Online Courses & Learning Platform',
+        ogDescription: 'Access thousands of courses and resources. Learn at your pace from industry experts.',
+        ogImage: defaultImage,
+        author: 'Vidyari Team',
+        robots: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+      },
+      course: {
+        title: `${data.title || 'Course'} | Online Learning | Vidyari`,
+        description: `Learn ${data.title || 'professional skills'} from expert instructor ${data.instructor || 'instructor'}. ${(data.description || '').substring(0, 100)}... Enroll now.`,
+        keywords: `${data.title || 'online course'}, ${data.category || 'learning'}, online learning, skill development`,
+        ogTitle: `${data.title || 'Course'} - Professional Online Learning`,
+        ogDescription: `Master ${data.title || 'new skills'} from expert instructors on Vidyari.`,
+        ogImage: data.thumbnail || defaultImage,
+        author: data.instructor || 'Vidyari',
+        robots: 'index, follow'
+      },
+      file: {
+        title: `${data.name || 'File'} | Digital Resource | Vidyari`,
+        description: `Download ${data.name || 'resource'}. ${(data.description || '').substring(0, 100)}... Trusted by thousands. Secure access.`,
+        keywords: `${data.name || 'resource'}, download, digital resource, study material`,
+        ogTitle: `${data.name || 'Resource'} - Quality Digital Content`,
+        ogDescription: `Get ${data.name || 'this resource'} from Vidyari. High-quality content.`,
+        ogImage: data.preview || defaultImage,
+        author: data.uploader || 'Vidyari',
+        robots: 'index, follow'
+      }
+    };
+    
+    res.locals.seo.metaTags = metaTags[pageType] || metaTags.home;
+    res.locals.seo.baseUrl = baseUrl;
+  };
+  
+  res.locals.addSchema = (schema) => {
+    res.locals.seo.schemas.push(schema);
+  };
+  
+  // Default to homepage meta tags
+  res.locals.setMetaTags('home');
+  
+  next();
+});
+
 // app.use(cookieParser());
-// app.set('view engine', 'ejs');
-// ... etc.
 
-
-
-app.use(express.json());
 const cors = require("cors");
 app.use(cors());
 
@@ -347,6 +483,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use('/api', activityTrackingRoutes);
 app.use("/api/wishlist", require("./routes/wishlistRoutes"));
+app.use("/api/search", require("./routes/searchRoutes"));
 app.use("/api/instructor", instructorPayoutRoutes);
 // apply JWT authentication to all admin API routes so req.user is populated
 // and unauthorized calls respond with JSON instead of HTML
@@ -1466,12 +1603,48 @@ app.post("/create-order", authenticateJWT_user,requireAuth,async (req, res) => {
   }
 });
 app.get("/privacy-policy", (req, res) => {
+  // =============== SEO SETUP ===============
+  res.locals.setMetaTags('privacy', {
+    title: 'Privacy Policy - Vidyari',
+    description: 'Learn how Vidyari protects your personal data and privacy. Read our comprehensive privacy policy.'
+  });
+  res.locals.addSchema({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    'name': 'Privacy Policy',
+    'description': 'Privacy Policy for Vidyari Learning Platform'
+  });
+  // =============== END SEO SETUP ===============
   res.render("privacy-policy");
 });
 app.get("/refund-policy", (req, res) => {
+  // =============== SEO SETUP ===============
+  res.locals.setMetaTags('refund', {
+    title: 'Refund Policy - Vidyari',
+    description: 'Learn about Vidyari\'s refund and return policy. We stand behind our courses and resources.'
+  });
+  res.locals.addSchema({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    'name': 'Refund Policy',
+    'description': 'Refund and Return Policy for Vidyari'
+  });
+  // =============== END SEO SETUP ===============
   res.render("refundpolicy");
 });
 app.get("/terms-and-conditions", (req, res) => {
+  // =============== SEO SETUP ===============
+  res.locals.setMetaTags('terms', {
+    title: 'Terms & Conditions - Vidyari',
+    description: 'Read the terms and conditions of using Vidyari platform. Our legal agreement with users.'
+  });
+  res.locals.addSchema({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    'name': 'Terms and Conditions',
+    'description': 'Terms and Conditions for Vidyari Platform'
+  });
+  // =============== END SEO SETUP ===============
   res.render("terms&conditions");
 });
 app.get("/terms&conditions", (req, res) => {
@@ -1484,6 +1657,18 @@ app.get("/payment-terms", (req, res) => {
   res.render("payment-terms");
 });
 app.get("/contact", (req, res) => {
+  // =============== SEO SETUP ===============
+  res.locals.setMetaTags('contact', {
+    title: 'Contact Us - Vidyari',
+    description: 'Get in touch with Vidyari. We\'re here to help with questions, feedback, or inquiries.'
+  });
+  res.locals.addSchema({
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    'name': 'Contact Us',
+    'description': 'Contact Vidyari support team'
+  });
+  // =============== END SEO SETUP ===============
   res.render("contact");
 });
 app.get("/disclaimer", (req, res) => {
@@ -1795,6 +1980,19 @@ app.post("/webhook", (req, res) => {
 // Home Page - Render files
 app.get("/", authenticateJWT_user, async (req, res) => {
   try {
+    // =============== SEO SETUP ===============
+    res.locals.setMetaTags('home', {});
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      'name': 'Vidyari - Online Learning Platform',
+      'description': 'Learn from expert instructors. Access thousands of courses, resources, and digital materials.',
+      'url': 'https://vidyari.com',
+      'logo': 'https://vidyari.com/logo.png',
+      'sameAs': ['https://twitter.com/vidyari', 'https://facebook.com/vidyari']
+    });
+    // =============== END SEO SETUP ===============
+
     const files = await File.find().sort({ downloadCount: -1 }).limit(5);
     const filesWithPreviews = await Promise.all(
       files.map(async (file) => {
@@ -1866,6 +2064,19 @@ app.get("/save", async (req, res) => {
   }
 });
 app.get("/pricing",authenticateJWT_user,async(req,res)=>{
+  // =============== SEO SETUP ===============
+  res.locals.setMetaTags('pricing', {
+    title: 'Affordable Pricing Plans - Vidyari',
+    description: 'Choose the perfect plan for your learning journey. Flexible pricing with premium features.'
+  });
+  res.locals.addSchema({
+    '@context': 'https://schema.org',
+    '@type': 'PriceSpecification',
+    'priceCurrency': 'INR',
+    'description': 'Vidyari membership plans with flexible pricing options'
+  });
+  // =============== END SEO SETUP ===============
+
   let profileUrl = null;
  let user = null;
     if (req.user) {
@@ -1914,6 +2125,19 @@ app.get("/pricing",authenticateJWT_user,async(req,res)=>{
   })
 })
 app.get("/About",authenticateJWT_user,async(req,res)=>{
+  // =============== SEO SETUP ===============
+  res.locals.setMetaTags('about', {
+    title: 'About Us - Vidyari',
+    description: 'Learn about Vidyari. Our mission is to make quality education accessible to everyone worldwide.'
+  });
+  res.locals.addSchema({
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    'name': 'About Vidyari',
+    'description': 'Vidyari is a global online learning platform dedicated to providing quality education'
+  });
+  // =============== END SEO SETUP ===============
+
   let profileUrl = null;
  let user = null;
     if (req.user) {
@@ -2770,6 +2994,71 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       return res.redirect(301, `/file/${file.slug}/${file._id}`);
     }
 
+    // =============== SEO SETUP ===============
+    res.locals.setMetaTags('file', {
+      name: file.filename,
+      description: file.filedescription,
+      uploader: file.user,
+      downloadCount: file.downloadCount || 0,
+      preview: await getValidFileUrl(file)
+    });
+    
+    // Add JSON-LD schema for file
+    const fileSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      'name': file.filename,
+      'description': file.filedescription,
+      'url': `https://vidyari.com/file/${file.slug}/${file._id}`,
+      'creator': {
+        '@type': 'Person',
+        'name': file.user || 'Vidyari Creator'
+      },
+      'datePublished': file.createdAt ? file.createdAt.toISOString() : new Date().toISOString(),
+      'dateModified': file.updatedAt ? file.updatedAt.toISOString() : new Date().toISOString(),
+      'inLanguage': 'en',
+      'offers': {
+        '@type': 'Offer',
+        'price': file.price || 0,
+        'priceCurrency': 'INR'
+      }
+    };
+    
+    if (file.downloadCount) {
+      fileSchema.aggregateRating = {
+        '@type': 'AggregateRating',
+        'ratingCount': file.downloadCount
+      };
+    }
+    
+    res.locals.addSchema(fileSchema);
+    
+    // Add breadcrumb schema
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        {
+          '@type': 'ListItem',
+          'position': 1,
+          'name': 'Home',
+          'item': 'https://vidyari.com'
+        },
+        {
+          '@type': 'ListItem',
+          'position': 2,
+          'name': 'Files',
+          'item': 'https://vidyari.com/documents'
+        },
+        {
+          '@type': 'ListItem',
+          'position': 3,
+          'name': file.filename
+        }
+      ]
+    });
+    // =============== END SEO SETUP ===============
+
     // 👤 Seller info (cached)
     let sellerprofilepic = "/images/avatar.jpg";
     let ISVERIFIED = false;
@@ -3461,11 +3750,22 @@ const pageCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache for
 
 const CLOUDFRONT_AVATAR_URL = "d3epchi0htsp3c.cloudfront.net/avatars";
 
-// ==========================================
+// ======================================================
 // ⚡ Optimized & Cached Documents Route
-// ==========================================
+// ======================================================
 app.get("/documents", authenticateJWT_user, async (req, res) => {
   try {
+    // =============== SEO SETUP ===============
+    res.locals.setMetaTags('home', {});
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      'name': 'Browse Digital Resources & Study Materials',
+      'description': 'Thousands of high-quality digital resources, study materials, and documents',
+      'url': 'https://vidyari.com/documents'
+    });
+    // =============== END SEO SETUP ===============
+    
     // 🧠 Step 1: Try cached categories
     let categories = pageCache.get("categories");
     if (!categories) {
@@ -3528,6 +3828,7 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
     res.status(500).send("Failed to load page");
   }
 });
+
 
 
 
@@ -3642,6 +3943,17 @@ app.get('/files', async (req, res) => {
 // GET /courses - Display all available courses
 app.get('/courses', authenticateJWT_user, async (req, res) => {
     try {
+        // =============== SEO SETUP ===============
+        res.locals.setMetaTags('home', {});
+        res.locals.addSchema({
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          'name': 'Browse Online Courses',
+          'description': 'Explore thousands of professional courses and learn from industry experts',
+          'url': 'https://vidyari.com/courses'
+        });
+        // =============== END SEO SETUP ===============
+        
         let user = null;
         let profileUrl = null;
 
@@ -3851,6 +4163,82 @@ app.get('/courses', authenticateJWT_user, async (req, res) => {
 // GET /course-detail - Display single course details
 app.get('/course-detail',authenticateJWT_user, async (req, res) => {
     try {
+       // =============== SEO SETUP ===============
+       const { courseId } = req.query;
+       
+       if (!courseId) {
+           return res.status(400).render('404', { message: 'Course ID is required' });
+       }
+
+       // Validate MongoDB ObjectId format
+       if (!mongoose.Types.ObjectId.isValid(courseId)) {
+           return res.status(400).render('404', { message: 'Invalid course ID format' });
+       }
+
+       // Fetch course early for SEO setup
+       const course = await Course.findById(courseId)
+           .populate('userId', 'fullName profilePicUrl username email');
+
+       if (!course) {
+           return res.status(404).render('404', { message: 'Course not found' });
+       }
+
+       res.locals.setMetaTags('course', {
+           name: course.title,
+           description: course.description || 'Professional course on ' + course.title,
+           instructor: course.userId?.fullName || 'Expert Instructor',
+           rating: course.averageRating || 0,
+           numReviews: course.reviews?.length || 0,
+           price: course.price || 'Free'
+       });
+       
+       res.locals.addSchema({
+           '@context': 'https://schema.org',
+           '@type': 'Course',
+           'name': course.title,
+           'description': course.description || '',
+           'instructor': {
+               '@type': 'Person',
+               'name': course.userId?.fullName || 'Expert Instructor'
+           },
+           'aggregateRating': course.averageRating ? {
+               '@type': 'AggregateRating',
+               'ratingValue': course.averageRating,
+               'reviewCount': course.reviews?.length || 0
+           } : null,
+           'offers': {
+               '@type': 'Offer',
+               'priceCurrency': 'INR',
+               'price': course.price || 0
+           }
+       });
+
+       res.locals.addSchema({
+           '@context': 'https://schema.org',
+           '@type': 'BreadcrumbList',
+           'itemListElement': [
+               {
+                   '@type': 'ListItem',
+                   'position': 1,
+                   'name': 'Home',
+                   'item': 'https://vidyari.com'
+               },
+               {
+                   '@type': 'ListItem',
+                   'position': 2,
+                   'name': 'Courses',
+                   'item': 'https://vidyari.com/courses'
+               },
+               {
+                   '@type': 'ListItem',
+                   'position': 3,
+                   'name': course.title,
+                   'item': `https://vidyari.com/course-detail?courseId=${courseId}`
+               }
+           ]
+       });
+       // =============== END SEO SETUP ===============
+
        let user = null;
         let profileUrl = null;
 
@@ -3877,24 +4265,6 @@ app.get('/course-detail',authenticateJWT_user, async (req, res) => {
                     profileUrl = user.profilePicUrl;
                 }
             }
-        }
-        const { courseId } = req.query;
-
-        if (!courseId) {
-            return res.status(400).render('404', { message: 'Course ID is required' });
-        }
-
-        // Validate MongoDB ObjectId format
-        if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            return res.status(400).render('404', { message: 'Invalid course ID format' });
-        }
-
-        // Fetch course from MongoDB
-        const course = await Course.findById(courseId)
-            .populate('userId', 'fullName profilePicUrl username email');
-
-        if (!course) {
-            return res.status(404).render('404', { message: 'Course not found' });
         }
 
         console.log(`Loading course details for: ${course.title}`);

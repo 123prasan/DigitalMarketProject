@@ -773,6 +773,24 @@
                 <button id="vCloseSidebarBtn" style="font-size: 1.5rem; color: var(--v-text-muted);"><i class="fas fa-times"></i></button>
             </div>
 
+            <!-- ASSET TYPE FILTER -->
+            <div class="v-filter-wrap">
+                <div class="v-filter-head">Asset Type</div>
+                <label class="v-check-row">
+                    <input type="radio" name="assetType" class="v-checkbox" value="all" checked id="vAssetAll">
+                    <span>All Items</span>
+                </label>
+                <label class="v-check-row">
+                    <input type="radio" name="assetType" class="v-checkbox" value="files" id="vAssetFiles">
+                    <span>Files Only</span>
+                </label>
+                <label class="v-check-row">
+                    <input type="radio" name="assetType" class="v-checkbox" value="courses" id="vAssetCourses">
+                    <span>Courses Only</span>
+                </label>
+            </div>
+
+            <!-- PRICING FILTER -->
             <div class="v-filter-wrap">
                 <div class="v-filter-head">Pricing</div>
                 <label class="v-check-row">
@@ -789,6 +807,50 @@
                 </label>
             </div>
 
+            <!-- PRICE RANGE FILTER -->
+            <div class="v-filter-wrap">
+                <div class="v-filter-head">Price Range</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px;">
+                    <input type="number" id="vPriceMin" placeholder="Min" value="0" min="0" style="padding: 8px; border: 1px solid var(--v-border); border-radius: 6px; font-size: 0.9rem;">
+                    <input type="number" id="vPriceMax" placeholder="Max" value="10000" min="0" style="padding: 8px; border: 1px solid var(--v-border); border-radius: 6px; font-size: 0.9rem;">
+                </div>
+            </div>
+
+            <!-- RATING FILTER -->
+            <div class="v-filter-wrap">
+                <div class="v-filter-head">Minimum Rating</div>
+                <label class="v-check-row">
+                    <input type="checkbox" name="rating" class="v-checkbox rating-check" value="0" checked id="vRating0">
+                    <span>Any Rating</span>
+                </label>
+                <label class="v-check-row">
+                    <input type="checkbox" name="rating" class="v-checkbox rating-check" value="3" id="vRating3">
+                    <span>⭐ 3.0+</span>
+                </label>
+                <label class="v-check-row">
+                    <input type="checkbox" name="rating" class="v-checkbox rating-check" value="4" id="vRating4">
+                    <span>⭐ 4.0+</span>
+                </label>
+                <label class="v-check-row">
+                    <input type="checkbox" name="rating" class="v-checkbox rating-check" value="4.5" id="vRating4_5">
+                    <span>⭐ 4.5+</span>
+                </label>
+            </div>
+
+            <!-- DATE RANGE FILTER -->
+            <div class="v-filter-wrap">
+                <div class="v-filter-head">Date Added</div>
+                <select id="vDateRange" style="width: 100%; padding: 8px; border: 1px solid var(--v-border); border-radius: 6px; font-size: 0.9rem;">
+                    <option value="all">All Time</option>
+                    <option value="week">Past Week</option>
+                    <option value="month">Past Month</option>
+                    <option value="3months">Past 3 Months</option>
+                    <option value="6months">Past 6 Months</option>
+                    <option value="year">Past Year</option>
+                </select>
+            </div>
+
+            <!-- CATEGORIES FILTER -->
             <div class="v-filter-wrap">
                 <div class="v-filter-head">Categories</div>
                 <div id="vCategoryList" style="max-height: 250px; overflow-y: auto;">
@@ -796,6 +858,7 @@
                 </div>
             </div>
             
+            <!-- FILE TYPES FILTER -->
             <div class="v-filter-wrap">
                 <div class="v-filter-head">File Types</div>
                 <div id="vFileTypeList" style="max-height: 200px; overflow-y: auto;">
@@ -923,7 +986,7 @@
                 totalPages: 1,
                 totalItems: 0,
                 sort: 'popular',
-                filters: { priceTier: 'all', categories: [], fileTypes: [] },
+                filters: { priceTier: 'all', categories: [], fileTypes: [], assetType: 'all', priceMin: null, priceMax: null, minRating: null, dateRange: 'all' },
                 
                 availableCategories: [],
                 availableFileTypes: [],
@@ -1076,9 +1139,17 @@
                         
                         if (State.query) params.append('search', State.query);
                         
-                        if (State.filters.priceTier !== 'all') {
+                        if (State.filters.assetType !== 'all') params.append('assetType', State.filters.assetType);
+                        
+                        if (State.filters.priceMin !== null) params.append('priceMin', State.filters.priceMin);
+                        if (State.filters.priceMax !== null) params.append('priceMax', State.filters.priceMax);
+                        
+                        if (State.filters.priceTier !== 'all' && State.filters.priceMin === null && State.filters.priceMax === null) {
                             params.append('price', State.filters.priceTier);
                         }
+                        
+                        if (State.filters.minRating) params.append('minRating', State.filters.minRating);
+                        if (State.filters.dateRange !== 'all') params.append('dateRange', State.filters.dateRange);
                         
                         State.filters.categories.forEach(c => params.append('category', c));
                         State.filters.fileTypes.forEach(t => params.append('fileType', t));
@@ -1150,8 +1221,27 @@
                     let html = '';
                     let count = 0;
                     
-                    if(State.filters.priceTier === 'free') { html += `<div class="v-filter-pill">Free Only <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; count++; }
-                    else if(State.filters.priceTier === 'paid') { html += `<div class="v-filter-pill">Premium Only <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; count++; }
+                    if(State.filters.assetType !== 'all') { 
+                        const typeLabel = State.filters.assetType === 'files' ? 'Files Only' : (State.filters.assetType === 'courses' ? 'Courses Only' : 'All Assets');
+                        html += `<div class="v-filter-pill">${typeLabel} <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('asset')"></i></div>`; 
+                        count++; 
+                    }
+                    
+                    if(State.filters.priceMin !== null || State.filters.priceMax !== null) { 
+                        const min = State.filters.priceMin || '0';
+                        const max = State.filters.priceMax || '∞';
+                        html += `<div class="v-filter-pill">₹${min} - ₹${max} <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('pricerange')"></i></div>`; 
+                        count++; 
+                    } else if(State.filters.priceTier === 'free') { 
+                        html += `<div class="v-filter-pill">Free Only <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; 
+                        count++; 
+                    } else if(State.filters.priceTier === 'paid') { 
+                        html += `<div class="v-filter-pill">Premium Only <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('price')"></i></div>`; 
+                        count++; 
+                    }
+                    
+                    if(State.filters.minRating) { html += `<div class="v-filter-pill">${State.filters.minRating}+ Stars <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('rating')"></i></div>`; count++; }
+                    if(State.filters.dateRange !== 'all') { const dateLabel = State.filters.dateRange === 'week' ? 'Past Week' : (State.filters.dateRange === 'month' ? 'Past Month' : (State.filters.dateRange === '3months' ? 'Past 3 Months' : (State.filters.dateRange === '6months' ? 'Past 6 Months' : (State.filters.dateRange === 'year' ? 'Past Year' : State.filters.dateRange)))); html += `<div class="v-filter-pill">${dateLabel} <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('date')"></i></div>`; count++; }
                     
                     State.filters.categories.forEach(c => { html += `<div class="v-filter-pill">${c} <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('cat', '${c}')"></i></div>`; count++; });
                     State.filters.fileTypes.forEach(t => { html += `<div class="v-filter-pill" style="text-transform: uppercase;">${t} <i class="fa-solid fa-xmark v-filter-remove" onclick="EventManager.removeFilter('type', '${t}')"></i></div>`; count++; });
@@ -1441,8 +1531,23 @@
                 },
 
                 syncStateFromUI: () => {
-                    const priceVal = document.querySelector('input[name="priceTier"]:checked').value;
+                    const priceVal = document.querySelector('input[name="priceTier"]:checked')?.value || 'all';
                     State.filters.priceTier = priceVal;
+                    
+                    const assetTypeChecked = document.querySelector('input[name="assetType"]:checked')?.value || 'all';
+                    State.filters.assetType = assetTypeChecked;
+                    
+                    const priceMinEl = document.getElementById('vPriceMin');
+                    const priceMaxEl = document.getElementById('vPriceMax');
+                    State.filters.priceMin = priceMinEl && priceMinEl.value ? parseInt(priceMinEl.value) : null;
+                    State.filters.priceMax = priceMaxEl && priceMaxEl.value ? parseInt(priceMaxEl.value) : null;
+                    
+                    const ratingChecked = Array.from(document.querySelectorAll('.rating-check:checked')).map(cb => cb.value);
+                    State.filters.minRating = ratingChecked.length > 0 && ratingChecked[0] !== '0' ? ratingChecked[0] : null;
+                    
+                    const dateRangeEl = document.getElementById('vDateRange');
+                    State.filters.dateRange = dateRangeEl ? (dateRangeEl.value || 'all') : 'all';
+                    
                     State.filters.categories = Array.from(document.querySelectorAll('.cat-check:checked')).map(cb => cb.value);
                     State.filters.fileTypes = Array.from(document.querySelectorAll('.type-check:checked')).map(cb => cb.value);
                     State.page = 1;
@@ -1451,6 +1556,12 @@
 
                 clearFilters: () => {
                     document.getElementById('vPriceAll').checked = true;
+                    document.querySelectorAll('input[name="assetType"]').forEach(cb => { if(cb.value === 'all') cb.checked = true; else cb.checked = false; });
+                    document.getElementById('vPriceMin').value = '0';
+                    document.getElementById('vPriceMax').value = '10000';
+                    document.querySelectorAll('.rating-check').forEach(cb => cb.checked = false);
+                    document.getElementById('vRating0').checked = true;
+                    document.getElementById('vDateRange').value = 'all';
                     document.querySelectorAll('.v-checkbox').forEach(cb => cb.checked = false);
                     DOM.input.value = ''; State.query = '';
                     EventManager.syncStateFromUI();
@@ -1459,6 +1570,10 @@
 
                 removeFilter: (type, val) => {
                     if(type === 'price') document.getElementById('vPriceAll').checked = true;
+                    if(type === 'asset') { const cb = document.querySelector('input[name="assetType"][value="all"]'); if(cb) cb.checked = true; }
+                    if(type === 'pricerange') { document.getElementById('vPriceMin').value = '0'; document.getElementById('vPriceMax').value = '10000'; }
+                    if(type === 'rating') { document.querySelectorAll('.rating-check').forEach(cb => cb.checked = false); document.getElementById('vRating0').checked = true; }
+                    if(type === 'date') { document.getElementById('vDateRange').value = 'all'; }
                     if(type === 'cat') { const cb = document.querySelector(`.cat-check[value="${val}"]`); if(cb) cb.checked = false; }
                     if(type === 'type') { const cb = document.querySelector(`.type-check[value="${val}"]`); if(cb) cb.checked = false; }
                     EventManager.syncStateFromUI();
@@ -1621,12 +1736,8 @@
             // --- 10. LOAD POPULAR/TRENDING ITEMS ---
             const loadPopular = async () => {
                 try {
-                    console.log('🔥 Loading popular/trending items...');
-                    
                     const response = await fetch('/api/trending-content?days=7&limit=12');
                     const data = await response.json();
-                    
-                    console.log('📊 Raw trending API response:', data);
                     
                     // Transform trending data with more robust handling
                     const trendingItems = (Array.isArray(data) ? data : []).map((item, idx) => {
@@ -1672,21 +1783,15 @@
                                 previewUrl: itemPreviewUrl
                             };
                             
-                            console.log(`✓ Item ${idx}:`, transformed);
                             return transformed;
                         } catch (err) {
-                            console.error(`❌ Error transforming item ${idx}:`, err, item);
                             return null;
                         }
                     }).filter(item => item && item._id && item.title);
                     
-                    console.log(`📊 Found ${trendingItems.length} valid trending items (from ${data.length} total)`);
-                    
                     // Only show section if there are trending items
                     if (trendingItems && trendingItems.length > 0) {
                         const popGrid = document.getElementById('vPopularGrid');
-                        
-                        console.log('🎯 Rendering', trendingItems.length, 'trending items...');
                         
                         popGrid.innerHTML = trendingItems.map((item, index) => {
                             const isFree = item.price === 0 || item.price === '0';
@@ -1768,13 +1873,10 @@
                         
                         // Show the section
                         document.getElementById('vPopular').style.display = 'block';
-                        console.log('✅ Popular/Trending section displayed successfully');
                     } else {
-                        console.log('ℹ️ No valid trending items to display');
                         document.getElementById('vPopular').style.display = 'none';
                     }
                 } catch (error) {
-                    console.error('❌ Error loading popular items:', error);
                     document.getElementById('vPopular').style.display = 'none';
                 }
             };

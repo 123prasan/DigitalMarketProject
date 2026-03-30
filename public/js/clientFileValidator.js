@@ -16,7 +16,7 @@ class ClientFileValidator {
       ALLOWED_MIME_TYPES: {
         image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
         file: ['application/pdf', 'application/zip', 'application/x-rar-compressed', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'video/mp4', 'video/webm'],
-      },
+      },ss
       DANGEROUS_EXTENSIONS: [
         'exe', 'bat', 'cmd', 'sh', 'ps1', 'vbs', 'js', 'jar', 'app', 'com',
         'scr', 'pif', 'msi', 'dll', 'sys', 'drv', 'tmp', 'chm', 'hlp'
@@ -28,11 +28,11 @@ class ClientFileValidator {
     };
     
     this.MAGIC_NUMBERS = {
-      pdf: Buffer.from([0x25, 0x50, 0x44, 0x46]), // %PDF
-      jpeg: Buffer.from([0xFF, 0xD8, 0xFF]),
-      png: Buffer.from([0x89, 0x50, 0x4E, 0x47]),
-      gif: Buffer.from([0x47, 0x49, 0x46, 0x38]),
-      zip: Buffer.from([0x50, 0x4B, 0x03, 0x04]),
+      pdf: new Uint8Array([0x25, 0x50, 0x44, 0x46]), // %PDF
+      jpeg: new Uint8Array([0xFF, 0xD8, 0xFF]),
+      png: new Uint8Array([0x89, 0x50, 0x4E, 0x47]),
+      gif: new Uint8Array([0x47, 0x49, 0x46, 0x38]),
+      zip: new Uint8Array([0x50, 0x4B, 0x03, 0x04]),
     };
   }
 
@@ -114,7 +114,7 @@ class ClientFileValidator {
       const reader = new FileReader();
       reader.onload = (e) => {
         const arr = new Uint8Array(e.target.result);
-        resolve(Buffer.from(arr));
+        resolve(arr);
       };
       reader.onerror = () => reject(new Error('Could not read file'));
       reader.readAsArrayBuffer(blob);
@@ -130,28 +130,39 @@ class ClientFileValidator {
 
     // Check based on MIME type
     if (mimetype.includes('pdf') || ext === 'pdf') {
-      if (!header.slice(0, 4).equals(this.MAGIC_NUMBERS.pdf)) {
+      if (!this.arrayStartsWith(header, this.MAGIC_NUMBERS.pdf)) {
         errors.push('Invalid PDF signature - file may be corrupted or not a real PDF');
       }
     } else if (mimetype.includes('jpeg') || mimetype.includes('jpg') || ext === 'jpg' || ext === 'jpeg') {
-      if (!header.slice(0, 3).equals(this.MAGIC_NUMBERS.jpeg)) {
+      if (!this.arrayStartsWith(header, this.MAGIC_NUMBERS.jpeg)) {
         errors.push('Invalid JPEG signature - file may be corrupted or not a real JPEG');
       }
     } else if (mimetype.includes('png') || ext === 'png') {
-      if (!header.slice(0, 4).equals(this.MAGIC_NUMBERS.png)) {
+      if (!this.arrayStartsWith(header, this.MAGIC_NUMBERS.png)) {
         errors.push('Invalid PNG signature - file may be corrupted or not a real PNG');
       }
     } else if (mimetype.includes('gif') || ext === 'gif') {
-      if (!header.slice(0, 4).equals(this.MAGIC_NUMBERS.gif)) {
+      if (!this.arrayStartsWith(header, this.MAGIC_NUMBERS.gif)) {
         errors.push('Invalid GIF signature - file may be corrupted or not a real GIF');
       }
     } else if (mimetype.includes('zip') || ext === 'zip') {
-      if (!header.slice(0, 4).equals(this.MAGIC_NUMBERS.zip)) {
+      if (!this.arrayStartsWith(header, this.MAGIC_NUMBERS.zip)) {
         warnings.push('ZIP signature not detected - may not be a real ZIP file');
       }
     }
 
     return { errors, warnings };
+  }
+
+  /**
+   * Check if byte array starts with prefix array
+   */
+  arrayStartsWith(src, prefix) {
+    if (!src || !prefix || src.length < prefix.length) return false;
+    for (let i = 0; i < prefix.length; i++) {
+      if (src[i] !== prefix[i]) return false;
+    }
+    return true;
   }
 
   /**

@@ -1230,6 +1230,24 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
     if (!user) {
       return res.status(404).render("404.ejs"); // Or send a simple message
     }
+
+    // =============== SEO SETUP ===============
+    res.locals.setMetaTags('profile', {
+      name: user.username,
+      title: `${user.fullName || user.username} - Instructor Profile`,
+      description: `View ${user.fullName || user.username}'s courses and resources on Vidyari. Professional instructor profile.`
+    });
+
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      'name': user.fullName || user.username,
+      'url': `https://vidyari.com/profile/${user.username}`,
+      'image': user.profilePicUrl || '',
+      'sameAs': user.socialLinks || []
+    });
+    // =============== END SEO SETUP ===============
+
     //  let user = null;
 
     // 2. Fetch the profile user's files and prepare them ONCE.

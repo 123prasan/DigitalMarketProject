@@ -44,14 +44,6 @@ class ActivityTracker {
     this.options = { ...defaults, ...options };
     this.userId = this.getUserIdFromDOM();
 
-    console.log('🚀 [ActivityTracker] Initializing...', {
-      userId: this.userId,
-      dataFileId: document.documentElement.getAttribute('data-file-id'),
-      dataUserId: document.documentElement.getAttribute('data-user-id'),
-      sessionId: this.sessionId,
-      autoTrack: this.options.autoTrack
-    });
-
     if (this.options.autoTrack) {
       this.setupAutoTracking();
     }
@@ -61,16 +53,7 @@ class ActivityTracker {
     // Initialize advanced tracking mechanisms
     this.initializeAdvancedTracking();
     
-    if (this.userId) {
-      console.log('✅ ActivityTracker initialized - User ID:', this.userId.substring(0, 8) + '...');
-      console.log('📊 Advanced tracking enabled: Reviews, Categories, Device, Browsing Paths, Cart Abandonment');
-    } else {
-      console.error('❌ ActivityTracker initialized - NO USER ID! Activities will NOT be tracked.');
-      console.log('   Debug info:');
-      console.log('   - localStorage.userId:', localStorage.getItem('userId'));
-      console.log('   - DOM data-user-id:', document.documentElement.getAttribute('data-user-id'));
-      console.log('   - [data-user-id] elements:', document.querySelectorAll('[data-user-id]').length);
-    }
+
   }
 
   /**
@@ -105,7 +88,6 @@ class ActivityTracker {
         }, this.options.batchInterval);
       }
     } catch (error) {
-      console.warn('ActivityTracker setup error (non-critical):', error);
       // Don't throw - continue operation even if tracking fails
     }
   }
@@ -153,7 +135,6 @@ class ActivityTracker {
     const htmlElement = document.documentElement;
     const htmlUserId = htmlElement.getAttribute('data-user-id');
     if (htmlUserId && htmlUserId.trim() !== '') {
-      console.log('✅ [getUserIdFromDOM] Found in html element:', htmlUserId.substring(0, 8) + '...');
       return htmlUserId;
     }
     
@@ -162,7 +143,6 @@ class ActivityTracker {
     if (userElement) {
       const userId = userElement.getAttribute('data-user-id');
       if (userId && userId.trim() !== '') {
-        console.log('✅ [getUserIdFromDOM] Found in DOM element:', userId.substring(0, 8) + '...');
         return userId;
       }
     }
@@ -170,16 +150,8 @@ class ActivityTracker {
     // Fall back to localStorage
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
-      console.log('✅ [getUserIdFromDOM] Found in localStorage:', storedUserId.substring(0, 8) + '...');
       return storedUserId;
     }
-    
-    console.error('❌ [getUserIdFromDOM] No userId found!', {
-      html_data_user_id: htmlUserId,
-      dom_data_user_id: userElement ? userElement.getAttribute('data-user-id') : null,
-      localStorage_userId: localStorage.getItem('userId'),
-      all_data_user_id_elements: Array.from(document.querySelectorAll('[data-user-id]')).length
-    });
     
     return null;
   }
@@ -283,7 +255,6 @@ class ActivityTracker {
         { passive: true }
       );
     } catch (error) {
-      console.warn('Scroll tracking setup failed:', error);
     }
   }
 
@@ -322,7 +293,6 @@ class ActivityTracker {
         }
       });
     } catch (error) {
-      console.warn('Click tracking setup failed:', error);
     }
   }
 
@@ -387,7 +357,6 @@ class ActivityTracker {
         }
       });
     } catch (error) {
-      console.warn('Search tracking setup failed:', error);
     }
   }
 
@@ -446,13 +415,11 @@ class ActivityTracker {
   async trackActivity(activityData) {
     try {
       if (!this.isInitialized) {
-        console.warn('⚠️  ActivityTracker not initialized, skipping activity');
         return; // Silently skip if not initialized
       }
 
       // Skip tracking if user is not authenticated
       if (!this.userId) {
-        console.warn('⚠️  No userId, activity tracking disabled (guest user)');
         return; // Silently skip for guests
       }
 
@@ -463,15 +430,6 @@ class ActivityTracker {
           userId: this.userId,
         };
 
-        console.log('📤 [ActivityTracker] Sending activity to server:', {
-          type: activityData.activityType,
-          pageType: activityData.pageType || 'unknown',
-          fileId: activityData.fileId || 'N/A',
-          searchQuery: activityData.searchQuery || 'N/A',
-          userId: this.userId.substring(0, 8) + '...',
-          sessionId: this.sessionId.substring(0, 8) + '...'
-        });
-
         // Send activity to server without blocking
         fetch('/api/track-activity', {
           method: 'POST',
@@ -480,27 +438,15 @@ class ActivityTracker {
           },
           body: JSON.stringify(payload),
         }).then(response => {
-          if (response.ok) {
-            console.log('✅ Activity tracked:', { type: activityData.activityType, status: response.status });
-          } else {
-            console.error('❌ Activity tracking failed:', { type: activityData.activityType, status: response.status });
-          }
           return response.json();
-        }).then(data => {
-          if (data && data.message) {
-            console.log('📬 Server response:', data.message);
-          }
         }).catch(err => {
           // Silently ignore network errors - don't disrupt user experience
-          console.error('❌ Activity tracking network error:', err.message);
         });
       } catch (error) {
         // Silently fail - don't disrupt user experience
-        console.error('❌ Activity tracking error:', error.message);
       }
     } catch (error) {
       // Outer try-catch for any unexpected errors
-      console.debug('Unexpected activity tracking error:', error.message);
     }
   }
 
@@ -663,8 +609,6 @@ class ActivityTracker {
       ...deviceInfo,
       pageType: this.getPageContext().pageType,
     });
-
-    console.log('📱 [ActivityTracker] Device tracked:', deviceInfo);
   }
 
   /**
@@ -699,12 +643,6 @@ class ActivityTracker {
       currentPath: pathEntry.pageType,
       previousPath: browsingPath.length > 1 ? browsingPath[browsingPath.length - 2].pageType : null,
       ...pageContext,
-    });
-
-    console.log('🛤️ [ActivityTracker] Browsing path tracked:', {
-      length: browsingPath.length,
-      current: pathEntry.pageType,
-      sequence: browsingPath.slice(-3).map(p => p.pageType),
     });
   }
 
@@ -765,13 +703,6 @@ class ActivityTracker {
       ...itemData,
       pageType: 'checkout',
     });
-
-    console.log('🛒 [ActivityTracker] Cart interaction tracked:', {
-      action,
-      itemsInCart: abandonmentRisk.itemsInCart,
-      checkoutAttempts: abandonmentRisk.checkoutAttempts,
-      completed: abandonmentRisk.completed,
-    });
   }
 
   /**
@@ -806,10 +737,7 @@ class ActivityTracker {
           || document.querySelector('[data-event="purchase-complete"]')) {
         this.trackCartInteraction('checkout_complete', {});
       }
-
-      console.log('🛒 [ActivityTracker] Cart abandonment tracking setup complete');
     } catch (error) {
-      console.warn('Cart abandonment tracking setup failed:', error);
     }
   }
 
@@ -848,10 +776,7 @@ class ActivityTracker {
           }
         }
       });
-
-      console.log('⭐ [ActivityTracker] Review interaction tracking setup complete');
     } catch (error) {
-      console.warn('Review tracking setup failed:', error);
     }
   }
 
@@ -879,10 +804,7 @@ class ActivityTracker {
           this.trackCategoryAffinity(category, 30);
         }
       }, 30000);
-
-      console.log('🚀 [ActivityTracker] Advanced tracking initialized');
     } catch (error) {
-      console.warn('Advanced tracking initialization failed:', error);
     }
   }
 
@@ -896,7 +818,6 @@ class ActivityTracker {
         return await response.json();
       }
     } catch (error) {
-      console.debug('Error fetching user interests:', error.message);
     }
     return [];
   }
@@ -911,7 +832,6 @@ class ActivityTracker {
         return await response.json();
       }
     } catch (error) {
-      console.debug('Error fetching trending content:', error.message);
     }
     return [];
   }
@@ -921,13 +841,6 @@ class ActivityTracker {
    */
   async getRecommendations(limit = 10, assetType = 'both') {
     try {
-      console.log('🔄 [ActivityTracker] Fetching recommendations...', {
-        limit,
-        assetType,
-        userId: this.userId ? this.userId.substring(0, 8) + '...' : 'NO_USER',
-        initialized: this.isInitialized
-      });
-
       const response = await fetch('/api/recommend-assets', {
         method: 'POST',
         headers: {
@@ -936,31 +849,12 @@ class ActivityTracker {
         body: JSON.stringify({ limit, assetType }),
       });
 
-      console.log('📨 [ActivityTracker] API Response received:', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok
-      });
-
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ [ActivityTracker] Recommendations received:', {
-          count: data.recommendations ? data.recommendations.length : 0,
-          topCategories: data.topCategories ? data.topCategories.length : 0,
-          topSearches: data.topSearches ? data.topSearches.length : 0,
-          message: data.message
-        });
         return data;
-      } else {
-        console.error('❌ [ActivityTracker] API returned error:', {
-          status: response.status,
-          statusText: response.statusText
-        });
       }
     } catch (error) {
-      console.error('❌ [ActivityTracker] Error fetching recommendations:', error.message, error.stack);
     }
-    console.log('📭 [ActivityTracker] Returning empty recommendations (error or no data)');
     return { recommendations: [], topCategories: [] };
   }
 
@@ -974,7 +868,6 @@ class ActivityTracker {
         return await response.json();
       }
     } catch (error) {
-      console.debug('Error fetching activity summary:', error.message);
     }
     return [];
   }
@@ -991,7 +884,6 @@ class ActivityTracker {
         return await response.json();
       }
     } catch (error) {
-      console.debug('Error clearing activity:', error.message);
     }
     return { success: false };
   }
