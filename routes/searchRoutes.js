@@ -73,19 +73,24 @@ router.get('/advanced', async (req, res) => {
                 sortOption = { _id: -1 };
         }
 
-        // Build common filters
-        const commonFilters = {
-            price: { $gte: parseFloat(priceMin), $lte: parseFloat(priceMax) },
-            rating: { $gte: parseFloat(minRating) },
-            ...dateFilter
+        // Build filters for files (more lenient - don't require price/rating)
+        const fileFilters = {
+            ...(priceMin > 0 || priceMax < 10000 ? { price: { $gte: parseFloat(priceMin), $lte: parseFloat(priceMax) } } : {}),
+            ...(minRating > 0 ? { rating: { $gte: parseFloat(minRating) } } : {}),
+            ...dateFilter,
+            ...(categoryArray.length > 0 && { category: { $in: categoryArray } })
         };
 
-        // Add category filter if specified
-        if (categoryArray.length > 0) {
-            commonFilters.category = { $in: categoryArray };
-        }
+        // Build filters for courses (strict)
+        const courseFilters = {
+            price: { $gte: parseFloat(priceMin), $lte: parseFloat(priceMax) },
+            rating: { $gte: parseFloat(minRating) },
+            ...dateFilter,
+            ...(categoryArray.length > 0 && { category: { $in: categoryArray } })
+        };
 
         // Add creator filter if specified
+        let creatorId = null;
         if (creator) {
             const creatorUser = await User.findOne({
                 $or: [
@@ -94,7 +99,9 @@ router.get('/advanced', async (req, res) => {
                 ]
             });
             if (creatorUser) {
-                commonFilters.user = creatorUser._id;
+                creatorId = creatorUser._id;
+                fileFilters.user = creatorId;
+                courseFilters.userId = creatorId;
             }
         }
 
@@ -106,26 +113,26 @@ router.get('/advanced', async (req, res) => {
         const searchQuery = q ? { $regex: q, $options: 'i' } : undefined;
 
         if (assetType === 'all' || assetType === 'files') {
-            filePromise = File.find({
-                ...commonFilters,
-                ...(searchQuery && {
+            const fileQuery = {
+                ...fileFilters,
+                ...(q && {
                     $or: [
-                        { filename: searchQuery },
-                        { filedescription: searchQuery },
-                        { tags: { $in: [new RegExp(q, 'i')] } }
+                        { filename: { $regex: q, $options: 'i' } },
+                        { filedescription: { $regex: q, $options: 'i' } },
+                        { category: { $regex: q, $options: 'i' } }
                     ]
                 })
-            })
-                .select('_id filename price rating downloadCount category createdAt previewUrl user')
+            };
+            console.log('📄 FILE QUERY:', fileQuery);
+            filePromise = File.find(fileQuery)
+                .select('_id filename price rating downloadCount category createdAt previewUrl user imageType')
                 .sort(sortOption)
                 .lean();
         }
 
         if (assetType === 'all' || assetType === 'courses') {
             coursePromise = Course.find({
-                price: { $gte: parseFloat(priceMin), $lte: parseFloat(priceMax) },
-                rating: { $gte: parseFloat(minRating) },
-                ...dateFilter,
+                ...courseFilters,
                 ...(categoryArray.length > 0 && { category: { $in: categoryArray } }),
                 ...(searchQuery && {
                     $or: [
@@ -141,6 +148,10 @@ router.get('/advanced', async (req, res) => {
 
         const [files, courses] = await Promise.all([filePromise, coursePromise]);
 
+        console.log('✅ FILES FOUND:', files.length);
+        console.log('✅ COURSES FOUND:', courses.length);
+        if (files.length > 0) console.log('📋 FIRST FILE:', files[0]);
+
         // Combine and format results
         const fileResults = files.map(f => ({
             _id: f._id,
@@ -151,6 +162,7 @@ router.get('/advanced', async (req, res) => {
             category: f.category,
             createdAt: f.createdAt,
             image: f.previewUrl,
+            imageType: f.imageType,
             type: 'file',
             creator: f.user
         }));

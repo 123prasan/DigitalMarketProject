@@ -100,31 +100,56 @@
 
         /* STRICT ANTI-AD-BLOWOUT RULES */
         body {
-            margin: 0; padding: 0;
-            max-width: 100vw; overflow-x: hidden !important; 
-            background: linear-gradient(180deg, #fafbfc 0%, #f5f8fc 30%, #f0f4fa 60%, #f5f9fc 100%);
+            margin: 0;
+            padding: 0;
+            max-width: 100vw;
+            overflow-x: hidden !important;
+            background: linear-gradient(180deg, 
+                #fafbfc 0%, 
+                #f5f8fc 15%,
+                #f0f4fb 35%,
+                #f8f6fd 55%,
+                #f5f8fc 75%,
+                #fafbfc 100%);
             background-attachment: fixed;
             color: var(--v-text-main);
             font-family: var(--v-font-sans);
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             min-height: 100vh;
             position: relative;
         }
         
-        /* Clean, minimal animated background pattern */
+        /* Premium designed background with decorative elements */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
             background-image: 
-                radial-gradient(circle at 15% 45%, rgba(11, 87, 208, 0.02) 0%, transparent 60%),
-                radial-gradient(circle at 85% 75%, rgba(11, 87, 208, 0.02) 0%, transparent 60%),
-                radial-gradient(circle at 50% 10%, rgba(248, 250, 253, 0.4) 0%, transparent 40%);
+                radial-gradient(circle at 8% 25%, rgba(245, 158, 11, 0.12) 0%, transparent 35%),
+                radial-gradient(circle at 92% 75%, rgba(11, 87, 208, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 50% 95%, rgba(245, 158, 11, 0.08) 0%, transparent 45%),
+                radial-gradient(ellipse 800px 600px at 100% 0%, rgba(11, 87, 208, 0.05) 0%, transparent 60%);
             pointer-events: none;
-            z-index: -1;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: 
+                repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(11, 87, 208, 0.015) 60px, rgba(11, 87, 208, 0.015) 61px),
+                repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(245, 158, 11, 0.01) 60px, rgba(245, 158, 11, 0.01) 61px);
+            pointer-events: none;
+            z-index: 0;
         }
 
         * { box-sizing: border-box; min-width: 0; } 
+        
+        html {
+            background: transparent;
+        } 
         a { text-decoration: none; color: inherit; transition: var(--v-transition); }
         button { font-family: inherit; cursor: pointer; outline: none; border: none; background: none; }
         ul, ol { margin: 0; padding: 0; list-style: none; }
@@ -463,86 +488,201 @@
 
 
         /* ==========================================================================
-           ULTIMATE ADVANCED FILE CARDS - PREMIUM GOOGLE BOOKS / AMAZON STYLE
+           AMAZON PREMIUM BOOKS-STYLE CARD CARDS
            ========================================================================== */
-        .v-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; transition: var(--v-transition); }
+        .v-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 24px; 
+            transition: var(--v-transition);
+            padding: 0;
+        }
+        
         .v-grid.is-list-view { grid-template-columns: 1fr; }
         
         .v-card { 
-            background: var(--v-surface); border: 1px solid rgba(11, 87, 208, 0.08); border-radius: 12px; 
-            box-shadow: 0 2px 8px rgba(11, 87, 208, 0.05), 0 1px 3px rgba(0, 0, 0, 0.08);
-            display: flex; flex-direction: column; overflow: hidden; 
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1); position: relative; text-decoration: none; color: inherit;
-            background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(248,250,253,0.5) 100%);
+            background: #ffffff;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
         }
+        
         .v-card:hover { 
-            box-shadow: 0 12px 24px rgba(11, 87, 208, 0.1);
-            transform: translateY(-6px); 
-            border-color: rgba(11, 87, 208, 0.15); 
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+            transform: translateY(-8px);
+            border-color: #d0d0d0;
         }
         
         .v-grid.is-list-view .v-card { flex-direction: row; align-items: stretch; }
         
         .v-card-img-box { 
-            aspect-ratio: 3/4.5; position: relative; overflow: hidden; 
-            background: linear-gradient(135deg, #f0f4f9 0%, #f8fafc 100%);
-            border-bottom: 1px solid rgba(11, 87, 208, 0.05);
+            aspect-ratio: 2.5/4;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ebebeb 100%);
+            border-bottom: 1px solid #e8e8e8;
         }
+        
         .v-grid.is-list-view .v-card-img-box { 
             aspect-ratio: 1/1;
-            width: 220px; border-bottom: none; border-right: 1px solid rgba(11, 87, 208, 0.05); flex-shrink: 0; 
+            width: 200px;
+            border-bottom: none;
+            border-right: 1px solid #e8e8e8;
+            flex-shrink: 0;
         }
         
-        .v-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-        .v-card:hover .v-card-img { transform: scale(1.05); }
+        .v-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+            background: linear-gradient(135deg, #f5f5f5 0%, #ebebeb 100%);
+            display: block;
+        }
+        
+        .v-card:hover .v-card-img {
+            transform: scale(1.12);
+        }
         
         .v-card-badges {
-            position: absolute; top: 12px; left: 12px; right: 12px;
-            display: flex; justify-content: space-between; align-items: flex-start; z-index: 10;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+            gap: 6px;
         }
         
         .v-badge-category { 
-            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px);
-            color: var(--v-primary); padding: 6px 14px; font-size: 0.75rem; font-weight: 700; 
-            border-radius: 20px; border: 1px solid rgba(255,255,255,0.6);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            letter-spacing: 0.3px;
-        }
-        .v-badge-type {
-            background: linear-gradient(135deg, var(--v-primary), #1b68f5); color: white; backdrop-filter: blur(4px);
-            width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; 
-            font-size: 0.85rem; box-shadow: 0 4px 12px rgba(11, 87, 208, 0.3); border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(8px);
+            color: #0b57d0;
+            padding: 6px 12px;
+            font-size: 0.65rem;
             font-weight: 700;
+            border-radius: 4px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.6);
+            text-transform: uppercase;
+        }
+        
+        .v-badge-type {
+            background: linear-gradient(135deg, #0b57d0, #1b68f5);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 14px rgba(11, 87, 208, 0.35);
+            font-weight: 700;
+            border: 2px solid rgba(255,255,255,0.4);
+            flex-shrink: 0;
         }
         
         .v-card-content { 
-            padding: 14px; flex: 1; display: flex; flex-direction: column; 
-            background: var(--v-surface);
-            z-index: 1; 
+            padding: 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            z-index: 1;
         }
+        
         .v-card-title { 
-            font-family: var(--v-font-display); font-size: 0.95rem; font-weight: 700; 
-            margin-bottom: 6px; line-height: 1.2; color: #1a1a1a; 
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-clamp: 2;
-            letter-spacing: -0.3px;
+            font-family: var(--v-font-display);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.35;
+            color: #0f1419;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            letter-spacing: -0.2px;
         }
         
         .v-card-rating {
-            display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 8px;
+            font-size: 0.75rem;
         }
+        
         .v-card-stars {
-            color: #ffc107; font-size: 0.8rem; letter-spacing: 1px;
+            color: #ffc107;
+            font-size: 0.8rem;
+            letter-spacing: 0.3px;
         }
+        
         .v-card-rating-count {
-            color: var(--v-text-muted); font-weight: 500; font-size: 0.75rem;
+            color: #a6a6a6;
+            font-weight: 600;
+            font-size: 0.72rem;
         }
         
         .v-card-meta {
-            display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
-            font-size: 0.75rem; color: var(--v-text-muted); font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.73rem;
+            color: #666666;
+            font-weight: 600;
         }
-        .v-card-meta-item { display: flex; align-items: center; gap: 5px; }
-        .v-card-meta-item i { color: var(--v-primary); font-size: 0.75rem; }
+        
+        .v-card-meta-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+        }
+        
+        .v-card-meta-item i { 
+            color: #0b57d0; 
+            font-size: 0.7rem; 
+        }
+
+        .v-card-footer {
+            margin-top: auto;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .v-price {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #c7254e;
+            font-family: var(--v-font-display);
+        }
+        
+        .v-price.is-free {
+            color: #137333;
+            background: rgba(19, 115, 51, 0.08);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
 
         .v-card-author-row { margin-top: auto; display: flex; align-items: center; justify-content: space-between; }
         .v-card-author { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--v-text-main); font-weight: 600; }
@@ -1126,6 +1266,542 @@
             .v-controls-actions { width: 100%; justify-content: space-between; }
             .v-sort-select { width: 100%; }
         }
+
+        /* =============================
+           AMAZON BOOKS HERO & SECTIONS
+           ============================= */
+        
+        .v-hero-banner {
+            background: linear-gradient(135deg, #0d1b2a 0%, #0b57d0 25%, #1565c0 50%, #0d3b66 75%, #1a3a52 100%);
+            color: white;
+            padding: 80px 60px;
+            border-radius: 16px;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(11, 87, 208, 0.2);
+        }
+
+        .v-hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(30px); }
+        }
+
+        .v-hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+
+        .v-hero-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.8px;
+            font-family: var(--v-font-display);
+            line-height: 1.1;
+        }
+
+        .v-hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 32px;
+            font-weight: 300;
+            line-height: 1.7;
+            letter-spacing: 0.3px;
+        }
+
+        .v-hero-search-box {
+            display: flex;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .v-hero-search-box input {
+            flex: 1;
+            border: none;
+            padding: 16px 24px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+            color: #202124;
+        }
+
+        .v-hero-search-box input::placeholder {
+            color: #9aa0a6;
+        }
+
+        .v-hero-search-btn {
+            background: linear-gradient(135deg, #0b57d0, #1b68f5);
+            color: white;
+            border: none;
+            padding: 0 32px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .v-hero-search-btn:hover {
+            background: linear-gradient(135deg, #0842a0, #0b57d0);
+            transform: translateY(-2px);
+        }
+
+        /* Featured Section Container */
+        .v-featured-section {
+            margin-bottom: 60px;
+            scroll-behavior: smooth;
+        }
+
+        .v-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding: 0 8px;
+        }
+
+        .v-section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            font-family: var(--v-font-display);
+            background: linear-gradient(135deg, #1a1a1a 0%, #0b57d0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.6px;
+            margin-bottom: 4px;
+        }
+
+        .v-section-title i {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .v-section-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .v-section-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            font-family: var(--v-font-display);
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+
+        .v-section-title i {
+            font-size: 2rem;
+            animation: flicker 2.5s ease-in-out infinite;
+            color: #fff;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .v-view-more-link {
+            color: #0b57d0;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .v-view-more-link:hover {
+            background: rgba(11, 87, 208, 0.08);
+            transform: translateX(4px);
+        }
+
+        /* Carousel Container */
+        .v-carousel-container {
+            position: relative;
+            overflow: visible;
+            border-radius: 14px;
+            padding: 12px 0;
+        }
+
+        .v-carousel-wrapper {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 12px 4px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .v-carousel-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .v-carousel-item {
+            flex: 0 0 calc(20% - 16px);
+            min-width: 160px;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .v-carousel-item:hover {
+            transform: translateY(-8px);
+        }
+
+        .v-carousel-item.v-card {
+            height: auto;
+            min-height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .v-carousel-item.v-card:hover {
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+        }
+        
+        @media (max-width: 1440px) {
+            .v-carousel-item { flex: 0 0 calc(25% - 15px); }
+        }
+        
+        @media (max-width: 1024px) {
+            .v-carousel-item { flex: 0 0 calc(33.333% - 13px); }
+        }
+        
+        @media (max-width: 768px) {
+            .v-carousel-item { flex: 0 0 calc(50% - 10px); }
+        }
+
+        .v-carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            font-size: 1.4rem;
+            z-index: 20;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+        }
+
+        .v-carousel-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.12);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            color: #333;
+        }
+
+        .v-carousel-nav.left {
+            left: -24px;
+        }
+
+        .v-carousel-nav.right {
+            right: -24px;
+        }
+
+        .v-section-subtitle {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: 0.2px;
+        }
+
+        /* ========== PREMIUM SECTION BACKGROUNDS (Professional Colors) ========== */
+        
+        /* Best Sellers - Premium Orange/Amber Gradient */
+        .v-featured-section:has(#vBestSellersCarousel) {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ea580c 100%);
+            padding: 50px 40px;
+            margin: 45px 0;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(245, 158, 11, 0.2);
+        }
+        
+        .v-featured-section:has(#vBestSellersCarousel)::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .v-featured-section:has(#vBestSellersCarousel)::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        /* New Releases - VIBRANT FESTIVAL BLUE/TEAL */
+        .v-featured-section:has(#vNewReleasesCarousel) {
+            background:
+                radial-gradient(circle at 15% 40%, rgba(0, 188, 212, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 85% 70%, rgba(33, 150, 243, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg,
+                    #e1f5fe 0%,
+                    #b3e5fc 15%,
+                    #81d4fa 30%,
+                    #4fc3f7 45%,
+                    #29b6f6 60%,
+                    #03a9f4 75%,
+                    #039be5 90%,
+                    #0288d1 100%);
+            padding: 60px 40px;
+            margin: 50px 0;
+            border-radius: 16px;
+            border: 3px solid rgba(33, 150, 243, 0.4);
+            box-shadow: 
+                inset 0 2px 20px rgba(0, 172, 193, 0.2),
+                0 12px 40px rgba(33, 150, 243, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .v-featured-section:has(#vNewReleasesCarousel)::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 255, 255, 0.03) 35px, rgba(255, 255, 255, 0.03) 70px);
+            pointer-events: none;
+            border-radius: 16px;
+        }
+        
+        /* Top Rated - Premium Purple Gradient */
+        .v-featured-section:has(#vTopRatedCarousel) {
+            background: linear-gradient(135deg, #9c27b0 0%, #c2185b 50%, #7b1fa2 100%);
+            padding: 50px 40px;
+            margin: 45px 0;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(156, 39, 176, 0.2);
+        }
+        
+        .v-featured-section:has(#vTopRatedCarousel)::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .v-featured-section:has(#vTopRatedCarousel)::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .v-featured-section {
+            margin-bottom: 70px;
+            scroll-behavior: smooth;
+            position: relative;
+            z-index: 1;
+        }
+
+        .v-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .v-section-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .v-featured-section h2 {
+            margin: 0;
+        }
+
+        /* Category Showcase */
+        .v-category-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 50px;
+        }
+
+        .v-category-card {
+            background: linear-gradient(135deg, rgba(11, 87, 208, 0.08) 0%, rgba(27, 104, 245, 0.04) 100%);
+            border: 2px solid rgba(11, 87, 208, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .v-category-card:hover {
+            transform: translateY(-8px);
+            background: linear-gradient(135deg, rgba(11, 87, 208, 0.12) 0%, rgba(27, 104, 245, 0.08) 100%);
+            border-color: rgba(11, 87, 208, 0.2);
+            box-shadow: 0 12px 32px rgba(11, 87, 208, 0.15);
+        }
+
+        .v-category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #0b57d0, #1b68f5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .v-category-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-family: var(--v-font-display);
+        }
+
+        .v-category-count {
+            font-size: 0.85rem;
+            color: #5f6368;
+            font-weight: 500;
+        }
+
+        /* Badges for featured sections */
+        .v-featured-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, #ff6b35, #ff4500);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+            z-index: 11;
+        }
+
+        .v-bestseller-badge {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a1a1a;
+        }
+
+        .v-new-badge {
+            background: linear-gradient(135deg, #0b57d0, #1b68f5);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1440px) {
+            .v-carousel-item {
+                flex: 0 0 calc(25% - 12px);
+                min-width: 150px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .v-carousel-item {
+                flex: 0 0 calc(33.333% - 12px);
+                min-width: 140px;
+            }
+            .v-hero-banner {
+                padding: 40px 24px;
+            }
+            .v-hero-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .v-carousel-item {
+                flex: 0 0 calc(50% - 12px);
+                min-width: 130px;
+            }
+            .v-hero-banner {
+                padding: 30px 16px;
+                margin-bottom: 40px;
+            }
+            .v-hero-title {
+                font-size: 1.5rem;
+            }
+            .v-section-title {
+                font-size: 1.5rem;
+            }
+            .v-category-showcase {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1241,8 +1917,117 @@
 
         <main class="v-main">
             
-            <h1 class="v-text-loud">Library</h1>
-            <p class="v-text-sub">Explore thousands of premium academic resources, templates, and courses.</p>
+            <!-- HERO BANNER WITH SEARCH -->
+            <div class="v-hero-banner">
+                <div class="v-hero-content">
+                    <h1 class="v-hero-title">Discover Premium Learning Materials</h1>
+                    <p class="v-hero-subtitle">Access thousands of premium study notes, courses, and resources curated by top students and educators worldwide.</p>
+                    <div class="v-hero-search-box">
+                        <input type="text" id="vHeroSearchInput" placeholder="Search for courses, notes, papers...">
+                        <button class="v-hero-search-btn" id="vHeroSearchBtn">Search</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BEST SELLERS SECTION -->
+            <div class="v-featured-section">
+                <div class="v-section-header">
+                    <div>
+                        <div class="v-section-title">
+                            <i class="fas fa-crown"></i> Best Sellers
+                        </div>
+                        <div class="v-section-subtitle">Most popular courses and study materials</div>
+                    </div>
+                    <a href="#" class="v-view-more-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="v-carousel-container">
+                    <div class="v-carousel-wrapper" id="vBestSellersCarousel">
+                        <div style="text-align: center; grid-column: 1/-1; padding: 40px; color: #5f6368;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                    <button class="v-carousel-nav left" onclick="scrollCarousel('vBestSellersCarousel', -300)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="v-carousel-nav right" onclick="scrollCarousel('vBestSellersCarousel', 300)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- NEW RELEASES SECTION -->
+            <div class="v-featured-section">
+                <div class="v-section-header">
+                    <div>
+                        <div class="v-section-title">
+                            <i class="fas fa-sparkles"></i> New Releases
+                        </div>
+                        <div class="v-section-subtitle">Latest courses and materials just added</div>
+                    </div>
+                    <a href="#" class="v-view-more-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="v-carousel-container">
+                    <div class="v-carousel-wrapper" id="vNewReleasesCarousel">
+                        <div style="text-align: center; grid-column: 1/-1; padding: 40px; color: #5f6368;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                    <button class="v-carousel-nav left" onclick="scrollCarousel('vNewReleasesCarousel', -300)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="v-carousel-nav right" onclick="scrollCarousel('vNewReleasesCarousel', 300)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TOP RATED SECTION -->
+            <div class="v-featured-section">
+                <div class="v-section-header">
+                    <div>
+                        <div class="v-section-title">
+                            <i class="fas fa-star"></i> Top Rated
+                        </div>
+                        <div class="v-section-subtitle">Highest rated resources with excellent reviews</div>
+                    </div>
+                    <a href="#" class="v-view-more-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="v-carousel-container">
+                    <div class="v-carousel-wrapper" id="vTopRatedCarousel">
+                        <div style="text-align: center; grid-column: 1/-1; padding: 40px; color: #5f6368;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                    <button class="v-carousel-nav left" onclick="scrollCarousel('vTopRatedCarousel', -300)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="v-carousel-nav right" onclick="scrollCarousel('vTopRatedCarousel', 300)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CATEGORY SHOWCASE -->
+            <div class="v-featured-section">
+                <div class="v-section-header">
+                    <div>
+                        <div class="v-section-title">
+                            <i class="fas fa-th"></i> Browse by Category
+                        </div>
+                        <div class="v-section-subtitle">Explore resources in your area of interest</div>
+                    </div>
+                </div>
+                <div class="v-category-showcase" id="vCategoryShowcase">
+                    <!-- Categories will load here dynamically -->
+                </div>
+            </div>
+
+            <!-- DIVIDER -->
+            <div style="border-top: 2px solid rgba(11, 87, 208, 0.1); margin: 60px 0; padding-top: 40px;"></div>
+
+            <!-- MAIN SEARCH & BROWSE SECTION -->
+            <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; font-family: var(--v-font-display);">Browse All Resources</h2>
+            <p style="color: #5f6368; font-weight: 500; margin-bottom: 28px;">Find exactly what you're looking for with advanced search and filters</p>
 
             <div class="v-search-container">
                 <div class="v-search-box" id="vSearchBox">
@@ -1334,7 +2119,258 @@
     <!-- Activity Tracker already loaded in header.ejs -->
 
     <script>
+        // ============================================
+        // CAROUSEL & FEATURED SECTIONS FUNCTIONS
+        // ============================================
+
+        function scrollCarousel(carouselId, distance) {
+            const carousel = document.getElementById(carouselId);
+            if (carousel) {
+                carousel.scrollBy({
+                    left: distance,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function createCardHTML(item) {
+            const title = item.title || item.name || 'Untitled';
+            const price = item.price || 0;
+            const rating = (item.rating || item.avgRating || 0).toFixed(1);
+            const reviews = item.interest || item.reviews || item.reviewCount || 0;
+            const fileId = item._id || item.id;
+            const isFree = price === 0 || price === '0' || item.isFree;
+            const typeIcon = item.type === 'course' ? 'C' : 'F';
+            
+            // Use placehold.co for fallback like trending section does
+            const textForImage = (title || 'File').substring(0, 20);
+            const fallbackImage = `https://placehold.co/400x250/fee2e2/ea580c?text=${encodeURIComponent(textForImage)}&font=Outfit`;
+            
+            // Check if previewUrl is valid (not empty, not 'null', not 'undefined')
+            const previewImage = (item.image && item.image.trim && item.image.trim() && item.image.trim() !== 'null' && item.image.trim() !== 'undefined')
+                ? item.image 
+                : fallbackImage;
+
+            return `
+                <a href="${item.type === 'course' ? '/course/' : '/file/'}${fileId}" class="v-card v-carousel-item" style="text-decoration: none; color: inherit;">
+                    <div class="v-card-img-box">
+                        <img src="${previewImage}" alt="${title}" class="v-card-img" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
+                        <div class="v-card-badges">
+                            <span class="v-badge-category">${item.category || item.type || 'Academic'}</span>
+                            <div class="v-badge-type" title="${item.type || 'file'}">${typeIcon}</div>
+                        </div>
+                    </div>
+                    <div class="v-card-content">
+                        <div class="v-card-title">${title.substring(0, 60)}</div>
+                        <div class="v-card-rating">
+                            <span class="v-card-stars">${'★'.repeat(Math.floor(rating))}${'☆'.repeat(5-Math.floor(rating))}</span>
+                            <span class="v-card-rating-count">(${reviews})</span>
+                        </div>
+                        <div class="v-card-meta">
+                            <div class="v-card-meta-item">
+                                <i class="fas fa-${item.type === 'course' ? 'users' : 'download'}"></i> ${reviews}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="v-card-footer">
+                        <span class="v-price${isFree ? ' is-free' : ''}">${isFree ? 'Free' : '₹' + Math.floor(price)}</span>
+                    </div>
+                </a>
+            `;
+        }
+
+        async function loadBestSellers() {
+            try {
+                console.log('📥 Fetching best sellers (sorted by downloads)...');
+                
+                // Fetch files sorted by trending/downloads
+                let response = await fetch('/api/search/advanced?sortBy=trending&limit=20&assetType=files&page=1');
+                let data = await response.json();
+                const carousel = document.getElementById('vBestSellersCarousel');
+                
+                console.log('✅ Best Sellers Response:', data);
+                
+                if (data.results && data.results.length > 0) {
+                    const items = data.results.slice(0, 10).map(item => {
+                        // Build CloudFront URL using imageType like trending section
+                        const itemPreviewUrl = item.image || (item.imageType ? `https://d3epchi0htsp3c.cloudfront.net/files-previews/images/${item._id}.${item.imageType}` : null);
+                        
+                        return {
+                            ...item,
+                            image: itemPreviewUrl
+                        };
+                    });
+                    
+                    console.log(`✨ Found ${items.length} best sellers`);
+                    carousel.innerHTML = items
+                        .map(item => createCardHTML(item))
+                        .join('');
+                } else {
+                    carousel.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #5f6368;">
+                        <p>No files available</p>
+                    </div>`;
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                document.getElementById('vBestSellersCarousel').innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #c5221f;">Error</p>`;
+            }
+        }
+
+        async function loadNewReleases() {
+            try {
+                console.log('📥 Fetching new releases (sorted by date)...');
+                
+                let response = await fetch('/api/search/advanced?sortBy=newest&limit=20&assetType=files&page=1');
+                let data = await response.json();
+                const carousel = document.getElementById('vNewReleasesCarousel');
+                
+                console.log('✅ New Releases Response:', data);
+                
+                if (data.results && data.results.length > 0) {
+                    const items = data.results.slice(0, 10).map(item => {
+                        // Build CloudFront URL using imageType like trending section
+                        const itemPreviewUrl = item.image || (item.imageType ? `https://d3epchi0htsp3c.cloudfront.net/files-previews/images/${item._id}.${item.imageType}` : null);
+                        
+                        return {
+                            ...item,
+                            image: itemPreviewUrl
+                        };
+                    });
+                    
+                    console.log(`✨ Found ${items.length} new releases`);
+                    carousel.innerHTML = items
+                        .map(item => createCardHTML(item))
+                        .join('');
+                } else {
+                    carousel.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #5f6368;">
+                        <p>No files available</p>
+                    </div>`;
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                document.getElementById('vNewReleasesCarousel').innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #c5221f;">Error</p>`;
+            }
+        }
+
+        async function loadTopRated() {
+            try {
+                console.log('📥 Fetching top rated (sorted by rating)...');
+                
+                let response = await fetch('/api/search/advanced?sortBy=rating&limit=20&assetType=files&page=1');
+                let data = await response.json();
+                const carousel = document.getElementById('vTopRatedCarousel');
+                
+                console.log('✅ Top Rated Response:', data);
+                
+                if (data.results && data.results.length > 0) {
+                    const items = data.results.slice(0, 10).map(item => {
+                        // Build CloudFront URL using imageType like trending section
+                        const itemPreviewUrl = item.image || (item.imageType ? `https://d3epchi0htsp3c.cloudfront.net/files-previews/images/${item._id}.${item.imageType}` : null);
+                        
+                        return {
+                            ...item,
+                            image: itemPreviewUrl
+                        };
+                    });
+                    
+                    console.log(`✨ Found ${items.length} top rated items`);
+                    carousel.innerHTML = items
+                        .map(item => createCardHTML(item))
+                        .join('');
+                } else {
+                    carousel.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #5f6368;">
+                        <p>No files available</p>
+                    </div>`;
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                document.getElementById('vTopRatedCarousel').innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #c5221f;">Error</p>`;
+            }
+        }
+
+        async function loadCategoryShowcase() {
+            try {
+                console.log('📥 Fetching categories...');
+                
+                const response = await fetch('/api/search/filters-options');
+                const data = await response.json();
+                const showcase = document.getElementById('vCategoryShowcase');
+                
+                console.log('✅ Categories Response:', data);
+                
+                const categoryIcons = {
+                    'Technology': 'fas fa-laptop-code',
+                    'Mathematics': 'fas fa-calculator',
+                    'Science': 'fas fa-flask',
+                    'Business': 'fas fa-briefcase',
+                    'Language': 'fas fa-language',
+                    'Arts': 'fas fa-palette',
+                    'Engineering': 'fas fa-hammer-wrench',
+                    'Music': 'fas fa-music',
+                    'Health': 'fas fa-heartbeat',
+                    'History': 'fas fa-book-open',
+                    'Programming': 'fas fa-code',
+                    'Writing': 'fas fa-pen-fancy',
+                    'Design': 'fas fa-paint-brush',
+                    'Finance': 'fas fa-chart-line',
+                    'Education': 'fas fa-graduation-cap'
+                };
+
+                if (data.categories && data.categories.length > 0) {
+                    console.log(`✨ Found ${data.categories.length} categories`);
+                    showcase.innerHTML = data.categories.slice(0, 8)
+                        .map(cat => `
+                            <a href="/search?q=&category[]=${encodeURIComponent(cat)}" class="v-category-card">
+                                <div class="v-category-icon">
+                                    <i class="${categoryIcons[cat] || 'fas fa-folder'}"></i>
+                                </div>
+                                <div class="v-category-name">${cat}</div>
+                                <div class="v-category-count">Explore</div>
+                            </a>
+                        `)
+                        .join('');
+                } else {
+                    console.warn('⚠️ No categories found');
+                    showcase.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #5f6368;">Categories coming soon</p>';
+                }
+            } catch (error) {
+                console.error('❌ Error loading categories:', error);
+                document.getElementById('vCategoryShowcase').innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #c5221f;">Error loading categories</p>';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // Load featured sections
+            setTimeout(() => {
+                console.log('🚀 Starting to load featured sections...');
+                loadBestSellers();
+                loadNewReleases();
+                loadTopRated();
+                loadCategoryShowcase();
+            }, 500);
+
+            // Hero search functionality
+            const heroSearchBtn = document.getElementById('vHeroSearchBtn');
+            const heroSearchInput = document.getElementById('vHeroSearchInput');
+            if (heroSearchBtn) {
+                heroSearchBtn.addEventListener('click', () => {
+                    const query = heroSearchInput.value.trim();
+                    if (query) {
+                        window.location.href = `/search?query=${encodeURIComponent(query)}`;
+                    }
+                });
+            }
+            if (heroSearchInput) {
+                heroSearchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = heroSearchInput.value.trim();
+                        if (query) {
+                            window.location.href = `/search?query=${encodeURIComponent(query)}`;
+                        }
+                    }
+                });
+            }
             
             // Initialize AdSense manually to ensure it triggers after layout rendering
             try {

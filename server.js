@@ -69,6 +69,7 @@ const pushNotificationroute = require('./pushNotification.js');
 const serviceAccount = require('./serviceAccountKey.json');
 const sendNotification = require("./test.js")
 const Course = require("./models/course.js")
+const SearchLog = require("./models/SearchLog.js");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
@@ -1795,6 +1796,342 @@ app.get("/contact", (req, res) => {
   // =============== END SEO SETUP ===============
   res.render("contact");
 });
+
+// Search Results Page
+app.get("/search", async (req, res) => {
+  try {
+    const query = req.query.query || req.query.q || '';
+    
+    // Track search activity
+    if (query.trim()) {
+      try {
+        const searchLog = new SearchLog({
+          query: query.trim(),
+          userId: req.user?.id || null,
+          userAgent: req.get('user-agent'),
+          ipAddress: req.ip,
+          timestamp: new Date()
+        });
+        await searchLog.save();
+      } catch (e) {
+        // Silent fail for logging
+      }
+    }
+    
+    // =============== SEO SETUP ===============
+    res.locals.setMetaTags('search', {
+      title: `Search: ${query} - Vidyari`,
+      description: `Search results for "${query}" on Vidyari marketplace`
+    });
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'SearchResultsPage',
+      'name': `Search Results for ${query}`,
+      'description': `Showing search results for ${query}`
+    });
+    // =============== END SEO SETUP ===============
+    
+    res.render("search", { query });
+  } catch (error) {
+    console.error('Search page error:', error);
+    res.render("search", { query: '' });
+  }
+});
+
+// =====================================================
+// INTELLIGENT SEARCH API ROUTES - Advanced Features
+// =====================================================
+
+// Get filter options for search sidebar
+app.get("/api/search/filters-options", async (req, res) => {
+  try {
+    const cacheKey = "search_filters_options";
+    const cached = appCache.get(cacheKey);
+    
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Get unique categories from files and courses
+    const [fileCategories, courseCategories] = await Promise.all([
+      File.distinct("category").limit(50),
+      Course.distinct("category").limit(50)
+    ]);
+
+    const allCategories = [...new Set([...fileCategories, ...courseCategories])].filter(Boolean);
+
+    const response = {
+      success: true,
+      categories: allCategories.map(cat => ({
+        id: cat,
+        name: cat,
+        icon: getCategoryIcon(cat)
+      })),
+      priceRanges: [
+        { label: "Free", min: 0, max: 0 },
+        { label: "Under ₹500", min: 0, max: 500 },
+        { label: "₹500 - ₹1000", min: 500, max: 1000 },
+        { label: "₹1000 - ₹5000", min: 1000, max: 5000 },
+        { label: "Above ₹5000", min: 5000, max: 999999 }
+      ],
+      ratings: [1, 2, 3, 4, 5],
+      types: ["files", "courses"]
+    };
+
+    appCache.set(cacheKey, response, 3600);
+    res.json(response);
+  } catch (error) {
+    console.error('Filter options error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get trending searches
+app.get("/api/search/trending", async (req, res) => {
+  try {
+    const cacheKey = "trending_searches";
+    const cached = appCache.get(cacheKey);
+    
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Aggregate search logs to find trending queries (last 7 days)
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    
+    const trending = await SearchLog.aggregate([
+      {
+        $match: {
+          timestamp: { $gte: sevenDaysAgo }
+        }
+      },
+      {
+        $group: {
+          _id: { $toLower: "$query" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { count: -1 }
+      },
+      {
+        $limit: 20
+      }
+    ]).catch(() => []);
+
+    const response = {
+      success: true,
+      trending: trending.map(item => ({
+        query: item._id,
+        count: item.count
+      }))
+    };
+
+    appCache.set(cacheKey, response, 1800);
+    res.json(response);
+  } catch (error) {
+    console.error('Trending searches error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get smart search suggestions with AI ranking
+app.get("/api/search/suggestions", async (req, res) => {
+  try {
+    const q = req.query.q || '';
+    
+    if (q.length < 2) {
+      return res.json({ success: true, suggestions: [] });
+    }
+
+    const cacheKey = `search_suggestions_${q.toLowerCase()}`;
+    const cached = appCache.get(cacheKey);
+    
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Search across both files and courses
+    const [files, courses] = await Promise.all([
+      File.find({
+        $or: [
+          { filename: { $regex: q, $options: 'i' } },
+          { description: { $regex: q, $options: 'i' } }
+        ]
+      })
+        .select('_id filename category downloadCount rating imageType')
+        .limit(5)
+        .lean(),
+      Course.find({
+        $or: [
+          { title: { $regex: q, $options: 'i' } },
+          { description: { $regex: q, $options: 'i' } }
+        ]
+      })
+        .select('_id title category students rating')
+        .limit(5)
+        .lean()
+    ]);
+
+    const suggestions = [
+      ...files.map(f => ({
+        id: f._id,
+        title: f.filename,
+        type: 'file',
+        icon: 'file',
+        score: calculateRelevanceScore(f.downloadCount, f.rating),
+        popularity: f.downloadCount || 0
+      })),
+      ...courses.map(c => ({
+        id: c._id,
+        title: c.title,
+        type: 'course',
+        icon: 'book',
+        score: calculateRelevanceScore(c.students, c.rating),
+        popularity: c.students || 0
+      }))
+    ].sort((a, b) => b.score - a.score).slice(0, 8);
+
+    const response = {
+      success: true,
+      suggestions: suggestions
+    };
+
+    appCache.set(cacheKey, response, 600);
+    res.json(response);
+  } catch (error) {
+    console.error('Suggestions error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get popular searches
+app.get("/api/search/popular", async (req, res) => {
+  try {
+    const cacheKey = "popular_searches";
+    const cached = appCache.get(cacheKey);
+    
+    if (cached) {
+      return res.json(cached);
+    }
+
+    // Get top files and courses
+    const [topFiles, topCourses] = await Promise.all([
+      File.find({})
+        .select('_id filename downloadCount rating category imageType')
+        .sort({ downloadCount: -1 })
+        .limit(10)
+        .lean(),
+      Course.find({})
+        .select('_id title students rating category')
+        .sort({ students: -1 })
+        .limit(10)
+        .lean()
+    ]);
+
+    const response = {
+      success: true,
+      popular: [
+        ...topFiles.map(f => ({
+          id: f._id,
+          title: f.filename,
+          type: 'file',
+          icon: 'file',
+          popularity: f.downloadCount || 0,
+          rating: (f.rating || 0).toFixed(1)
+        })),
+        ...topCourses.map(c => ({
+          id: c._id,
+          title: c.title,
+          type: 'course',
+          icon: 'book',
+          popularity: c.students || 0,
+          rating: (c.rating || 0).toFixed(1)
+        }))
+      ].sort((a, b) => b.popularity - a.popularity).slice(0, 15)
+    };
+
+    appCache.set(cacheKey, response, 3600);
+    res.json(response);
+  } catch (error) {
+    console.error('Popular searches error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get search analytics for admin
+app.get("/api/admin/search-analytics", requireAuth, async (req, res) => {
+  try {
+    // Check if user is admin
+    const user = await User.findById(req.user?.id);
+    if (!user?.isAdmin) {
+      return res.status(403).json({ success: false, error: 'Unauthorized' });
+    }
+
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    
+    const analytics = await SearchLog.aggregate([
+      {
+        $match: {
+          timestamp: { $gte: thirtyDaysAgo }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSearches: { $sum: 1 },
+          uniqueQueries: { $addToSet: "$query" },
+          uniqueUsers: { $addToSet: "$userId" }
+        }
+      },
+      {
+        $project: {
+          totalSearches: 1,
+          uniqueQueriesCount: { $size: "$uniqueQueries" },
+          uniqueUsersCount: { $size: "$uniqueUsers" },
+          avgSearchesPerDay: { $divide: ["$totalSearches", 30] }
+        }
+      }
+    ]).catch(() => []);
+
+    const response = {
+      success: true,
+      analytics: analytics[0] || {
+        totalSearches: 0,
+        uniqueQueriesCount: 0,
+        uniqueUsersCount: 0,
+        avgSearchesPerDay: 0
+      }
+    };
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Helper: Calculate relevance score based on popularity and rating
+function calculateRelevanceScore(popularity, rating) {
+  const popularityScore = Math.log(popularity + 1) * 10;
+  const ratingScore = (rating || 0) * 5;
+  return popularityScore + ratingScore;
+}
+
+// Helper: Get category icon
+function getCategoryIcon(category) {
+  const iconMap = {
+    'programming': 'code',
+    'design': 'palette',
+    'business': 'briefcase',
+    'marketing': 'chart-line',
+    'photography': 'camera',
+    'music': 'music',
+    'writing': 'pen',
+    'development': 'code'
+  };
+  return iconMap[category?.toLowerCase()] || 'folder';
+}
+
 app.get("/disclaimer", (req, res) => {
   res.render("disclaimer");
 });
