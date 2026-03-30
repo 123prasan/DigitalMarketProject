@@ -13,29 +13,21 @@
         <% } %>
     </title>
 
-    <meta name="description" content="Download '<%= file.filename %>' on Vidyari. <%= priceDetails.total == 0 ? 'Free access' : '₹' + priceDetails.total %> — Verified creator, 4.8★ rating.">
-    <meta property="og:type" content="product">
+    <meta name="description" content="<%= seoMetaDescription || ('Download ' + file.filename + ' on Vidyari. ' + (priceDetails.total == 0 ? 'Free access' : '₹' + priceDetails.total) + ' — Verified creator, 4.8★ rating.') %>">
+    <meta name="keywords" content="<%= seoKeywords || (file.filename + ', pdf, download, notes, study material') %>">
+    <meta property="og:type" content="website">
     <meta property="og:title" content="<%= file.filename %> | Download on Vidyari">
     <meta property="og:image" content="<%= previewUrl || 'https://vidyari.com/images/logo-1200x630.png' %>">
     <meta property="og:url" content="https://vidyari.com/file/<%= file.slug %>/<%= file._id %>">
+    <meta property="og:description" content="<%= seoMetaDescription || file.filedescription %>">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= file.filename %> on Vidyari">
+    <meta name="twitter:description" content="<%= seoMetaDescription %>">
+    <meta name="twitter:image" content="<%= previewUrl || 'https://vidyari.com/images/logo.png' %>">
     <link rel="canonical" href="https://vidyari.com/file/<%= file.slug %>/<%= file._id %>">
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": "<%- (file.filename || 'Digital Resource').replace(/"/g, '&quot;') %>",
-      "image": ["<%= previewUrl || 'https://vidyari.com/images/logo.png' %>"],
-      "description": "<%- (file.filedescription || 'Premium educational resource').substring(0, 160).replace(/"/g, '&quot;') %>",
-      "offers": {
-        "@type": "Offer",
-        "priceCurrency": "INR",
-        "price": "<%= priceDetails.total %>",
-        "availability": "https://schema.org/InStock"
-      }
-    }
-    </script>
+    <!-- SEO Schema Markup is generated server-side and included via header.ejs -->
+    <!-- Including: EducationalResource, FAQ, BreadcrumbList -->
 
     <link rel="icon" href="/images/logo.svg" type="image/svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -883,6 +875,17 @@ const isFree = Number(priceDetails.total) === 0;
                     <%= file.category || 'Resource' %>
                 </div>
                 <h1 class="file-title"><%- file.title || file.filename %></h1>
+                <h2 style="font-size:1rem;font-weight:500;color:var(--ink-2);margin-bottom:16px;">
+                    <% if(file.filename.toLowerCase().includes('note')) { %>
+                        Free & Paid Study Notes | <%= file.category %> | PDF Download
+                    <% } else if(file.filename.toLowerCase().includes('paper')) { %>
+                        Question Papers & Solutions | <%= file.category %> | Download & Learn
+                    <% } else if(file.filename.toLowerCase().includes('solution')) { %>
+                        Solutions & Answers | <%= file.category %> | Study Material
+                    <% } else { %>
+                        Premium Learning Resource | <%= file.category %> | Trusted by Students
+                    <% } %>
+                </h2>
                 <a href="/profile/<%= file.user || 'admin' %>" class="creator-card">
                     <img src="<%= sellerprofilepic && sellerprofilepic.trim() !== '' ? sellerprofilepic : '/images/avatar.jpg' %>"
                          alt="Creator"
@@ -913,7 +916,7 @@ const isFree = Number(priceDetails.total) === 0;
             <!-- DESCRIPTION -->
             <% if (file.filedescription) { %>
             <div class="content-card">
-                <h2 class="content-card-title"><i class="fa-solid fa-circle-info"></i> About this resource</h2>
+                <h2 class="content-card-title"><i class="fa-solid fa-circle-info" style="color:var(--accent);"></i> About this resource</h2>
                 <div class="desc-text"><%- file.filedescription %></div>
             </div>
             <% } %>
@@ -923,14 +926,56 @@ const isFree = Number(priceDetails.total) === 0;
 
             <!-- REVIEWS -->
             <div class="content-card">
-                <h2 class="content-card-title"><i class="fa-solid fa-star"></i> Student Reviews</h2>
+                <h2 class="content-card-title"><i class="fa-solid fa-star" style="color:var(--accent);"></i> Student Reviews</h2>
                 <div id="reviewsArea"><p style="color:var(--ink-3);font-size:0.875rem;">Loading reviews…</p></div>
+            </div>
+
+            <!-- FAQ SECTION FOR SEO -->
+            <div class="content-card">
+                <h2 class="content-card-title"><i class="fa-solid fa-circle-question" style="color:var(--accent);"></i> Frequently Asked Questions</h2>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="background:var(--rule-light);border-radius:var(--r-md);padding:14px;cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        <strong style="color:var(--ink);"><i class="fa-solid fa-cloud-arrow-down" style="margin-right:8px;color:var(--accent);"></i> How do I download <%= file.filename %>?</strong>
+                    </div>
+                    <div style="padding:0 14px;display:none;color:var(--ink-2);font-size:0.9rem;line-height:1.6;">
+                        Click the Download button <% if(file.price > 0) { %>or "Secure Checkout" to purchase<% } %> and you'll get instant access to the file. <%= file.price === 0 ? 'No payment required!' : 'It\'s a one-time payment for lifetime access.' %>
+                    </div>
+                    
+                    <div style="background:var(--rule-light);border-radius:var(--r-md);padding:14px;cursor:pointer;margin-top:8px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        <strong style="color:var(--ink);"><i class="fa-solid fa-tag" style="margin-right:8px;color:var(--accent);"></i> Is <%= file.filename %> free or paid?</strong>
+                    </div>
+                    <div style="padding:0 14px;display:none;color:var(--ink-2);font-size:0.9rem;line-height:1.6;">
+                        <% if(file.price === 0) { %>
+                            <%= file.filename %> is completely free! No charges, no hidden fees. Just download and use.
+                        <% } else { %>
+                            <%= file.filename %> is a premium resource priced at ₹<%= file.price %>. You pay once and get lifetime access.
+                        <% } %>
+                    </div>
+                    
+                    <div style="background:var(--rule-light);border-radius:var(--r-md);padding:14px;cursor:pointer;margin-top:8px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        <strong style="color:var(--ink);"><i class="fa-solid fa-lock" style="margin-right:8px;color:var(--accent);"></i> Can I share this file after downloading?</strong>
+                    </div>
+                    <div style="padding:0 14px;display:none;color:var(--ink-2);font-size:0.9rem;line-height:1.6;">
+                        <%= file.filename %> is for personal and educational use. Redistribution or commercial use is not permitted. Please respect the creator's intellectual property.
+                    </div>
+                    
+                    <div style="background:var(--rule-light);border-radius:var(--r-md);padding:14px;cursor:pointer;margin-top:8px;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                        <strong style="color:var(--ink);"><i class="fa-solid fa-file" style="margin-right:8px;color:var(--accent);"></i> What's included in this <%= file.fileType %>?</strong>
+                    </div>
+                    <div style="padding:0 14px;display:none;color:var(--ink-2);font-size:0.9rem;line-height:1.6;">
+                        <% if(file.filedescription) { %>
+                            <%= file.filedescription.substring(0, 200) %>...
+                        <% } else { %>
+                            <%= file.filename %> is a comprehensive <%= file.category %> resource designed to help you excel in your studies.
+                        <% } %>
+                    </div>
+                </div>
             </div>
 
             <!-- RELATED -->
             <div class="content-card related-section-premium">
                 <div class="related-header">
-                    <h2 class="related-title"><i class="fa-solid fa-sparkles"></i> You Might Also Like</h2>
+                    <h2 class="related-title"><i class="fa-solid fa-sparkles" style="color:var(--accent);"></i> You Might Also Like</h2>
                     <p class="related-subtitle">Handpicked recommendations based on this file</p>
                 </div>
                 <div id="relatedArea"><p style="color:var(--ink-3);font-size:0.875rem;text-align:center;padding:40px 20px;">Loading suggestions…</p></div>

@@ -2974,6 +2974,127 @@ const userCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // 10 min ca
 
 
 // ======================================================
+// ✅ SEO Helper: Generate keyword-optimized meta description
+function generateOptimizedSEOForFile(file) {
+  const filename = file.filename || '';
+  const category = file.category || 'Study Material';
+  const fileType = file.fileType || 'PDF';
+  const price = file.price;
+  
+  // Extract keywords from filename (course codes, year numbers, etc.)
+  const keywordMatches = filename.match(/\b[A-Z]{2,}[0-9]{3,}\b/g) || [];
+  const keywords = [filename];
+  
+  // Add file type keywords
+  if (filename.toLowerCase().includes('note')) keywords.push('notes', 'study notes');
+  if (filename.toLowerCase().includes('paper')) keywords.push('paper', 'question paper');
+  if (filename.toLowerCase().includes('solution')) keywords.push('solution', 'answers');
+  if (filename.toLowerCase().includes('model')) keywords.push('model paper');
+  
+  // Add price indicator
+  if (price === 0) keywords.push('free download', 'free pdf');
+  else keywords.push('paid', 'premium');
+  
+  // Add educational related keywords
+  keywords.push('pdf download', 'digital resource', category.toLowerCase());
+  
+  // Generate optimized meta description (150-160 chars)
+  const priceText = price === 0 ? 'Free' : `₹${Math.floor(price)}`;
+  let metaDesc = `${filename} | ${priceText} Download`;
+  
+  if (filename.toLowerCase().includes('note')) {
+    metaDesc = `${filename} | Free & Paid Study Notes | Download PDF | ${category}`;
+  } else if (filename.toLowerCase().includes('paper')) {
+    metaDesc = `${filename} | Question Papers & Solutions | Download | ${category}`;
+  } else {
+    metaDesc = `${filename} | Premium Digital Resource | ${priceText} on Vidyari | ${category}`;
+  }
+  
+  return {
+    keywords: [...new Set(keywords)].slice(0, 10),
+    metaDescription: metaDesc.substring(0, 160),
+    keywords_string: [...new Set(keywords)].slice(0, 10).join(', ')
+  };
+}
+
+// ✅ XML SITEMAP FOR SEO - HELPS GOOGLE INDEX ALL FILES
+// ======================================================
+app.get("/sitemap.xml", async (req, res) => {
+  try {
+    const files = await File.find().select("slug _id updatedAt").lean();
+    
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    
+    // Home page
+    xml += '  <url>\n';
+    xml += '    <loc>https://vidyari.com/</loc>\n';
+    xml += '    <lastmod>2024-01-01</lastmod>\n';
+    xml += '    <changefreq>daily</changefreq>\n';
+    xml += '    <priority>1.0</priority>\n';
+    xml += '  </url>\n';
+    
+    // Documents/Files page
+    xml += '  <url>\n';
+    xml += '    <loc>https://vidyari.com/documents</loc>\n';
+    xml += '    <lastmod>2024-01-01</lastmod>\n';
+    xml += '    <changefreq>daily</changefreq>\n';
+    xml += '    <priority>0.9</priority>\n';
+    xml += '  </url>\n';
+    
+    // Individual file URLs
+    files.forEach(file => {
+      const lastmod = file.updatedAt 
+        ? new Date(file.updatedAt).toISOString().split('T')[0] 
+        : '2024-01-01';
+      
+      xml += '  <url>\n';
+      xml += `    <loc>https://vidyari.com/file/${file.slug}/${file._id}</loc>\n`;
+      xml += `    <lastmod>${lastmod}</lastmod>\n`;
+      xml += '    <changefreq>weekly</changefreq>\n';
+      xml += '    <priority>0.8</priority>\n';
+      xml += '  </url>\n';
+    });
+    
+    xml += '</urlset>';
+    
+    res.set('Content-Type', 'application/xml');
+    res.send(xml);
+    
+    console.log(`✅ Sitemap generated with ${files.length + 2} URLs`);
+  } catch (error) {
+    console.error('❌ Sitemap generation error:', error);
+    res.status(500).send('Sitemap generation failed');
+  }
+});
+
+// ✅ API: GET RELATED FILES FOR A CATEGORY
+// ======================================================
+app.get("/api/related-files/:fileId", async (req, res) => {
+  try {
+    const file = await File.findById(req.params.fileId).select("category").lean();
+    
+    if (!file) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
+    // Get 6 related files from same category (excluding current file)
+    const relatedFiles = await File.find({
+      category: file.category,
+      _id: { $ne: file._id }
+    })
+    .select("filename slug _id downloadCount price category")
+    .sort({ downloadCount: -1 })
+    .limit(6)
+    .lean();
+    
+    res.json({ relatedFiles });
+  } catch (error) {
+    console.error('Error fetching related files:', error);
+    res.status(500).json({ error: 'Failed to fetch related files' });
+  }
+});
+
 // ✅ Advanced Optimized File Details Route
 // ======================================================
 app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
@@ -2994,44 +3115,90 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       return res.redirect(301, `/file/${file.slug}/${file._id}`);
     }
 
-    // =============== SEO SETUP ===============
+    // =============== ENHANCED SEO SETUP ===============
+    // Generate keyword-optimized SEO data
+    const seoData = generateOptimizedSEOForFile(file);
+    
     res.locals.setMetaTags('file', {
       name: file.filename,
-      description: file.filedescription,
+      description: seoData.metaDescription,
+      keywords: seoData.keywords_string,
       uploader: file.user,
       downloadCount: file.downloadCount || 0,
       preview: await getValidFileUrl(file)
     });
     
-    // Add JSON-LD schema for file
-    const fileSchema = {
+    // Add JSON-LD schema for EducationalResource (better for documents)
+    const educationalSchema = {
       '@context': 'https://schema.org',
-      '@type': 'CreativeWork',
+      '@type': 'EducationalResource',
       'name': file.filename,
-      'description': file.filedescription,
+      'description': seoData.metaDescription,
       'url': `https://vidyari.com/file/${file.slug}/${file._id}`,
-      'creator': {
+      'keywords': seoData.keywords_string,
+      'author': {
         '@type': 'Person',
         'name': file.user || 'Vidyari Creator'
       },
       'datePublished': file.createdAt ? file.createdAt.toISOString() : new Date().toISOString(),
       'dateModified': file.updatedAt ? file.updatedAt.toISOString() : new Date().toISOString(),
+      'learningResourceType': file.fileType && file.fileType.toUpperCase() === 'PDF' ? 'Document' : 'Handout',
+      'educationalLevel': file.category || 'General',
       'inLanguage': 'en',
+      'isAccessibleForFree': file.price === 0,
       'offers': {
         '@type': 'Offer',
         'price': file.price || 0,
-        'priceCurrency': 'INR'
+        'priceCurrency': 'INR',
+        'availability': 'https://schema.org/InStock'
       }
     };
     
+    // Add download count if available
     if (file.downloadCount) {
-      fileSchema.aggregateRating = {
+      educationalSchema.aggregateRating = {
         '@type': 'AggregateRating',
-        'ratingCount': file.downloadCount
+        'ratingCount': file.downloadCount,
+        'bestRating': file.downloadCount,
+        'name': 'Downloads'
       };
     }
     
-    res.locals.addSchema(fileSchema);
+    res.locals.addSchema(educationalSchema);
+    
+    // Add FAQ Schema for common questions about study materials
+    const faqSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'mainEntity': [
+        {
+          '@type': 'Question',
+          'name': `Where can I download ${file.filename}?`,
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': `You can download ${file.filename} directly from Vidyari. ${file.price === 0 ? 'It is available for free.' : 'It is a premium resource available for a one-time purchase.'}`
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': `Is ${file.filename} free or paid?`,
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': file.price === 0 ? `${file.filename} is completely free to download on Vidyari.` : `${file.filename} is a premium resource. You can purchase it once for lifetime access.`
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': `Can I share ${file.filename} after downloading?`,
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': 'Downloaded resources are for personal use. Commercial sharing or distribution may violate terms of service.'
+          }
+        }
+      ]
+    };
+    
+    res.locals.addSchema(faqSchema);
     
     // Add breadcrumb schema
     res.locals.addSchema({
@@ -3047,17 +3214,23 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
         {
           '@type': 'ListItem',
           'position': 2,
-          'name': 'Files',
+          'name': 'Resources',
           'item': 'https://vidyari.com/documents'
         },
         {
           '@type': 'ListItem',
           'position': 3,
+          'name': file.category || 'Category',
+          'item': `https://vidyari.com/documents?category=${encodeURIComponent(file.category || '')}`
+        },
+        {
+          '@type': 'ListItem',
+          'position': 4,
           'name': file.filename
         }
       ]
     });
-    // =============== END SEO SETUP ===============
+    // =============== END ENHANCED SEO SETUP ===============
 
     // 👤 Seller info (cached)
     let sellerprofilepic = "/images/avatar.jpg";
@@ -3126,6 +3299,17 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
 
     // Prepare price details for checkout display
     const priceDetails = GenCheckOutPrice(Number(file.price) || 0);
+    
+    // Fetch related files from same category for internal linking
+    const relatedFiles = await File.find({
+      category: file.category,
+      _id: { $ne: file._id }
+    })
+    .select("filename slug _id downloadCount price")
+    .sort({ downloadCount: -1 })
+    .limit(4)
+    .lean();
+   
    console.log(previewUrl, pdfUrl)
     // 🎨 Render final optimized view
     res.render("file-details", {
@@ -3141,6 +3325,10 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       useremail: user?.email || null,
       uId: user?._id || null,
       priceDetails,
+      seoMetaDescription: seoData.metaDescription,
+      seoKeywords: seoData.keywords_string,
+      seoKeywordsList: seoData.keywords,
+      relatedFiles: relatedFiles,
     });
   } catch (error) {
     console.error("⚠️ Error fetching file:", error);
