@@ -13,7 +13,7 @@ const router = express.Router();
 
 // --- HELPER FUNCTION for finding image URLs ---
 async function getValidFileUrl(file) {
-    const CF_DOMAIN = process.env.CF_DOMAIN || "https://d3tonh6o5ach9f.cloudfront.net";
+    const CF_DOMAIN = process.env.CF_DOMAIN || "https://d3epchi0htsp3c.cloudfront.net";
     const VALID_IMAGE_TYPES = ["jpg", "jpeg", "png", "webp", "gif"];
     const triedExtensions = new Set();
     if (file.imageType) {

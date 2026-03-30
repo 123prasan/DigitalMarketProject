@@ -460,14 +460,18 @@ body { animation: bodyReveal 0.4s var(--ease) both; }
     from { opacity:0; transform:translateY(12px); }
     to   { opacity:1; transform:none; }
 }
-.review-head { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.review-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
 .review-initials {
-    width:38px; height:38px; border-radius:50%;
+    width:56px; height:56px; border-radius:50%;
     background:var(--accent-2); color:var(--accent);
-    font-size:.78rem; font-weight:700;
+    font-size:.95rem; font-weight:700;
     display:flex; align-items:center; justify-content:center;
     flex-shrink:0; border:2px solid rgba(26,86,240,.15);
     transition:transform .3s var(--ease-spring), box-shadow .3s;
+    overflow:hidden;
+}
+.review-initials img {
+    width:100%; height:100%; object-fit:cover; display:block;
 }
 .review-item:hover .review-initials { transform:scale(1.1); box-shadow:0 0 0 4px var(--accent-glow-sm); }
 .review-user-name { font-size:.875rem; font-weight:600; color:var(--ink); }
@@ -1533,9 +1537,11 @@ const isFree = Number(priceDetails.total) === 0;
 /* ════════════════════════════════════════════════════
    VIDYARI · FILE PAGE SCRIPT — ENHANCED EDITION
 ════════════════════════════════════════════════════ */
-const FILE_ID   = "<%= file._id %>";
+const FILE_ID   = "<%= String(file._id) %>";
 const FILE_NAME = "<%- (file.filename || 'Resource').replace(/"/g,'&quot;') %>";
 let   activeTotal = <%= priceDetails.total %>;
+
+console.log('✅ File-details loaded:', { FILE_ID, FILE_NAME, activeTotal });
 
 /* ── Activity Tracker ── */
 if(typeof window.ActivityTracker_Instance !== 'undefined') {
@@ -1874,8 +1880,47 @@ document.getElementById('payBtnMobile')?.addEventListener('click', () => {
 async function loadReviews() {
     const area = document.getElementById('reviewsArea');
     try {
-        const res  = await fetch(`/api/file-reviews/file/${FILE_ID}`);
+        const fileId = FILE_ID || document.documentElement.dataset.fileId;
+        console.log('📝 loadReviews called with fileId:', fileId);
+        
+        if (!fileId || fileId.trim() === '') {
+            console.error('❌ FILE_ID is empty or not found');
+            area.innerHTML = '<p style="color:var(--ink-3);font-size:.875rem;padding:8px 0;">File ID not available. Please refresh the page.</p>';
+            return;
+        }
+
+        console.log('🔍 Fetching reviews from:', `/api/file-reviews/file/${fileId}`);
+        const res = await fetch(`/api/file-reviews/file/${fileId}`);
+        
+        console.log('📊 API response status:', res.status, res.statusText);
+        
+        if (!res.ok) {
+            throw new Error(`API error: ${res.status} ${res.statusText}`);
+        }
+        
         const data = await res.json();
+        console.log('✅ Reviews loaded:', data);
+        
+        // Debug: Log first review's user data
+        if(data.reviews && data.reviews.length > 0) {
+            console.log('📸 First review user data:', {
+                userId: data.reviews[0].userId?._id,
+                username: data.reviews[0].userId?.username,
+                fullName: data.reviews[0].userId?.fullName,
+                profilePicUrl: data.reviews[0].userId?.profilePicUrl,
+                isCloudFront: data.reviews[0].userId?.profilePicUrl?.includes('cloudfront')
+            });
+            
+            // Log all reviews profile URLs
+            console.log('📸 All reviewer profile URLs:');
+            data.reviews.forEach((rv, idx) => {
+                console.log(`  ${idx + 1}. ${rv.userId?.username}: ${rv.userId?.profilePicUrl}`);
+            });
+        }
+
+        if(!data) {
+            throw new Error('No data returned from API');
+        }
 
         if(data.averageRating) {
             document.getElementById('avgRatingDisplay').textContent = `${data.averageRating.toFixed(1)} / 5.0`;
@@ -1906,29 +1951,65 @@ async function loadReviews() {
                 <span class="dist-count">${data.ratingDistribution[s]||0}</span>
             </div>`).join('');
 
-        const reviewsHTML = data.reviews.map((rv,i) => `
-            <div class="review-item" style="animation-delay:${i*0.07}s">
-                <div class="review-head">
-                    <div class="review-initials">
-                        ${(rv.userId?.fullName||rv.userId?.username||'U').substring(0,2).toUpperCase()}
-                    </div>
-                    <div>
-                        <div class="review-user-name">${rv.userId?.fullName||rv.userId?.username||'Anonymous'}</div>
-                        <div class="review-user-date">
-                            ${new Date(rv.createdAt).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'})}
+        const reviewsHTML = data.reviews.map((rv,i) => {
+            const initials = (rv.userId?.fullName||rv.userId?.username||'U').substring(0,2).toUpperCase();
+            const profileImg = rv.userId?.profilePicUrl;
+            
+            const isCloudFront = profileImg?.includes('cloudfront');
+            const isS3 = profileImg?.includes('s3');
+            console.log(`📸 Review ${i + 1} (${rv.userId?.username}):`, {
+                profileImg: profileImg,
+                isCloudFront: isCloudFront,
+                isS3: isS3,
+                initials: initials
+            });
+            
+            if (profileImg) {
+                // Show image with fallback to initials
+                return `
+                <div class="review-item" style="animation-delay:${i*0.07}s">
+                    <div class="review-head">
+                        <div class="review-initials">
+                            <img src="${profileImg}" alt="${rv.userId?.username}" style="width:100%; height:100%; object-fit:cover;" onerror="console.warn('Image failed to load:', this.src); this.parentElement.innerHTML='${initials}'" />
                         </div>
+                        <div>
+                            <div class="review-user-name">${rv.userId?.fullName||rv.userId?.username||'Anonymous'}</div>
+                            <div class="review-user-date">${new Date(rv.createdAt).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'})}</div>
+                        </div>
+                        <div class="review-stars">${genStars(rv.rating)}</div>
                     </div>
-                    <div class="review-stars">${genStars(rv.rating)}</div>
-                </div>
-                ${rv.title ? `<div class="review-title">${rv.title}</div>` : ''}
-                <div class="review-body">${rv.reviewText||''}</div>
-                <div class="helpful-row">
-                    <span class="helpful-label">Was this helpful?</span>
-                    <button class="helpful-btn" onclick="markHelpful('${rv._id}',this)">
-                        <i class="fa-regular fa-thumbs-up"></i> ${rv.helpful||0}
-                    </button>
-                </div>
-            </div>`).join('');
+                    ${rv.title ? `<div class="review-title">${rv.title}</div>` : ''}
+                    <div class="review-body">${rv.reviewText||''}</div>
+                    <div class="helpful-row">
+                        <span class="helpful-label">Was this helpful?</span>
+                        <button class="helpful-btn" onclick="markHelpful('${rv._id}',this)">
+                            <i class="fa-regular fa-thumbs-up"></i> ${rv.helpful||0}
+                        </button>
+                    </div>
+                </div>`;
+            } else {
+                // No image, just show initials
+                return `
+                <div class="review-item" style="animation-delay:${i*0.07}s">
+                    <div class="review-head">
+                        <div class="review-initials">${initials}</div>
+                        <div>
+                            <div class="review-user-name">${rv.userId?.fullName||rv.userId?.username||'Anonymous'}</div>
+                            <div class="review-user-date">${new Date(rv.createdAt).toLocaleDateString('en-IN',{year:'numeric',month:'short',day:'numeric'})}</div>
+                        </div>
+                        <div class="review-stars">${genStars(rv.rating)}</div>
+                    </div>
+                    ${rv.title ? `<div class="review-title">${rv.title}</div>` : ''}
+                    <div class="review-body">${rv.reviewText||''}</div>
+                    <div class="helpful-row">
+                        <span class="helpful-label">Was this helpful?</span>
+                        <button class="helpful-btn" onclick="markHelpful('${rv._id}',this)">
+                            <i class="fa-regular fa-thumbs-up"></i> ${rv.helpful||0}
+                        </button>
+                    </div>
+                </div>`;
+            }
+        }).join('');
 
         area.innerHTML = `
             <div class="rating-block">
@@ -1953,8 +2034,14 @@ async function loadReviews() {
             }, 100);
         });
 
-    } catch {
-        area.innerHTML = '<p style="color:var(--ink-3);font-size:.875rem;padding:8px 0;">Unable to load reviews right now.</p>';
+    } catch (error) {
+        console.error('❌ Error loading reviews:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
+        area.innerHTML = `<p style="color:var(--ink-3);font-size:.875rem;padding:8px 0;">⚠️ Unable to load reviews. Error: ${error.message}. Check console for details.</p>`;
     }
 }
 
@@ -1984,15 +2071,18 @@ document.getElementById('reviewForm').addEventListener('submit', async e => {
         });
         const data = await res.json();
         if(res.ok) {
+            console.log('✅ Review submitted successfully:', data);
             btn.innerHTML = '<i class="fa-solid fa-check"></i> Thank you!';
             btn.style.background = 'var(--green)';
             showToast('Review submitted! Thank you 🎉');
             setTimeout(() => { closeReviewModal(); loadReviews(); }, 1600);
         } else {
+            console.error('❌ Review submission failed:', data);
             showToast(data.message || 'Submission failed.', 'error');
             btn.innerHTML = 'Submit Review'; btn.disabled = false; btn.style.background = '';
         }
-    } catch {
+    } catch (error) {
+        console.error('❌ Review submission error:', error);
         showToast('Error. Please try again.', 'error');
         btn.innerHTML = 'Submit Review'; btn.disabled = false;
     }

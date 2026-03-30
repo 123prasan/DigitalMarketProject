@@ -46,7 +46,7 @@ const UserDownloads = require("./models/userDownloads.js");
 const Userpurchases = require("./models/userPerchase.js");
 const requireAuth = require("./routes/authentication/reaquireAuth.js");
 const Usernotifications = require("./models/userNotifications");
-const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
+const CF_DOMAIN = "https://d3epchi0htsp3c.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
 const Usertransaction = require("./models/userTransactions.js");
 const UserChats = require('./testings4.js'); // <-- IMPORT THE NEW ROUTER
 

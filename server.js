@@ -57,7 +57,7 @@ const UserDownloads = require("./models/userDownloads.js");
 const Userpurchases = require("./models/userPerchase.js");
 const requireAuth = require("./routes/authentication/reaquireAuth.js");
 const Usernotifications = require("./models/userNotifications");
-const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
+const CF_DOMAIN = process.env.CF_DOMAIN_PROFILES_COURSES || "https://d3epchi0htsp3c.cloudfront.net";
 const Usertransaction = require("./models/userTransactions.js");
 const UserChats = require('./testings4.js'); // <-- IMPORT THE NEW ROUTER
 const Coupon = require("./models/couponschema.js");
@@ -202,6 +202,13 @@ wss.on('connection', (ws) => {
 
           // 1. Get sender profile for chat list update
           const senderProfile = await User.findById(userId).select('username profilePicUrl isVerified');
+          
+          // Convert S3 URL to CloudFront if needed
+          let senderProfilePic = senderProfile.profilePicUrl;
+          if (senderProfilePic?.includes("s3.")) {
+            const fileName = senderProfilePic.split("/").pop();
+            senderProfilePic = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+          }
 
           // 2. Create and save the message
           const messageDoc = new UserMessage({
@@ -226,7 +233,7 @@ wss.on('connection', (ws) => {
             partner: {
               _id: userId,
               username: senderProfile.username,
-              profilePicUrl: senderProfile.profilePicUrl,
+              profilePicUrl: senderProfilePic,
               isVerified: senderProfile.isVerified
             }
           };
@@ -537,7 +544,7 @@ app.use((req, res, next) => {
 
   res.locals.setMetaTags = (pageType, data = {}) => {
     const baseUrl = 'https://vidyari.com';
-    const defaultImage = 'https://d3tonh6o5ach9f.cloudfront.net/og-image.jpg';
+    const defaultImage = process.env.CF_DOMAIN_PROFILES_COURSES ? `${process.env.CF_DOMAIN_PROFILES_COURSES}/og-image.jpg` : 'https://d3epchi0htsp3c.cloudfront.net/og-image.jpg';
 
     const metaTags = {
       home: {
@@ -795,7 +802,9 @@ app.get("/api/courses/:courseId/enrolled-students", authenticateJWT_user, async 
             firstName: student.firstName || "User",
             lastName: student.lastName || "",
             email: student.email,
-            profilePicUrl: student.profilePicUrl,
+            profilePicUrl: student.profilePicUrl?.includes("s3.") 
+              ? `${CLOUDFRONT_AVATAR_URL}/${student.profilePicUrl.split("/").pop()}`
+              : student.profilePicUrl,
             progress: progressPercentage,
             completedLessons: completedLessons,
             totalLessons: totalLessons,
@@ -1305,7 +1314,7 @@ function extractS3KeyFromUrl(url) {
 
   // Try multiple extraction methods
 
-  // Method 1: CloudFront domain (https://d3tonh6o5ach9f.cloudfront.net/...)
+  // Method 1: CloudFront domain (https://d3epchi0htsp3c.cloudfront.net/...)
   if (url.includes('cloudfront.net')) {
     const urlParts = url.split('/');
     const keyIndex = urlParts.findIndex(part => part === 'courses');
@@ -3018,7 +3027,7 @@ const previewhttp = axios.create({
 
 async function getValidFileUrl(
   file,
-  CLOUDFRONT_DOMAIN = "d3epchi0htsp3c.cloudfront.net",
+  CLOUDFRONT_DOMAIN = process.env.CF_DOMAIN_PROFILES_COURSES ? process.env.CF_DOMAIN_PROFILES_COURSES.replace(/^https:\/\//, "") : "d3epchi0htsp3c.cloudfront.net",
   validTypes = ["jpg", "jpeg", "png", "webp"]
 ) {
 
@@ -3083,7 +3092,7 @@ async function getValidFileUrl(
 }
 
 // simpler helper for when you already know the extension
-function buildPreviewUrl(file, CLOUDFRONT_DOMAIN = "d3epchi0htsp3c.cloudfront.net") {
+function buildPreviewUrl(file, CLOUDFRONT_DOMAIN = process.env.CF_DOMAIN_PROFILES_COURSES ? process.env.CF_DOMAIN_PROFILES_COURSES.replace(/^https:\/\//, "") : "d3epchi0htsp3c.cloudfront.net") {
   // always normalise jpeg → jpg; S3 keys are generated with .jpg for both
   let ext = file.imageType || 'jpg';
   if (ext === 'jpeg') ext = 'jpg';
@@ -3786,7 +3795,10 @@ const { getSignedUrl } = require("@aws-sdk/cloudfront-signer");
 // const NodeCache = require("node-cache");
 
 // ⚙️ Config
-const CLOUDFRONT_DOMAIN = "d2q25uqlym20sh.cloudfront.net";
+const CF_DOMAIN_RAW = process.env.CF_DOMAIN_DOWNLOADS || "d2q25uqlym20sh.cloudfront.net";
+// Remove https:// prefix if present to avoid double https://
+const CLOUDFRONT_DOMAIN = CF_DOMAIN_RAW.replace(/^https:\/\//, "");
+
 const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID;
 const PRIVATE_KEY_PATH = path.join(__dirname, "private_keys", "cloudfront-private-key.pem");
 const PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
@@ -4073,7 +4085,7 @@ dotenv.config();
 // import NodeCache from "node-cache";
 const pageCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // Cache for 10 min
 
-const CLOUDFRONT_AVATAR_URL = "d3epchi0htsp3c.cloudfront.net/avatars";
+const CLOUDFRONT_AVATAR_URL = process.env.CF_DOMAIN_PROFILES_COURSES ? (process.env.CF_DOMAIN_PROFILES_COURSES + "/avatars") : "https://d3epchi0htsp3c.cloudfront.net/avatars";
 
 // ======================================================
 // ⚡ Optimized & Cached Documents Route

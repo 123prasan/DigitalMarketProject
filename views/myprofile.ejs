@@ -393,7 +393,7 @@
                         <div class="details-grid">
                             <div class="info-card">
                                 <label>Full Name</label>
-                                <p id="detailsFullName"><%= userData.fullname || 'Not Set' %></p>
+                                <p id="detailsFullName"><%= (userData.fullname && userData.fullname.trim()) ? userData.fullname : userData.username %></p>
                             </div>
                             <div class="info-card">
                                 <label>Username</label>
@@ -405,12 +405,14 @@
                             </div>
                             <div class="info-card">
                                 <label>Date of Birth</label>
-                                <p id="detailsDob"><%= userData.DOB || 'Not Set' %></p>
+                                <% let dobDisplay = ''; if(userData.DOB) { const d = new Date(userData.DOB); dobDisplay = !isNaN(d) ? d.toISOString().split('T')[0] : ''; } %>
+                                <p id="detailsDob"><%= dobDisplay || 'Not Set' %></p>
                             </div>
                         </div>
                     </div>
 
                     <div class="tab-pane fade" id="security" role="tabpanel">
+                        <% let hasPassword = userData.password && userData.password.length > 0; %>
                         <% if (hasPassword) { %>
                             <div id="change-password-container">
                                 <h3 class="mb-4" style="font-size: 1.25rem; font-weight: 600;">Change Password</h3>
@@ -549,17 +551,19 @@ document.addEventListener("DOMContentLoaded", () => {
         let initialProfileData = {};
 
         editModalElement.addEventListener("show.bs.modal", () => {
+            const fullnameDisplay = document.getElementById("detailsFullName").textContent.trim();
+            const dobText = document.getElementById("detailsDob").textContent.trim();
             initialProfileData = {
-                fullname: document.getElementById("profileName").textContent.trim(),
+                fullname: fullnameDisplay === 'Not Set' ? '' : fullnameDisplay,
                 bio: document.getElementById("profileBio").textContent.trim(),
-                dob: document.getElementById("detailsDob").textContent.trim(),
+                dob: dobText === 'Not Set' ? '' : dobText,
                 avatarSrc: document.getElementById("profileAvatar").src,
                 githubUrl: document.getElementById("socialGithub").href,
                 instagramUrl: document.getElementById("socialInstagram").href,
             };
             document.getElementById("fullNameInput").value = initialProfileData.fullname;
             document.getElementById("bioInput").value = initialProfileData.bio.includes('No bio yet') ? '' : initialProfileData.bio;
-            document.getElementById("dobInput").value = initialProfileData.dob === 'Not Set' ? '' : initialProfileData.dob;
+            document.getElementById("dobInput").value = initialProfileData.dob;
             document.getElementById("githubInput").value = initialProfileData.githubUrl.includes('#') ? '' : initialProfileData.githubUrl;
             document.getElementById("instagramInput").value = initialProfileData.instagramUrl.includes('#') ? '' : initialProfileData.instagramUrl;
             imagePreview.src = initialProfileData.avatarSrc;
@@ -604,8 +608,11 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 if (Object.keys(changedData).length > 0) {
                     const response = await fetch("/update/user-detail", { method: "POST", body: formData });
-                    if (!response.ok) throw new Error('Update failed');
                     const result = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(result.message || "Update failed. Please try again.");
+                    }
                     
                     if (changedData.fullname) {
                         document.getElementById("profileName").textContent = changedData.fullname;
@@ -616,9 +623,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (changedData.githubUrl !== undefined) document.getElementById("socialGithub").href = changedData.githubUrl || '#';
                     if (changedData.instagramUrl !== undefined) document.getElementById("socialInstagram").href = changedData.instagramUrl || '#';
                     if (result.newProfilePicUrl) document.getElementById("profileAvatar").src = result.newProfilePicUrl;
+                    
+                    showFeedback(result.message || "Profile updated successfully!", "success");
+                } else {
+                    showFeedback("No changes made", "info");
                 }
             } catch(error) { 
                 console.error('Error:', error);
+                showFeedback(error.message || "Failed to update profile. Please try again.", "danger");
             } finally {
                 saveButton.disabled = false;
                 saveButton.innerHTML = 'Save Changes';
@@ -671,7 +683,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 showFeedback(result.message || "Password updated successfully!", "success");
                 changePasswordForm.reset();
             } catch (error) {
-                showFeedback(error.message, "danger");
+                console.error('Password update error:', error);
+                showFeedback(error.message || "Failed to update password. Try again.", "danger");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Update Password";
@@ -705,14 +718,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 const result = await response.json();
                 if (!response.ok) throw new Error(result.message || "An error occurred.");
                 
-                showFeedback(result.message || "Password set successfully!", "success");
+                showFeedback(result.message || "Password set successfully! Refreshing page...", "success");
                 setPasswordForm.style.display = 'none';
                 setTimeout(() => window.location.reload(), 1500);
             } catch (error) {
-                showFeedback(error.message, "danger");
-            } finally {
+                console.error('Password error:', error);
+                showFeedback(error.message || "Failed to set password. Check console for details.", "danger");
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Set Password";
+                submitBtn.innerHTML = 'Set Password';
             }
         });
     }

@@ -51,7 +51,7 @@ router.post("/create-course", authenticateJWT_user, createCourse);
 
 // router.get('/:courseId', authenticateJWT_user, getCourseById);
 const s3BucketName = "post-upload-pending2";
-const cloudfrontDomain = "d3epchi0htsp3c.cloudfront.net";
+const cloudfrontDomain = process.env.CF_DOMAIN_PROFILES_COURSES ? process.env.CF_DOMAIN_PROFILES_COURSES.replace(/^https:\/\//, "") : "d3epchi0htsp3c.cloudfront.net";
 const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID;
 const PRIVATE_KEY_PATH = path.join(__dirname, "..", "private_keys", "cloudfront-private-key.pem");
 const PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
@@ -135,7 +135,8 @@ router.get("/:courseId/lessons/:lessonId/video", authenticateJWT_user, async (re
     }
 
     // Extract S3 key from CloudFront URL
-    const cloudfrontDomain = "d3epchi0htsp3c.cloudfront.net";
+    let cloudfrontDomain = process.env.CF_DOMAIN_PROFILES_COURSES || "https://d3epchi0htsp3c.cloudfront.net";
+    cloudfrontDomain = cloudfrontDomain.replace(/^https:\/\//, ""); // Remove https:// if present
     const urlPattern = new RegExp(`https://${cloudfrontDomain}/(.+)`);
     const match = videoUrl.match(urlPattern);
 

@@ -465,10 +465,30 @@
                     <section class="content-section" id="courses-section">
                         <h2 class="content-heading"><i class="fa-solid fa-book-open-reader"></i> Courses</h2>
                         
-                        <div class="empty-state">
-                            <i class="fa-solid fa-video-slash empty-icon"></i>
-                            <h3>No Courses Available</h3>
-                        </div>
+                        <% if (courses && courses.length > 0) { %>
+                            <div class="v-grid">
+                                <% courses.forEach((course) => { %>
+                                    <a href="/course/<%= course.slug || course._id %>" class="v-card">
+                                        <div class="v-card-img-box">
+                                            <div class="v-badge-card">Course</div>
+                                            <img class="v-card-img" src="<%= course.thumbnailUrl || '/images/course-placeholder.svg' %>" alt="Course Thumbnail" loading="lazy" onerror="this.onerror=null;this.src='/images/course-placeholder.svg';">
+                                        </div>
+                                        <div class="v-card-content">
+                                            <h3 class="v-card-title"><%= course.title || 'Untitled Course' %></h3>
+                                        </div>
+                                        <div class="v-card-footer">
+                                            <div style="font-size: 0.85rem; font-weight: 500; color: var(--v-text-muted);"><%= course.level || 'All Levels' %></div>
+                                            <div class="v-card-action"><i class="fa-solid fa-arrow-right"></i></div>
+                                        </div>
+                                    </a>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="fa-solid fa-video-slash empty-icon"></i>
+                                <h3>No Courses Available</h3>
+                            </div>
+                        <% } %>
                     </section>
 
                 </main>

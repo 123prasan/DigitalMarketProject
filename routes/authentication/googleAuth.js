@@ -28,7 +28,7 @@ const xss = require("xss");
 const Report = require("../../models/userReports");
 const userbal=require("../../models/userBalance.js");
 
-const CF_DOMAIN = "https://d3tonh6o5ach9f.cloudfront.net"; // e.g., https://d123abcd.cloudfront.net
+const CF_DOMAIN = process.env.CF_DOMAIN_PROFILES_COURSES || "https://d3epchi0htsp3c.cloudfront.net";
 
 router.use(express.json());
 router.use(cookieParser());
@@ -846,20 +846,20 @@ router.get(
     const hasPassword = !!user.password;
     const files = await File.find({ userId: user._id });
     const numsOfDocs = files.length;
-    const numOfCourses = 0; // For now only
+
+    // Fetch actual courses for the user
+    const courses = await Course.find({ userId: user._id }).select('title _id');
+    const numOfCourses = courses.length;
     let fileUrl = userData.profilePicUrl;
     console.log(fileUrl);
 
     if (fileUrl) {
       try {
-        // If fileUrl is relative (starts with /), prepend your domain
-        if (fileUrl.startsWith("/")) {
-          fileUrl = `${CF_DOMAIN}${fileUrl}`;
+        // Convert S3 URL to CloudFront
+        if (fileUrl.includes("s3.")) {
+          const fileName = fileUrl.split("/").pop();
+          userData.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
         }
-
-        const url = new URL(fileUrl); // now this should always work
-        const key = url.pathname.substring(1); // remove leading "/"
-        userData.profilePicUrl = `${CF_DOMAIN}/${key}`;
       } catch (err) {
         console.error("Invalid URL for profile pic:", fileUrl, err);
         userData.profilePicUrl = null; // fallback
@@ -1063,9 +1063,48 @@ router.post("/update/user-password", authenticateJWT_user, async (req, res) => {
   }
 });
 
+// --- Set Password Route (for social login users) ---
+router.post("/set/user-password", authenticateJWT_user,requireAuth ,async (req, res) => {
+  try {
+    const { newPassword, confirmPassword } = req.body;
+    const userId = req.user._id;
+
+    if (!newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "Please fill in all fields." });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match." });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if user already has a password
+    if (user.password && user.password.length > 0) {
+      return res.status(400).json({ message: "You already have a password set. Please use 'Change Password' instead." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.status(200).json({ message: "Password set successfully! You can now log in with your password." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error while setting password." });
+  }
+});
+
 const NodeCache=require("node-cache");
 const userCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // 10 min TTL
-const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
+const CLOUDFRONT_AVATAR_URL = process.env.CF_DOMAIN_PROFILES_COURSES ? (process.env.CF_DOMAIN_PROFILES_COURSES + "/avatars") : "https://d3epchi0htsp3c.cloudfront.net/avatars";
 
 // ======================================================
 // ✅ Optimized Notifications Route
@@ -1231,6 +1270,13 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
       return res.status(404).render("404.ejs"); // Or send a simple message
     }
 
+    // Convert profile picture from S3 to CloudFront
+    let userProfilePic = user.profilePicUrl;
+    if (userProfilePic?.includes("s3.")) {
+      const fileName = userProfilePic.split("/").pop();
+      user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+    }
+
     // =============== SEO SETUP ===============
     res.locals.setMetaTags('profile', {
       name: user.username,
@@ -1253,15 +1299,20 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
     // 2. Fetch the profile user's files and prepare them ONCE.
     const files = await File.find({ userId: user._id });
     const numsOfDocs = files.length;
-    const numOfCourses = 0; // For now only
- const S3_BUCKET = 'vidyari3';
-  const REGION = 'ap-south-1';
 
-  const BASE_URL = `https://${S3_BUCKET}.s3.${REGION}.amazonaws.com`;
+    // 3. Fetch actual courses for the user
+    const courses = await Course.find({ userId: user._id, published: true }).select('title _id slug level thumbnailUrl');
+    const numOfCourses = courses.length;
+
+    // Use CloudFront for file previews
+    const CLOUDFRONT_DOMAIN = process.env.CF_DOMAIN_PROFILES_COURSES 
+      ? process.env.CF_DOMAIN_PROFILES_COURSES.replace(/^https:\/\//, "")
+      : "d3epchi0htsp3c.cloudfront.net";
+    const BASE_URL = `https://${CLOUDFRONT_DOMAIN}/files-previews/images`;
+
     const filesWithPreviews = files.map((file) => ({
       ...file.toObject(),
-      previewUrl: `${BASE_URL}/files-previews/images/${file._id}.${file.imageType || "jpg"
-        }`,
+      previewUrl: `${BASE_URL}/${file._id}.${file.imageType || "jpg"}`,
       pdfUrl: `${CF_DOMAIN}/${file.fileUrl}`,
     }));
 
@@ -1273,6 +1324,7 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
       numsOfDocs,
       numOfCourses,
       files: filesWithPreviews,
+      courses: courses,
       userData: user,
       follow: false, // Default value for own profile or logged-out users
       isFollowed: false, // Default value for other profiles or logged-out users

@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
  */
 const generateMetaTags = (pageType, data = {}) => {
   const baseUrl = 'https://vidyari.com';
-  const defaultImage = 'https://d3tonh6o5ach9f.cloudfront.net/og-image.jpg';
+  const defaultImage = process.env.CF_DOMAIN_PROFILES_COURSES ? `${process.env.CF_DOMAIN_PROFILES_COURSES}/og-image.jpg` : 'https://d3epchi0htsp3c.cloudfront.net/og-image.jpg';
 
   const metaTags = {
     home: {

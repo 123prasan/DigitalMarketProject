@@ -31,16 +31,8 @@ const fileReviewSchema = new mongoose.Schema({
     type: Number,
     default: 0, // Count of users who found this review helpful
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
 }, {
-  timestamps: true
+  timestamps: true  // This automatically adds createdAt and updatedAt
 });
 
 // Index for faster queries
