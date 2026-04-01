@@ -1568,13 +1568,8 @@ mongoose
     minPoolSize: 5,            // Minimum connections
     connectTimeoutMS: 10000,
     heartbeatFrequencyMS: 10000,
-    // Buffering & compression
-    bufferCommands: true,
-    maxCommitTransactionAt: 10000,
-    // Replica set optimization
-    w: 1,                       // Write concern
-    j: true,                    // Journaling
-    authSource: 'admin'
+    // Buffering
+    bufferCommands: true
   })
   .then(() => {
     console.log("\n✅ MongoDB connected successfully!");
