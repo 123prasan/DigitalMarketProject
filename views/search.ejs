@@ -1,929 +1,1302 @@
+<%-include("header")%>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Search - Vidyari Marketplace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    
+    <!-- Primary Meta Tags -->
+    <title><%= seo && seo.metaTags && seo.metaTags.title ? seo.metaTags.title : 'Search Courses & Resources - Vidyari' %></title>
+    <meta name="title" content="<%= seo && seo.metaTags && seo.metaTags.title ? seo.metaTags.title : 'Search Courses & Resources - Vidyari' %>">
+    <meta name="description" content="<%= seo && seo.metaTags && seo.metaTags.description ? seo.metaTags.description : 'Find premium online courses, study materials, and educational resources on Vidyari. Search thousands of quality courses and files.' %>">
+    <meta name="keywords" content="<%= query ? query + ', ' : '' %>online courses, study materials, educational resources, learning platform, Vidyari">
+    <meta name="author" content="Vidyari Inc.">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
+    
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
+    <meta property="og:title" content="<%= seo && seo.metaTags && seo.metaTags.ogTitle ? seo.metaTags.ogTitle : 'Search Results - Vidyari' %>">
+    <meta property="og:description" content="<%= seo && seo.metaTags && seo.metaTags.ogDescription ? seo.metaTags.ogDescription : 'Discover premium courses and educational resources' %>">
+    <meta property="og:image" content="https://www.vidyari.com/images/og-search.jpg">
+    <meta property="og:site_name" content="Vidyari">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
+    <meta property="twitter:title" content="<%= query ? 'Search: ' + query : 'Search Results' %> - Vidyari">
+    <meta property="twitter:description" content="<%= seo && seo.metaTags && seo.metaTags.ogDescription ? seo.metaTags.ogDescription : 'Find premium courses and resources on Vidyari' %>">
+    <meta property="twitter:image" content="https://www.vidyari.com/images/og-search.jpg">
+    
+    <!-- Additional Meta Tags for SEO -->
+    <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU">
+    <meta name="msvalidate.01" content="D3E102BD58FF1D339695A30F2A3EAB37">
+    
+    <!-- Preconnect & Prefetch -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    
+    <!-- JSON-LD Structured Data for Search Results Page -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SearchResultsPage",
+      "name": "<%= query ? 'Search Results for ' + query : 'Course Search Results' %>",
+      "description": "<%= seo && seo.metaTags && seo.metaTags.description ? seo.metaTags.description : 'Search results for courses and educational resources' %>",
+      "url": "https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>",
+      "image": "https://www.vidyari.com/images/og-search.jpg",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Vidyari",
+        "url": "https://www.vidyari.com"
+      }
+    }
+    </script>
+    
+    <!-- JSON-LD Structured Data for Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Vidyari",
+      "url": "https://www.vidyari.com",
+      "logo": "https://www.vidyari.com/images/logo.svg",
+      "description": "Premium online learning platform with courses and educational resources",
+      "sameAs": [
+        "https://www.facebook.com/vidyari",
+        "https://www.twitter.com/vidyari",
+        "https://www.instagram.com/vidyari"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Support",
+        "email": "support@vidyari.com"
+      }
+    }
+    </script>
+    
+    <!-- JSON-LD Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://www.vidyari.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Search",
+          "item": "https://www.vidyari.com/search"
+        }
+        <% if (query) { %>
+        ,{
+          "@type": "ListItem",
+          "position": 3,
+          "name": "<%= query %>",
+          "item": "https://www.vidyari.com/search?query=<%= encodeURIComponent(query) %>"
+        }
+        <% } %>
+      ]
+    }
+    </script>
+    
+    <!-- Google Analytics & Tracking -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            /* Modern SaaS / Clean Slate Palette */
+            --header-bg: #0F172A; /* Deep Slate */
+            --header-border: #1E293B;
+            --bg-main: #F8FAFC;
+            --bg-surface: #FFFFFF;
+            --bg-panel-header: #F1F5F9;
+            
+            /* Primary Actions */
+            --primary: #2563EB; /* Royal Blue */
+            --primary-hover: #1D4ED8;
+            --primary-bg: #EFF6FF;
+            --accent: #38BDF8; /* Clean Cyan */
+            
+            /* Text & Borders */
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --text-light: #94A3B8;
+            --border: #E2E8F0;
+            --border-hover: #CBD5E1;
+            
+            /* Status Colors */
+            --success: #10B981;
+            --success-bg: #ECFDF5;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --warning: #F59E0B;
+            
+            /* Clean Geometry */
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.2s ease-in-out;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
         }
 
         body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e8f0fb 50%, #f8f9fa 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--text-main);
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
-        /* ============ HEADER ============ */
+        /* ============ ANIMATIONS ============ */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite linear;
+            border-radius: var(--radius-sm);
+        }
+
+        /* ============ MODERN SOLID HEADER ============ */
         .search-header {
-            background: linear-gradient(135deg, #0b57d0 0%, #1b68f5 100%);
-            padding: 50px 20px 40px;
-            box-shadow: 0 8px 32px rgba(11, 87, 208, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .search-header::before {
-            content: '';
-            position: absolute;
+            background: #FFFFFF;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 20px 24px;
+            position: sticky;
             top: 0;
-            right: 0;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .search-header::after {
-            content: '';
-            position: absolute;
-            bottom: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 500px;
-            height: 100px;
-            background: radial-gradient(ellipse, rgba(255,255,255,0.1) 0%, transparent 70%);
+            z-index: 1000;
         }
 
         .header-content {
-            max-width: 1200px;
+            width: 100%;
+            max-width: 1600px;
             margin: 0 auto;
-            position: relative;
-            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 0;
         }
 
         .header-title {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-        }
-
-        .header-subtitle {
-            color: rgba(255,255,255,0.9);
-            font-size: 1rem;
-            margin-bottom: 25px;
+            font-size: 1.5rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            margin: 0;
         }
 
         /* ============ SEARCH BOX ============ */
         .search-box-container {
+            flex: 1;
+            max-width: 800px;
             position: relative;
-            margin-bottom: 15px;
         }
 
-        .search-input-wrapper {
+        .search-input-wrapper { 
             position: relative;
+            display: flex;
+            align-items: center;
         }
 
         .search-input {
             width: 100%;
-            padding: 16px 20px 16px 50px;
-            font-size: 1rem;
-            border: none;
+            padding: 13px 110px 13px 44px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            border: 2px solid transparent;
             border-radius: 12px;
-            background: white;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            transition: all 0.3s ease;
+            background: #FFFFFF;
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            font-weight: 500;
+        }
+
+        .search-input:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
         }
 
         .search-input:focus {
             outline: none;
-            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+            background: #FFFFFF;
+            border-color: #2563eb;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
             transform: translateY(-2px);
         }
 
+        .search-input::placeholder { color: #cbd5e1; font-weight: 400; }
+        .search-input:focus::placeholder { color: #94a3b8; }
+
         .search-icon {
             position: absolute;
-            left: 16px;
+            left: 16px; 
             top: 50%;
             transform: translateY(-50%);
-            color: #0b57d0;
-            font-size: 1.2rem;
+            color: #94a3b8;
+            font-size: 1.1rem;
             pointer-events: none;
+            z-index: 2;
+            font-weight: 600;
+            transition: color 0.3s ease;
         }
+
+        .search-input:focus ~ .search-icon { 
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .voice-controls {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .voice-btn {
+            width: 33px;
+            height: 33px;
+            border-radius: 8px;
+            border: none;
+            background: #e2e8f0;
+            color: #1e293b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .voice-btn:hover { 
+            background: #cbd5e1;
+            transform: scale(1.05);
+        }
+        .voice-btn:active { transform: scale(0.95); }
+        .voice-btn.listening { 
+            background: #ef4444;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+
+        .voice-transcript {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 8px;
+            background: #1f2937;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 100;
+            border: 1px solid #374151;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
+        }
+
+        .voice-transcript.active { opacity: 1; }
 
         /* ============ SUGGESTIONS DROPDOWN ============ */
         .suggestions-dropdown {
             position: absolute;
-            top: 100%;
-            left: 0;
+            top: calc(100% + 6px);
+            left: 0; 
             right: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-            max-height: 500px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            max-height: 400px;
             overflow-y: auto;
             display: none;
             z-index: 1000;
-            margin-top: 10px;
+            padding: 8px 0;
         }
 
-        .suggestions-dropdown.active {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .suggestion-category-header {
-            padding: 12px 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #999;
-            text-transform: uppercase;
-            background: #f8f9fa;
-            border-bottom: 1px solid #eee;
-        }
+        .suggestions-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
 
         .suggestion-item {
-            padding: 12px 20px;
+            padding: 10px 16px;
             cursor: pointer;
-            border-bottom: 1px solid #f5f5f5;
-            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 12px;
-            color: #333;
         }
 
-        .suggestion-item:hover {
-            background: #f0f7ff;
-            padding-left: 24px;
-        }
-
-        .suggestion-item-icon {
-            width: 24px;
-            text-align: center;
-            color: #0b57d0;
-            font-size: 1rem;
-        }
-
-        .suggestion-item-text {
-            flex: 1;
-        }
-
-        .suggestion-item-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .suggestion-item-type {
-            font-size: 0.8rem;
-            color: #999;
-        }
-
-        .suggestion-item-badge {
-            background: #e8f0fe;
-            color: #0b57d0;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: auto;
-        }
+        .suggestion-item:hover { background: var(--bg-main); color: var(--primary); }
+        .suggestion-item-icon { color: var(--text-light); width: 20px; text-align: center; }
+        .suggestion-item:hover .suggestion-item-icon { color: var(--primary); }
+        .suggestion-item-title { flex: 1; font-weight: 500; font-size: 0.9rem; }
 
         /* ============ QUICK ACTIONS ============ */
         .quick-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .action-btn {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            display: flex;
+            display: flex; 
+            gap: 8px;
             align-items: center;
+            margin-left: auto;
+        }
+
+        .btn-nav {
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             gap: 6px;
+            background: #f0f4f8;
+            color: #1e293b;
+            border: none;
+            backdrop-filter: blur(4px);
         }
 
-        .action-btn:hover {
-            background: rgba(255,255,255,0.25);
-            border-color: rgba(255,255,255,0.5);
+        .btn-nav:hover { 
+            background: #e2e8f0;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .btn-nav:active { transform: translateY(0); }
+        .btn-nav i { font-size: 0.9rem; }
+
+        /* Standard Buttons */
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-surface);
+            color: var(--text-main);
+            transition: var(--transition);
         }
 
-        /* ============ MAIN CONTENT AREA ============ */
+        .btn:hover { background: var(--bg-main); border-color: var(--border-hover); color: var(--primary); }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .btn-primary:hover { background: var(--primary-hover); color: white; border-color: var(--primary-hover); }
+
+        .btn-danger { background: var(--bg-surface); color: var(--danger); }
+        .btn-danger:hover { background: var(--danger-bg); border-color: rgba(239, 68, 68, 0.3); }
+
+        /* ============ MAIN LAYOUT ============ */
         .search-container {
-            max-width: 1400px;
+            width: 100%;
+            max-width: 1600px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 24px;
             display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 30px;
+            grid-template-columns: 260px 1fr;
+            gap: 32px;
+            align-items: start;
+            box-sizing: border-box;
         }
 
         /* ============ SIDEBAR FILTERS ============ */
         .filters-sidebar {
-            position: sticky;
-            top: 20px;
-            height: fit-content;
+            position: sticky; 
+            top: 90px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 8px;
+            padding-bottom: 40px; /* Prevents last item from cutting off */
+        }
+        
+        .filters-sidebar::-webkit-scrollbar { width: 4px; }
+        .filters-sidebar::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 4px; }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .filter-panel {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            margin-bottom: 20px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: visible; /* Prevents inner dropdowns/clipping issues */
         }
 
         .filter-panel-header {
-            display: flex;
-            align-items: center;
+            display: flex; 
+            align-items: center; 
             justify-content: space-between;
-            margin-bottom: 16px;
             cursor: pointer;
+            user-select: none;
+            padding: 14px 16px;
+            background: var(--bg-panel-header);
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            transition: var(--transition);
         }
 
-        .filter-panel-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .filter-panel-header:hover { background: var(--border); }
 
-        .filter-panel-toggle {
-            color: #999;
-            transition: transform 0.3s;
-        }
+        .filter-panel-title { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .filter-panel-title i { color: var(--text-muted); width: 16px; text-align: center; }
 
-        .filter-panel.collapsed .filter-panel-toggle {
-            transform: rotate(-90deg);
+        .filter-panel-toggle { 
+            color: var(--text-muted); 
+            transition: transform 0.2s;
+            font-size: 0.8rem;
         }
+        .filter-panel.collapsed .filter-panel-toggle { transform: rotate(-90deg); }
+        .filter-panel.collapsed .filter-options, 
+        .filter-panel.collapsed .price-inputs,
+        .filter-panel.collapsed .preset-block { display: none; }
+        .filter-panel.collapsed .filter-panel-header { border-bottom: none; border-radius: var(--radius-md); }
 
         .filter-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 2px;
+            padding: 8px 0;
         }
 
         .filter-option {
-            display: flex;
-            align-items: center;
+            display: flex; 
+            align-items: center; 
             gap: 10px;
-            cursor: pointer;
-            padding: 8px 0;
-            border-radius: 6px;
-            transition: background 0.2s;
+            cursor: pointer; 
+            padding: 8px 16px;
+            transition: var(--transition);
         }
 
-        .filter-option:hover {
-            background: #f8f9fa;
-        }
+        .filter-option:hover { background: var(--bg-main); }
 
-        .filter-option input {
+        .filter-option input[type="radio"],
+        .filter-option input[type="checkbox"] {
+            margin: 0;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
             cursor: pointer;
-            width: 18px;
-            height: 18px;
-            accent-color: #0b57d0;
         }
 
         .filter-option label {
-            cursor: pointer;
+            cursor: pointer; 
             margin: 0;
-            font-size: 0.9rem;
-            color: #555;
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
             flex: 1;
-        }
-
-        .filter-option-count {
-            font-size: 0.8rem;
-            color: #999;
-            margin-left: auto;
-        }
-
-        .price-slider-container {
-            margin-top: 12px;
-        }
-
-        .price-inputs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .filter-option input:checked + label {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Price Inputs */
+        .price-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 0 16px 8px;
         }
 
         .price-input {
-            flex: 1;
             padding: 8px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .price-input:focus {
-            outline: none;
-            border-color: #0b57d0;
-        }
-
-        .clear-filters {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
             width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8f0fe 100%);
-            border: 1px solid #d0d0d0;
-            border-radius: 8px;
-            color: #0b57d0;
-            font-weight: 600;
+            background: var(--bg-surface);
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+        .price-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-bg); }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: calc(100% - 32px);
+            margin: 12px 16px;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px; width: 16px;
+            border-radius: 50%;
+            background: var(--primary);
             cursor: pointer;
-            transition: all 0.3s;
+            margin-top: -6px;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px;
+            cursor: pointer;
+            background: var(--border);
+            border-radius: 2px;
         }
 
-        .clear-filters:hover {
-            background: linear-gradient(135deg, #e8f0fe 0%, #d0e0f8 100%);
+        .preset-block {
+            padding: 12px 16px; 
+            border-top: 1px solid var(--bg-main);
+        }
+        .preset-title {
+            font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        /* ============ MAIN RESULTS AREA ============ */
-        .search-results {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
+        /* ============ RESULTS AREA ============ */
+        .search-results { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px;
         }
 
         .results-header {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            display: flex;
-            justify-content: space-between;
+            display: flex; 
+            justify-content: space-between; 
             align-items: center;
-            flex-wrap: wrap;
+            flex-wrap: wrap; 
             gap: 16px;
+            padding: 16px 24px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
         }
 
-        .results-info {
-            display: flex;
+        .results-info { font-size: 0.95rem; color: var(--text-muted); font-weight: 400; }
+        .results-count { font-weight: 600; color: var(--text-main); font-size: 1.05rem; }
+
+        .sort-group { 
+            display: flex; 
+            gap: 8px; 
             align-items: center;
-            gap: 12px;
         }
-
-        .results-count {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: #0b57d0;
-        }
-
-        .results-text {
-            color: #666;
-            font-size: 0.95rem;
-        }
-
-        .sort-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
+        
         .sort-option {
             padding: 8px 14px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background: white;
+            border: 1px solid transparent; 
+            border-radius: var(--radius-sm);
+            background: transparent; 
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 500; 
             font-size: 0.85rem;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            color: var(--text-muted);
+            transition: var(--transition);
         }
 
-        .sort-option:hover {
-            border-color: #0b57d0;
-            color: #0b57d0;
-        }
-
-        .sort-option.active {
-            background: linear-gradient(135deg, #0b57d0 0%, #1b68f5 100%);
-            color: white;
-            border-color: #0b57d0;
+        .sort-option:hover { color: var(--text-main); background: var(--bg-main); }
+        .sort-option.active { 
+            background: var(--bg-surface); 
+            color: var(--primary); 
+            border-color: var(--border);
+            box-shadow: var(--shadow-sm);
         }
 
         /* ============ RESULTS GRID ============ */
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
         }
 
         .result-item {
-            background: white;
-            border: 1px solid #e8e8e8;
-            border-radius: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             overflow: hidden;
-            transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            display: flex;
+            display: flex; 
             flex-direction: column;
-            height: 100%;
             text-decoration: none !important;
+            color: inherit !important;
+            cursor: pointer;
+            height: 100%;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            animation: fadeIn 0.3s ease;
         }
 
         .result-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-            border-color: #0b57d0;
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
         }
 
         .result-image-container {
-            width: 100%;
-            height: 160px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8eef8 100%);
-            overflow: hidden;
+            width: 100%; 
+            height: 150px;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: var(--bg-main);
+            border-bottom: 1px solid var(--border);
         }
 
         .result-image {
-            width: 100%;
+            width: 100%; 
             height: 100%;
             object-fit: cover;
         }
 
-        .result-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(135deg, #0b57d0, #1b68f5);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 700;
+        .badge {
+            position: absolute; 
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.7rem; 
+            font-weight: 600;
             text-transform: uppercase;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            letter-spacing: 0.5px;
+        }
+
+        .badge-type {
+            top: 12px; 
+            left: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge-pop {
+            top: 12px;
+            right: 12px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .result-info {
-            padding: 16px;
+            padding: 16px; 
             flex: 1;
-            display: flex;
+            display: flex; 
             flex-direction: column;
         }
 
         .result-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #1a1a1a;
+            font-size: 1.05rem; 
+            font-weight: 600;
+            color: var(--text-main);
             margin-bottom: 8px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            flex: 1;
+            line-height: 1.4;
+        }
+
+        .result-instructor {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
         }
 
         .result-meta {
-            display: flex;
-            justify-content: space-between;
+            display: flex; 
             align-items: center;
-            font-size: 0.85rem;
-            margin-bottom: 12px;
-            color: #666;
+            font-size: 0.85rem; 
+            color: var(--text-muted);
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
 
-        .result-rating {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: #ffc107;
-            font-weight: 600;
+        .result-rating { 
+            color: var(--warning);
+            font-weight: 500;
+            display: flex; align-items: center; gap: 4px;
         }
 
-        .result-category {
-            display: inline-block;
-            background: #f0f7ff;
-            color: #0b57d0;
+        .result-tag {
+            background: var(--bg-main);
             padding: 2px 8px;
             border-radius: 4px;
+            border: 1px solid var(--border);
             font-size: 0.75rem;
-            font-weight: 600;
+            color: var(--text-muted);
+        }
+        
+        .result-price {
+            font-size: 1.2rem; 
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: auto;
         }
 
-        .result-price {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #c7254e;
-            margin-bottom: 12px;
-        }
+        .result-price.free { color: var(--success); }
 
         .result-footer {
-            padding-top: 12px;
-            border-top: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
+            padding-top: 16px;
+            margin-top: 16px;
+            border-top: 1px solid var(--bg-main);
+            display: flex; 
+            justify-content: space-between; 
             align-items: center;
-            font-size: 0.8rem;
-            color: #999;
+            font-size: 0.8rem; 
+            color: var(--text-light);
         }
 
-        /* ============ EMPTY STATES ============ */
-        .empty-state {
-            background: white;
-            border-radius: 12px;
-            padding: 80px 40px;
-            text-align: center;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            grid-column: 1 / -1;
+        /* ============ SECTION HEADERS ============ */
+        .section-header-block {
+            padding: 24px;
+            margin-top: 32px;
+            border: 1px solid var(--border);
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
         }
-
-        .empty-icon {
-            font-size: 4rem;
-            color: #ddd;
-            margin-bottom: 20px;
-        }
-
-        .empty-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 10px;
-        }
-
-        .empty-text {
-            color: #999;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
-        }
-
-        .empty-suggestions {
+        .section-header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 16px;
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
+            align-items: center;
+            gap: 8px;
         }
 
-        .suggestion-tag {
-            background: #f0f7ff;
-            border: 1px solid #d0e0f8;
-            color: #0b57d0;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            font-size: 0.9rem;
+        /* ============ SKELETON CARD ============ */
+        .skeleton-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            height: 340px;
         }
+        .skeleton-card .skeleton { margin: 0 !important; border-radius: 0; }
 
-        .suggestion-tag:hover {
-            background: #0b57d0;
-            color: white;
-            border-color: #0b57d0;
+        /* ============ EMPTY STATE ============ */
+        .empty-state {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 60px 20px; 
+            text-align: center;
+            grid-column: 1 / -1;
+            box-shadow: var(--shadow-sm);
         }
+        .empty-icon { font-size: 3rem; color: var(--border-hover); margin-bottom: 16px; }
+        .empty-title { font-size: 1.2rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+        .empty-text { color: var(--text-muted); font-size: 0.95rem; }
 
         /* ============ PAGINATION ============ */
-        .pagination-wrapper {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 30px;
-            flex-wrap: wrap;
+        .pagination-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            gap: 6px; 
+            margin-top: 32px; 
         }
 
         .pagination-btn {
-            padding: 10px 14px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background: white;
+            padding: 8px 14px;
+            border: 1px solid var(--border); 
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface); 
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 500; 
             font-size: 0.9rem;
-            transition: all 0.3s;
-            min-width: 40px;
-            text-align: center;
+            color: var(--text-main);
+            transition: var(--transition);
         }
 
-        .pagination-btn:hover:not(:disabled) {
-            border-color: #0b57d0;
-            color: #0b57d0;
-        }
+        .pagination-btn:hover:not(:disabled) { background: var(--bg-main); border-color: var(--border-hover); }
+        .pagination-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .pagination-btn:disabled { color: var(--text-light); cursor: not-allowed; background: var(--bg-main); opacity: 0.6; }
 
-        .pagination-btn.active {
-            background: linear-gradient(135deg, #0b57d0 0%, #1b68f5 100%);
-            color: white;
-            border-color: #0b57d0;
-        }
+        /* ============ MOBILE RESPONSIVENESS ============ */
+        .mobile-filter-toggle, .mobile-filter-close { display: none; }
 
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* ============ LOADING STATE ============ */
-        .loading-skeleton {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #0b57d0;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 40px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* ============ RESPONSIVE ============ */
         @media (max-width: 1024px) {
-            .search-container {
-                grid-template-columns: 1fr;
-            }
-
-            .filters-sidebar {
-                position: static;
-            }
-
-            .results-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            }
-
-            .header-title {
-                font-size: 2rem;
-            }
+            .search-container { grid-template-columns: 220px 1fr; gap: 20px; padding: 20px; }
         }
 
         @media (max-width: 768px) {
-            .search-header {
-                padding: 40px 15px 30px;
+            .search-header { 
+                padding: 14px 12px;
+                width: 100%;
+                margin: 0;
+                box-shadow: 0 2px 12px rgba(30, 58, 138, 0.2);
             }
-
-            .header-title {
-                font-size: 1.6rem;
+            .header-content { 
+                flex-wrap: wrap; 
+                gap: 10px;
+                width: 100%;
+                padding: 0;
             }
-
-            .header-subtitle {
+            
+            /* Ensures Search Bar stays prominent on mobile */
+            .search-box-container { order: 3; width: 100%; max-width: 100%; }
+            .search-input { padding: 11px 80px 11px 36px; font-size: 0.9rem; border-radius: 10px; }
+            
+            .search-container { 
+                grid-template-columns: 1fr; 
+                padding: 8px;
+                width: 100%;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            
+            .mobile-filter-toggle {
+                display: flex;
+                width: calc(100% - 16px);
+                margin: 0 8px 8px 8px;
+                padding: 10px;
                 font-size: 0.9rem;
             }
 
-            .search-container {
-                padding: 24px 12px;
-                gap: 16px;
+            .filters-sidebar { display: none; }
+
+            .filters-sidebar.mobile-open {
+                position: fixed;
+                left: 0; top: 0; width: 100%; height: 100vh;
+                background: var(--bg-main);
+                z-index: 2000;
+                display: flex;
+                flex-direction: column;
+                padding: 60px 16px 100px; /* Large bottom padding so nothing cuts off */
+                max-height: 100vh;
+                overflow-y: auto;
             }
 
-            .results-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            .mobile-filter-close.visible {
+                display: flex;
+                position: fixed;
+                top: 12px; right: 16px;
+                width: 36px; height: 36px;
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-sm);
+                align-items: center; justify-content: center;
+                z-index: 2001;
+                font-size: 1.1rem;
+                color: var(--text-main);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .results-header { 
+                flex-direction: column; 
+                align-items: flex-start;
+                padding: 8px;
+                margin: 0;
+                width: 100%;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+                gap: 8px;
+            }
+            .results-info {
+                font-size: 0.9rem;
+                width: 100%;
+            }
+            .sort-group { 
+                width: 100%; 
+                overflow-x: auto; 
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 4px; 
+                margin-top: 0;
+                gap: 6px;
+                padding-right: 0;
+            }
+            .sort-option {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            
+            /* Pagination on mobile */
+            .pagination-wrapper {
+                flex-wrap: wrap;
+                gap: 4px;
+                margin-top: 12px;
+                padding: 8px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .pagination-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .search-results {
                 gap: 12px;
             }
 
-            .result-image-container {
-                height: 120px;
+            .empty-state {
+                padding: 40px 16px;
+                border-radius: var(--radius-md);
+                margin: 0;
             }
-
-            .result-info {
-                padding: 12px;
+            .empty-icon { 
+                font-size: 2.5rem; 
+                margin-bottom: 12px; 
             }
-
-            .results-header {
-                flex-direction: column;
-                align-items: stretch;
+            .empty-title { 
+                font-size: 1.1rem; 
             }
-
-            .results-info,
-            .sort-group {
+            .empty-text { 
+                font-size: 0.9rem; 
+            }
+            
+            /* Smaller cards for phones - 2 columns */
+            .results-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+                gap: 8px;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .result-item {
+                border-radius: var(--radius-sm);
+                overflow: hidden;
+            }
+            .result-image-container { 
+                height: 90px;
                 width: 100%;
             }
-
-            .sort-group {
-                justify-content: flex-start;
+            .result-info { 
+                padding: 8px;
+                min-height: 60px;
             }
-
-            .filter-panel {
-                padding: 16px;
+            .result-title { 
+                font-size: 0.85rem;
+                line-height: 1.2;
+                margin-bottom: 4px;
             }
-
-            .empty-state {
-                padding: 60px 20px;
+            .result-instructor {
+                font-size: 0.75rem;
+                margin-bottom: 4px;
             }
-
-            .empty-icon {
-                font-size: 3rem;
+            .result-meta {
+                font-size: 0.75rem;
+                gap: 4px;
+                margin-bottom: 8px;
             }
-        }
-
-        @media (max-width: 480px) {
-            .header-title {
-                font-size: 1.3rem;
+            .result-rating {
+                font-size: 0.75rem;
             }
-
-            .search-input {
-                font-size: 16px;
+            .result-tag {
+                font-size: 0.7rem;
             }
-
-            .results-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            .result-price { 
+                font-size: 0.9rem;
             }
-
-            .quick-actions {
-                gap: 8px;
-            }
-
-            .action-btn {
-                padding: 6px 12px;
-                font-size: 0.8rem;
+            .result-footer { 
+                font-size: 0.7rem;
+                padding-top: 8px;
+                margin-top: 8px;
             }
         }
     </style>
 </head>
+
 <body>
-    <!-- ============ HEADER ============ -->
+    <main role="main">
     <div class="search-header">
         <div class="header-content">
-            <h1 class="header-title">🔍 Advanced Search</h1>
-            <p class="header-subtitle">Discover thousands of courses and files</p>
+            <h1 class="header-title" style="visibility: hidden; position: absolute; width: 1px; height: 1px;">
+                <% if (query && query.trim()) { %>
+                    Search Results for <%= query %> - Premium Online Courses & Educational Resources
+                <% } else { %>
+                    Search Courses and Educational Resources on Vidyari
+                <% } %>
+            </h1>
             
             <div class="search-box-container">
                 <div class="search-input-wrapper">
-                    <i class="fas fa-search search-icon"></i>
-                    <input 
-                        type="text" 
-                        id="searchInput" 
-                        class="search-input" 
-                        placeholder="Search courses, files, skills..." 
-                        autocomplete="off"
-                    >
-                    <div id="suggestionsDropdown" class="suggestions-dropdown"></div>
+                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search resources, tags, and tools" autocomplete="off" aria-label="Search for courses and resources">
+                    <div class="voice-controls">
+                        <button type="button" class="voice-btn" id="voiceBtn" title="Click to speak" onclick="toggleVoiceRecognition()" aria-label="Voice search">
+                            <i class="fas fa-microphone" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div id="voiceTranscript" class="voice-transcript" role="status" aria-live="polite">
+                        <span id="transcriptText">Listening...</span>
+                    </div>
+                    <div id="suggestionsDropdown" class="suggestions-dropdown" role="listbox" aria-label="Search suggestions"></div>
                 </div>
             </div>
 
             <div class="quick-actions">
-                <button class="action-btn" onclick="loadTrendingSearches()" title="View trending searches">
-                    <i class="fas fa-fire"></i> <span>Trending</span>
+                <button class="btn-nav" onclick="loadTrendingSearches()" title="Trending searches" aria-label="View trending searches">
+                    <i class="fas fa-fire" style="color: var(--accent)" aria-hidden="true"></i> <span class="d-none d-md-inline">Trending</span>
                 </button>
-                <button class="action-btn" onclick="loadPopularItems()" title="View popular items">
-                    <i class="fas fa-star"></i> <span>Popular</span>
+                <button class="btn-nav" onclick="loadPopularItems()" title="Top rated resources" aria-label="View top rated resources">
+                    <i class="fas fa-star" style="color: var(--accent)" aria-hidden="true"></i> <span class="d-none d-md-inline">Top Rated</span>
                 </button>
-                <button class="action-btn" onclick="showRecentSearches()" title="Recent searches">
-                    <i class="fas fa-history"></i> <span>History</span>
-                </button>
-                <button class="action-btn" onclick="clearAllFilters()" title="Reset all filters">
-                    <i class="fas fa-redo"></i> <span>Reset</span>
+                <button class="btn-nav" onclick="showRecentSearches()" title="Search history" aria-label="View recent searches">
+                    <i class="fas fa-history" aria-hidden="true"></i> <span class="d-none d-md-inline">History</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ============ MAIN CONTENT ============ -->
     <div class="search-container">
-        <!-- ============ SIDEBAR ============ -->
-        <aside class="filters-sidebar">
-            <!-- TYPE FILTER -->
+        
+        <button class="btn btn-primary mobile-filter-toggle" onclick="toggleMobileFilters()" aria-label="Show filters">
+            <i class="fas fa-filter" aria-hidden="true"></i> Show Filters
+        </button>
+        <button class="mobile-filter-close" id="mobileFilterClose" onclick="closeMobileFilters()" aria-label="Close filters">
+            <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+
+        <aside class="filters-sidebar" id="filtersSidebar" role="complementary" aria-label="Search filters">
+            <div class="sidebar-title">Filters</div>
+
             <div class="filter-panel">
-                <div class="filter-panel-header" onclick="togglePanel(this)">
-                    <span class="filter-panel-title">
-                        <i class="fas fa-list"></i> Type
-                    </span>
-                    <i class="fas fa-chevron-right filter-panel-toggle"></i>
+                <div class="filter-panel-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
+                    <span class="filter-panel-title"><i class="fas fa-file-alt" aria-hidden="true"></i> Resource Type</span>
+                    <i class="fas fa-chevron-down filter-panel-toggle" aria-hidden="true"></i>
                 </div>
-                <div class="filter-options">
+                <div class="filter-options" role="group" aria-label="Resource type options">
                     <div class="filter-option">
-                        <input type="radio" name="type" value="all" id="typeAll" checked onchange="applyFilters()">
+                        <input type="radio" name="type" id="typeAll" value="all" checked onchange="applyFilters()">
                         <label for="typeAll">All Types</label>
                     </div>
                     <div class="filter-option">
-                        <input type="radio" name="type" value="files" id="typeFiles" onchange="applyFilters()">
-                        <label for="typeFiles">Files</label>
+                        <input type="radio" name="type" id="typeFiles" value="files" onchange="applyFilters()">
+                        <label for="typeFiles">Documents</label>
                     </div>
                     <div class="filter-option">
-                        <input type="radio" name="type" value="courses" id="typeCourses" onchange="applyFilters()">
-                        <label for="typeCourses">Courses</label>
+                        <input type="radio" name="type" id="typeCourses" value="courses" onchange="applyFilters()">
+                        <label for="typeCourses">Modules</label>
                     </div>
                 </div>
             </div>
 
-            <!-- RATING FILTER -->
             <div class="filter-panel">
-                <div class="filter-panel-header" onclick="togglePanel(this)">
-                    <span class="filter-panel-title">
-                        <i class="fas fa-star"></i> Rating
-                    </span>
-                    <i class="fas fa-chevron-right filter-panel-toggle"></i>
+                <div class="filter-panel-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
+                    <span class="filter-panel-title"><i class="fas fa-layer-group" aria-hidden="true"></i> Level</span>
+                    <i class="fas fa-chevron-down filter-panel-toggle" aria-hidden="true"></i>
                 </div>
-                <div class="filter-options">
+                <div class="filter-options" role="group" aria-label="Difficulty level options">
                     <div class="filter-option">
-                        <input type="radio" name="rating" value="0" id="ratingAll" checked onchange="applyFilters()">
-                        <label for="ratingAll">All Ratings</label>
+                        <input type="checkbox" id="diffAll" value="" checked onchange="applyFilters()">
+                        <label for="diffAll">Any Level</label>
                     </div>
                     <div class="filter-option">
-                        <input type="radio" name="rating" value="4" id="rating4" onchange="applyFilters()">
-                        <label for="rating4">4.0+ Stars</label>
+                        <input type="checkbox" id="diffBeg" value="Beginner" onchange="applyFilters()">
+                        <label for="diffBeg">Beginner</label>
                     </div>
                     <div class="filter-option">
-                        <input type="radio" name="rating" value="3" id="rating3" onchange="applyFilters()">
-                        <label for="rating3">3.0+ Stars</label>
+                        <input type="checkbox" id="diffInt" value="Intermediate" onchange="applyFilters()">
+                        <label for="diffInt">Intermediate</label>
                     </div>
                     <div class="filter-option">
-                        <input type="radio" name="rating" value="2" id="rating2" onchange="applyFilters()">
-                        <label for="rating2">2.0+ Stars</label>
+                        <input type="checkbox" id="diffAdv" value="Advanced" onchange="applyFilters()">
+                        <label for="diffAdv">Advanced</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="diffExp" value="Expert" onchange="applyFilters()">
+                        <label for="diffExp">Expert</label>
                     </div>
                 </div>
             </div>
 
-            <!-- PRICE FILTER -->
             <div class="filter-panel">
                 <div class="filter-panel-header" onclick="togglePanel(this)">
-                    <span class="filter-panel-title">
-                        <i class="fas fa-tag"></i> Price
-                    </span>
-                    <i class="fas fa-chevron-right filter-panel-toggle"></i>
+                    <span class="filter-panel-title"><i class="fas fa-tags"></i> Domain</span>
+                    <i class="fas fa-chevron-down filter-panel-toggle"></i>
                 </div>
                 <div class="filter-options">
                     <div class="filter-option">
-                        <input type="checkbox" value="free" id="priceFree" onchange="applyFilters()">
-                        <label for="priceFree">Free Items</label>
+                        <input type="checkbox" id="catAll" value="" checked onchange="applyFilters()">
+                        <label for="catAll">All Domains</label>
                     </div>
                     <div class="filter-option">
-                        <input type="checkbox" value="paid" id="pricePaid" onchange="applyFilters()">
-                        <label for="pricePaid">Paid Items</label>
+                        <input type="checkbox" id="catProg" value="Programming" onchange="applyFilters()">
+                        <label for="catProg">Engineering</label>
                     </div>
-                    <div class="price-slider-container">
-                        <div class="price-inputs">
-                            <input type="number" id="minPrice" placeholder="Min ₹" class="price-input" onchange="applyFilters()" min="0">
-                            <input type="number" id="maxPrice" placeholder="Max ₹" class="price-input" onchange="applyFilters()" min="0">
+                    <div class="filter-option">
+                        <input type="checkbox" id="catDes" value="Design" onchange="applyFilters()">
+                        <label for="catDes">UI/UX Design</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="catBus" value="Business" onchange="applyFilters()">
+                        <label for="catBus">Business Ops</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="catMark" value="Marketing" onchange="applyFilters()">
+                        <label for="catMark">Marketing</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-panel">
+                <div class="filter-panel-header" onclick="togglePanel(this)">
+                    <span class="filter-panel-title"><i class="fas fa-clock"></i> Duration</span>
+                    <i class="fas fa-chevron-down filter-panel-toggle"></i>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="checkbox" id="durShort" value="short" onchange="applyFilters()">
+                        <label for="durShort">< 2 hours</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="durMed" value="medium" onchange="applyFilters()">
+                        <label for="durMed">2 - 10 hours</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="durLong" value="long" onchange="applyFilters()">
+                        <label for="durLong">> 10 hours</label>
+                    </div>
+                    
+                    <div class="preset-block">
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" style="flex:1; font-size: 0.75rem;" onclick="setDurationPreset('short')">Quick Select</button>
+                            <button class="btn" style="flex:1; font-size: 0.75rem;" onclick="setDurationPreset('long')">Deep Dive</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button class="clear-filters" onclick="clearAllFilters()">
-                <i class="fas fa-times"></i> Clear All Filters
-            </button>
-        </aside>
-
-        <!-- ============ RESULTS ============ -->
-        <div class="search-results">
-            <!-- Results Header -->
-            <div class="results-header">
-                <div class="results-info">
-                    <div>
-                        Found <span class="results-count">0</span> <span class="results-text">results for "<strong id="queryDisplay"></strong>"</span>
-                    </div>
+            <div class="filter-panel">
+                <div class="filter-panel-header" onclick="togglePanel(this)">
+                    <span class="filter-panel-title"><i class="fas fa-check-circle"></i> Verification</span>
+                    <i class="fas fa-chevron-down filter-panel-toggle"></i>
                 </div>
-                <div class="sort-group">
-                    <button class="sort-option active" onclick="setSortBy(event, 'relevance')">
-                        <i class="fas fa-arrows-alt-v"></i> Relevant
-                    </button>
-                    <button class="sort-option" onclick="setSortBy(event, 'newest')">
-                        <i class="fas fa-clock"></i> Newest
-                    </button>
-                    <button class="sort-option" onclick="setSortBy(event, 'trending')">
-                        <i class="fas fa-fire"></i> Trending
-                    </button>
-                    <button class="sort-option" onclick="setSortBy(event, 'rating')">
-                        <i class="fas fa-star"></i> Top Rated
-                    </button>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="checkbox" id="certCert" value="certified" onchange="applyFilters()">
+                        <label for="certCert">Certified</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="certVer" value="verified" onchange="applyFilters()">
+                        <label for="certVer">Verified Auth</label>
+                    </div>
                 </div>
             </div>
 
-            <!-- Results Grid -->
-            <div id="resultsContainer" class="results-grid"></div>
+            <div class="filter-panel">
+                <div class="filter-panel-header" onclick="togglePanel(this)">
+                    <span class="filter-panel-title"><i class="fas fa-credit-card"></i> Cost Allocation</span>
+                    <i class="fas fa-chevron-down filter-panel-toggle"></i>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="radio" name="priceType" id="priceAll" value="all" checked onchange="applyFilters()">
+                        <label for="priceAll">Any</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="priceType" id="priceFree" value="free" onchange="applyFilters()">
+                        <label for="priceFree">Free Tier</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="priceType" id="pricePaid" value="paid" onchange="applyFilters()">
+                        <label for="pricePaid">Premium</label>
+                    </div>
+                    
+                    <div class="preset-block">
+                        <span class="preset-title">Custom Range (₹)</span>
+                        <div class="price-inputs">
+                            <input type="number" id="minPrice" class="price-input" placeholder="Min" onchange="applyFilters()">
+                            <input type="number" id="maxPrice" class="price-input" placeholder="Max" onchange="applyFilters()">
+                        </div>
+                        <input type="range" id="priceRangeSlider" min="0" max="10000" step="100" value="0" onchange="updatePriceDisplay()">
+                        <div style="font-size: 0.8rem; text-align: right; padding: 0 16px 8px; color: var(--text-muted);" id="priceRangeDisplay">₹0 - ₹10000</div>
+                        
+                        <div style="display: flex; gap: 8px; padding: 0 16px;">
+                            <button class="btn" style="flex:1; font-size: 0.75rem;" onclick="setPricePreset(0, 500)">Low</button>
+                            <button class="btn" style="flex:1; font-size: 0.75rem;" onclick="setPricePreset(1500, 10000)">High</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Pagination -->
+            <div id="dynamicFiltersContainer"></div>
+            
+            <button class="btn btn-danger" style="width: 100%; justify-content: center; margin-top: 8px;" onclick="clearAllFilters()">
+                Clear Filters
+            </button>
+        </aside>
+
+        <div class="search-results">
+            <div class="results-header">
+                <div class="results-info">
+                    <span class="results-count">0</span> items <span id="queryDisplayContainer" style="display:none; color: var(--text-muted);">matching "<strong id="queryDisplay" style="color: var(--text-main);"></strong>"</span>
+                </div>
+                <div class="sort-group">
+                    <button class="sort-option active" onclick="setSortBy(event, 'relevance')">Relevance</button>
+                    <button class="sort-option" onclick="setSortBy(event, 'newest')">Newest</button>
+                    <button class="sort-option" onclick="setSortBy(event, 'rating')">Rating</button>
+                    <button class="sort-option" onclick="setSortBy(event, 'trending')">Trending</button>
+                    <button class="sort-option" onclick="setSortBy(event, 'price-asc')">Price (Low)</button>
+                </div>
+            </div>
+
+            <div id="resultsContainer" class="results-grid"></div>
             <div id="paginationContainer" class="pagination-wrapper"></div>
         </div>
     </div>
@@ -933,63 +1306,190 @@
         let currentPage = 1;
         let totalResults = 0;
         let searchTimeout;
+        let isLoading = false;
+        let apiBaseUrl = '/api/search';
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        // ============ VOICE RECOGNITION SETUP ============
+        let recognition = null;
+        let isListening = false;
+        let recognitionSupported = false;
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognitionSupported = true;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = function() {
+                isListening = true;
+                const voiceBtn = document.getElementById('voiceBtn');
+                const transcript = document.getElementById('voiceTranscript');
+                
+                voiceBtn.classList.add('listening');
+                transcript.classList.add('active');
+                document.getElementById('transcriptText').textContent = 'Listening...';
+            };
+            
+            recognition.onresult = function(event) {
+                let interim_transcript = '';
+                let final_transcript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        final_transcript += transcript + ' ';
+                    } else {
+                        interim_transcript += transcript;
+                    }
+                }
+                
+                const displayText = final_transcript || interim_transcript;
+                document.getElementById('transcriptText').textContent = displayText || 'Listening...';
+                
+                if (final_transcript) {
+                    document.getElementById('searchInput').value = final_transcript.trim();
+                    saveSearchHistory(final_transcript.trim());
+                    loadResults(1);
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                const errorMessages = {
+                    'no-speech': 'No speech detected.',
+                    'audio-capture': 'No microphone available.',
+                    'network': 'Network error.',
+                    'aborted': 'Voice input cancelled.'
+                };
+                const message = errorMessages[event.error] || `Voice error: ${event.error}`;
+                document.getElementById('transcriptText').textContent = message;
+                console.error('Voice error:', event.error);
+            };
+            
+            recognition.onend = function() {
+                isListening = false;
+                document.getElementById('voiceBtn').classList.remove('listening');
+                setTimeout(() => {
+                    document.getElementById('voiceTranscript').classList.remove('active');
+                }, 2000);
+            };
+        }
+
+        function toggleVoiceRecognition() {
+            if (!recognitionSupported) {
+                alert('Voice recognition not supported in your browser. Please use Chrome, Edge, or Safari.');
+                return;
+            }
+            if (isListening) {
+                recognition.stop();
+                isListening = false;
+            } else {
+                document.getElementById('searchInput').focus();
+                recognition.start();
+            }
+        }
+
+        // ============ UTILITY FUNCTIONS ============
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(text).replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function togglePanel(header) {
+            header.closest('.filter-panel').classList.toggle('collapsed');
+        }
+
+        function toggleMobileFilters() {
+            const sidebar = document.getElementById('filtersSidebar');
+            const closeBtn = document.getElementById('mobileFilterClose');
+            sidebar.classList.add('mobile-open');
+            closeBtn.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileFilters() {
+            const sidebar = document.getElementById('filtersSidebar');
+            const closeBtn = document.getElementById('mobileFilterClose');
+            sidebar.classList.remove('mobile-open');
+            closeBtn.classList.remove('visible');
+            document.body.style.overflow = 'auto';
+        }
+
+        // ============ EVENT LISTENERS - INIT ============
+        document.addEventListener('DOMContentLoaded', function () {
             const initialQuery = new URLSearchParams(window.location.search).get('query') || '';
             if (initialQuery) {
                 document.getElementById('searchInput').value = initialQuery;
                 loadResults(1);
             } else {
-                showEmptyState('Start searching to find your favorite courses and files');
+                showEmptyState('Enter query parameters to search directory.', 'fa-database');
             }
 
-            // Search suggestions on input
-            document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchInput = document.getElementById('searchInput');
+
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const query = this.value.trim();
+                    if (query.length > 0) {
+                        saveSearchHistory(query);
+                        window.history.pushState({ search: query }, '', `/search?query=${encodeURIComponent(query)}`);
+                        loadResults(1);
+                        document.getElementById('suggestionsDropdown').classList.remove('active');
+                        if (window.innerWidth <= 768) {
+                            closeMobileFilters();
+                        }
+                    }
+                }
+            });
+
+            searchInput.addEventListener('input', function (e) {
                 const query = e.target.value.trim();
                 clearTimeout(searchTimeout);
-                
                 if (query.length < 2) {
                     document.getElementById('suggestionsDropdown').classList.remove('active');
                     return;
                 }
-
-                searchTimeout = setTimeout(() => {
-                    fetchSuggestions(query);
-                }, 300);
+                searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 300);
             });
 
-            // Close suggestions on click outside
-            document.addEventListener('click', function(e) {
+            // Close dropdowns on outside click
+            document.addEventListener('click', function (e) {
+                const sidebar = document.getElementById('filtersSidebar');
+                if (window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) {
+                    if (!e.target.closest('.filters-sidebar') && !e.target.closest('.mobile-filter-toggle') && !e.target.closest('.mobile-filter-close')) {
+                        closeMobileFilters();
+                    }
+                }
                 if (!e.target.closest('.search-box-container')) {
                     document.getElementById('suggestionsDropdown').classList.remove('active');
                 }
             });
         });
 
+        // ============ SEARCH SUGGESTIONS ============
         async function fetchSuggestions(query) {
             try {
-                const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(query)}`);
+                const response = await fetch(`${apiBaseUrl}/advanced?q=${encodeURIComponent(query)}&limit=5`);
                 const data = await response.json();
                 
-                if (data.success && data.suggestions && data.suggestions.length > 0) {
-                    const grouped = groupBy(data.suggestions, 'type');
+                if (data.success && data.results && data.results.length > 0) {
+                    const suggestions = data.results.slice(0, 5).map(item => ({
+                        text: item.title,
+                        category: item.type,
+                        icon: item.type === 'file' ? 'fa-file-alt' : 'fa-graduation-cap'
+                    }));
+                    
                     let html = '';
-
-                    for (const type in grouped) {
-                        html += `<div class="suggestion-category-header">${type}s</div>`;
-                        html += grouped[type].map(item => `
-                            <div class="suggestion-item" onclick="searchFor('${item.title.replace(/'/g, "\\'")}')">
-                                <i class="suggestion-item-icon fas fa-${item.icon}"></i>
-                                <div class="suggestion-item-text">
-                                    <div class="suggestion-item-title">${item.title}</div>
-                                    <div class="suggestion-item-type">${item.type}</div>
-                                </div>
-                                <div class="suggestion-item-badge">${item.popularity}</div>
+                    suggestions.forEach(item => {
+                        html += `
+                            <div class="suggestion-item" onclick="searchFor('${item.text.replace(/'/g, "\\'")}')">
+                                <i class="suggestion-item-icon fas ${item.icon}"></i>
+                                <div class="suggestion-item-title">${escapeHtml(item.text)}</div>
                             </div>
-                        `).join('');
-                    }
-
+                        `;
+                    });
                     document.getElementById('suggestionsDropdown').innerHTML = html;
                     document.getElementById('suggestionsDropdown').classList.add('active');
                 }
@@ -998,23 +1498,22 @@
             }
         }
 
-        function groupBy(arr, key) {
-            return arr.reduce((groups, item) => {
-                const group = item[key];
-                if (!groups[group]) groups[group] = [];
-                groups[group].push(item);
-                return groups;
-            }, {});
-        }
-
         function searchFor(query) {
+            query = query.trim();
+            if (query.length === 0) return;
             document.getElementById('searchInput').value = query;
             saveSearchHistory(query);
             document.getElementById('suggestionsDropdown').classList.remove('active');
+            window.history.pushState({ search: query }, '', `/search?query=${encodeURIComponent(query)}`);
             loadResults(1);
+            if (window.innerWidth <= 768) {
+                closeMobileFilters();
+            }
         }
 
+        // ============ SORT & FILTERS ============
         function setSortBy(e, sort) {
+            if (isLoading) return;
             currentSort = sort;
             document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
             e.target.closest('.sort-option').classList.add('active');
@@ -1022,232 +1521,635 @@
         }
 
         function applyFilters() {
+            if (isLoading) return;
+            currentPage = 1;
             loadResults(1);
         }
 
         function clearAllFilters() {
-            document.getElementById('typeAll').checked = true;
-            document.getElementById('ratingAll').checked = true;
-            document.getElementById('priceFree').checked = false;
-            document.getElementById('pricePaid').checked = false;
-            document.getElementById('minPrice').value = '';
-            document.getElementById('maxPrice').value = '';
+            const typeAll = document.getElementById('typeAll');
+            if (typeAll) typeAll.checked = true;
+            
+            const priceAll = document.getElementById('priceAll');
+            if (priceAll) priceAll.checked = true;
+            
+            const minPrice = document.getElementById('minPrice');
+            if (minPrice) minPrice.value = '';
+            
+            const maxPrice = document.getElementById('maxPrice');
+            if (maxPrice) maxPrice.value = '';
+            
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            const categoryAll = document.getElementById('catAll');
+            if (categoryAll) categoryAll.checked = true;
+            
+            const diffAll = document.getElementById('diffAll');
+            if (diffAll) diffAll.checked = true;
+            
+            currentSort = 'relevance';
+            currentPage = 1;
+            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
+            const firstSortOption = document.querySelector('.sort-option');
+            if (firstSortOption) firstSortOption.classList.add('active');
+            
             loadResults(1);
+            if (window.innerWidth <= 768) {
+                closeMobileFilters();
+            }
         }
 
-        function togglePanel(header) {
-            header.closest('.filter-panel').classList.toggle('collapsed');
-        }
-
+        // ============ MAIN SEARCH FUNCTION ============
         async function loadResults(page = 1) {
             const query = document.getElementById('searchInput').value.trim();
-            document.getElementById('queryDisplay').textContent = query || 'all items';
+            
+            if (query) {
+                document.getElementById('queryDisplay').textContent = query;
+                document.getElementById('queryDisplayContainer').style.display = 'inline';
+            } else {
+                document.getElementById('queryDisplayContainer').style.display = 'none';
+            }
 
             if (!query) {
-                showEmptyState('Enter a search term to find results');
+                showEmptyState('Enter query parameters to search directory.', 'fa-database');
                 return;
             }
 
             const container = document.getElementById('resultsContainer');
-            container.innerHTML = '<div class="spinner"></div>';
+            showSkeletonLoader(container, 12);
+            isLoading = true;
 
             try {
-                const type = document.querySelector('input[name="type"]:checked').value;
-                const rating = parseFloat(document.querySelector('input[name="rating"]:checked').value) || 0;
-                const free = document.getElementById('priceFree').checked;
-                const paid = document.getElementById('pricePaid').checked;
-                const minPrice = document.getElementById('minPrice').value || 0;
-                const maxPrice = document.getElementById('maxPrice').value || 999999;
+                // Collect filter values from form with null checking
+                const typeElement = document.querySelector('input[name="type"]:checked');
+                const type = typeElement ? typeElement.value : 'all';
+                
+                const priceTypeElement = document.querySelector('input[name="priceType"]:checked');
+                const priceType = priceTypeElement ? priceTypeElement.value : 'all';
+                
+                const minPrice = document.getElementById('minPrice')?.value || 0;
+                const maxPrice = document.getElementById('maxPrice')?.value || 10000;
+                
+                const categories = Array.from(document.querySelectorAll('input[value="Programming"], input[value="Design"], input[value="Business"], input[value="Marketing"]'))
+                    .filter(cb => cb.checked && cb.type === 'checkbox')
+                    .map(cb => cb.value);
+
+                const difficulties = Array.from(document.querySelectorAll('input[value="Beginner"], input[value="Intermediate"], input[value="Advanced"], input[value="Expert"]'))
+                    .filter(cb => cb.checked && cb.type === 'checkbox')
+                    .map(cb => cb.value);
+
+                const durations = Array.from(document.querySelectorAll('input[value="short"], input[value="medium"], input[value="long"]'))
+                    .filter(cb => cb.checked && cb.type === 'checkbox')
+                    .map(cb => cb.value);
+                
+                const certifications = Array.from(document.querySelectorAll('input[value="certified"], input[value="verified"]'))
+                    .filter(cb => cb.checked && cb.type === 'checkbox')
+                    .map(cb => cb.value);
 
                 const params = new URLSearchParams({
                     q: query,
                     sortBy: currentSort,
                     assetType: type,
-                    minRating: rating,
                     page: page,
-                    limit: 20
+                    limit: 12,
+                    priceMin: Math.max(priceType === 'free' ? 0 : minPrice, 0),
+                    priceMax: priceType === 'free' ? 0 : (priceType === 'paid' ? parseFloat(maxPrice) : 10000)
                 });
 
-                const response = await fetch(`/api/search/advanced?${params}`);
+                categories.forEach(cat => params.append('category', cat));
+                difficulties.forEach(diff => params.append('difficulty', diff));
+                durations.forEach(dur => params.append('duration', dur));
+                certifications.forEach(cert => params.append('certification', cert));
+
+                console.log('Search Params:', params.toString());
+
+                const response = await fetch(`${apiBaseUrl}/advanced?${params}`);
                 const data = await response.json();
 
+                console.log('API Response:', data);
+
                 if (!data.success || !data.results || data.results.length === 0) {
-                    showEmptyState(`No "${query}" found. Try different keywords.`);
+                    showEmptyState('0 records matched applied filters.', 'fa-exclamation-circle');
+                    isLoading = false;
                     return;
                 }
 
-                totalResults = data.pagination?.total || 0;
-                document.querySelector('.results-count').textContent = totalResults;
-
+                document.querySelector('.results-count').textContent = data.pagination.total;
                 container.innerHTML = data.results.map(item => createResultCard(item)).join('');
 
-                // Pagination
-                if (data.pagination?.pages > 1) {
+                if (data.pagination.pages > 1) {
                     renderPagination(page, data.pagination.pages);
                 } else {
                     document.getElementById('paginationContainer').innerHTML = '';
                 }
 
                 currentPage = page;
-                saveSearchHistory(query);
+                isLoading = false;
+                
+                trackSearch(query);
+                loadDynamicFilters();
+                loadSmartAlternatives();
             } catch (error) {
-                console.error('Search error:', error);
-                showEmptyState('Error loading results. Please try again.');
+                console.error('❌ Search error:', error);
+                showEmptyState('System Error: Unable to fetch resources.', 'fa-bug');
+                isLoading = false;
             }
         }
 
+        // ============ RESULT CARD BUILDER ============
         function createResultCard(item) {
-            const image = item.image || 'https://placehold.co/180x160/f5f5f5/999?text=No+Image';
-            const price = item.price ? `₹${item.price}` : 'Free';
-            const type = item.type === 'file' ? 'File' : 'Course';
-            const link = item.type === 'file' ? `/file/${item._id}` : `/course/${item._id}`;
+            const typeStr = item.type === 'file' ? 'DOC' : 'MOD';
+            const link = item.type === 'file' ? '/file/' + item.slug + '/' + item._id : '/course-detail?courseId=' + item._id;
             const rating = (item.rating || 0).toFixed(1);
+            const priceStr = item.price === 0 ? 'Free' : '₹' + Math.floor(item.price);
+            const priceClass = item.price === 0 ? 'free' : '';
+            
+            const image = item.image || `https://via.placeholder.com/400x200/F1F5F9/94A3B8?text=${encodeURIComponent((item.title || 'Data').substring(0, 10))}`;
+            
+            let badge = '';
+            if (item.interest > 500) {
+                badge = `<span class="badge badge-pop"><i class="fas fa-arrow-up"></i> Trending</span>`;
+            }
 
             return `
-                <a href="${link}" style="text-decoration: none;">
-                    <div class="result-item">
-                        <div class="result-image-container">
-                            <img src="${image}" alt="${item.title}" class="result-image" onerror="this.src='https://placehold.co/180x160/f5f5f5/999?text=No+Image'">
-                            <span class="result-badge">${type}</span>
+                <a href="${link}" class="result-item" title="${escapeHtml(item.title)}">
+                    <div class="result-image-container">
+                        <img src="${image}" alt="${escapeHtml(item.title)}" class="result-image" onerror="this.style.display='none'; this.parentElement.style.background='#F1F5F9';">
+                        <span class="badge badge-type">${typeStr}</span>
+                        ${badge}
+                    </div>
+                    <div class="result-info">
+                        <h3 class="result-title">${escapeHtml(item.title)}</h3>
+                        ${item.creator ? `<div class="result-instructor"><i class="fas fa-id-badge"></i> ${escapeHtml(typeof item.creator === 'string' ? item.creator : 'System')}</div>` : ''}
+                        
+                        <div class="result-meta">
+                            <span class="result-rating"><i class="fas fa-star"></i> ${rating}</span>
+                            <span class="result-tag">${escapeHtml(item.category || 'General')}</span>
                         </div>
-                        <div class="result-info">
-                            <h3 class="result-title">${item.title}</h3>
-                            <div class="result-meta">
-                                <span class="result-rating">⭐ ${rating}</span>
-                                <span class="result-category">${item.category || 'General'}</span>
-                            </div>
-                            <div class="result-price">${price}</div>
-                            <div class="result-footer">
-                                <span>📊 ${item.interest || item.downloads || 0}</span>
-                            </div>
+                        
+                        <div class="result-price ${priceClass}">${priceStr}</div>
+                        
+                        <div class="result-footer">
+                            <span><i class="fas fa-download"></i> ${item.interest || 0}</span>
+                            <span>${new Date(item.createdAt || Date.now()).toISOString().split('T')[0]}</span>
                         </div>
                     </div>
                 </a>
             `;
         }
 
-        function renderPagination(currentPageNum, totalPages) {
-            let html = `
-                <button class="pagination-btn" ${currentPageNum === 1 ? 'disabled' : ''} onclick="loadResults(${currentPageNum - 1})">
-                    <i class="fas fa-chevron-left"></i> Prev
-                </button>
-            `;
-
-            for (let i = 1; i <= totalPages; i++) {
-                if (i === 1 || i === totalPages || (i >= currentPageNum - 1 && i <= currentPageNum + 1)) {
-                    if (i > 1 && i < totalPages && i < currentPageNum - 1) {
-                        html += '<span style="padding: 10px 0;">...</span>';
-                    }
-                    html += `<button class="pagination-btn ${i === currentPageNum ? 'active' : ''}" onclick="loadResults(${i})">${i}</button>`;
-                }
+        // ============ LOADING & EMPTY STATES ============
+        function showSkeletonLoader(container, count = 8) {
+            let skeletonHTML = '';
+            for (let i = 0; i < count; i++) {
+                skeletonHTML += `
+                    <div class="skeleton-card">
+                        <div class="skeleton" style="height:150px;"></div>
+                        <div style="padding: 16px;">
+                            <div class="skeleton" style="height:16px; width:85%; margin-bottom: 8px;"></div>
+                            <div class="skeleton" style="height:12px; width:65%; margin-bottom: 20px;"></div>
+                            <div class="skeleton" style="height:20px; width:40%; margin-bottom: 12px;"></div>
+                            <div class="skeleton" style="height:1px; width:100%; margin-bottom: 12px;"></div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <div class="skeleton" style="height:12px; width:30%;"></div>
+                                <div class="skeleton" style="height:12px; width:30%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
+            container.innerHTML = skeletonHTML;
+        }
 
-            html += `
-                <button class="pagination-btn" ${currentPageNum === totalPages ? 'disabled' : ''} onclick="loadResults(${currentPageNum + 1})">
-                    Next <i class="fas fa-chevron-right"></i>
-                </button>
+        function showEmptyState(message, icon = 'fa-database') {
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas ${icon}"></i></div>
+                    <h3 class="empty-title">${escapeHtml(message)}</h3>
+                    <p class="empty-text">Verify query parameters or reset filters.</p>
+                </div>
             `;
+            document.querySelector('.results-count').textContent = '0';
+            document.getElementById('paginationContainer').innerHTML = '';
+        }
 
+        // ============ PAGINATION ============
+        function renderPagination(currentPageNum, totalPages) {
+            let html = `<button class="pagination-btn" ${currentPageNum === 1 ? 'disabled' : ''} onclick="loadResults(${currentPageNum - 1})"><i class="fas fa-chevron-left"></i></button>`;
+            
+            const startPage = Math.max(1, currentPageNum - 2);
+            const endPage = Math.min(totalPages, currentPageNum + 2);
+            
+            if (startPage > 1) {
+                html += `<button class="pagination-btn" onclick="loadResults(1)">1</button>`;
+                if (startPage > 2) html += `<span style="color: var(--text-muted); padding: 0 4px;">...</span>`;
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="pagination-btn ${i === currentPageNum ? 'active' : ''}" onclick="loadResults(${i})">${i}</button>`;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span style="color: var(--text-muted); padding: 0 4px;">...</span>`;
+                html += `<button class="pagination-btn" onclick="loadResults(${totalPages})">${totalPages}</button>`;
+            }
+            
+            html += `<button class="pagination-btn" ${currentPageNum === totalPages ? 'disabled' : ''} onclick="loadResults(${currentPageNum + 1})"><i class="fas fa-chevron-right"></i></button>`;
             document.getElementById('paginationContainer').innerHTML = html;
         }
 
-        function showEmptyState(message) {
-            const container = document.getElementById('resultsContainer');
-            document.querySelector('.results-count').textContent = '0';
-            document.getElementById('paginationContainer').innerHTML = '';
-            
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-search"></i></div>
-                    <h3 class="empty-title">${message}</h3>
-                    <p class="empty-text">Explore our marketplace with millions of courses and files</p>
-                    <div class="empty-suggestions">
-                        <span class="suggestion-tag" onclick="searchFor('python')">Python</span>
-                        <span class="suggestion-tag" onclick="searchFor('web development')">Web Dev</span>
-                        <span class="suggestion-tag" onclick="searchFor('design')">Design</span>
-                        <span class="suggestion-tag" onclick="searchFor('data science')">Data Science</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function loadTrendingSearches() {
-            try {
-                const response = await fetch('/api/search/trending');
-                const data = await response.json();
-                
-                if (data.success && data.trending.length > 0) {
-                    const container = document.getElementById('resultsContainer');
-                    const suggestions = data.trending.slice(0, 6).map(item => 
-                        `<span class="suggestion-tag" onclick="searchFor('${item.query}')">${item.query} 🔥</span>`
-                    ).join('');
-
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon"><i class="fas fa-fire"></i></div>
-                            <h3 class="empty-title">🔥 Trending Now</h3>
-                            <p class="empty-text">Most searched topics this week</p>
-                            <div class="empty-suggestions">${suggestions}</div>
-                        </div>
-                    `;
-                    document.getElementById('queryDisplay').textContent = 'Trending';
-                    document.querySelector('.results-count').textContent = data.trending.length;
-                }
-            } catch (error) {
-                console.error('Trending error:', error);
-            }
-        }
-
-        async function loadPopularItems() {
-            try {
-                const response = await fetch('/api/search/popular');
-                const data = await response.json();
-                
-                if (data.success && data.popular.length > 0) {
-                    const container = document.getElementById('resultsContainer');
-                    container.innerHTML = data.popular.slice(0, 12).map(item => createResultCard(item)).join('');
-                    document.getElementById('queryDisplay').textContent = 'Popular';
-                    document.querySelector('.results-count').textContent = data.popular.length;
-                    document.getElementById('paginationContainer').innerHTML = '';
-                }
-            } catch (error) {
-                console.error('Popular error:', error);
-            }
-        }
-
-        function showRecentSearches() {
-            const history = localStorage.getItem('searchHistory');
-            const searches = history ? JSON.parse(history) : [];
-            
-            if (searches.length === 0) {
-                showEmptyState('No recent searches');
-                return;
-            }
-
-            const container = document.getElementById('resultsContainer');
-            const suggestions = searches.slice(0, 8).map(query => 
-                `<span class="suggestion-tag" onclick="searchFor('${query}')">${query}</span>`
-            ).join('');
-
-            container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-history"></i></div>
-                    <h3 class="empty-title">📝 Recent Searches</h3>
-                    <p class="empty-text">Your search history</p>
-                    <div class="empty-suggestions">${suggestions}</div>
-                </div>
-            `;
-            document.getElementById('queryDisplay').textContent = 'History';
-            document.querySelector('.results-count').textContent = searches.length;
-        }
-
+        // ============ SEARCH HISTORY ============
         function saveSearchHistory(query) {
             let history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
             history = history.filter(q => q.toLowerCase() !== query.toLowerCase());
             history.unshift(query);
-            history = history.slice(0, 20);
-            localStorage.setItem('searchHistory', JSON.stringify(history));
+            localStorage.setItem('searchHistory', JSON.stringify(history.slice(0, 15)));
+        }
+
+        function loadTrendingSearches() { loadTrendingItems(); }
+
+        function loadPopularItems() {
+            if (isLoading) return;
+            currentSort = 'rating';
+            currentPage = 1;
+            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
+            const buttons = document.querySelectorAll('.sort-option');
+            if (buttons[2]) buttons[2].classList.add('active');
+            loadResults(1);
+        }
+
+        function showRecentSearches() {
+            const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            if (history.length === 0) {
+                showEmptyState('No query history available.', 'fa-history');
+                return;
+            }
+            
+            const buttons = history.map(q => 
+                `<button class="btn" style="background: var(--bg-surface);" onclick="searchFor('${q.replace(/'/g, "\\'")}')">${escapeHtml(q)}</button>`
+            ).join('');
+            
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-history"></i></div>
+                    <h3 class="empty-title">Query Log</h3>
+                    <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:16px;">${buttons}</div>
+                </div>
+            `;
+            document.querySelector('.results-count').textContent = history.length;
+            document.getElementById('paginationContainer').innerHTML = '';
+        }
+
+        // ============ FULL ADVANCED API INTEGRATIONS ============
+        async function loadTrendingItems() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/trending-advanced?timeRange=week&limit=12`);
+                const data = await response.json();
+                
+                if (data.success && data.trending) {
+                    const allTrending = [...(data.trending.byDownloads || []), ...(data.trending.byEnrollment || [])].slice(0, 12);
+                    const resultsGrid = allTrending.map(item => createResultCard(item)).join('');
+                    
+                    let html = `
+                        <div class="search-results">
+                            <div class="results-header">
+                                <div class="results-info">
+                                    <span class="results-count">${allTrending.length}</span> active trending metrics
+                                </div>
+                            </div>
+                            <div class="results-grid">
+                                ${resultsGrid}
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('resultsContainer').innerHTML = html;
+                    document.getElementById('paginationContainer').innerHTML = '';
+                }
+            } catch (error) { console.error('Trending error:', error); }
+        }
+
+        async function loadRelatedItems(itemId, type) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/related/${itemId}?type=${type}`);
+                const data = await response.json();
+                if (data.success && data.related && data.related.length > 0) {
+                    let html = `
+                        <div class="section-header-block">
+                            <h4 class="section-header-title"><i class="fas fa-sitemap" style="color: var(--text-muted);"></i> Correlated Entities</h4>
+                            <div class="results-grid">
+                                ${data.related.slice(0, 4).map(item => createResultCard(item)).join('')}
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('resultsContainer').insertAdjacentHTML('afterend', html);
+                }
+            } catch (error) { console.error('Related error:', error); }
+        }
+
+        async function loadPopularSearches() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/popular-searches?limit=10`);
+                const data = await response.json();
+                if (data.success && data.popularSearches && data.popularSearches.length > 0) {
+                    let html = `
+                        <div class="section-header-block">
+                            <h4 class="section-header-title"><i class="fas fa-chart-line" style="color: var(--text-muted);"></i> Frequent Queries</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${data.popularSearches.slice(0, 8).map(item => `
+                                    <button class="btn" onclick="searchFor('${item.query.replace(/'/g, "\\'")}')" title="Count: ${item.searches}">
+                                        ${escapeHtml(item.query)} <span style="color: var(--text-light); font-size: 0.8em; margin-left: 6px;">[${item.searches}]</span>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('resultsContainer').insertAdjacentHTML('afterend', html);
+                }
+            } catch (error) { console.error('Popular searches error:', error); }
+        }
+
+        async function loadExploreCategories() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/explore?sortBy=trending&limit=12`);
+                const data = await response.json();
+                if (data.success && data.explore && data.explore.length > 0) {
+                    let html = `
+                        <div class="section-header-block">
+                            <h4 class="section-header-title"><i class="fas fa-folder-tree" style="color: var(--text-muted);"></i> Taxonomy Explorer</h4>
+                    `;
+                    html += data.explore.map(category => `
+                        <div style="margin-bottom: 24px;">
+                            <h5 style="margin-bottom: 12px; font-size: 1rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 4px;">${escapeHtml(category.category)}</h5>
+                            <div class="results-grid">
+                                ${category.items.slice(0, 4).map(item => createResultCard(item)).join('')}
+                            </div>
+                        </div>
+                    `).join('');
+                    html += '</div>';
+                    document.getElementById('resultsContainer').insertAdjacentHTML('afterend', html);
+                }
+            } catch (error) { console.error('Explore categories error:', error); }
+        }
+
+        async function loadSmartAlternatives() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/smart-correct?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (data.intelligence && data.intelligence.relatedItems && data.intelligence.relatedItems.length > 0) {
+                    let html = `
+                        <div class="section-header-block" id="smartAlternativesBlock">
+                            <h4 class="section-header-title"><i class="fas fa-project-diagram" style="color: var(--text-muted);"></i> Semantic Matches</h4>
+                            <div class="results-grid">
+                    `;
+                    html += data.intelligence.relatedItems.slice(0, 4).map(item => `
+                        <div class="result-item" style="height: auto; flex-direction: row; align-items: center;">
+                            <div class="result-image-container" style="height: 60px; width: 60px; flex-shrink: 0; border-bottom: none; border-right: 1px solid var(--border);">
+                                <img src="${item.image || 'https://via.placeholder.com/60'}" class="result-image" onerror="this.style.display='none';">
+                            </div>
+                            <div class="result-info" style="padding: 10px 12px;">
+                                <h3 class="result-title" style="font-size: 0.9rem; margin:0;">${escapeHtml(item.title)}</h3>
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">${item.category}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                    html += '</div></div>';
+                    
+                    const existingBlock = document.getElementById('smartAlternativesBlock');
+                    if (existingBlock) existingBlock.remove();
+                    
+                    document.getElementById('resultsContainer').insertAdjacentHTML('afterend', html);
+                }
+            } catch (error) { console.error('Smart alternatives error:', error); }
+        }
+
+        // ============ DYNAMIC FILTERS ============
+        async function loadDynamicFilters() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/dynamic-filters?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (!data.success || !data.dynamicFilters) return;
+                
+                let html = '';
+                const df = data.dynamicFilters;
+                
+                if (df.difficulties && Object.keys(df.difficulties).length > 1) {
+                    html += `
+                        <div class="filter-panel" style="margin-top:16px;">
+                            <div class="filter-panel-header" onclick="togglePanel(this)">
+                                <span class="filter-panel-title"><i class="fas fa-layer-group"></i> Extracted Levels</span>
+                                <i class="fas fa-chevron-down filter-panel-toggle"></i>
+                            </div>
+                            <div class="filter-options">
+                                ${df.difficulties.map((d, i) => `
+                                    <div class="filter-option">
+                                        <input type="checkbox" id="dyn_diff_${i}" value="${d.level}" onchange="applyFilters()">
+                                        <label for="dyn_diff_${i}">${d.level} <span style="color: var(--text-light); margin-left: auto;">${d.count}</span></label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (df.formats && Object.keys(df.formats).length > 1) {
+                    html += `
+                        <div class="filter-panel" style="margin-top:16px;">
+                            <div class="filter-panel-header" onclick="togglePanel(this)">
+                                <span class="filter-panel-title"><i class="fas fa-file"></i> File Formats</span>
+                                <i class="fas fa-chevron-down filter-panel-toggle"></i>
+                            </div>
+                            <div class="filter-options">
+                                ${df.formats.slice(0, 6).map((f, i) => `
+                                    <div class="filter-option">
+                                        <input type="checkbox" id="dyn_form_${i}" value="${f.format}" onchange="applyFilters()">
+                                        <label for="dyn_form_${i}">${f.format} <span style="color: var(--text-light); margin-left: auto;">${f.count}</span></label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (df.instructors && df.instructors.length > 0) {
+                    html += `
+                        <div class="filter-panel" style="margin-top:16px;">
+                            <div class="filter-panel-header" onclick="togglePanel(this)">
+                                <span class="filter-panel-title"><i class="fas fa-id-card"></i> Identities</span>
+                                <i class="fas fa-chevron-down filter-panel-toggle"></i>
+                            </div>
+                            <div class="filter-options">
+                                ${df.instructors.slice(0, 8).map((i, idx) => `
+                                    <div class="filter-option">
+                                        <input type="checkbox" id="dyn_inst_${idx}" value="${i.name}" onchange="applyFilters()">
+                                        <label for="dyn_inst_${idx}">${escapeHtml(i.name)} <span style="color: var(--text-light); margin-left: auto;">${i.count}</span></label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('dynamicFiltersContainer').innerHTML = html;
+            } catch (error) { console.error('Dynamic filters error:', error); }
+        }
+
+        // ============ PRICE PRESETS ============
+        function setPricePreset(min, max) {
+            const minPriceEl = document.getElementById('minPrice');
+            const maxPriceEl = document.getElementById('maxPrice');
+            const displayEl = document.getElementById('priceRangeDisplay');
+            const sliderEl = document.getElementById('priceRangeSlider');
+            
+            if (minPriceEl) minPriceEl.value = min;
+            if (maxPriceEl) maxPriceEl.value = max;
+            if (sliderEl) sliderEl.value = max;
+            if (displayEl) displayEl.textContent = `₹${min} - ₹${max}`;
+            
+            applyFilters();
+        }
+
+        function updatePriceDisplay() {
+            const minPriceEl = document.getElementById('minPrice');
+            const maxPriceEl = document.getElementById('maxPrice');
+            const displayEl = document.getElementById('priceRangeDisplay');
+            const sliderEl = document.getElementById('priceRangeSlider');
+            
+            if (displayEl && sliderEl) {
+                const maxPrice = sliderEl.value;
+                if (maxPriceEl) maxPriceEl.value = maxPrice;
+                const minPrice = minPriceEl ? minPriceEl.value || 0 : 0;
+                displayEl.textContent = `₹${minPrice} - ₹${maxPrice}`;
+            }
+        }
+
+        // ============ DURATION PRESETS ============
+        function setDurationPreset(preset) {
+            document.querySelectorAll('input[value="short"], input[value="medium"], input[value="long"]').forEach(cb => cb.checked = false);
+            
+            if (preset === 'short') {
+                const el = document.getElementById('durShort');
+                if (el) el.checked = true;
+            } else if (preset === 'medium') {
+                const el = document.getElementById('durMed');
+                if (el) el.checked = true;
+            } else if (preset === 'long') {
+                const el = document.getElementById('durLong');
+                if (el) el.checked = true;
+            }
+            
+            applyFilters();
+        }
+
+        // ============ TRACK SEARCHES FOR ANALYTICS ============
+        function trackSearch(query) {
+            fetch(`${apiBaseUrl}/track-search`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    query: query,
+                    resultCount: parseInt(document.querySelector('.results-count')?.textContent || 0),
+                    timeSpent: Date.now()
+                })
+            }).catch(err => console.error('Telemetry error:', err));
         }
     </script>
+    </main>
+
+    <!-- SEO: Add structured data for Product/Course schema in results -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Monitor results container for dynamic content changes
+            const resultsContainer = document.getElementById('resultsContainer');
+            if (resultsContainer) {
+                // Observer to track when results are added
+                const observer = new MutationObserver(() => {
+                    updateProductSchemas();
+                });
+                
+                observer.observe(resultsContainer, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        });
+
+        function updateProductSchemas() {
+            // Add JSON-LD for each product in the results
+            const results = document.querySelectorAll('.result-item');
+            const products = [];
+            
+            results.forEach((item, index) => {
+                const title = item.querySelector('.result-title')?.textContent || '';
+                const price = item.querySelector('.result-price')?.textContent || '0';
+                const rating = item.querySelector('.result-rating')?.getAttribute('data-rating') || '0';
+                const image = item.querySelector('.result-image')?.src || '';
+                
+                if (title) {
+                    products.push({
+                        '@type': 'Product',
+                        'position': index + 1,
+                        'name': title.trim(),
+                        'image': image,
+                        'description': title.trim(),
+                        'offers': {
+                            '@type': 'Offer',
+                            'price': price.replace(/[^0-9.]/g, '') || '0',
+                            'priceCurrency': 'USD',
+                            'availability': 'https://schema.org/InStock'
+                        },
+                        'aggregateRating': {
+                            '@type': 'AggregateRating',
+                            'ratingValue': rating,
+                            'bestRating': '5',
+                            'worstRating': '1'
+                        }
+                    });
+                }
+            });
+
+            // Update or create schema for search results
+            if (products.length > 0) {
+                let existingScript = document.getElementById('searchProductSchema');
+                if (existingScript) {
+                    existingScript.remove();
+                }
+
+                const script = document.createElement('script');
+                script.id = 'searchProductSchema';
+                script.type = 'application/ld+json';
+                script.textContent = JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'ItemList',
+                    'itemListElement': products
+                });
+                document.head.appendChild(script);
+            }
+        }
+    </script>
+
+    <!-- SEO: Performance & Core Web Vitals Optimization -->
+    <script>
+        // Log Core Web Vitals for SEO optimization
+        if ('web-vital' in window) {
+            const vitals = window['web-vital'];
+            if (vitals && vitals.getCLS) {
+                vitals.getCLS(metric => console.log('CLS:', metric.value));
+                vitals.getFID(metric => console.log('FID:', metric.value));
+                vitals.getFCP(metric => console.log('FCP:', metric.value));
+                vitals.getLCP(metric => console.log('LCP:', metric.value));
+            }
+        }
+    </script>
+
 </body>
+
+<%-include("footer")%>
 </html>

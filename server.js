@@ -203,7 +203,7 @@ wss.on('connection', (ws) => {
 
           // 1. Get sender profile for chat list update
           const senderProfile = await User.findById(userId).select('username profilePicUrl isVerified');
-          
+
           // Convert S3 URL to CloudFront if needed
           let senderProfilePic = senderProfile.profilePicUrl;
           if (senderProfilePic?.includes("s3.")) {
@@ -412,7 +412,9 @@ app.use(
           "https://googleads.g.doubleclick.net",
           "https://ep2.adtrafficquality.google",
           "https://www.google.com",
-          "https://tpc.googlesyndication.com"
+          "https://tpc.googlesyndication.com",
+          "https://www.youtube.com",
+          "https://*.youtube.com"
         ],
 
         connectSrc: [
@@ -426,7 +428,9 @@ app.use(
           "https://api.razorpay.com",
           "https://lumberjack.razorpay.com",
           "https://cdn.jsdelivr.net",
-          "https://cdnjs.cloudflare.com"
+          "https://cdnjs.cloudflare.com",
+          "https://*.s3.ap-south-1.amazonaws.com",
+          "https://vidyarimain2.s3.ap-south-1.amazonaws.com"
         ],
 
         mediaSrc: [
@@ -532,6 +536,58 @@ app.use((req, res, next) => {
       console.warn(`⚠️ SLOW: ${req.method} ${req.path} - ${duration.toFixed(2)}ms`);
     }
   });
+  next();
+});
+
+// ========== PERFORMANCE OPTIMIZATION MIDDLEWARE ==========
+// Request deduplication cache
+const requestCache = new Map();
+app.use((req, res, next) => {
+  // Skip caching for non-GET requests
+  if (req.method !== 'GET') return next();
+  
+  const cacheKey = `${req.method}:${req.path}:${req.query && Object.keys(req.query).length ? JSON.stringify(req.query) : ''}`;
+  const AuthToken = req.headers.authorization;
+  
+  // Don't cache authenticated requests differently
+  if (AuthToken) return next();
+  
+  const cached = requestCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < 60000) { // 60 second cache
+    return res.status(cached.statusCode).send(cached.body);
+  }
+  
+  const originalSend = res.send;
+  res.send = function(data) {
+    if (res.statusCode === 200 && typeof data === 'string') {
+      requestCache.set(cacheKey, {
+        body: data,
+        statusCode: 200,
+        timestamp: Date.now()
+      });
+      // Clean old entries
+      if (requestCache.size > 100) {
+        const firstKey = requestCache.keys().next().value;
+        requestCache.delete(firstKey);
+      }
+    }
+    return originalSend.call(this, data);
+  };
+  next();
+});
+
+// Optimize static file serving
+app.use(express.static(path.join(__dirname, "public"), {
+  maxAge: '1y',
+  etag: false,
+  dotfiles: 'deny'
+}));
+
+// Image optimization headers
+app.use((req, res, next) => {
+  if (req.path.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+    res.set('Cache-Control', 'public, max-age=31536000, immutable');
+  }
   next();
 });
 
@@ -803,7 +859,7 @@ app.get("/api/courses/:courseId/enrolled-students", authenticateJWT_user, async 
             firstName: student.firstName || "User",
             lastName: student.lastName || "",
             email: student.email,
-            profilePicUrl: student.profilePicUrl?.includes("s3.") 
+            profilePicUrl: student.profilePicUrl?.includes("s3.")
               ? `${CLOUDFRONT_AVATAR_URL}/${student.profilePicUrl.split("/").pop()}`
               : student.profilePicUrl,
             progress: progressPercentage,
@@ -1500,18 +1556,31 @@ app.post("/save-location", async (req, res) => {
 // Ensure DNS can resolve SRV records (some networks/VPNs block them)
 require('dns').setServers(['1.1.1.1', '8.8.8.8']);
 
-// Connect to MongoDB with enhanced error handling
+// Connect to MongoDB with enhanced error handling and performance optimization
 mongoose
   .connect(process.env.MONGODB_URI, {
     family: 4,
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000,
     retryWrites: true,
+    // Performance optimizations
+    maxPoolSize: 10,           // Connection pooling
+    minPoolSize: 5,            // Minimum connections
+    connectTimeoutMS: 10000,
+    heartbeatFrequencyMS: 10000,
+    // Buffering & compression
+    bufferCommands: true,
+    maxCommitTransactionAt: 10000,
+    // Replica set optimization
+    w: 1,                       // Write concern
+    j: true,                    // Journaling
+    authSource: 'admin'
   })
   .then(() => {
     console.log("\n✅ MongoDB connected successfully!");
     console.log(`📊 Database: ${mongoose.connection.name}`);
-    console.log(`🔗 Host: ${mongoose.connection.host}\n`);
+    console.log(`🔗 Host: ${mongoose.connection.host}`);
+    console.log(`📈 Connection Pool: 5-10 connections\n`);
   })
   .catch((err) => {
     console.error("\n❌ MongoDB connection error:");
@@ -1801,7 +1870,7 @@ app.get("/contact", (req, res) => {
 app.get("/search", async (req, res) => {
   try {
     const query = req.query.query || req.query.q || '';
-    
+
     // Track search activity
     if (query.trim()) {
       try {
@@ -1817,24 +1886,118 @@ app.get("/search", async (req, res) => {
         // Silent fail for logging
       }
     }
-    
-    // =============== SEO SETUP ===============
+
+    // =============== COMPREHENSIVE SEO SETUP ===============
+    const pageTitle = query ? `${query} - Search Courses & Resources | Vidyari` : 'Search Courses & Resources | Vidyari';
+    const pageDescription = query 
+      ? `Find premium online courses, study materials, and educational resources related to "${query}". Browse thousands of quality courses on Vidyari.`
+      : 'Search premium online courses, study materials, and educational resources on Vidyari. Discover quality learning content from verified instructors.';
+
     res.locals.setMetaTags('search', {
-      title: `Search: ${query} - Vidyari`,
-      description: `Search results for "${query}" on Vidyari marketplace`
+      title: pageTitle,
+      description: pageDescription,
+      keywords: query ? `${query}, online courses, study materials, educational resources, learning platform` : 'online courses, study materials, educational resources, learning platform',
+      author: 'Vidyari Inc.',
+      robots: 'index, follow',
+      ogTitle: query ? `Search: ${query}` : 'Course Search Results',
+      ogDescription: pageDescription,
+      ogImage: 'https://www.vidyari.com/images/og-search.jpg'
     });
+
+    // Add comprehensive schema markup
     res.locals.addSchema({
       '@context': 'https://schema.org',
       '@type': 'SearchResultsPage',
-      'name': `Search Results for ${query}`,
-      'description': `Showing search results for ${query}`
+      'name': query ? `Search Results for "${query}"` : 'Course Search Results',
+      'description': pageDescription,
+      'url': `https://www.vidyari.com/search?${query ? 'query=' + encodeURIComponent(query) : ''}`,
+      'image': {
+        '@type': 'ImageObject',
+        'url': 'https://www.vidyari.com/images/og-search.jpg',
+        'width': 1200,
+        'height': 630
+      },
+      'isPartOf': {
+        '@type': 'WebSite',
+        'name': 'Vidyari',
+        'url': 'https://www.vidyari.com',
+        'searchAction': {
+          '@type': 'SearchAction',
+          'target': 'https://www.vidyari.com/search?query={search_term_string}',
+          'query-input': 'required name=search_term_string'
+        }
+      },
+      'mainEntity': {
+        '@type': 'SearchAction',
+        'target': `https://www.vidyari.com/search?query=${encodeURIComponent(query || '')}`,
+        'query': query || ''
+      }
     });
-    // =============== END SEO SETUP ===============
-    
-    res.render("search", { query });
+
+    // Add organization schema
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      'name': 'Vidyari',
+      'url': 'https://www.vidyari.com',
+      'logo': 'https://www.vidyari.com/images/logo.svg',
+      'description': 'Premium online learning platform with thousands of courses and educational resources',
+      'sameAs': [
+        'https://www.facebook.com/vidyari',
+        'https://www.twitter.com/vidyari',
+        'https://www.instagram.com/vidyari',
+        'https://www.linkedin.com/company/vidyari'
+      ],
+      'contactPoint': {
+        '@type': 'ContactPoint',
+        'contactType': 'Customer Support',
+        'email': 'support@vidyari.com',
+        'telephone': '+1-xxx-xxx-xxxx',
+        'contactOption': ['TelephoneAction', 'EmailAction']
+      }
+    });
+
+    // Add breadcrumb schema
+    res.locals.addSchema({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': [
+        {
+          '@type': 'ListItem',
+          'position': 1,
+          'name': 'Home',
+          'item': 'https://www.vidyari.com'
+        },
+        {
+          '@type': 'ListItem',
+          'position': 2,
+          'name': 'Search',
+          'item': 'https://www.vidyari.com/search'
+        },
+        ...(query ? [{
+          '@type': 'ListItem',
+          'position': 3,
+          'name': query,
+          'item': `https://www.vidyari.com/search?query=${encodeURIComponent(query)}`
+        }] : [])
+      ]
+    });
+    // =============== END COMPREHENSIVE SEO SETUP ===============
+
+    res.render("search", { 
+      query,
+      uId: req.user?.id || null,
+      isLoggedin: !!req.user,
+      seo: res.locals.seo
+    });
   } catch (error) {
     console.error('Search page error:', error);
-    res.render("search", { query: '' });
+    res.render("search", { 
+      query: '',
+      uId: null,
+      isLoggedin: false,
+      seo: res.locals.seo
+    });
   }
 });
 
@@ -1847,7 +2010,7 @@ app.get("/api/search/filters-options", async (req, res) => {
   try {
     const cacheKey = "search_filters_options";
     const cached = appCache.get(cacheKey);
-    
+
     if (cached) {
       return res.json(cached);
     }
@@ -1891,14 +2054,14 @@ app.get("/api/search/trending", async (req, res) => {
   try {
     const cacheKey = "trending_searches";
     const cached = appCache.get(cacheKey);
-    
+
     if (cached) {
       return res.json(cached);
     }
 
     // Aggregate search logs to find trending queries (last 7 days)
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-    
+
     const trending = await SearchLog.aggregate([
       {
         $match: {
@@ -1939,14 +2102,14 @@ app.get("/api/search/trending", async (req, res) => {
 app.get("/api/search/suggestions", async (req, res) => {
   try {
     const q = req.query.q || '';
-    
+
     if (q.length < 2) {
       return res.json({ success: true, suggestions: [] });
     }
 
     const cacheKey = `search_suggestions_${q.toLowerCase()}`;
     const cached = appCache.get(cacheKey);
-    
+
     if (cached) {
       return res.json(cached);
     }
@@ -2010,7 +2173,7 @@ app.get("/api/search/popular", async (req, res) => {
   try {
     const cacheKey = "popular_searches";
     const cached = appCache.get(cacheKey);
-    
+
     if (cached) {
       return res.json(cached);
     }
@@ -2069,7 +2232,7 @@ app.get("/api/admin/search-analytics", requireAuth, async (req, res) => {
     }
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    
+
     const analytics = await SearchLog.aggregate([
       {
         $match: {
@@ -2765,6 +2928,15 @@ app.get("/logout", (req, res) => {
   }
   res.clearCookie("jwt", clearOptions); // Clear the JWT cookie from the browser
   res.redirect("/admin-login"); // Redirect to login page
+});
+
+// Token Validation Endpoint - Prevents infinite reload loops
+app.post("/api/validate-token", authenticateJWT_user, (req, res) => {
+  if (req.user) {
+    res.json({ valid: true, userId: req.user.id || req.user._id });
+  } else {
+    res.status(401).json({ valid: false });
+  }
 });
 
 // Admin Dashboard (Protected by JWT)

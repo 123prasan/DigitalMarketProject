@@ -731,19 +731,45 @@
         document.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem('token');
             const isLoggedinServer = <%= isLoggedin ? 'true' : 'false' %>;
+            const reloadAttempt = sessionStorage.getItem('authReloadAttempt') || '0';
+            
+            // Safety check: prevent infinite reload loops
+            if (parseInt(reloadAttempt) > 2) {
+                sessionStorage.removeItem('authReloadAttempt');
+                localStorage.removeItem('token'); // Clear invalid token
+                return;
+            }
             
             // If token exists in localStorage but server didn't verify it
-            if (token && !isLoggedinServer) {
-                // Set Authorization header for future requests
-                fetch(window.location.href, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }).then(() => {
-                    // Token is valid, reload to show correct auth state
-                    window.location.reload();
-                }).catch(() => {
-                    // Token might be invalid, clear it
+            if (token && !isLoggedinServer && parseInt(reloadAttempt) === 0) {
+                // Validate token with dedicated endpoint
+                fetch('/api/validate-token', {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Token is valid, reload to show correct auth state
+                        sessionStorage.setItem('authReloadAttempt', '1');
+                        window.location.reload();
+                    } else {
+                        // Token is invalid or expired, clear it
+                        localStorage.removeItem('token');
+                        sessionStorage.removeItem('authReloadAttempt');
+                    }
+                })
+                .catch(error => {
+                    // Network error or endpoint doesn't exist, clear invalid token
+                    console.error('Token validation error:', error);
                     localStorage.removeItem('token');
+                    sessionStorage.removeItem('authReloadAttempt');
                 });
+            } else if (parseInt(reloadAttempt) > 0) {
+                // Clear reload counter after reload
+                sessionStorage.removeItem('authReloadAttempt');
             }
             
             // If no token but server says user is logged in

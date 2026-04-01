@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Search - Digital Market</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-main: 'Outfit', 'Inter', sans-serif;
+            --bg-main: #F5F7FA;
+            --bg-surface: #ffffff;
+            --primary: #5366E5;
+            --primary-light: #EEF2FF;
+            --primary-dark: #3B4CB8;
+            --text-main: #0F1419;
+            --text-secondary: #505A70;
+            --text-muted: #8B95A6;
+            --border: #DFE3EC;
+            --border-light: #ECEFF5;
+            --radius-pill: 9999px;
+            --radius-card: 16px;
+            --radius-sm: 10px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(5,35,110,0.08);
+            --shadow-lg: 0 8px 24px rgba(5,35,110,0.12);
+            --transition: 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+            --accent-green: #10B981;
+            --accent-orange: #F59E0B;
+            --accent-red: #EF4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: linear-gradient(135deg, #F5F7FA 0%, #ECEEF3 100%);
+            min-height: 100vh;
+            font-family: var(--font-main);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============ SKELETON ============ */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+            border-radius: 10px;
+        }
+
+        /* ============ HEADER ============ */
+        .search-header {
+            background: linear-gradient(135deg, var(--bg-surface) 0%, #FAFBFD 100%);
+            padding: 50px 20px 40px;
+            border-bottom: 1px solid var(--border-light);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background: linear-gradient(135deg, var(--primary), #7C3AED);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary), #7C3AED);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        /* ============ SEARCH BOX ============ */
+        .search-box-container {
+            position: relative;
+            max-width: 720px;
+            margin: 0 auto 24px;
+        }
+
+        .search-input-wrapper { 
+            position: relative; 
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 24px 18px 56px;
+            font-size: 1.1rem;
+            font-family: var(--font-main);
+            border: 2px solid transparent;
+            border-radius: var(--radius-pill);
+            background: var(--bg-surface);
+            color: var(--text-main);
+            transition: all var(--transition);
+            font-weight: 500;
+        }
+
+        .search-input::placeholder { 
+            color: var(--text-muted); 
+            font-weight: 400;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg), 0 0 0 3px rgba(83, 102, 229, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px; 
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        /* ============ SUGGESTIONS ============ */
+        .suggestions-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0; right: 0;
+            background: var(--bg-surface);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-lg);
+            max-height: 420px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .suggestions-dropdown.active { 
+            display: block; 
+            animation: slideDown .25s ease-out; 
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            display: flex; 
+            align-items: center; 
+            gap: 14px;
+            transition: all .2s;
+            color: var(--text-main);
+        }
+
+        .suggestion-item:hover { 
+            background: var(--primary-light);
+            padding-left: 24px;
+        }
+
+        .suggestion-item-icon { 
+            width: 24px; 
+            text-align: center; 
+            color: var(--primary); 
+            font-size: 1rem;
+        }
+
+        .suggestion-item-text { 
+            flex: 1; 
+        }
+
+        .suggestion-item-title { 
+            font-weight: 600; 
+            font-size: .95rem; 
+        }
+
+        /* ============ QUICK ACTIONS ============ */
+        .quick-actions {
+            display: flex; 
+            gap: 10px;
+            flex-wrap: wrap; 
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 10px 18px;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            font-weight: 600; 
+            font-size: .85rem;
+            font-family: var(--font-main);
+            transition: all var(--transition);
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ============ MAIN LAYOUT ============ */
+        .search-container {
+            max-width: 1540px;
+            margin: 0 auto;
+            padding: 28px 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        /* ============ SIDEBAR FILTERS ============ */
+        .filters-sidebar {
+            position: sticky; 
+            top: 20px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: .9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            padding: 0 18px;
+            margin-bottom: 8px;
+        }
+
+        .filter-panel {
+            background: var(--bg-surface);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+        }
+
+        .filter-panel:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .filter-panel-header {
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            margin-bottom: 0; 
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .filter-panel-title {
+            font-size: .92rem; 
+            font-weight: 700; 
+            color: var(--text-main);
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-panel-title i { 
+            color: var(--primary); 
+            font-size: .9rem;
+        }
+
+        .filter-panel-toggle { 
+            color: var(--primary);
+            transition: transform var(--transition); 
+            font-size: .85rem;
+            font-weight: 600;
+        }
+
+        .filter-panel.collapsed .filter-panel-toggle { 
+            transform: rotate(-90deg); 
+        }
+
+        .filter-panel.collapsed .filter-options { 
+            display: none; 
+        }
+
+        .filter-options { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .filter-option {
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            cursor: pointer; 
+            padding: 8px 10px; 
+            border-radius: 8px;
+            transition: all .15s;
+            user-select: none;
+        }
+
+        .filter-option:hover { 
+            background: var(--primary-light);
+        }
+
+        .filter-option input { 
+            cursor: pointer; 
+            width: 18px; 
+            height: 18px; 
+            accent-color: var(--primary); 
+        }
+
+        .filter-option label {
+            cursor: pointer; 
+            margin: 0;
+            font-size: .88rem; 
+            color: var(--text-secondary); 
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .filter-count {
+            font-size: .75rem;
+            color: var(--text-muted);
+            background: var(--bg-main);
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        .price-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .price-input {
+            padding: 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: .85rem;
+            font-family: var(--font-main);
+            font-weight: 500;
+        }
+
+        .price-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(83, 102, 229, 0.1);
+        }
+
+        .clear-filters {
+            width: 100%; 
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent-red), #DC2626);
+            border: none;
+            border-radius: var(--radius-pill);
+            color: white; 
+            font-weight: 600; 
+            font-size: .85rem;
+            font-family: var(--font-main);
+            cursor: pointer; 
+            transition: all var(--transition);
+        }
+
+        .clear-filters:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* ============ RESULTS AREA ============ */
+        .search-results { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px;
+        }
+
+        .results-header {
+            background: var(--bg-surface);
+            padding: 18px 24px;
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border-light);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            flex-wrap: wrap; 
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .results-info { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: .95rem;
+        }
+
+        .results-count { 
+            font-weight: 800; 
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .results-text { 
+            color: var(--text-secondary); 
+            font-weight: 500;
+        }
+
+        .sort-group { 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+        }
+
+        .sort-option {
+            padding: 8px 16px;
+            border: 1.5px solid var(--border); 
+            border-radius: var(--radius-pill);
+            background: var(--bg-surface); 
+            cursor: pointer;
+            font-weight: 600; 
+            font-size: .8rem;
+            font-family: var(--font-main);
+            transition: all var(--transition);
+            display: flex; 
+            align-items: center; 
+            gap: 6px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .sort-option:hover {
+            border-color: var(--primary); 
+            color: var(--primary);
+        }
+
+        .sort-option.active {
+            background: var(--primary); 
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(83, 102, 229, 0.3);
+        }
+
+        /* ============ RESULTS GRID ============ */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            animation: fadeIn .4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-item {
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            transition: all .35s cubic-bezier(.34,1.56,.64,1);
+            display: flex; 
+            flex-direction: column;
+            height: 100%;
+            text-decoration: none !important;
+            color: inherit !important;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .result-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .result-image-container {
+            width: 100%; 
+            height: 220px;
+            background: linear-gradient(135deg, var(--bg-main) 0%, var(--border-light) 100%);
+            overflow: hidden; 
+            position: relative;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+
+        .result-image {
+            width: 100%; 
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s ease;
+        }
+
+        .result-item:hover .result-image { 
+            transform: scale(1.08); 
+        }
+
+        .result-badge {
+            position: absolute; 
+            top: 12px; 
+            left: 12px;
+            background: linear-gradient(135deg, var(--primary), #7C3AED);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: .7rem; 
+            font-weight: 700;
+            text-transform: uppercase; 
+            letter-spacing: .4px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-popularity {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: .7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-info {
+            padding: 16px; 
+            flex: 1;
+            display: flex; 
+            flex-direction: column;
+        }
+
+        .result-title {
+            font-size: .95rem; 
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+            flex: 1;
+            transition: color .2s;
+        }
+
+        .result-item:hover .result-title { 
+            color: var(--primary); 
+        }
+
+        .result-meta {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-size: .8rem; 
+            margin-bottom: 10px; 
+            color: var(--text-muted);
+            gap: 8px;
+        }
+
+        .result-rating {
+            display: flex; 
+            align-items: center; 
+            gap: 4px;
+            color: var(--accent-orange); 
+            font-weight: 700; 
+            font-size: .8rem;
+        }
+
+        .result-category {
+            background: var(--primary-light); 
+            color: var(--primary);
+            padding: 3px 10px; 
+            border-radius: 6px;
+            font-size: .7rem; 
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .result-price {
+            font-size: 1.2rem; 
+            font-weight: 800;
+            color: var(--primary); 
+            margin-bottom: 8px;
+        }
+
+        .result-footer {
+            padding-top: 10px;
+            border-top: 1px solid var(--border-light);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            font-size: .75rem; 
+            color: var(--text-muted);
+        }
+
+        /* ============ SKELETON CARD ============ */
+        .skeleton-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .skeleton-card .skeleton {
+            margin: 0 !important;
+        }
+
+        /* ============ EMPTY STATE ============ */
+        .empty-state {
+            background: var(--bg-surface); 
+            border-radius: var(--radius-card);
+            padding: 80px 40px; 
+            text-align: center;
+            border: 1.5px dashed var(--border);
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon { 
+            font-size: 3.5rem; 
+            color: var(--text-muted); 
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .empty-title { 
+            font-size: 1.4rem; 
+            font-weight: 800; 
+            color: var(--text-main); 
+            margin-bottom: 8px; 
+        }
+
+        .empty-text { 
+            color: var(--text-muted); 
+            margin-bottom: 24px; 
+            font-size: .95rem;
+            font-weight: 500;
+        }
+
+        .empty-suggestions { 
+            display: flex; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            margin-top: 20px; 
+        }
+
+        .suggestion-tag {
+            background: var(--primary-light); 
+            border: 1.5px solid var(--primary);
+            color: var(--primary); 
+            padding: 10px 20px;
+            border-radius: var(--radius-pill); 
+            cursor: pointer;
+            font-weight: 600; 
+            font-size: .85rem;
+            font-family: var(--font-main);
+            transition: all var(--transition);
+        }
+
+        .suggestion-tag:hover {
+            background: var(--primary); 
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* ============ PAGINATION ============ */
+        .pagination-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            gap: 8px; 
+            margin-top: 32px; 
+            flex-wrap: wrap; 
+        }
+
+        .pagination-btn {
+            padding: 10px 16px;
+            border: 1.5px solid var(--border); 
+            border-radius: var(--radius-pill);
+            background: var(--bg-surface); 
+            cursor: pointer;
+            font-weight: 600; 
+            font-size: .82rem;
+            font-family: var(--font-main);
+            transition: all var(--transition); 
+            min-width: 44px;
+            text-align: center; 
+            color: var(--text-secondary);
+        }
+
+        .pagination-btn:hover:not(:disabled) { 
+            border-color: var(--primary); 
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .pagination-btn.active { 
+            background: var(--primary); 
+            color: #fff; 
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(83, 102, 229, 0.3);
+        }
+
+        .pagination-btn:disabled { 
+            opacity: .4; 
+            cursor: not-allowed; 
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 1200px) {
+            .search-container { 
+                grid-template-columns: 1fr; 
+            }
+
+            .filters-sidebar { 
+                flex-direction: row; 
+                flex-wrap: wrap;
+                position: static;
+                max-height: unset;
+                gap: 12px;
+            }
+
+            .filter-panel { 
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .results-grid { 
+                grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); 
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-header { 
+                padding: 32px 16px 28px; 
+            }
+
+            .header-title { 
+                font-size: 1.8rem; 
+            }
+
+            .search-container { 
+                padding: 16px 12px; 
+            }
+
+            .results-grid { 
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+                gap: 12px;
+            }
+
+            .result-image-container { 
+                height: 160px; 
+            }
+
+            .result-info { 
+                padding: 12px; 
+            }
+
+            .results-header { 
+                flex-direction: column; 
+                align-items: stretch; 
+            }
+
+            .sort-group {
+                width: 100%;
+            }
+
+            .filter-panel { 
+                min-width: auto; 
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title { 
+                font-size: 1.4rem; 
+            }
+
+            .search-input { 
+                font-size: 16px; 
+                padding: 14px 16px 14px 44px; 
+            }
+
+            .results-grid { 
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+            }
+
+            .quick-actions {
+                gap: 6px;
+            }
+
+            .action-btn {
+                padding: 8px 12px;
+                font-size: .75rem;
+            }
+
+            .action-btn span {
+                display: none;
+            }
+
+            .result-title {
+                font-size: .85rem;
+            }
+
+            .result-price {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ============ HEADER ============ -->
+    <div class="search-header">
+        <div class="header-content">
+            <h1 class="header-title"><i class="fas fa-search"></i> Smart Search</h1>
+            <p class="header-subtitle">Find premium courses, files, and learning materials</p>
+
+            <div class="search-box-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="Search courses, files, tutorials..." autocomplete="off">
+                    <div id="suggestionsDropdown" class="suggestions-dropdown"></div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <button class="action-btn" onclick="loadTrendingSearches()" title="View trending now">
+                    <i class="fas fa-fire"></i> <span>Trending</span>
+                </button>
+                <button class="action-btn" onclick="loadPopularItems()" title="Most popular">
+                    <i class="fas fa-star"></i> <span>Popular</span>
+                </button>
+                <button class="action-btn" onclick="showRecentSearches()" title="Your history">
+                    <i class="fas fa-history"></i> <span>Recent</span>
+                </button>
+                <button class="action-btn" onclick="clearAllFilters()" title="Reset all">
+                    <i class="fas fa-redo"></i> <span>Reset</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <div class="search-container">
+        <!-- ============ SIDEBAR FILTERS ============ -->
+        <aside class="filters-sidebar">
+            <div class="sidebar-title">Filters</div>
+
+            <!-- Type Filter -->
+            <div class="filter-panel">
+                <div class="filter-panel-header" onclick="togglePanel(this)">
+                    <span class="filter-panel-title"><i class="fas fa-layer-group"></i> Type</span>
+                    <i class="fas fa-chevron-right filter-panel-toggle"></i>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="radio" name="type" value="all" id="typeAll" checked onchange="applyFilters()">
+                        <label for="typeAll">All Types</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="type" value="files" id="typeFiles" onchange="applyFilters()">
+                        <label for="typeFiles">Files</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="type" value="courses" id="typeCourses" onchange="applyFilters()">
+                        <label for="typeCourses">Courses</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-panel">
+                <div class="filter-panel-header" onclick="togglePanel(this)">
+                    <span class="filter-panel-title"><i class="fas fa-folder"></i> Category</span>
+                    <i class="fas fa-chevron-right filter-panel-toggle"></i>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="checkbox" value="" id="categoryAll" checked onchange="applyFilters()">
+                        <label for="categoryAll">All Categories</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" value="Programming" onchange="applyFilters()">
+                        <label>Programming</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" value="Design" onchange="applyFilters()">
+                        <label>Design</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" value="Business" onchange="applyFilters()">
+                        <label>Business</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" value="Marketing" onchange="applyFilters()">
+                        <label>Marketing</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating Filter -->
+            <div class="filter-panel">
+                <div class="filter-panel-header" onclick="togglePanel(this)">
+                    <span class="filter-panel-title"><i class="fas fa-star"></i> Rating</span>
+                    <i class="fas fa-chevron-right filter-panel-toggle"></i>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="radio" name="rating" value="0" id="ratingAll" checked onchange="applyFilters()">
+                        <label for="ratingAll">All Ratings</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="rating" value="4.5" id="rating45" onchange="applyFilters()">
+                        <label for="rating45">★★★★★ 4.5+</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="rating" value="4" id="rating4" onchange="applyFilters()">
+                        <label for="rating4">★★★★☆ 4.0+</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="rating" value="3" id="rating3" onchange="applyFilters()">
+                        <label for="rating3">★★★☆☆ 3.0+</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Filter -->
+            <div class="filter-panel">
+                <div class="filter-panel-header" onclick="togglePanel(this)">
+                    <span class="filter-panel-title"><i class="fas fa-tag"></i> Price</span>
+                    <i class="fas fa-chevron-right filter-panel-toggle"></i>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="radio" name="priceType" value="all" id="priceAll" checked onchange="applyFilters()">
+                        <label for="priceAll">All Prices</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="priceType" value="free" id="priceFree" onchange="applyFilters()">
+                        <label for="priceFree">Free Only</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="priceType" value="paid" id="pricePaid" onchange="applyFilters()">
+                        <label for="pricePaid">Paid Only</label>
+                    </div>
+                </div>
+                <div class="price-inputs">
+                    <input type="number" id="minPrice" placeholder="Min ₹" class="price-input" onchange="applyFilters()" min="0">
+                    <input type="number" id="maxPrice" placeholder="Max ₹" class="price-input" onchange="applyFilters()" min="0">
+                </div>
+            </div>
+
+            <!-- Popularity Filter -->
+            <div class="filter-panel">
+                <div class="filter-panel-header" onclick="togglePanel(this)">
+                    <span class="filter-panel-title"><i class="fas fa-arrow-up"></i> Popularity</span>
+                    <i class="fas fa-chevron-right filter-panel-toggle"></i>
+                </div>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="radio" name="popularity" value="all" id="popAll" checked onchange="applyFilters()">
+                        <label for="popAll">Any</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="popularity" value="trending" id="popTrending" onchange="applyFilters()">
+                        <label for="popTrending">Trending Now</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="radio" name="popularity" value="highDownload" id="popHighDL" onchange="applyFilters()">
+                        <label for="popHighDL">Most Downloaded</label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="clear-filters" onclick="clearAllFilters()">
+                <i class="fas fa-times-circle"></i> Clear All Filters
+            </button>
+        </aside>
+
+        <!-- ============ RESULTS ============ -->
+        <div class="search-results">
+            <div class="results-header">
+                <div class="results-info">
+                    <div>
+                        Found <span class="results-count">0</span> <span class="results-text">results for "<strong id="queryDisplay">--</strong>"</span>
+                    </div>
+                </div>
+                <div class="sort-group">
+                    <button class="sort-option active" onclick="setSortBy(event, 'relevance')">
+                        <i class="fas fa-arrows-alt-v"></i> Relevant
+                    </button>
+                    <button class="sort-option" onclick="setSortBy(event, 'newest')">
+                        <i class="fas fa-clock"></i> Newest
+                    </button>
+                    <button class="sort-option" onclick="setSortBy(event, 'trending')">
+                        <i class="fas fa-fire"></i> Trending
+                    </button>
+                    <button class="sort-option" onclick="setSortBy(event, 'rating')">
+                        <i class="fas fa-star"></i> Top Rated
+                    </button>
+                    <button class="sort-option" onclick="setSortBy(event, 'price-asc')">
+                        <i class="fas fa-arrow-up"></i> Low Price
+                    </button>
+                </div>
+            </div>
+
+            <div id="resultsContainer" class="results-grid"></div>
+            <div id="paginationContainer" class="pagination-wrapper"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSort = 'relevance';
+        let currentPage = 1;
+        let totalResults = 0;
+        let searchTimeout;
+        let isLoading = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            const initialQuery = new URLSearchParams(window.location.search).get('query') || '';
+            if (initialQuery) {
+                document.getElementById('searchInput').value = initialQuery;
+                loadResults(1);
+            } else {
+                showEmptyState('Start searching to find amazing courses and files');
+            }
+
+            const searchInput = document.getElementById('searchInput');
+
+            // Handle Enter key
+            searchInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const query = this.value.trim();
+                    if (query.length > 0) {
+                        saveSearchHistory(query);
+                        window.history.pushState({ search: query }, '', `/search?query=${encodeURIComponent(query)}`);
+                        loadResults(1);
+                        document.getElementById('suggestionsDropdown').classList.remove('active');
+                    }
+                }
+            });
+
+            // Handle input for suggestions
+            searchInput.addEventListener('input', function (e) {
+                const query = e.target.value.trim();
+                clearTimeout(searchTimeout);
+                if (query.length < 2) {
+                    document.getElementById('suggestionsDropdown').classList.remove('active');
+                    return;
+                }
+                searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 300);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.search-box-container')) {
+                    document.getElementById('suggestionsDropdown').classList.remove('active');
+                }
+            });
+        });
+
+        // Fetch Suggestions
+        async function fetchSuggestions(query) {
+            try {
+                const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (data.suggestions && data.suggestions.length > 0) {
+                    let html = '';
+                    data.suggestions.forEach(item => {
+                        html += `
+                            <div class="suggestion-item" onclick="searchFor('${item.text.replace(/'/g, "\\'")}')">
+                                <i class="suggestion-item-icon fas fa-${item.category === 'Files' ? 'file' : item.category === 'Category' ? 'folder' : 'book'}"></i>
+                                <div class="suggestion-item-text">
+                                    <div class="suggestion-item-title">${escapeHtml(item.text)}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('suggestionsDropdown').innerHTML = html;
+                    document.getElementById('suggestionsDropdown').classList.add('active');
+                }
+            } catch (error) {
+                console.error('Suggestion error:', error);
+            }
+        }
+
+        // Search For
+        function searchFor(query) {
+            query = query.trim();
+            if (query.length === 0) return;
+            
+            document.getElementById('searchInput').value = query;
+            saveSearchHistory(query);
+            document.getElementById('suggestionsDropdown').classList.remove('active');
+            window.history.pushState({ search: query }, '', `/search?query=${encodeURIComponent(query)}`);
+            loadResults(1);
+        }
+
+        // Set Sort
+        function setSortBy(e, sort) {
+            if (isLoading) return;
+            currentSort = sort;
+            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
+            e.target.closest('.sort-option').classList.add('active');
+            loadResults(1);
+        }
+
+        // Apply Filters
+        function applyFilters() {
+            if (isLoading) return;
+            loadResults(1);
+        }
+
+        // Clear Filters
+        function clearAllFilters() {
+            document.getElementById('typeAll').checked = true;
+            document.getElementById('ratingAll').checked = true;
+            document.getElementById('priceAll').checked = true;
+            document.getElementById('popAll').checked = true;
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('categoryAll').checked = true;
+            
+            currentSort = 'relevance';
+            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.sort-option').classList.add('active');
+            loadResults(1);
+        }
+
+        // Toggle Panel
+        function togglePanel(header) {
+            header.closest('.filter-panel').classList.toggle('collapsed');
+        }
+
+        // Load Results
+        async function loadResults(page = 1) {
+            const query = document.getElementById('searchInput').value.trim();
+            document.getElementById('queryDisplay').textContent = query || 'all items';
+
+            if (!query) {
+                showEmptyState('Enter a search term to discover amazing content');
+                return;
+            }
+
+            const container = document.getElementById('resultsContainer');
+            showSkeletonLoader(container);
+            isLoading = true;
+
+            try {
+                const type = document.querySelector('input[name="type"]:checked').value;
+                const rating = parseFloat(document.querySelector('input[name="rating"]:checked').value) || 0;
+
+                const params = new URLSearchParams({
+                    q: query, 
+                    sortBy: currentSort, 
+                    assetType: type,
+                    minRating: rating, 
+                    page: page, 
+                    limit: 20
+                });
+
+                console.log('🔍 Searching for:', query);
+                const response = await fetch(`/api/search/advanced?${params}`);
+                const data = await response.json();
+
+                console.log('📊 Search results:', data);
+
+                if (!data.success || !data.results || data.results.length === 0) {
+                    showEmptyState('No results found for "' + query + '". Try different keywords.');
+                    isLoading = false;
+                    return;
+                }
+
+                totalResults = data.pagination?.total || 0;
+                document.querySelector('.results-count').textContent = totalResults;
+                container.innerHTML = data.results.map(item => {
+                    console.log('📦 Item with image:', item.image);
+                    return createResultCard(item);
+                }).join('');
+
+                // Render pagination
+                if (data.pagination?.pages > 1) {
+                    renderPagination(page, data.pagination.pages);
+                } else {
+                    document.getElementById('paginationContainer').innerHTML = '';
+                }
+
+                currentPage = page;
+                saveSearchHistory(query);
+                isLoading = false;
+            } catch (error) {
+                console.error('❌ Search error:', error);
+                showEmptyState('Error loading results. Please try again.');
+                isLoading = false;
+            }
+        }
+
+        // Show Skeleton Loader
+        function showSkeletonLoader(container) {
+            let skeletonHTML = '';
+            for (let i = 0; i < 12; i++) {
+                skeletonHTML += `
+                    <div class="skeleton-card">
+                        <div class="skeleton" style="height:220px; margin:0;"></div>
+                        <div style="padding: 16px;">
+                            <div class="skeleton" style="height:18px; width:85%; margin-bottom: 8px;"></div>
+                            <div class="skeleton" style="height:14px; width:70%; margin-bottom: 12px;"></div>
+                            <div class="skeleton" style="height:16px; width:40%;"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = skeletonHTML;
+        }
+
+        // Create Result Card
+        function createResultCard(item) {
+            const type = item.type === 'file' ? 'File' : 'Course';
+            const link = item.type === 'file' ? '/file/' + item._id : '/course/' + item._id;
+            const rating = (item.rating || 0).toFixed(1);
+            
+            // Direct use of CloudFront URL from API
+            const image = item.image && item.image.includes('cloudfront') 
+                ? item.image 
+                : buildFallbackImage(item.title, item.category);
+            const price = item.price ? '₹' + Math.floor(item.price) : 'Free';
+            const popularity = item.interest > 1000 ? '🔥 Trending' : item.interest > 100 ? '★ Popular' : '● New';
+
+            return `
+                <a href="${link}" style="text-decoration:none;">
+                    <div class="result-item">
+                        <div class="result-image-container">
+                            <img src="${image}" alt="${escapeHtml(item.title)}" class="result-image" 
+                                onerror="this.src='https://via.placeholder.com/220x220/5366E5/ffffff?text=${encodeURIComponent(item.title.substring(0, 12))}'">
+                            <span class="result-badge">${type}</span>
+                            <span class="result-popularity"><i class="fas fa-chart-line"></i> ${popularity}</span>
+                        </div>
+                        <div class="result-info">
+                            <h3 class="result-title">${escapeHtml(item.title)}</h3>
+                            <div class="result-meta">
+                                <span class="result-rating"><i class="fas fa-star"></i> ${rating}</span>
+                                <span class="result-category">${escapeHtml(item.category || 'General')}</span>
+                            </div>
+                            <div class="result-price">${price}</div>
+                            <div class="result-footer">
+                                <span><i class="fas fa-download"></i> ${item.interest || 0} ${item.type === 'file' ? 'downloads' : 'enrolls'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        // Build Fallback Image
+        function buildFallbackImage(title, category) {
+            const colors = ['5366E5', 'F59E0B', '10B981', 'EF4444', 'EC4899', '8B5CF6'];
+            const hashCode = title.charCodeAt(0) + (category ? category.charCodeAt(0) : 0);
+            const color = colors[hashCode % colors.length];
+            return `https://via.placeholder.com/220x220/${color}/ffffff?text=${encodeURIComponent(title.substring(0, 15))}`;
+        }
+
+        // Render Pagination
+        function renderPagination(currentPageNum, totalPages) {
+            let html = `<button class="pagination-btn" ${currentPageNum === 1 ? 'disabled' : ''} onclick="loadResults(${currentPageNum - 1})"><i class="fas fa-chevron-left"></i> Prev</button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPageNum - 1 && i <= currentPageNum + 1)) {
+                    if (i > 1 && i < totalPages && i < currentPageNum - 1) {
+                        html += '<span style="padding:8px;">...</span>';
+                    }
+                    html += `<button class="pagination-btn ${i === currentPageNum ? 'active' : ''}" onclick="loadResults(${i})">${i}</button>`;
+                }
+            }
+            
+            html += `<button class="pagination-btn" ${currentPageNum === totalPages ? 'disabled' : ''} onclick="loadResults(${currentPageNum + 1})">Next <i class="fas fa-chevron-right"></i></button>`;
+            document.getElementById('paginationContainer').innerHTML = html;
+        }
+
+        // Show Empty State
+        function showEmptyState(message) {
+            const container = document.getElementById('resultsContainer');
+            document.querySelector('.results-count').textContent = '0';
+            document.getElementById('paginationContainer').innerHTML = '';
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-search"></i></div>
+                    <h3 class="empty-title">${message}</h3>
+                    <p class="empty-text">Browse through our curated marketplace</p>
+                </div>
+            `;
+        }
+
+        // Load Trending
+        async function loadTrendingSearches() {
+            if (isLoading) return;
+            isLoading = true;
+            try {
+                const response = await fetch('/api/search/trending');
+                const data = await response.json();
+                if (data.success && data.trending && data.trending.length > 0) {
+                    const container = document.getElementById('resultsContainer');
+                    container.innerHTML = data.trending.map(item => createResultCard(item)).join('');
+                    document.getElementById('queryDisplay').textContent = 'Trending';
+                    document.querySelector('.results-count').textContent = data.trending.length;
+                    document.getElementById('paginationContainer').innerHTML = '';
+                }
+                isLoading = false;
+            } catch (error) {
+                console.error('Trending error:', error);
+                isLoading = false;
+            }
+        }
+
+        // Load Popular
+        async function loadPopularItems() {
+            if (isLoading) return;
+            isLoading = true;
+            try {
+                const response = await fetch('/api/search/popular');
+                const data = await response.json();
+                if (data.success && data.popular && data.popular.length > 0) {
+                    const container = document.getElementById('resultsContainer');
+                    container.innerHTML = data.popular.map(item => createResultCard(item)).join('');
+                    document.getElementById('queryDisplay').textContent = 'Popular';
+                    document.querySelector('.results-count').textContent = data.popular.length;
+                    document.getElementById('paginationContainer').innerHTML = '';
+                }
+                isLoading = false;
+            } catch (error) {
+                console.error('Popular error:', error);
+                isLoading = false;
+            }
+        }
+
+        // Show Recent Searches
+        function showRecentSearches() {
+            const history = localStorage.getItem('searchHistory');
+            const searches = history ? JSON.parse(history) : [];
+            if (searches.length === 0) {
+                showEmptyState('No recent searches. Start exploring!');
+                return;
+            }
+            
+            const container = document.getElementById('resultsContainer');
+            const suggestions = searches.slice(0, 12).map(query =>
+                `<span class="suggestion-tag" onclick="searchFor('${query.replace(/'/g, "\\'")}')">${escapeHtml(query)}</span>`
+            ).join('');
+            
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-history"></i></div>
+                    <h3 class="empty-title">Recent Searches</h3>
+                    <p class="empty-text">Your search history</p>
+                    <div class="empty-suggestions">${suggestions}</div>
+                </div>
+            `;
+            document.getElementById('queryDisplay').textContent = 'History';
+            document.querySelector('.results-count').textContent = searches.length;
+            document.getElementById('paginationContainer').innerHTML = '';
+        }
+
+        // Save Search History
+        function saveSearchHistory(query) {
+            let history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            history = history.filter(q => q.toLowerCase() !== query.toLowerCase());
+            history.unshift(query);
+            history = history.slice(0, 20);
+            localStorage.setItem('searchHistory', JSON.stringify(history));
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+
+</html>
