@@ -135,7 +135,7 @@ router.get('/chat/:userId',authenticateJWT_user, requireAuth, async (req, res) =
         // Fetch any other data needed for your header
         const user = await User.findById(req.user.id);
 
-        res.render('user-chat', { // Assuming your EJS file is named 'chat.ejs'
+        res.render('social/user-chat', { // Assuming your EJS file is named 'chat.ejs'
             myUserId: myUserId,
             recipientId: recipientId,
             // Pass other necessary data for your header

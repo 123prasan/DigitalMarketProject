@@ -727,7 +727,7 @@ app.get("/my-courses", authenticateJWT_user, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching user courses:", error);
-    res.status(500).render("500", {
+    res.status(500).render("errors/500", {
       error: "Failed to load your courses",
     });
   }
@@ -749,7 +749,7 @@ app.get("/analytics-dashboard", authenticateJWT_user, async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering analytics dashboard:", error);
-    res.status(500).render("500", {
+    res.status(500).render("errors/500", {
       error: "Failed to load analytics dashboard",
     });
   }
@@ -912,7 +912,7 @@ app.get("/edit-course/:courseId", authenticateJWT_user, async (req, res) => {
     });
   } catch (error) {
     console.error("Error loading edit course page:", error);
-    res.status(500).render("500", { error: "Failed to load course" });
+    res.status(500).render("errors/500", { error: "Failed to load course" });
   }
 });
 
@@ -1745,7 +1745,7 @@ app.get("/dashboard", authenticateJWT_user, async (req, res) => {
     });
   } catch (error) {
     console.error("Error loading dashboard:", error);
-    res.status(500).render("500", { error: "Failed to load dashboard" });
+    res.status(500).render("errors/500", { error: "Failed to load dashboard" });
   }
 });
 // Razorpay Order Creation - No auth needed (public)
@@ -5032,7 +5032,7 @@ app.get('/courses', authenticateJWT_user, async (req, res) => {
     if (req.xhr || req.headers.accept?.includes('application/json')) {
       return res.status(500).json({ success: false, error: 'Failed to fetch courses.' });
     }
-    res.status(500).render('500', { error: 'An unexpected error occurred while loading courses.' });
+    res.status(500).render('errors/500', { error: 'An unexpected error occurred while loading courses.' });
   }
 });
 
@@ -5043,12 +5043,12 @@ app.get('/course-detail', authenticateJWT_user, async (req, res) => {
     const { courseId } = req.query;
 
     if (!courseId) {
-      return res.status(400).render('404', { message: 'Course ID is required' });
+      return res.status(400).render('errors/404', { message: 'Course ID is required' });
     }
 
     // Validate MongoDB ObjectId format
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
-      return res.status(400).render('404', { message: 'Invalid course ID format' });
+      return res.status(400).render('errors/404', { message: 'Invalid course ID format' });
     }
 
     // Fetch course early for SEO setup
@@ -5056,7 +5056,7 @@ app.get('/course-detail', authenticateJWT_user, async (req, res) => {
       .populate('userId', 'fullName profilePicUrl username email');
 
     if (!course) {
-      return res.status(404).render('404', { message: 'Course not found' });
+      return res.status(404).render('errors/404', { message: 'Course not found' });
     }
 
     res.locals.setMetaTags('course', {
@@ -5158,7 +5158,7 @@ app.get('/course-detail', authenticateJWT_user, async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching course details:', error);
-    res.status(500).render('500', { error: error.message });
+    res.status(500).render('errors/500', { error: error.message });
   }
 });
 

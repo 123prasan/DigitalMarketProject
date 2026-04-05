@@ -43,7 +43,7 @@ async function getValidFileUrl(file) {
 // Route for the main chat list page
 router.get('/chats',authenticateJWT_user,requireAuth, async (req, res) => {
     const myUserId = req.user._id; 
-    res.render('chat-list', { myUserId, isLoggedin: true });
+    res.render('social/chat-list', { myUserId, isLoggedin: true });
 });
 
 // Route for a specific one-on-one chat page
@@ -76,7 +76,7 @@ router.get('/user/chat/:userId', authenticateJWT_user, requireAuth, async (req, 
             return res.status(404).send("User not found");
         }
 
-        res.render('user-chat', {
+        res.render('social/user-chat', {
             myUserId,
             recipientId,
             recipientUsername: recipientUser.username,
