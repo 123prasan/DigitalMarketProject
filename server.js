@@ -900,7 +900,7 @@ app.get("/edit-course/:courseId", authenticateJWT_user, async (req, res) => {
 
     const course = await Course.findOne({ _id: courseId, userId: instructorId });
     if (!course) {
-      return res.status(404).render("404", { message: "Course not found" });
+      return res.status(404).render("errors/404", { message: "Course not found" });
     }
 
     res.render("courses/edit-course", {
@@ -1843,7 +1843,7 @@ app.get("/refundpolicy", (req, res) => {
   res.render("pages/refundpolicy");
 });
 app.get("/payment-terms", (req, res) => {
-  res.render("payment-terms");
+  res.render("pages/payment-terms");
 });
 app.get("/contact", (req, res) => {
   // =============== SEO SETUP ===============
@@ -3779,7 +3779,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
     // 📄 Fetch file
     const file = await File.findById(req.params.id);
     if (!file) {
-      return res.status(404).render("404", { message: "File not found" });
+      return res.status(404).render("errors/404", { message: "File not found" });
     }
 
     // 🔄 Redirect to canonical slug
@@ -4453,7 +4453,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
         console.log(`✅ Cached new signed URL for ${file.filename}`);
       } catch (signErr) {
         console.error("❌ CloudFront signing error:", signErr);
-        return res.status(500).render("500");
+        return res.status(500).render("errors/500");
       }
     }
 
@@ -4506,7 +4506,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
 
   } catch (error) {
     console.error("💥 Error in /download route:", error);
-    return res.status(500).render("500");
+    return res.status(500).render("errors/500");
   }
 });
 
@@ -5820,7 +5820,7 @@ function getMimeType(extension) {
 
 
 app.use((req, res) => {
-  res.status(404).render("404");
+  res.status(404).render("errors/404");
 });
 app.use((err, req, res, next) => {
   // 1. Log the error to your console for debugging
@@ -5829,6 +5829,6 @@ app.use((err, req, res, next) => {
   console.error("======================================================");
 
   // 2. Send the 500 status code and render your new error page
-  res.status(500).render("500");
+  res.status(500).render("errors/500");
 });
 // Error handling middleware

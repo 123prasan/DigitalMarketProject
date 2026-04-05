@@ -1207,7 +1207,7 @@ const isFree = Number(priceDetails.total) === 0;
             <% } %>
 
             <!-- REPORT -->
-            <div class="mt-1 reveal"><%- include("reporttemplate") %></div>
+            <div class="mt-1 reveal"><%- include("../components/reporttemplate") %></div>
 
             <!-- FAQ -->
             <div class="content-card reveal">
@@ -1406,7 +1406,7 @@ const isFree = Number(priceDetails.total) === 0;
                             <span id="likeCountLabel"><%= file.likes||0 %></span>
                         </button>
                         <div style="flex:1;display:flex;min-width:0;">
-                            <%- include("share") %>
+                            <%- include("../social/share") %>
                         </div>
                     </div>
 
