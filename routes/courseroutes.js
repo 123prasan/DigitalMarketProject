@@ -6,6 +6,7 @@ const {
   getCourseById,
 } = require("../controllers/coursecontroller");
 const authenticateJWT_user = require("./authentication/jwtAuth.js");
+const { enforceDeviceLimit } = require("./authentication/deviceLimit.js");
 const jwt = require("jsonwebtoken");
 const UserProgress = require("../models/courseProgress");
 const Course = require("../models/course");
@@ -28,7 +29,7 @@ router.post(
   authenticateJWT_user,
   generatePresignedUrl
 );
-router.get("/coursecreation",(req,res)=>{
+router.get("/coursecreation", authenticateJWT_user, (req,res)=>{
   res.render("gencourse.ejs");
 })
 // Route to create the course after files are uploaded
@@ -56,10 +57,16 @@ const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID;
 const PRIVATE_KEY_PATH = path.join(__dirname, "..", "private_keys", "cloudfront-private-key.pem");
 const PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
 
-router.get("/:courseId", authenticateJWT_user, async (req, res) => {
+router.get("/:courseId", authenticateJWT_user, enforceDeviceLimit, async (req, res) => {
   try {
     // console.log("cousr colled")
     const { courseId } = req.params;
+
+    // Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).render("404", { message: "Authentication required to access courses." });
+    }
+
     const userId = req.user._id;
     // console.log(userId)
 
@@ -73,7 +80,8 @@ router.get("/:courseId", authenticateJWT_user, async (req, res) => {
     }
 
     // Check if user has purchased/enrolled in this course
-    const isEnrolled = course.enrolledStudents && course.enrolledStudents.some(id => id.toString() === userId.toString());
+    // Allow access if course is free OR user is enrolled
+    const isEnrolled = course.isFree || (course.enrolledStudents && course.enrolledStudents.some(id => id.toString() === userId.toString()));
     if (!isEnrolled) {
       return res.status(403).render("404", { message: "You must purchase this course to access it." });
     }
@@ -100,9 +108,15 @@ router.get("/:courseId", authenticateJWT_user, async (req, res) => {
 });
 
 // Secure video access endpoint
-router.get("/:courseId/lessons/:lessonId/video", authenticateJWT_user, async (req, res) => {
+router.get("/:courseId/lessons/:lessonId/video", authenticateJWT_user, enforceDeviceLimit, async (req, res) => {
   try {
     const { courseId, lessonId } = req.params;
+
+    // Check if user is authenticated
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required." });
+    }
+
     const userId = req.user._id;
 
     // Find the course
@@ -111,8 +125,8 @@ router.get("/:courseId/lessons/:lessonId/video", authenticateJWT_user, async (re
       return res.status(404).json({ error: "Course not found" });
     }
 
-    // Verify user is enrolled
-    const isEnrolled = course.enrolledStudents && course.enrolledStudents.some(id => id.toString() === userId.toString());
+    // Verify user is enrolled (or course is free)
+    const isEnrolled = course.isFree || (course.enrolledStudents && course.enrolledStudents.some(id => id.toString() === userId.toString()));
     if (!isEnrolled) {
       return res.status(403).json({ error: "Access denied. You must purchase this course." });
     }

@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     
-    <!-- Primary Meta Tags -->
     <title><%= seo && seo.metaTags && seo.metaTags.title ? seo.metaTags.title : 'Search Courses & Resources - Vidyari' %></title>
     <meta name="title" content="<%= seo && seo.metaTags && seo.metaTags.title ? seo.metaTags.title : 'Search Courses & Resources - Vidyari' %>">
     <meta name="description" content="<%= seo && seo.metaTags && seo.metaTags.description ? seo.metaTags.description : 'Find premium online courses, study materials, and educational resources on Vidyari. Search thousands of quality courses and files.' %>">
@@ -17,10 +16,8 @@
     <meta name="revisit-after" content="7 days">
     <meta name="theme-color" content="#ffffff">
     
-    <!-- Canonical URL -->
     <link rel="canonical" href="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
     
-    <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
     <meta property="og:title" content="<%= seo && seo.metaTags && seo.metaTags.ogTitle ? seo.metaTags.ogTitle : 'Search Results - Vidyari' %>">
@@ -29,32 +26,26 @@
     <meta property="og:site_name" content="Vidyari">
     <meta property="og:locale" content="en_US">
     
-    <!-- Twitter Card Meta Tags -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
     <meta property="twitter:title" content="<%= query ? 'Search: ' + query : 'Search Results' %> - Vidyari">
     <meta property="twitter:description" content="<%= seo && seo.metaTags && seo.metaTags.ogDescription ? seo.metaTags.ogDescription : 'Find premium courses and resources on Vidyari' %>">
     <meta property="twitter:image" content="https://www.vidyari.com/images/og-search.jpg">
     
-    <!-- Additional Meta Tags for SEO -->
     <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU">
     <meta name="msvalidate.01" content="D3E102BD58FF1D339695A30F2A3EAB37">
     
-    <!-- Preconnect & Prefetch -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
     <link rel="icon" type="image/png" href="/images/logo.png">
     
-    <!-- JSON-LD Structured Data for Search Results Page -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -71,7 +62,6 @@
     }
     </script>
     
-    <!-- JSON-LD Structured Data for Organization -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -93,7 +83,6 @@
     }
     </script>
     
-    <!-- JSON-LD Breadcrumb Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -123,10 +112,8 @@
     }
     </script>
     
-    <!-- Google Analytics & Tracking -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             /* Modern SaaS / Clean Slate Palette */
@@ -155,6 +142,13 @@
             --danger: #EF4444;
             --danger-bg: #FEF2F2;
             --warning: #F59E0B;
+            
+            /* Google Books Style Colors */
+            --play-blue: #01875f;
+            --play-green: #01875f; /* Play Store Green for Free/Install */ 
+            --gemini-blue: #1a73e8; 
+            --heart-default: rgba(0, 0, 0, 0.4);
+            --heart-active: #d93025;
             
             /* Clean Geometry */
             --radius-sm: 6px;
@@ -201,8 +195,9 @@
         /* ============ MODERN SOLID HEADER ============ */
         .search-header {
             background: #FFFFFF;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            padding: 16px 24px;
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -210,10 +205,11 @@
 
         .header-content {
             width: 100%;
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 24px;
             padding: 0;
         }
@@ -229,7 +225,8 @@
         /* ============ SEARCH BOX ============ */
         .search-box-container {
             flex: 1;
-            max-width: 800px;
+            max-width: 600px;
+            margin: 0 auto; /* Centers the search bar relative to header */
             position: relative;
         }
 
@@ -241,32 +238,33 @@
 
         .search-input {
             width: 100%;
-            padding: 13px 110px 13px 44px;
+            padding: 14px 110px 14px 48px;
             font-size: 0.95rem;
             font-family: inherit;
             border: 2px solid transparent;
             border-radius: 12px;
-            background: #FFFFFF;
+            background: #F8FAFC; /* Softer background for contrast */
             color: var(--text-main);
             transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
             font-weight: 500;
         }
 
         .search-input:hover {
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            background: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .search-input:focus {
             outline: none;
             background: #FFFFFF;
             border-color: #2563eb;
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
         }
 
-        .search-input::placeholder { color: #cbd5e1; font-weight: 400; }
-        .search-input:focus::placeholder { color: #94a3b8; }
+        .search-input::placeholder { color: #94a3b8; font-weight: 400; }
+        .search-input:focus::placeholder { color: #cbd5e1; }
 
         .search-icon {
             position: absolute;
@@ -386,7 +384,7 @@
             display: flex; 
             gap: 8px;
             align-items: center;
-            margin-left: auto;
+            flex-shrink: 0;
         }
 
         .btn-nav {
@@ -665,68 +663,117 @@
 
         /* ============ RESULTS GRID ============ */
         .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
         }
 
         .result-item {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            display: flex; 
+            width: 160px; 
+            background: transparent;
+            display: flex;
             flex-direction: column;
+            cursor: pointer;
+            position: relative;
             text-decoration: none !important;
             color: inherit !important;
-            cursor: pointer;
-            height: 100%;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
             animation: fadeIn 0.3s ease;
+            height: 100%; /* Ensure equal heights across the row */
         }
 
         .result-item:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--border-hover);
             transform: translateY(-2px);
         }
 
         .result-image-container {
-            width: 100%; 
-            height: 150px;
+            width: 100%;
+            height: 240px; 
+            overflow: hidden;
             position: relative;
-            background: var(--bg-main);
-            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+            background-color: #eee;
+            flex-shrink: 0;
+        }
+
+        /* Spine Shadow Effect */
+        .result-image-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
         }
 
         .result-image {
             width: 100%; 
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .result-item:hover .result-image {
+            transform: scale(1.02);
+        }
+
+        /* Wishlist Heart Button */
+        .wishlist-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: var(--heart-default);
+            font-size: 1.1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .wishlist-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .wishlist-btn:active {
+            transform: scale(0.9);
+        }
+
+        .wishlist-btn.active {
+            color: var(--heart-active);
         }
 
         .badge {
             position: absolute; 
-            padding: 4px 8px;
+            padding: 5px 10px;
             border-radius: var(--radius-sm);
-            font-size: 0.7rem; 
-            font-weight: 600;
+            font-size: 0.65rem; 
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
 
         .badge-type {
-            top: 12px; 
-            left: 12px;
-            background: rgba(255, 255, 255, 0.9);
+            top: 10px; 
+            left: 10px;
+            background: rgba(255, 255, 255, 0.95);
             color: var(--text-main);
             box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(4px);
         }
 
         .badge-pop {
-            top: 12px;
-            right: 12px;
+            top: 10px;
+            right: 10px;
             background: var(--primary);
             color: white;
             display: flex;
@@ -735,75 +782,73 @@
         }
 
         .result-info {
-            padding: 16px; 
-            flex: 1;
-            display: flex; 
+            padding: 8px 4px 0 4px;
+            display: flex;
             flex-direction: column;
+            flex-grow: 1; /* Pushes price to the bottom */
         }
 
         .result-title {
-            font-size: 1.05rem; 
-            font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0 0 4px 0;
             display: -webkit-box;
             -webkit-line-clamp: 2;
-            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            line-height: 1.4;
+            line-height: 1.2rem;
         }
 
         .result-instructor {
-            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
+            font-size: 0.75rem;
+            margin: 0 0 6px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .result-meta {
-            display: flex; 
+            display: flex;
             align-items: center;
-            font-size: 0.85rem; 
-            color: var(--text-muted);
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-
-        .result-rating { 
-            color: var(--warning);
-            font-weight: 500;
-            display: flex; align-items: center; gap: 4px;
-        }
-
-        .result-tag {
-            background: var(--bg-main);
-            padding: 2px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
             font-size: 0.75rem;
             color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .rating-star {
+            font-size: 0.7rem;
+            margin-right: 2px;
+            color: #F59E0B;
         }
         
         .result-price {
-            font-size: 1.2rem; 
-            font-weight: 700;
-            color: var(--text-main);
-            margin-top: auto;
+            background: var(--gemini-blue);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: auto; /* Forces button to the bottom of the card */
+            text-align: center;
         }
 
-        .result-price.free { color: var(--success); }
+        .result-price:hover {
+            background: #1765cc;
+        }
 
-        .result-footer {
-            padding-top: 16px;
-            margin-top: 16px;
-            border-top: 1px solid var(--bg-main);
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            font-size: 0.8rem; 
-            color: var(--text-light);
+        .result-price.free { 
+            background: var(--play-green);
+            color: white;
+        }
+
+        .result-price.free:hover {
+            background: #006e4e;
         }
 
         /* ============ SECTION HEADERS ============ */
@@ -827,13 +872,49 @@
 
         /* ============ SKELETON CARD ============ */
         .skeleton-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            height: 340px;
+            width: 160px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
-        .skeleton-card .skeleton { margin: 0 !important; border-radius: 0; }
+
+        .skeleton-card .skeleton {
+            margin: 0 !important;
+            border-radius: 0;
+        }
+
+        .skeleton-card .skeleton:first-child {
+            height: 240px;
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-card .skeleton:nth-child(2) {
+            height: 16px;
+            width: 85%;
+            margin: 0 0 2px 2px;
+        }
+
+        .skeleton-card .skeleton:nth-child(3) {
+            height: 14px;
+            width: 65%;
+            margin: 0 0 4px 2px;
+        }
+
+        .skeleton-card .skeleton:nth-child(4) {
+            height: 12px;
+            width: 40%;
+            margin: 0 0 8px 2px;
+        }
+
+        .skeleton-card .skeleton:nth-child(5) {
+            height: 32px;
+            width: 100%;
+            border-radius: 8px;
+            margin: 8px 0 0 0;
+        }
 
         /* ============ EMPTY STATE ============ */
         .empty-state {
@@ -850,68 +931,228 @@
         .empty-text { color: var(--text-muted); font-size: 0.95rem; }
 
         /* ============ PAGINATION ============ */
-        .pagination-wrapper { 
-            display: flex; 
-            justify-content: center; 
-            gap: 6px; 
-            margin-top: 32px; 
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
         }
 
         .pagination-btn {
-            padding: 8px 14px;
-            border: 1px solid var(--border); 
+            padding: 10px 16px;
+            border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            background: var(--bg-surface); 
+            background: var(--bg-surface);
             cursor: pointer;
-            font-weight: 500; 
+            font-weight: 500;
             font-size: 0.9rem;
             color: var(--text-main);
             transition: var(--transition);
+            min-width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
 
-        .pagination-btn:hover:not(:disabled) { background: var(--bg-main); border-color: var(--border-hover); }
-        .pagination-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .pagination-btn:disabled { color: var(--text-light); cursor: not-allowed; background: var(--bg-main); opacity: 0.6; }
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--bg-main);
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        .pagination-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .pagination-btn:disabled {
+            color: var(--text-light);
+            cursor: not-allowed;
+            background: var(--bg-main);
+            opacity: 0.6;
+        }
+
+        .pagination-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0 16px;
+        }
 
         /* ============ MOBILE RESPONSIVENESS ============ */
         .mobile-filter-toggle, .mobile-filter-close { display: none; }
 
+        /* Tablet Responsiveness */
         @media (max-width: 1024px) {
-            .search-container { grid-template-columns: 220px 1fr; gap: 20px; padding: 20px; }
+            .search-container {
+                grid-template-columns: 200px 1fr;
+                gap: 24px;
+                padding: 20px 16px;
+            }
+
+            .filters-sidebar {
+                max-height: calc(100vh - 120px);
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 20px;
+            }
+
+            .result-item {
+                width: auto;
+                max-width: 180px;
+            }
         }
 
+        /* Small Tablet Responsiveness */
+        @media (max-width: 900px) {
+            .search-container {
+                grid-template-columns: 180px 1fr;
+                gap: 20px;
+                padding: 16px 12px;
+            }
+
+            .results-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 16px;
+            }
+
+            .result-item {
+                max-width: 160px;
+            }
+        }
+
+        /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .search-header { 
-                padding: 14px 12px;
-                width: 100%;
-                margin: 0;
-                box-shadow: 0 2px 12px rgba(30, 58, 138, 0.2);
+                padding: 12px 16px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             }
-            .header-content { 
-                flex-wrap: wrap; 
-                gap: 10px;
+            .header-content {
+                flex-direction: column;
+                align-items: stretch; /* Forces children to span full width */
+                gap: 12px;
+            }
+            .header-title {
+                display: none; /* Hide hidden title block to free up space */
+            }
+
+            .search-box-container {
+                order: 1;
                 width: 100%;
-                padding: 0;
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .search-input { 
+                padding: 12px 90px 12px 42px; 
+                font-size: 1rem; 
+                border-radius: 10px; 
+                width: 100%; /* Ensure full width on mobile */
+            }
+
+            .quick-actions {
+                order: 2;
+                width: 100%;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 4px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .btn-nav {
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+
+            /* Voice search button mobile */
+            .voice-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
             }
             
-            /* Ensures Search Bar stays prominent on mobile */
-            .search-box-container { order: 3; width: 100%; max-width: 100%; }
-            .search-input { padding: 11px 80px 11px 36px; font-size: 0.9rem; border-radius: 10px; }
+            /* Mobile Google Books card design */
+            .result-item {
+                width: 160px;
+                margin: 0 auto;
+            }
+            
+            .result-title {
+                font-size: 0.875rem;
+                margin-bottom: 2px;
+                line-height: 1.1rem;
+            }
+            
+            .result-instructor {
+                font-size: 0.75rem;
+                margin-bottom: 4px;
+            }
+            
+            .result-meta {
+                font-size: 0.75rem;
+                margin-bottom: 8px;
+            }
+            
+            .result-price {
+                font-size: 0.85rem;
+                padding: 8px 0;
+                margin-top: auto;
+            }
+            
+            .result-image-container {
+                height: 240px;
+                margin-bottom: 8px;
+            }
+            
+            .results-grid {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 16px;
+                padding: 0 8px;
+            }
             
             .search-container { 
                 grid-template-columns: 1fr; 
-                padding: 8px;
+                padding: 12px;
                 width: 100%;
                 margin: 0;
                 box-sizing: border-box;
+                gap: 12px;
             }
             
             .mobile-filter-toggle {
                 display: flex;
-                width: calc(100% - 16px);
-                margin: 0 8px 8px 8px;
-                padding: 10px;
+                width: calc(100% - 24px);
+                margin: 8px 12px;
+                padding: 12px 16px;
                 font-size: 0.9rem;
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-sm);
+                cursor: pointer;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                font-weight: 500;
+                color: var(--text-main);
+                transition: var(--transition);
+            }
+
+            .mobile-filter-toggle:hover {
+                background: var(--bg-main);
+                border-color: var(--border-hover);
             }
 
             .filters-sidebar { display: none; }
@@ -946,13 +1187,13 @@
             .results-header { 
                 flex-direction: column; 
                 align-items: flex-start;
-                padding: 8px;
+                padding: 12px;
                 margin: 0;
                 width: 100%;
                 background: transparent;
                 border: none;
                 box-shadow: none;
-                gap: 8px;
+                gap: 12px;
             }
             .results-info {
                 font-size: 0.9rem;
@@ -977,21 +1218,36 @@
             /* Pagination on mobile */
             .pagination-wrapper {
                 flex-wrap: wrap;
-                gap: 4px;
-                margin-top: 12px;
-                padding: 8px;
+                gap: 6px;
+                margin-top: 20px;
+                margin-bottom: 16px;
+                padding: 16px 12px;
                 width: 100%;
                 box-sizing: border-box;
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-sm);
             }
             .pagination-btn {
-                padding: 6px 10px;
+                padding: 8px 12px;
                 font-size: 0.8rem;
+                min-width: 36px;
+            }
+
+            .pagination-info {
+                font-size: 0.8rem;
+                margin: 0 8px;
+                order: -1;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 8px;
             }
 
             .search-results {
-                gap: 12px;
+                gap: 16px;
             }
-
+            
             .empty-state {
                 padding: 40px 16px;
                 border-radius: var(--radius-md);
@@ -1007,55 +1263,40 @@
             .empty-text { 
                 font-size: 0.9rem; 
             }
-            
-            /* Smaller cards for phones - 2 columns */
-            .results-grid { 
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 8px;
-                padding: 0;
-                margin: 0;
-                width: 100%;
-                box-sizing: border-box;
+
+            /* Mobile Google Books skeleton design */
+            .skeleton-card {
+                width: 160px;
+                margin: 0 auto;
             }
-            .result-item {
-                border-radius: var(--radius-sm);
-                overflow: hidden;
-            }
-            .result-image-container { 
-                height: 90px;
-                width: 100%;
-            }
-            .result-info { 
-                padding: 8px;
-                min-height: 60px;
-            }
-            .result-title { 
-                font-size: 0.85rem;
-                line-height: 1.2;
-                margin-bottom: 4px;
-            }
-            .result-instructor {
-                font-size: 0.75rem;
-                margin-bottom: 4px;
-            }
-            .result-meta {
-                font-size: 0.75rem;
-                gap: 4px;
+
+            .skeleton-card .skeleton:first-child {
+                height: 240px;
                 margin-bottom: 8px;
             }
-            .result-rating {
-                font-size: 0.75rem;
+
+            .skeleton-card .skeleton:nth-child(2) {
+                height: 16px;
+                width: 85%;
+                margin: 0 0 2px 2px;
             }
-            .result-tag {
-                font-size: 0.7rem;
+
+            .skeleton-card .skeleton:nth-child(3) {
+                height: 14px;
+                width: 65%;
+                margin: 0 0 4px 2px;
             }
-            .result-price { 
-                font-size: 0.9rem;
+
+            .skeleton-card .skeleton:nth-child(4) {
+                height: 12px;
+                width: 40%;
+                margin: 0 0 8px 2px;
             }
-            .result-footer { 
-                font-size: 0.7rem;
-                padding-top: 8px;
-                margin-top: 8px;
+
+            .skeleton-card .skeleton:nth-child(5) {
+                height: 32px;
+                width: 100%;
+                margin: 8px 0 0 0;
             }
         }
     </style>
@@ -1416,6 +1657,10 @@
             document.body.style.overflow = 'auto';
         }
 
+        function toggleWishlist(itemId, button) {
+            button.classList.toggle('active');
+        }
+
         // ============ EVENT LISTENERS - INIT ============
         document.addEventListener('DOMContentLoaded', function () {
             const initialQuery = new URLSearchParams(window.location.search).get('query') || '';
@@ -1621,12 +1866,8 @@
                 durations.forEach(dur => params.append('duration', dur));
                 certifications.forEach(cert => params.append('certification', cert));
 
-                console.log('Search Params:', params.toString());
-
                 const response = await fetch(`${apiBaseUrl}/advanced?${params}`);
                 const data = await response.json();
-
-                console.log('API Response:', data);
 
                 if (!data.success || !data.results || data.results.length === 0) {
                     showEmptyState('0 records matched applied filters.', 'fa-exclamation-circle');
@@ -1677,22 +1918,20 @@
                         <img src="${image}" alt="${escapeHtml(item.title)}" class="result-image" onerror="this.style.display='none'; this.parentElement.style.background='#F1F5F9';">
                         <span class="badge badge-type">${typeStr}</span>
                         ${badge}
+                        <button class="wishlist-btn" title="Add to wishlist" onclick="event.preventDefault(); event.stopPropagation(); toggleWishlist('${item._id}', this);">
+                            ❤
+                        </button>
                     </div>
                     <div class="result-info">
                         <h3 class="result-title">${escapeHtml(item.title)}</h3>
-                        ${item.creator ? `<div class="result-instructor"><i class="fas fa-id-badge"></i> ${escapeHtml(typeof item.creator === 'string' ? item.creator : 'System')}</div>` : ''}
+                        ${item.creator ? `<div class="result-instructor">${escapeHtml(typeof item.creator === 'string' ? item.creator : 'System')}</div>` : ''}
                         
                         <div class="result-meta">
-                            <span class="result-rating"><i class="fas fa-star"></i> ${rating}</span>
-                            <span class="result-tag">${escapeHtml(item.category || 'General')}</span>
+                            <span>${rating}</span>
+                            <span class="rating-star">★</span>
                         </div>
                         
                         <div class="result-price ${priceClass}">${priceStr}</div>
-                        
-                        <div class="result-footer">
-                            <span><i class="fas fa-download"></i> ${item.interest || 0}</span>
-                            <span>${new Date(item.createdAt || Date.now()).toISOString().split('T')[0]}</span>
-                        </div>
                     </div>
                 </a>
             `;
@@ -1704,17 +1943,11 @@
             for (let i = 0; i < count; i++) {
                 skeletonHTML += `
                     <div class="skeleton-card">
-                        <div class="skeleton" style="height:150px;"></div>
-                        <div style="padding: 16px;">
-                            <div class="skeleton" style="height:16px; width:85%; margin-bottom: 8px;"></div>
-                            <div class="skeleton" style="height:12px; width:65%; margin-bottom: 20px;"></div>
-                            <div class="skeleton" style="height:20px; width:40%; margin-bottom: 12px;"></div>
-                            <div class="skeleton" style="height:1px; width:100%; margin-bottom: 12px;"></div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <div class="skeleton" style="height:12px; width:30%;"></div>
-                                <div class="skeleton" style="height:12px; width:30%;"></div>
-                            </div>
-                        </div>
+                        <div class="skeleton"></div>
+                        <div class="skeleton"></div>
+                        <div class="skeleton"></div>
+                        <div class="skeleton"></div>
+                        <div class="skeleton"></div>
                     </div>
                 `;
             }
@@ -1735,7 +1968,8 @@
 
         // ============ PAGINATION ============
         function renderPagination(currentPageNum, totalPages) {
-            let html = `<button class="pagination-btn" ${currentPageNum === 1 ? 'disabled' : ''} onclick="loadResults(${currentPageNum - 1})"><i class="fas fa-chevron-left"></i></button>`;
+            let html = `<div class="pagination-info">Page ${currentPageNum} of ${totalPages}</div>`;
+            html += `<button class="pagination-btn" ${currentPageNum === 1 ? 'disabled' : ''} onclick="loadResults(${currentPageNum - 1})"><i class="fas fa-chevron-left"></i></button>`;
             
             const startPage = Math.max(1, currentPageNum - 2);
             const endPage = Math.min(totalPages, currentPageNum + 2);
@@ -2063,7 +2297,6 @@
     </script>
     </main>
 
-    <!-- SEO: Add structured data for Product/Course schema in results -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Monitor results container for dynamic content changes
@@ -2089,7 +2322,7 @@
             results.forEach((item, index) => {
                 const title = item.querySelector('.result-title')?.textContent || '';
                 const price = item.querySelector('.result-price')?.textContent || '0';
-                const rating = item.querySelector('.result-rating')?.getAttribute('data-rating') || '0';
+                const rating = item.querySelector('.result-meta')?.textContent?.match(/(\d+\.?\d*)/)?.[1] || '0';
                 const image = item.querySelector('.result-image')?.src || '';
                 
                 if (title) {
@@ -2135,7 +2368,6 @@
         }
     </script>
 
-    <!-- SEO: Performance & Core Web Vitals Optimization -->
     <script>
         // Log Core Web Vitals for SEO optimization
         if ('web-vital' in window) {

@@ -80,7 +80,7 @@ const getS3Params = (fileType, originalFileName, fileId) => {
 // =================================================================
 
 // --- STEP 1: Start Upload ---
-router.post('/start-multipart-upload', async (req, res) => {
+router.post('/start-multipart-upload', authenticateJWT_user, async (req, res) => {
     const { fileName, contentType, fileType, fileId } = req.body;
     if (!fileName || !contentType || !fileType || !fileId) {
         return res.status(400).json({ error: 'Missing required fields.' });
@@ -145,7 +145,7 @@ router.post('/start-multipart-upload', async (req, res) => {
 });
 
 // --- STEP 2: Get Presigned URL ---
-router.get('/get-presigned-part-url', async (req, res) => {
+router.get('/get-presigned-part-url', authenticateJWT_user, async (req, res) => {
     const { key, uploadId, partNumber, fileType } = req.query;
     if (!key || !uploadId || !partNumber || !fileType) {
         return res.status(400).json({ error: 'Missing required query parameters.' });
@@ -170,7 +170,7 @@ router.get('/get-presigned-part-url', async (req, res) => {
 });
 
 // --- STEP 3: Complete Upload ---
-router.post('/complete-multipart-upload', async (req, res) => {
+router.post('/complete-multipart-upload', authenticateJWT_user, async (req, res) => {
     const { key, uploadId, parts, fileType, fileId, generatedFileName, fileSize } = req.body;
     if (!key || !uploadId || !Array.isArray(parts) || !fileType || !fileId || !generatedFileName) {
         return res.status(400).json({ error: 'Missing required fields.' });
@@ -255,7 +255,7 @@ router.post('/complete-multipart-upload', async (req, res) => {
 
 
 // --- STEP 4: Abort Upload ---
-router.post('/abort-multipart-upload', async (req, res) => {
+router.post('/abort-multipart-upload', authenticateJWT_user, async (req, res) => {
     const { key, uploadId, fileType } = req.body;
     if (!key || !uploadId || !fileType) {
         return res.status(400).json({ error: 'Missing required fields.' });

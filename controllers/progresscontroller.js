@@ -1,5 +1,26 @@
 const UserProgress = require('../models/courseProgress'); // Ensure this model name is correct
+const Course = require('../models/course'); // Add Course model import
 const mongoose = require('mongoose');
+
+/**
+ * Helper function to verify if user is enrolled in a course
+ * @param {string} userId - The user's ID
+ * @param {string} courseId - The course ID
+ * @returns {boolean} - True if enrolled, false otherwise
+ */
+const verifyCourseEnrollment = async (userId, courseId) => {
+    try {
+        const course = await Course.findById(courseId).select('enrolledStudents isFree');
+        if (!course) {
+            return false;
+        }
+        // Allow access if course is free OR user is enrolled
+        return course.isFree || (course.enrolledStudents && course.enrolledStudents.some(id => id.toString() === userId.toString()));
+    } catch (error) {
+        console.error('Error verifying course enrollment:', error);
+        return false;
+    }
+};
 
 /**
  * @desc    Get a user's progress for a specific course
@@ -8,9 +29,21 @@ const mongoose = require('mongoose');
  */
 exports.getProgressForCourse = async (req, res) => {
     try {
-        console.log("user progres colleged")
+        console.log("user progress requested")
         const { courseId } = req.params;
+
+        // Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({ message: "Authentication required." });
+        }
+
         const userId = req.user._id; // From auth middleware
+
+        // Verify user is enrolled in the course
+        const isEnrolled = await verifyCourseEnrollment(userId, courseId);
+        if (!isEnrolled) {
+            return res.status(403).json({ message: "Access denied. You must purchase this course to view progress." });
+        }
 
         const progress = await UserProgress.findOne({ userId, courseId });
 
@@ -38,6 +71,12 @@ exports.getProgressForCourse = async (req, res) => {
  */
 exports.updateProgress = async (req, res) => {
     const { courseId, lessonId, status, percentage } = req.body;
+
+    // Check if user is authenticated
+    if (!req.user) {
+        return res.status(401).json({ message: "Authentication required." });
+    }
+
     const userId = req.user._id;
 
     // Log incoming data for easy debugging
@@ -48,6 +87,12 @@ exports.updateProgress = async (req, res) => {
     }
 
     try {
+        // Verify user is enrolled in the course
+        const isEnrolled = await verifyCourseEnrollment(userId, courseId);
+        if (!isEnrolled) {
+            return res.status(403).json({ message: "Access denied. You must purchase this course to update progress." });
+        }
+
         const lessonObjectId = new mongoose.Types.ObjectId(lessonId);
 
         // Find the main progress document.

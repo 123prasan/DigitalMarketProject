@@ -2,11 +2,12 @@
 const express = require('express');
 const admin = require('firebase-admin');
 const FcmToken = require("./models/FcmToken"); // Assuming this path is correct
+const authenticateJWT_user = require('./routes/authentication/jwtAuth');
 
 const router = express.Router();
 
 // Route to register an FCM token in the database
-router.post("/register-token", async (req, res) => {
+router.post("/register-token", authenticateJWT_user, async (req, res) => {
     const { userId, token } = req.body;
     if (!userId || !token) return res.status(400).json({ message: "Missing data" });
 
@@ -28,7 +29,7 @@ router.post("/register-token", async (req, res) => {
 
 
 // Route to send a notification
-router.post("/send", async (req, res) => {
+router.post("/send", authenticateJWT_user, async (req, res) => {
   const { userId, title, body, image, target_link, notification_type, ...customData } = req.body;
 
   if (!userId) return res.status(400).json({ message: "Missing userId." });

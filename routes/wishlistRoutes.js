@@ -3,6 +3,7 @@ const router = express.Router();
 const Wishlist = require('../models/Wishlist');
 const File = require('../models/file');
 const authenticateJWT_user  = require('./authentication/jwtAuth.js');
+const requireAuth = require('./authentication/reaquireAuth.js');
 
 // CloudFront domain for preview images
 const CLOUDFRONT_DOMAIN = 'd3epchi0htsp3c.cloudfront.net';
@@ -273,7 +274,7 @@ router.post('/mark-purchased/:fileId', authenticateJWT_user, async (req, res) =>
  * GET /api/wishlist/abandoned
  * Get abandoned wishlist items (admin/background job)
  */
-router.get('/abandoned', async (req, res) => {
+router.get('/abandoned', authenticateJWT_user, requireAuth, async (req, res) => {
   try {
     // This could be protected with admin auth in production
     const abandonedWishlists = await Wishlist.getAbandonedItems(7); // 7 days threshold

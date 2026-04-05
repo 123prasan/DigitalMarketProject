@@ -1862,9 +1862,39 @@ app.get("/contact", (req, res) => {
 });
 
 // Search Results Page
-app.get("/search", async (req, res) => {
+app.get("/search",authenticateJWT_user, async (req, res) => {
   try {
     const query = req.query.query || req.query.q || '';
+ let user = null;
+    let profileUrl = null;
+
+    if (req.user) {
+      const cacheKey = `user_${req.user._id}`;
+      const cachedUser = pageCache.get(cacheKey);
+
+      if (cachedUser) {
+        user = cachedUser;
+        profileUrl = cachedUser.profilePicUrl;
+      } else {
+        // Fetch minimal data for rendering
+        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
+        if (user) {
+          // Convert to CloudFront if S3-based
+          if (user.profilePicUrl?.includes("s3.")) {
+            try {
+              const fileName = user.profilePicUrl.split("/").pop();
+              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
+            } catch (err) {
+              console.warn("⚠️ Profile URL conversion failed:", err.message);
+            }
+          }
+
+          // Cache for future requests
+          pageCache.set(cacheKey, user);
+          profileUrl = user.profilePicUrl;
+        }
+      }
+    }
 
     // Track search activity
     if (query.trim()) {
@@ -1983,7 +2013,12 @@ app.get("/search", async (req, res) => {
       query,
       uId: req.user?.id || null,
       isLoggedin: !!req.user,
-      seo: res.locals.seo
+      seo: res.locals.seo,
+     
+      profileUrl,
+      username: user?.username || null,
+      useremail: user?.email || null,
+     
     });
   } catch (error) {
     console.error('Search page error:', error);

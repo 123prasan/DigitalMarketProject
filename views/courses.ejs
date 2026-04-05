@@ -21,38 +21,50 @@
 
     <style>
         /* ==========================================================================
-           VIDYARI COURSES: PROFESSIONAL DESIGN
+           VIDYARI COURSES: MATERIAL DESIGN 3 - PREMIUM VERSION
            ========================================================================== */
         :root {
-            --v-bg: #f8fafd;           
+            --v-bg: #f5f7fa;           
             --v-surface: #ffffff;      
-            --v-text-main: #202124;    
-            --v-text-muted: #5f6368;   
+            --v-text-main: #0f1419;    
+            --v-text-muted: #49454f;   
             
             --v-primary: #0b57d0;      
             --v-primary-hover: #0842a0;
             --v-primary-bg: #e8f0fe;
+            --v-primary-light: #f3f8ff;
+            
+            --v-secondary: #6d5b7f;
+            --v-tertiary: #7d5260;
             
             --v-success: #137333;      
             --v-success-bg: #e6f4ea;
+            --v-success-light: #f1f8f5;
             
-            --v-border: #dadce0;       
-            --v-border-light: #f1f3f4;
+            --v-warning: #f57c00;
+            --v-warning-bg: #fff3e0;
+            
+            --v-border: #e0e0e0;       
+            --v-border-light: #f5f5f5;
+            --v-divider: #f0f0f0;
             
             --v-font-display: 'Outfit', sans-serif;
             --v-font-sans: 'Inter', sans-serif;
             
             --v-radius-sm: 8px;
             --v-radius-md: 12px;
-            --v-radius-lg: 24px;
+            --v-radius-lg: 20px;
+            --v-radius-xl: 28px;
             --v-radius-pill: 9999px;
             
-            --v-shadow-sm: 0 1px 3px rgba(60,64,67,0.08);
-            --v-shadow-card: 0 4px 12px rgba(60,64,67,0.06);
+            --v-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --v-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
             --v-shadow-float: 0 8px 24px rgba(11, 87, 208, 0.12);
-            --v-shadow-drawer: -8px 0 24px rgba(0,0,0,0.15);
+            --v-shadow-elevated: 0 12px 32px rgba(0, 0, 0, 0.1);
+            --v-shadow-drawer: -8px 0 32px rgba(0, 0, 0, 0.12);
             
-            --v-transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+            --v-transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            --v-transition-fast: all 0.15s cubic-bezier(0.2, 0, 0, 1);
         }
 
         * {
@@ -64,18 +76,39 @@
 
         body {
             font-family: var(--v-font-sans);
-            background-color: var(--v-bg);
+            background: linear-gradient(180deg, var(--v-bg) 0%, #ffffff 50%, var(--v-bg) 100%);
             color: var(--v-text-main);
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
         }
 
         /* --- Header / Hero --- */
         .header {
-            background: var(--v-surface);
-            border-bottom: 1px solid var(--v-border);
-            padding: 48px 0;
+            background: linear-gradient(135deg, #0b57d0 0%, #0842a0 50%, #1a237e 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 60px 0 80px;
             text-align: center;
+            color: white;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; right: -100px; bottom: 0;
+            width: 500px;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header::after {
+            content: '📚';
+            position: absolute;
+            top: -40px; left: 10%;
+            font-size: 180px;
+            opacity: 0.08;
+            animation: float 6s ease-in-out infinite;
         }
 
         .container {
@@ -88,33 +121,38 @@
             font-family: var(--v-font-display);
             font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 700;
-            color: var(--v-text-main);
-            margin-bottom: 16px;
-            letter-spacing: -1px;
+            color: white;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 2;
         }
         
         .hero-subtitle {
             font-size: 1.15rem;
-            color: var(--v-text-muted);
-            max-width: 600px;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 650px;
             margin: 0 auto;
             line-height: 1.6;
+            position: relative;
+            z-index: 2;
+            font-weight: 500;
         }
 
         /* --- Search Section (Sticky) --- */
         .search-section {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--v-border);
-            padding: 20px 0;
+            border-bottom: 1px solid var(--v-divider);
+            padding: 24px 0;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .search-wrapper {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             position: relative;
             display: flex;
@@ -124,20 +162,21 @@
         .search-input {
             width: 100%;
             padding: 14px 24px 14px 48px;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-family: var(--v-font-sans);
             color: var(--v-text-main);
-            border: 1px solid var(--v-border);
+            border: 2px solid var(--v-border);
             border-radius: var(--v-radius-pill);
             background: var(--v-surface);
             transition: var(--v-transition);
             box-shadow: var(--v-shadow-sm);
         }
-        .search-input::placeholder { color: #9aa0a6; }
+        .search-input::placeholder { color: #b3b3b3; font-weight: 500; }
         .search-input:focus {
             outline: none;
             border-color: var(--v-primary);
-            box-shadow: 0 0 0 3px var(--v-primary-bg);
+            box-shadow: 0 0 0 4px var(--v-primary-light);
+            background: var(--v-primary-light);
         }
 
         .search-icon {
@@ -178,13 +217,14 @@
         .filters {
             background: var(--v-surface);
             border: 1px solid var(--v-border);
-            border-radius: var(--v-radius-lg);
+            border-radius: var(--v-radius-xl);
             padding: 28px;
             box-shadow: var(--v-shadow-card);
             position: sticky;
-            top: 100px;
-            max-height: calc(100vh - 120px);
+            top: 110px;
+            max-height: calc(100vh - 130px);
             overflow-y: auto;
+            transition: var(--v-transition);
         }
         
         .filters::-webkit-scrollbar { width: 6px; }
@@ -212,14 +252,19 @@
             border: none;
             color: var(--v-primary);
             font-family: var(--v-font-sans);
-            font-weight: 500;
-            font-size: 0.85rem;
+            font-weight: 700;
+            font-size: 0.8rem;
             cursor: pointer;
-            transition: var(--v-transition);
-            padding: 4px 8px;
+            transition: var(--v-transition-fast);
+            padding: 6px 12px;
             border-radius: var(--v-radius-pill);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .reset-btn:hover { background: var(--v-primary-bg); }
+        .reset-btn:hover { 
+            background: var(--v-primary-light);
+            transform: translateX(2px);
+        }
 
         .filter-group {
             margin-bottom: 20px;
@@ -236,38 +281,46 @@
         .filter-option {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 6px 0;
+            gap: 12px;
+            padding: 10px 8px;
             cursor: pointer;
-            transition: var(--v-transition);
-            border-radius: var(--v-radius-sm);
+            transition: var(--v-transition-fast);
+            border-radius: var(--v-radius-md);
         }
-        .filter-option:hover { background: var(--v-border-light); padding-left: 8px; margin-left: -8px;}
+        .filter-option:hover { 
+            background: var(--v-bg);
+            padding-left: 12px;
+        }
 
         .filter-option input[type="radio"],
         .filter-option input[type="checkbox"] {
             appearance: none;
-            width: 18px; height: 18px;
-            border: 2px solid var(--v-text-muted);
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid var(--v-border);
             border-radius: 4px;
             margin: 0;
             cursor: pointer;
             position: relative;
-            transition: var(--v-transition);
+            transition: var(--v-transition-fast);
             flex-shrink: 0;
+            background: var(--v-surface);
         }
-        .filter-option input[type="radio"] { border-radius: 50%; }
+        .filter-option input[type="radio"] { 
+            border-radius: 50%; 
+        }
         
         .filter-option input:checked {
             background-color: var(--v-primary);
             border-color: var(--v-primary);
+            box-shadow: 0 2px 6px rgba(11, 87, 208, 0.2);
         }
         .filter-option input[type="checkbox"]:checked::after {
-            content: ''; position: absolute; left: 5px; top: 1px; width: 4px; height: 8px;
+            content: ''; position: absolute; left: 6px; top: 2px; width: 4px; height: 8px;
             border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
         }
         .filter-option input[type="radio"]:checked::after {
-            content: ''; position: absolute; left: 4px; top: 4px; width: 6px; height: 6px;
+            content: ''; position: absolute; left: 5px; top: 5px; width: 6px; height: 6px;
             background: white; border-radius: 50%;
         }
 
@@ -277,8 +330,12 @@
             color: var(--v-text-muted);
             cursor: pointer;
             flex: 1;
+            font-weight: 500;
         }
-        .filter-option input:checked + .filter-label { color: var(--v-text-main); font-weight: 500; }
+        .filter-option input:checked + .filter-label { 
+            color: var(--v-text-main);
+            font-weight: 700;
+        }
 
         /* --- Courses Container --- */
         .courses-container { min-height: 600px; }
@@ -299,20 +356,28 @@
         }
 
         .sort-select {
-            padding: 10px 36px 10px 16px;
+            padding: 12px 36px 12px 16px;
             font-family: var(--v-font-sans);
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.9rem;
             color: var(--v-text-main);
-            border: 1px solid var(--v-border);
+            border: 1.5px solid var(--v-border);
             border-radius: var(--v-radius-pill);
-            background: var(--v-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f6368' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
+            background: var(--v-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230b57d0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
             cursor: pointer;
             appearance: none;
             outline: none;
-            transition: var(--v-transition);
+            transition: var(--v-transition-fast);
+            box-shadow: var(--v-shadow-sm);
         }
-        .sort-select:hover { background-color: var(--v-bg); }
+        .sort-select:hover { 
+            background-color: var(--v-bg);
+            border-color: var(--v-primary);
+        }
+        .sort-select:focus {
+            border-color: var(--v-primary);
+            box-shadow: 0 0 0 3px var(--v-primary-light);
+        }
 
         .courses-grid {
             display: grid;
@@ -324,7 +389,7 @@
         .course-card {
             background: var(--v-surface);
             border: 1px solid var(--v-border);
-            border-radius: var(--v-radius-lg);
+            border-radius: var(--v-radius-xl);
             box-shadow: var(--v-shadow-sm);
             display: flex;
             flex-direction: column;
@@ -332,14 +397,28 @@
             transition: var(--v-transition);
             text-decoration: none;
             color: inherit;
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(20px);
+            position: relative;
         }
         .course-card:hover {
-            box-shadow: var(--v-shadow-card);
-            transform: translateY(-4px);
-            border-color: #d2e3fc;
+            box-shadow: var(--v-shadow-elevated);
+            transform: translateY(-8px);
+            border-color: var(--v-primary);
+        }
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--v-primary), var(--v-secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+        }
+        .course-card:hover::before {
+            opacity: 1;
         }
 
         .course-image-container {
@@ -347,12 +426,12 @@
             aspect-ratio: 16/10;
             position: relative;
             overflow: hidden;
-            background: var(--v-border-light);
-            border-bottom: 1px solid var(--v-border);
+            background: linear-gradient(135deg, var(--v-primary-light) 0%, var(--v-bg) 100%);
+            border-bottom: 1px solid var(--v-divider);
         }
         .course-image-container::after {
             content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%);
+            background: linear-gradient(to top, rgba(15, 20, 25, 0.5) 0%, transparent 60%);
             opacity: 0; transition: opacity 0.3s ease;
         }
         .course-card:hover .course-image-container::after { opacity: 1; }
@@ -360,9 +439,9 @@
         .course-image {
             width: 100%; height: 100%;
             object-fit: cover;
-            transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1);
+            transition: transform 0.6s cubic-bezier(0.2, 0, 0, 1);
         }
-        .course-card:hover .course-image { transform: scale(1.08); }
+        .course-card:hover .course-image { transform: scale(1.1); }
 
         .badges-wrapper {
             position: absolute; top: 12px; left: 12px; right: 12px;
@@ -371,35 +450,38 @@
 
         .discount-badge {
             background: var(--v-success); color: white;
-            padding: 4px 10px; border-radius: var(--v-radius-pill);
-            font-size: 0.75rem; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            padding: 6px 12px; border-radius: var(--v-radius-pill);
+            font-size: 0.75rem; font-weight: 700; box-shadow: 0 4px 12px rgba(19, 115, 51, 0.3);
         }
         .category-badge {
-            background: rgba(255,255,255,0.96); backdrop-filter: blur(8px);
-            color: var(--v-text-main); padding: 4px 12px; border-radius: var(--v-radius-pill);
-            font-size: 0.75rem; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+            color: var(--v-text-main); padding: 6px 14px; border-radius: var(--v-radius-pill);
+            font-size: 0.75rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
         .course-content {
-            padding: 20px;
+            padding: 22px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            background: var(--v-surface);
         }
 
         .course-title {
             font-family: var(--v-font-display);
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.15rem;
+            font-weight: 700;
             color: var(--v-text-main);
-            margin-bottom: 8px;
-            line-height: 1.35;
+            margin-bottom: 12px;
+            line-height: 1.3;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             line-clamp: 2;
             overflow: hidden;
-            min-height: 2.5em;
+            min-height: 2.6em;
+            letter-spacing: -0.3px;
         }
 
         .course-instructor {
@@ -416,60 +498,82 @@
         .instructor-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            background: linear-gradient(135deg, var(--v-primary-bg) 0%, rgba(8, 66, 160, 0.05) 100%);
-            border: 1px solid rgba(11, 87, 208, 0.2);
-            padding: 6px 10px;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--v-primary-light) 0%, var(--v-primary-bg) 100%);
+            border: 1.5px solid var(--v-primary-bg);
+            padding: 8px 14px;
             border-radius: var(--v-radius-pill);
             font-size: 0.8rem;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--v-primary);
-            transition: var(--v-transition);
+            transition: var(--v-transition-fast);
+            backdrop-filter: blur(4px);
         }
         .course-card:hover .instructor-badge {
             background: linear-gradient(135deg, var(--v-primary) 0%, #0842a0 100%);
             color: white;
             border-color: var(--v-primary);
+            transform: translateX(2px);
+            box-shadow: 0 4px 12px rgba(11, 87, 208, 0.2);
+        }
+        .instructor-badge i {
+            font-size: 0.9rem;
         }
 
         .course-stats {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 14px;
             font-size: 0.8rem;
+            flex-wrap: wrap;
         }
         .stat-item {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            font-weight: 500;
+            gap: 5px;
+            font-weight: 600;
             color: var(--v-text-muted);
-            transition: var(--v-transition);
+            transition: var(--v-transition-fast);
+            background: var(--v-bg);
+            padding: 4px 10px;
+            border-radius: var(--v-radius-pill);
         }
-        .stat-item i { color: #ffc107; font-size: 0.9rem; }
-        .stat-divider { color: var(--v-border); }
+        .course-card:hover .stat-item:hover {
+            background: var(--v-primary-light);
+            color: var(--v-primary);
+        }
+        .stat-item i { 
+            color: #ffc107;
+            font-size: 0.95rem;
+        }
+        .stat-divider { 
+            color: var(--v-border);
+            opacity: 0.5;
+        }
 
         .course-level {
             display: inline-block;
-            background: var(--v-bg);
-            border: 1px solid var(--v-border);
-            padding: 4px 10px;
+            background: linear-gradient(135deg, var(--v-warning-bg), #fff8e1);
+            border: 1px solid #ffe0b2;
+            padding: 6px 12px;
             font-size: 0.75rem;
-            font-weight: 500;
+            font-weight: 700;
             border-radius: var(--v-radius-pill);
             margin-bottom: 12px;
-            color: var(--v-text-muted);
+            color: #f57c00;
             width: fit-content;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .course-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 14px 20px;
-            border-top: 1px solid var(--v-border-light);
-            background: var(--v-surface);
+            padding: 16px 20px;
+            border-top: 1px solid var(--v-divider);
+            background: linear-gradient(180deg, var(--v-surface) 0%, var(--v-bg) 100%);
             margin-top: auto;
         }
 
@@ -480,38 +584,59 @@
         }
         .current-price {
             font-family: var(--v-font-display);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--v-text-main);
+            background: linear-gradient(135deg, var(--v-primary), var(--v-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .current-price.free-price {
             color: var(--v-success);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            background: none;
+            -webkit-text-fill-color: unset;
         }
         .original-price {
             font-size: 0.8rem;
-            color: #9aa0a6;
+            color: #b3b3b3;
             text-decoration: line-through;
+            font-weight: 500;
         }
 
         .enroll-btn {
-            background: var(--v-primary-bg);
+            background: linear-gradient(135deg, var(--v-primary-light) 0%, var(--v-primary-bg) 100%);
             color: var(--v-primary);
-            border: 1px solid transparent;
+            border: 1.5px solid transparent;
             border-radius: var(--v-radius-pill);
-            padding: 8px 18px;
+            padding: 10px 20px;
             font-family: var(--v-font-sans);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: var(--v-transition);
+            transition: var(--v-transition-fast);
             white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+        .enroll-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--v-primary) 0%, #0842a0 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
         .course-card:hover .enroll-btn {
-            background: var(--v-primary);
             color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(11, 87, 208, 0.3);
+            border-color: var(--v-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(11, 87, 208, 0.3);
+        }
+        .course-card:hover .enroll-btn::before {
+            opacity: 1;
         }
 
         /* --- Skeleton Loading --- */
@@ -541,6 +666,13 @@
 
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { 
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
 
         /* --- No Results --- */
         .no-results {
@@ -556,25 +688,34 @@
         .mobile-filter-toggle {
             display: none;
             position: fixed;
-            bottom: 20px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--v-surface);
-            color: var(--v-text-main);
-            border: 1px solid var(--v-border);
-            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--v-primary), var(--v-secondary));
+            color: white;
+            border: none;
+            padding: 14px 28px;
             border-radius: var(--v-radius-pill);
-            font-weight: 500;
+            font-weight: 600;
             font-size: 0.95rem;
-            box-shadow: var(--v-shadow-float);
+            box-shadow: var(--v-shadow-elevated);
             z-index: 1000;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             cursor: pointer;
             transition: var(--v-transition);
         }
-        .mobile-filter-toggle i { color: var(--v-primary); }
-        .mobile-filter-toggle:active { transform: translateX(-50%) scale(0.95); }
+        .mobile-filter-toggle:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 16px 32px rgba(11, 87, 208, 0.25);
+        }
+        .mobile-filter-toggle:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+        .mobile-filter-toggle i { 
+            color: white;
+            font-size: 1rem;
+        }
 
         /* ==========================================================================
            RESPONSIVENESS
@@ -604,8 +745,8 @@
             .filter-overlay {
                 display: block;
                 position: fixed; inset: 0;
-                background: rgba(32, 33, 36, 0.5);
-                backdrop-filter: blur(2px);
+                background: rgba(15, 20, 25, 0.6);
+                backdrop-filter: blur(4px);
                 z-index: 1000;
                 opacity: 0; visibility: hidden;
                 transition: opacity 0.3s ease;
@@ -628,10 +769,22 @@
         .mobile-close-btn {
             display: none;
             position: absolute; top: 16px; right: 16px;
-            background: var(--v-border-light); color: var(--v-text-muted);
-            border: none; width: 36px; height: 36px; border-radius: 50%;
-            cursor: pointer; font-size: 1.1rem;
-            align-items: center; justify-content: center;
+            background: var(--v-primary-light);
+            color: var(--v-primary);
+            border: 1.5px solid var(--v-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            align-items: center;
+            justify-content: center;
+            transition: var(--v-transition-fast);
+        }
+        .mobile-close-btn:hover {
+            background: var(--v-primary);
+            color: white;
+            transform: rotate(90deg);
         }
         @media (max-width: 1024px) { .mobile-close-btn { display: flex; z-index: 10; } }
     </style>
