@@ -716,7 +716,7 @@ app.get("/my-courses", authenticateJWT_user, async (req, res) => {
       })
     );
 
-    res.render("my-courses", {
+    res.render("courses/my-courses", {
       courses: courses,
       courseProgress: courseProgress,
       isLoggedin: !!req.user,
@@ -740,7 +740,7 @@ app.get("/analytics-dashboard", authenticateJWT_user, async (req, res) => {
       return res.redirect("/user-login");
     }
 
-    res.render("analytics-dashboard", {
+    res.render("admin/analytics-dashboard", {
       isLoggedin: !!req.user,
       username: req.user?.username || req.user?.email,
       useremail: req.user?.email,
@@ -903,7 +903,7 @@ app.get("/edit-course/:courseId", authenticateJWT_user, async (req, res) => {
       return res.status(404).render("404", { message: "Course not found" });
     }
 
-    res.render("edit-course", {
+    res.render("courses/edit-course", {
       courseId: courseId,
       course: course,
       isLoggedin: !!req.user,
@@ -1643,7 +1643,7 @@ function authenticateJWT(req, res, next) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
     // No token provided, redirect to login
-    return res.render('login', { error: 'Access denied. Please log in.' });
+    return res.render('auth/login', { error: 'Access denied. Please log in.' });
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
@@ -1653,7 +1653,7 @@ function authenticateJWT(req, res, next) {
       if (isApi) {
         return res.status(401).json({ message: 'Session expired or invalid. Please log in again.' });
       }
-      return res.render('login', {
+      return res.render('auth/login', {
         error: 'Session expired or invalid. Please log in again.',
       });
     }
@@ -1734,7 +1734,7 @@ app.get("/dashboard", authenticateJWT_user, async (req, res) => {
       };
     });
 
-    res.render("createcourse", {
+    res.render("courses/createcourse", {
       instructorCourses: instructorCourses,
       files: filesWithPreview,
       isLoggedin: !!req.user,
@@ -1804,7 +1804,7 @@ app.get("/privacy-policy", (req, res) => {
     'description': 'Privacy Policy for Vidyari Learning Platform'
   });
   // =============== END SEO SETUP ===============
-  res.render("privacy-policy");
+  res.render("pages/privacy-policy");
 });
 app.get("/refund-policy", (req, res) => {
   // =============== SEO SETUP ===============
@@ -1819,7 +1819,7 @@ app.get("/refund-policy", (req, res) => {
     'description': 'Refund and Return Policy for Vidyari'
   });
   // =============== END SEO SETUP ===============
-  res.render("refundpolicy");
+  res.render("pages/refundpolicy");
 });
 app.get("/terms-and-conditions", (req, res) => {
   // =============== SEO SETUP ===============
@@ -1834,13 +1834,13 @@ app.get("/terms-and-conditions", (req, res) => {
     'description': 'Terms and Conditions for Vidyari Platform'
   });
   // =============== END SEO SETUP ===============
-  res.render("terms&conditions");
+  res.render("pages/terms&conditions");
 });
 app.get("/terms&conditions", (req, res) => {
-  res.render("terms&conditions");
+  res.render("pages/terms&conditions");
 });
 app.get("/refundpolicy", (req, res) => {
-  res.render("refundpolicy");
+  res.render("pages/refundpolicy");
 });
 app.get("/payment-terms", (req, res) => {
   res.render("payment-terms");
@@ -1858,7 +1858,7 @@ app.get("/contact", (req, res) => {
     'description': 'Contact Vidyari support team'
   });
   // =============== END SEO SETUP ===============
-  res.render("contact");
+  res.render("pages/contact");
 });
 
 // Search Results Page
@@ -2009,7 +2009,7 @@ app.get("/search",authenticateJWT_user, async (req, res) => {
     });
     // =============== END COMPREHENSIVE SEO SETUP ===============
 
-    res.render("search", { 
+    res.render("search/search", { 
       query,
       uId: req.user?.id || null,
       isLoggedin: !!req.user,
@@ -2022,7 +2022,7 @@ app.get("/search",authenticateJWT_user, async (req, res) => {
     });
   } catch (error) {
     console.error('Search page error:', error);
-    res.render("search", { 
+    res.render("search/search", { 
       query: '',
       uId: null,
       isLoggedin: false,
@@ -2326,16 +2326,16 @@ function getCategoryIcon(category) {
 }
 
 app.get("/disclaimer", (req, res) => {
-  res.render("disclaimer");
+  res.render("pages/disclaimer");
 });
 app.get("/acceptable-use", (req, res) => {
-  res.render("acceptable-use");
+  res.render("pages/acceptable-use");
 });
 app.get("/intellectual-property", (req, res) => {
-  res.render("intellectual-property");
+  res.render("pages/intellectual-property");
 });
 app.get("/return-cancellation", (req, res) => {
-  res.render("return-cancellation");
+  res.render("pages/return-cancellation");
 });
 let token;
 const Adminbal = require("./models/admin/adminBal.js");
@@ -2685,7 +2685,7 @@ app.get("/", authenticateJWT_user, async (req, res) => {
         console.log("User profile pic URL:", user.profilePicUrl);
       }
     }
-    res.render("landing", {
+    res.render("pages/landing", {
       popularFiles: filesWithPreviews,
       isLoggedin: !!req.user,
       profileUrl: user?.profilePicUrl || null,
@@ -2779,7 +2779,7 @@ app.get("/pricing", authenticateJWT_user, async (req, res) => {
     }
   }
 
-  res.render("pricing", {
+  res.render("commerce/pricing", {
     isLoggedin: !!req.user,
     profileUrl,
     username: user?.username || null,
@@ -2840,7 +2840,7 @@ app.get("/About", authenticateJWT_user, async (req, res) => {
     }
   }
 
-  res.render("about", {
+  res.render("pages/about", {
     isLoggedin: !!req.user,
     profileUrl,
     username: user?.username || null,
@@ -2908,10 +2908,10 @@ app.get("/admin-login", (req, res) => {
       res.clearCookie("jwt", clearOptions);
     }
   }
-  res.render("login", { error: null });
+  res.render("auth/login", { error: null });
 });
 app.get("/user-login", (req, res) => {
-  res.render("user-login.ejs");
+  res.render("auth/user-login");
 });
 // Handle Login (POST) - No auth check needed here, this is auth itself
 app.post("/login", async (req, res) => {
@@ -2946,7 +2946,7 @@ app.post("/login", async (req, res) => {
     res.redirect("/admin");
   } else {
     // Render login page with error for invalid credentials
-    res.render("login", { error: "Invalid username or password." });
+    res.render("auth/login", { error: "Invalid username or password." });
   }
 });
 
@@ -3207,7 +3207,7 @@ app.get("/admin", authenticateJWT, async (req, res) => {
   const suspendedUsers = allUsers.filter(u => u.isSuspended).length;
   const bannedUsers = allUsers.filter(u => u.isBanned).length;
 
-  res.render("admin", {
+  res.render("admin/admin", {
     // include the authenticated admin's username for display in the header
     username: req.user?.username || "Admin",
     orders: await Order.find({}).sort({ dateTime: -1 }), // Ensure orders are sorted for "Recent Orders"
@@ -3773,7 +3773,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
   try {
     // 🧩 Validate Mongo ID format
     if (req.params.id.length !== 24) {
-      return res.render("file-not-found");
+      return res.render("files/file-not-found");
     }
 
     // 📄 Fetch file
@@ -3984,7 +3984,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
 
     console.log(previewUrl, pdfUrl)
     // 🎨 Render final optimized view
-    res.render("file-details", {
+    res.render("files/file-details", {
       file,
       sellerprofilepic,
       ISVERIFIED,
@@ -4308,7 +4308,7 @@ app.get("/viewfile/:slug/:id", async (req, res) => {
     //   return res.status(500).send("Could not fetch file");
     // }
 
-    res.render("thank-you", { file, expiry: 120 });
+    res.render("misc/thank-you", { file, expiry: 120 });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -4392,7 +4392,7 @@ function checkDownloadRateLimit(userId) {
 app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
   try {
     const fileId = req.query.file_id;
-    if (!fileId || fileId.length !== 24) return res.render("file-not-found");
+    if (!fileId || fileId.length !== 24) return res.render("files/file-not-found");
 
     // 🚦 Check download rate limit (prevent CloudFront abuse)
     const rateLimitCheck = checkDownloadRateLimit(req.user._id);
@@ -4406,7 +4406,7 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
     }
 
     const file = await File.findById(fileId).lean();
-    if (!file) return res.render("file-not-found");
+    if (!file) return res.render("files/file-not-found");
 
     // 🛡️ Validate purchase
     if (file.price > 0) {
@@ -4414,14 +4414,14 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
         userId: req.user._id,
         productId: fileId,
       });
-      if (!purchased) return res.render("404");
+      if (!purchased) return res.render("errors/404");
     }
 
     // 🧩 Normalize & encode S3 key to avoid AccessDenied and duplicate prefixes
     const rawFileKey = String(file.fileUrl || '').trim();
     if (!rawFileKey) {
       console.error('Download error: missing file.fileUrl for', fileId);
-      return res.render('file-not-found');
+      return res.render('files/file-not-found');
     }
     const normalizedKey = rawFileKey.startsWith('main-files/') ? rawFileKey : `main-files/${rawFileKey}`;
     const cleanFileName = decodeURIComponent(normalizedKey).replace(/\s+/g, ' ').trim();
@@ -4605,7 +4605,7 @@ dotenv.config();
 //       );
 //     }
 
-//     res.render("index", {
+//     res.render("pages/index", {
 //       files: filesWithPreviews,
 //       categories,
 //       isLoggedin: !!req.user,
@@ -4691,7 +4691,7 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
     }
 
     // ✅ Step 4: Render final page
-    res.render("index", {
+    res.render("pages/index", {
       categories,
       isLoggedin: !!req.user,
       profileUrl,
@@ -5016,7 +5016,7 @@ app.get('/courses', authenticateJWT_user, async (req, res) => {
         };
       });
 
-      res.render('courses', {
+      res.render('courses/courses', {
         courses: formattedCourses,
         isLoggedin: !!req.user,
         profileUrl,
@@ -5146,7 +5146,7 @@ app.get('/course-detail', authenticateJWT_user, async (req, res) => {
     console.log(`Loading course details for: ${course.title}`);
 
     // Pass course data to view
-    res.render('course-detail', {
+    res.render('courses/course-detail', {
       course: course,
       title: course.title,
       isLoggedin: !!req.user,
@@ -5423,7 +5423,7 @@ app.get("/checkout", authenticateJWT_user, requireAuth, async (req, res) => {
     const priceDetails = GenCheckOutPrice(file.price, { discountPercent });
 
     // Render checkout with all price info
-    res.render("checkout", {
+    res.render("commerce/checkout", {
       cashfreeAppId: process.env.CASHFREE_APP_ID,
       file,
       priceDetails,
@@ -5479,7 +5479,7 @@ app.get("/vidyariPro", authenticateJWT_user, requireAuth, async (req, res) => {
     // Fetch the latest user data to ensure 'isPro' and 'pendingSubscriptionFee' are accurate
     const user = await User.findById(req.user._id);
 
-    res.render('subscription', {
+    res.render('commerce/subscription', {
       user: user,
       pageTitle: 'Upgrade to Vidyari Pro'
     });
@@ -5665,7 +5665,7 @@ app.post("/subscription/cancel", authenticateJWT_user, async (req, res) => {
   }
 });
 app.get("/analytics", (req, res) => {
-  res.render("analytics")
+  res.render("admin/analytics")
 })
 // Price generator
 function GenCheckOutPrice(price, options = {}) {
@@ -5720,16 +5720,16 @@ function GenCheckOutPrice(price, options = {}) {
 
 
 app.get("/help/user/vidyari-guid", (req, res) => {
-  res.render("help.ejs");
+  res.render("pages/help");
 })
 app.get("/help/user/dashboard", (req, res) => {
-  res.render("dashboardhelp.ejs")
+  res.render("dashboard/dashboardhelp")
 })
 
 // Wishlist page route
 app.get("/wishlist", authenticateJWT_user, (req, res) => {
   try {
-    res.render("wishlist.ejs", {
+    res.render("search/wishlist", {
       uId: req.user?._id || req.userId,
       username: req.user?.username || req.userUsername,
       useremail: req.user?.email || req.userEmail,
@@ -5738,7 +5738,7 @@ app.get("/wishlist", authenticateJWT_user, (req, res) => {
     });
   } catch (error) {
     console.error('Error rendering wishlist page:', error);
-    res.status(500).render("error", { message: "Failed to load wishlist" });
+    res.status(500).render("errors/500", { message: "Failed to load wishlist" });
   }
 });
 
@@ -5784,7 +5784,7 @@ app.get(
       }
 
       // Render the EJS template and pass the 'purchases' data to it
-      res.render("perchasehistory", {
+      res.render("dashboard/perchasehistory", {
         purchases: processedPurchases,
         isLoggedin: !!req.user,
         profileUrl: user?.profilePicUrl || null,

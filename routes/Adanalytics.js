@@ -21,7 +21,7 @@ router.get('/analytics', authenticateJWT_user, async (req, res) => {
             return res.redirect('/subscription');
         }
 
-        res.render('analytics', { user });
+        res.render('admin/analytics', { user });
     } catch (err) {
         console.error(err);
         res.redirect('/dashboard');

@@ -1,4 +1,4 @@
-<%- include("header") %>
+<%- include("../components/header") %>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth" data-file-id="<%= file._id %>" data-user-id="<%= uId || '' %>">
 <head>
@@ -1528,7 +1528,7 @@ const isFree = Number(priceDetails.total) === 0;
 <!-- TOAST -->
 <div id="vToast"><i class="toast-icon"></i><span id="vToastText"></span></div>
 
-<%- include('footer') %>
+<%- include("../components/footer") %>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

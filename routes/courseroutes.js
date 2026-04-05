@@ -30,7 +30,7 @@ router.post(
   generatePresignedUrl
 );
 router.get("/coursecreation", authenticateJWT_user, (req,res)=>{
-  res.render("gencourse.ejs");
+  res.render("courses/gencourse.ejs");
 })
 // Route to create the course after files are uploaded
 router.post("/create-course", authenticateJWT_user, createCourse);
@@ -97,7 +97,7 @@ router.get("/:courseId", authenticateJWT_user, enforceDeviceLimit, async (req, r
     };
 
     // Render the EJS template with the transformed data
-    res.render("courseplayer", {
+    res.render("courses/courseplayer", {
       course: course,
       userProgress: progressData,
     });

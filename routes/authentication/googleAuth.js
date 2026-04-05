@@ -370,7 +370,7 @@ router.get(
    }
   //  console.log(userwithreq)
   //  console.log(Ubalance.Balance)
-    res.render("createcourse", {
+    res.render("courses/createcourse", {
       upiId: userPaymentMethod ? userPaymentMethod.upi : null,
       transactions: userTransactions,
       payouts,
@@ -478,9 +478,9 @@ router.get("/viewprofile/:username", async (req, res) => {
   const username = req.params.username;
   const user = await User.findOne({ username: username });
   if (!user) {
-    res.render("profileNotfound.ejs");
+    return res.render("dashboard/profileNotFound");
   }
-  res.render("publicprofile.ejs");
+  res.render("dashboard/publicprofile");
 });
 
 router.get(
@@ -512,7 +512,7 @@ router.get(
 
       // res.render("mydownloads.ejs", {  downloads });
       // 3. Render the EJS view, passing the downloads data to it
-      res.render("mydownloads", {
+      res.render("dashboard/mydownloads", {
         isLoggedin: !!req.user,
         pageTitle: "My Downloads",
         downloads: userDownloads,
@@ -704,7 +704,7 @@ router.get("/auth/verify-email", async (req, res) => {
       isEmailVerified: true,
     });
 
-    res.render("emailVerified.ejs", { email: user.email });
+    res.render("auth/emailVerified", { email: user.email });
   } catch (err) {
     console.log(err);
     res.status(400).send("Token expired or invalid");
@@ -774,7 +774,7 @@ router.post("/auth/forgot-pass", async (req, res) => {
 });
 
 router.get("/reset-password/:token", (req, res) => {
-  res.render("resetpass.ejs");
+  res.render("auth/resetpass");
 });
 
 router.post("/auth/reset-password/:token", async (req, res) => {
@@ -873,7 +873,7 @@ router.get(
 
     //  userData.profilePicUrl= `${CF_DOMAIN}/files-previews/images/${file._id}.${files.imageType || "jpg"}`
 
-    res.render("myprofile.ejs", {
+    res.render("dashboard/myprofile", {
       numsOfDocs,
       numOfCourses,
       userData: userData,
@@ -941,7 +941,7 @@ router.get('/following', authenticateJWT_user, reaquireAuth, async (req, res) =>
       }
     }
 
-    res.render('following', {
+    res.render('dashboard/following', {
       isLoggedin: !!req.user,
       profileUrl: user?.profilePicUrl || null,
       username: user?.username || null,
@@ -975,7 +975,7 @@ router.get('/followers', authenticateJWT_user, reaquireAuth, async (req, res) =>
       }
     }
 
-    res.render('followers', {
+    res.render('dashboard/followers', {
       isLoggedin: !!req.user,
       profileUrl: user?.profilePicUrl || null,
       username: user?.username || null,
@@ -1152,7 +1152,7 @@ router.get("/user-notifications", authenticateJWT_user, reaquireAuth, async (req
     }
 
     // 🎨 Render notifications page
-    res.render("notifications", {
+    res.render("dashboard/notifications", {
       isLoggedin: true,
       notifications,
       unreadCount,
@@ -1344,7 +1344,7 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
     }
 
     // 4. Render the page exactly ONCE with the final options.
-    return res.render("publicprofile.ejs", renderOptions);
+    return res.render("dashboard/publicprofile", renderOptions);
   } catch (error) {
     console.error("Error fetching profile:", error);
     return res.status(500).send("Something went wrong.");
