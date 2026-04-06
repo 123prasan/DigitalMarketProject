@@ -4294,21 +4294,25 @@ app.get("/viewfile/:slug/:id", async (req, res) => {
       return res.status(403).send("Link expired or invalid");
     }
 
-    // Validate file matches token
     if (payload.fileId !== req.params.id) {
       return res.status(403).send("Invalid file");
     }
-    const file = await File.findById(payload.fileId);
-    // ✅ Generate Supabase signed URL
-    // const { data, error } = await supabase.storage
-    //   .from("files")
-    //   .createSignedUrl(file.fileUrl, 60); // link valid 1 min
 
-    // if (error || !data?.signedUrl) {
-    //   return res.status(500).send("Could not fetch file");
-    // }
+    const file = await File.findById(payload.fileId).lean();
+    if (!file) {
+      return res.status(404).send("File not found");
+    }
 
-    res.render("misc/thank-you", { file, expiry: 120 });
+    const rawFileKey = getFileKeyFromUrl(String(file.fileUrl || ''));
+    if (!rawFileKey) {
+      console.error('Viewfile error: missing fileUrl for', file._id);
+      return res.status(404).send("File not found");
+    }
+
+    const normalizedKey = rawFileKey.startsWith('main-files/') ? rawFileKey : `main-files/${rawFileKey}`;
+    const signedUrl = buildCloudFrontSignedUrl(normalizedKey, 60);
+
+    return res.redirect(signedUrl);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -4341,6 +4345,33 @@ const CLOUDFRONT_DOMAIN = CF_DOMAIN_RAW.replace(/^https:\/\//, "");
 const CLOUDFRONT_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID;
 const PRIVATE_KEY_PATH = path.join(__dirname, "private_keys", "cloudfront-private-key.pem");
 const PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf8");
+
+function getFileKeyFromUrl(fileUrl) {
+  if (!fileUrl) return null;
+  try {
+    const parsed = new URL(String(fileUrl));
+    return parsed.pathname.replace(/^\/+/, "");
+  } catch (err) {
+    return String(fileUrl).replace(/^\/+/, "");
+  }
+}
+
+function buildCloudFrontSignedUrl(fileKey, ttlSeconds = 900) {
+  if (!fileKey) {
+    throw new Error('Missing CloudFront file key');
+  }
+
+  const cleanKey = decodeURIComponent(String(fileKey)).replace(/^\/+/, "").replace(/\s+/g, ' ').trim();
+  const encodedKey = encodeURIComponent(cleanKey).replace(/%2F/g, "/");
+  const unsignedUrl = `https://${CLOUDFRONT_DOMAIN}/${encodedKey}`;
+
+  return getSignedUrl({
+    url: unsignedUrl,
+    keyPairId: CLOUDFRONT_KEY_PAIR_ID,
+    privateKey: PRIVATE_KEY,
+    dateLessThan: new Date(Date.now() + ttlSeconds * 1000),
+  });
+}
 
 // ⚡ Advanced cache
 const urlCache = new NodeCache({
@@ -4441,16 +4472,10 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
 
     // 🧠 Generate signed URL if not cached
     if (!signedUrl) {
-      const unsignedUrl = `https://${CLOUDFRONT_DOMAIN}/${encodedFileKey}`;
       try {
-        signedUrl = getSignedUrl({
-          url: unsignedUrl,
-          keyPairId: CLOUDFRONT_KEY_PAIR_ID,
-          privateKey: PRIVATE_KEY,
-          dateLessThan: new Date(Date.now() + 15 * 60 * 1000),
-        });
+        signedUrl = buildCloudFrontSignedUrl(encodedFileKey, 60);
         urlCache.set(cacheKey, signedUrl);
-        console.log(`✅ Cached new signed URL for ${file.filename}`);
+        console.log(`✅ Cached new signed URL (1 min expiry) for ${file.filename}`);
       } catch (signErr) {
         console.error("❌ CloudFront signing error:", signErr);
         return res.status(500).render("errors/500");
