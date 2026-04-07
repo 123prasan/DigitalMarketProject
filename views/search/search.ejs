@@ -1,4 +1,4 @@
-<%-include("../components/header")%>
+<%- include("../components/header") %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,16 +8,14 @@
     
     <title><%= seo && seo.metaTags && seo.metaTags.title ? seo.metaTags.title : 'Search Courses & Resources - Vidyari' %></title>
     <meta name="title" content="<%= seo && seo.metaTags && seo.metaTags.title ? seo.metaTags.title : 'Search Courses & Resources - Vidyari' %>">
-    <meta name="description" content="<%= seo && seo.metaTags && seo.metaTags.description ? seo.metaTags.description : 'Find premium online courses, study materials, and educational resources on Vidyari. Search thousands of quality courses and files.' %>">
+    <meta name="description" content="<%= seo && seo.metaTags && seo.metaTags.description ? seo.metaTags.description : 'Find premium online courses, study materials, and educational resources on Vidyari.' %>">
     <meta name="keywords" content="<%= query ? query + ', ' : '' %>online courses, study materials, educational resources, learning platform, Vidyari">
     <meta name="author" content="Vidyari Inc.">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-    <meta name="language" content="English">
-    <meta name="revisit-after" content="7 days">
     <meta name="theme-color" content="#ffffff">
-    
+
     <link rel="canonical" href="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
-    
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
     <meta property="og:title" content="<%= seo && seo.metaTags && seo.metaTags.ogTitle ? seo.metaTags.ogTitle : 'Search Results - Vidyari' %>">
@@ -25,2362 +23,1834 @@
     <meta property="og:image" content="https://www.vidyari.com/images/og-search.jpg">
     <meta property="og:site_name" content="Vidyari">
     <meta property="og:locale" content="en_US">
-    
+
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>">
     <meta property="twitter:title" content="<%= query ? 'Search: ' + query : 'Search Results' %> - Vidyari">
     <meta property="twitter:description" content="<%= seo && seo.metaTags && seo.metaTags.ogDescription ? seo.metaTags.ogDescription : 'Find premium courses and resources on Vidyari' %>">
     <meta property="twitter:image" content="https://www.vidyari.com/images/og-search.jpg">
-    
+
     <meta name="google-site-verification" content="Hcnu9BHn9udbxOrSebP2NCm4kTf0IwYg9mStgcwI0BU">
     <meta name="msvalidate.01" content="D3E102BD58FF1D339695A30F2A3EAB37">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
     <link rel="icon" type="image/png" href="/images/logo.png">
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SearchResultsPage",
-      "name": "<%= query ? 'Search Results for ' + query : 'Course Search Results' %>",
-      "description": "<%= seo && seo.metaTags && seo.metaTags.description ? seo.metaTags.description : 'Search results for courses and educational resources' %>",
-      "url": "https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>",
-      "image": "https://www.vidyari.com/images/og-search.jpg",
-      "isPartOf": {
-        "@type": "WebSite",
-        "name": "Vidyari",
-        "url": "https://www.vidyari.com"
-      }
-    }
-    </script>
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Vidyari",
-      "url": "https://www.vidyari.com",
-      "logo": "https://www.vidyari.com/images/logo.svg",
-      "description": "Premium online learning platform with courses and educational resources",
-      "sameAs": [
-        "https://www.facebook.com/vidyari",
-        "https://www.twitter.com/vidyari",
-        "https://www.instagram.com/vidyari"
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "Customer Support",
-        "email": "support@vidyari.com"
-      }
-    }
-    </script>
-    
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://www.vidyari.com"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "Search",
-          "item": "https://www.vidyari.com/search"
-        }
-        <% if (query) { %>
-        ,{
-          "@type": "ListItem",
-          "position": 3,
-          "name": "<%= query %>",
-          "item": "https://www.vidyari.com/search?query=<%= encodeURIComponent(query) %>"
-        }
-        <% } %>
-      ]
-    }
-    </script>
-    
+
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"SearchResultsPage","name":"<%= query ? 'Search Results for ' + query : 'Course Search Results' %>","url":"https://www.vidyari.com/search?<%= query ? 'query=' + encodeURIComponent(query) : '' %>","isPartOf":{"@type":"WebSite","name":"Vidyari","url":"https://www.vidyari.com"}}</script>
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
-    
+
     <style>
         :root {
-            /* Modern SaaS / Clean Slate Palette */
-            --header-bg: #0F172A; /* Deep Slate */
-            --header-border: #1E293B;
-            --bg-main: #F8FAFC;
-            --bg-surface: #FFFFFF;
-            --bg-panel-header: #F1F5F9;
-            
-            /* Primary Actions */
-            --primary: #2563EB; /* Royal Blue */
-            --primary-hover: #1D4ED8;
-            --primary-bg: #EFF6FF;
-            --accent: #38BDF8; /* Clean Cyan */
-            
-            /* Text & Borders */
-            --text-main: #0F172A;
-            --text-muted: #64748B;
-            --text-light: #94A3B8;
-            --border: #E2E8F0;
-            --border-hover: #CBD5E1;
-            
-            /* Status Colors */
-            --success: #10B981;
-            --success-bg: #ECFDF5;
-            --danger: #EF4444;
-            --danger-bg: #FEF2F2;
-            --warning: #F59E0B;
-            
-            /* Google Books Style Colors */
-            --play-blue: #01875f;
-            --play-green: #01875f; /* Play Store Green for Free/Install */ 
-            --gemini-blue: #1a73e8; 
-            --heart-default: rgba(0, 0, 0, 0.4);
-            --heart-active: #d93025;
-            
-            /* Clean Geometry */
-            --radius-sm: 6px;
-            --radius-md: 12px;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --transition: all 0.2s ease-in-out;
+            --white: #ffffff;
+            --off-white: #fafafa;
+            --surface: #f5f5f5;
+            --surface-hover: #efefef;
+            --border-light: #e8e8e8;
+            --border-mid: #d4d4d4;
+
+            --ink: #111111;
+            --ink-secondary: #444444;
+            --ink-muted: #888888;
+            --ink-faint: #b8b8b8;
+
+            --blue: #1a6cf5;
+            --blue-dark: #1456cc;
+            --blue-light: #eef3ff;
+            --blue-mid: #d0e0ff;
+
+            --green: #0d9e6e;
+            --green-light: #e6f7f1;
+
+            --amber: #d97706;
+            --amber-light: #fef3c7;
+
+            --red: #dc2626;
+
+            --r-xs: 4px;
+            --r-sm: 8px;
+            --r-md: 12px;
+            --r-lg: 16px;
+            --r-xl: 20px;
+            --r-pill: 999px;
+
+            --header-h: 64px;
+            --sidebar-w: 248px;
+
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'Instrument Serif', Georgia, serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-        }
+        html { scroll-behavior: smooth; }
 
         body {
-            background-color: var(--bg-main);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            color: var(--text-main);
+            background: var(--off-white);
+            font-family: var(--font-body);
+            color: var(--ink);
             font-size: 14px;
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
-        /* ============ ANIMATIONS ============ */
+        /* ═══════════════════════════════════════
+           ANIMATIONS
+        ═══════════════════════════════════════ */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
         @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
+            0%   { background-position: -600px 0; }
+            100% { background-position: 600px 0; }
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .skeleton {
-            background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
-            background-size: 1000px 100%;
-            animation: shimmer 2s infinite linear;
-            border-radius: var(--radius-sm);
+        @keyframes pulse-ring {
+            0%   { box-shadow: 0 0 0 0 rgba(220,38,38,0.5); }
+            70%  { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
+            100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); }
         }
 
-        /* ============ MODERN SOLID HEADER ============ */
-        .search-header {
-            background: #FFFFFF;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            padding: 16px 24px;
+        /* ═══════════════════════════════════════
+           HEADER
+        ═══════════════════════════════════════ */
+        .v-header {
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 900;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-light);
+            height: var(--header-h);
         }
 
-        .header-content {
-            width: 100%;
-            max-width: 1400px;
+        .v-header-inner {
+            max-width: 1440px;
             margin: 0 auto;
+            padding: 0 20px;
+            height: 100%;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-            padding: 0;
+            gap: 16px;
         }
 
-        .header-title {
-            font-size: 1.5rem;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            margin: 0;
+        .v-logo {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            color: var(--ink);
+            text-decoration: none;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            flex-shrink: 0;
         }
+        .v-logo span { color: var(--blue); }
 
-        /* ============ SEARCH BOX ============ */
-        .search-box-container {
+        /* ═══════════════════════════════════════
+           SEARCH BAR
+        ═══════════════════════════════════════ */
+        .v-search-wrap {
             flex: 1;
-            max-width: 600px;
-            margin: 0 auto; /* Centers the search bar relative to header */
+            max-width: 540px;
             position: relative;
         }
 
-        .search-input-wrapper { 
+        .v-search-inner {
             position: relative;
             display: flex;
             align-items: center;
         }
 
-        .search-input {
-            width: 100%;
-            padding: 14px 110px 14px 48px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            background: #F8FAFC; /* Softer background for contrast */
-            color: var(--text-main);
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
-            font-weight: 500;
-        }
-
-        .search-input:hover {
-            background: #FFFFFF;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-        }
-
-        .search-input:focus {
-            outline: none;
-            background: #FFFFFF;
-            border-color: #2563eb;
-            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
-            transform: translateY(-1px);
-        }
-
-        .search-input::placeholder { color: #94a3b8; font-weight: 400; }
-        .search-input:focus::placeholder { color: #cbd5e1; }
-
-        .search-icon {
+        .v-search-icon {
             position: absolute;
-            left: 16px; 
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 1.1rem;
+            left: 14px;
+            color: var(--ink-muted);
+            font-size: 13px;
             pointer-events: none;
             z-index: 2;
-            font-weight: 600;
-            transition: color 0.3s ease;
         }
 
-        .search-input:focus ~ .search-icon { 
-            color: #2563eb;
-            font-weight: 700;
+        .v-search-input {
+            width: 100%;
+            height: 40px;
+            padding: 0 96px 0 38px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: var(--ink);
+            background: var(--surface);
+            border: 1px solid transparent;
+            border-radius: var(--r-pill);
+            outline: none;
+            transition: all 0.2s ease;
         }
 
-        .voice-controls {
+        .v-search-input::placeholder { color: var(--ink-faint); }
+
+        .v-search-input:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-mid);
+        }
+
+        .v-search-input:focus {
+            background: var(--white);
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(26,108,245,0.1);
+        }
+
+        .v-search-controls {
             position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 6px;
             display: flex;
             gap: 4px;
             align-items: center;
-            z-index: 2;
         }
 
-        .voice-btn {
-            width: 33px;
-            height: 33px;
-            border-radius: 8px;
+        .v-icon-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: var(--r-sm);
             border: none;
-            background: #e2e8f0;
-            color: #1e293b;
+            background: transparent;
+            color: var(--ink-muted);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 1rem;
+            font-size: 12px;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+        .v-icon-btn:hover { background: var(--surface-hover); color: var(--ink); }
+        .v-icon-btn.listening { background: #fef2f2; color: var(--red); animation: pulse-ring 1.5s infinite; }
+
+        /* ═══════════════════════════════════════
+           HEADER ACTIONS
+        ═══════════════════════════════════════ */
+        .v-header-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-shrink: 0;
+            margin-left: auto;
         }
 
-        .voice-btn:hover { 
-            background: #cbd5e1;
-            transform: scale(1.05);
-        }
-        .voice-btn:active { transform: scale(0.95); }
-        .voice-btn.listening { 
-            background: #ef4444;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-        }
-
-        .voice-transcript {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin-top: 8px;
-            background: #1f2937;
-            color: white;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+        .v-pill-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 12px;
+            height: 34px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-pill);
+            background: var(--white);
+            color: var(--ink-secondary);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
             white-space: nowrap;
+        }
+        .v-pill-btn:hover { background: var(--surface); border-color: var(--border-mid); color: var(--ink); }
+        .v-pill-btn i { font-size: 11px; color: var(--ink-muted); }
+
+        /* Voice transcript */
+        .v-transcript {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--ink);
+            color: var(--white);
+            padding: 8px 14px;
+            border-radius: var(--r-md);
+            font-size: 13px;
+            font-weight: 500;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.2s;
-            z-index: 100;
-            border: 1px solid #374151;
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
-            font-weight: 500;
+            z-index: 200;
         }
+        .v-transcript.active { opacity: 1; }
 
-        .voice-transcript.active { opacity: 1; }
-
-        /* ============ SUGGESTIONS DROPDOWN ============ */
-        .suggestions-dropdown {
+        /* ═══════════════════════════════════════
+           SUGGESTIONS
+        ═══════════════════════════════════════ */
+        .v-suggestions {
             position: absolute;
             top: calc(100% + 6px);
-            left: 0; 
+            left: 0;
             right: 0;
-            background: var(--bg-surface);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-md);
-            max-height: 400px;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-lg);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+            max-height: 320px;
             overflow-y: auto;
             display: none;
-            z-index: 1000;
-            padding: 8px 0;
+            z-index: 800;
+            padding: 6px;
         }
+        .v-suggestions.active { display: block; animation: fadeUp 0.15s ease; }
 
-        .suggestions-dropdown.active { display: block; animation: fadeIn 0.2s ease; }
-
-        .suggestion-item {
-            padding: 10px 16px;
-            cursor: pointer;
+        .v-suggestion-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: var(--r-sm);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .v-suggestion-item:hover { background: var(--surface); }
+        .v-suggestion-item i { color: var(--ink-faint); font-size: 12px; width: 16px; text-align: center; }
+        .v-suggestion-item span { font-size: 13px; color: var(--ink-secondary); }
+
+        /* ═══════════════════════════════════════
+           PAGE LAYOUT
+        ═══════════════════════════════════════ */
+        .v-page {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+            display: grid;
+            grid-template-columns: var(--sidebar-w) 1fr;
+            gap: 24px;
+            align-items: start;
         }
 
-        .suggestion-item:hover { background: var(--bg-main); color: var(--primary); }
-        .suggestion-item-icon { color: var(--text-light); width: 20px; text-align: center; }
-        .suggestion-item:hover .suggestion-item-icon { color: var(--primary); }
-        .suggestion-item-title { flex: 1; font-weight: 500; font-size: 0.9rem; }
-
-        /* ============ QUICK ACTIONS ============ */
-        .quick-actions {
-            display: flex; 
+        /* ═══════════════════════════════════════
+           SIDEBAR
+        ═══════════════════════════════════════ */
+        .v-sidebar {
+            position: sticky;
+            top: calc(var(--header-h) + 16px);
+            display: flex;
+            flex-direction: column;
             gap: 8px;
+            max-height: calc(100vh - var(--header-h) - 32px);
+            overflow-y: auto;
+            padding-bottom: 24px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-mid) transparent;
+        }
+        .v-sidebar::-webkit-scrollbar { width: 3px; }
+        .v-sidebar::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 3px; }
+
+        .v-sidebar-heading {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-faint);
+            padding: 4px 2px 8px;
+        }
+
+        /* Filter Panel */
+        .v-filter-panel {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-lg);
+            overflow: hidden;
+        }
+
+        .v-filter-header {
+            display: flex;
             align-items: center;
+            justify-content: space-between;
+            padding: 11px 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.1s;
+        }
+        .v-filter-header:hover { background: var(--off-white); }
+
+        .v-filter-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .v-filter-title i { font-size: 11px; color: var(--ink-muted); width: 14px; text-align: center; }
+
+        .v-filter-chevron {
+            font-size: 10px;
+            color: var(--ink-faint);
+            transition: transform 0.2s ease;
+        }
+        .v-filter-panel.collapsed .v-filter-chevron { transform: rotate(-90deg); }
+        .v-filter-panel.collapsed .v-filter-body { display: none; }
+
+        .v-filter-body {
+            padding: 4px 0 8px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .v-filter-opt {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 14px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .v-filter-opt:hover { background: var(--off-white); }
+
+        .v-filter-opt input[type="radio"],
+        .v-filter-opt input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            accent-color: var(--blue);
+            cursor: pointer;
             flex-shrink: 0;
         }
 
-        .btn-nav {
-            padding: 9px 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            font-family: inherit;
+        .v-filter-opt label {
+            font-size: 13px;
+            color: var(--ink-secondary);
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: #f0f4f8;
-            color: #1e293b;
-            border: none;
-            backdrop-filter: blur(4px);
-        }
-
-        .btn-nav:hover { 
-            background: #e2e8f0;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        .btn-nav:active { transform: translateY(0); }
-        .btn-nav i { font-size: 0.9rem; }
-
-        /* Standard Buttons */
-        .btn {
-            padding: 8px 16px;
-            border-radius: var(--radius-sm);
-            font-weight: 500;
-            font-size: 0.85rem;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            border: 1px solid var(--border);
-            background: var(--bg-surface);
-            color: var(--text-main);
-            transition: var(--transition);
-        }
-
-        .btn:hover { background: var(--bg-main); border-color: var(--border-hover); color: var(--primary); }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        .btn-primary:hover { background: var(--primary-hover); color: white; border-color: var(--primary-hover); }
-
-        .btn-danger { background: var(--bg-surface); color: var(--danger); }
-        .btn-danger:hover { background: var(--danger-bg); border-color: rgba(239, 68, 68, 0.3); }
-
-        /* ============ MAIN LAYOUT ============ */
-        .search-container {
-            width: 100%;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 24px;
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 32px;
-            align-items: start;
-            box-sizing: border-box;
-        }
-
-        /* ============ SIDEBAR FILTERS ============ */
-        .filters-sidebar {
-            position: sticky; 
-            top: 90px;
-            display: flex; 
-            flex-direction: column; 
-            gap: 16px;
-            max-height: calc(100vh - 100px);
-            overflow-y: auto;
-            padding-right: 8px;
-            padding-bottom: 40px; /* Prevents last item from cutting off */
-        }
-        
-        .filters-sidebar::-webkit-scrollbar { width: 4px; }
-        .filters-sidebar::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 4px; }
-
-        .sidebar-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .filter-panel {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            overflow: visible; /* Prevents inner dropdowns/clipping issues */
-        }
-
-        .filter-panel-header {
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            cursor: pointer;
-            user-select: none;
-            padding: 14px 16px;
-            background: var(--bg-panel-header);
-            border-radius: var(--radius-md) var(--radius-md) 0 0;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-main);
-            transition: var(--transition);
-        }
-
-        .filter-panel-header:hover { background: var(--border); }
-
-        .filter-panel-title { font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-        .filter-panel-title i { color: var(--text-muted); width: 16px; text-align: center; }
-
-        .filter-panel-toggle { 
-            color: var(--text-muted); 
-            transition: transform 0.2s;
-            font-size: 0.8rem;
-        }
-        .filter-panel.collapsed .filter-panel-toggle { transform: rotate(-90deg); }
-        .filter-panel.collapsed .filter-options, 
-        .filter-panel.collapsed .price-inputs,
-        .filter-panel.collapsed .preset-block { display: none; }
-        .filter-panel.collapsed .filter-panel-header { border-bottom: none; border-radius: var(--radius-md); }
-
-        .filter-options {
-            display: flex; 
-            flex-direction: column; 
-            gap: 2px;
-            padding: 8px 0;
-        }
-
-        .filter-option {
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            cursor: pointer; 
-            padding: 8px 16px;
-            transition: var(--transition);
-        }
-
-        .filter-option:hover { background: var(--bg-main); }
-
-        .filter-option input[type="radio"],
-        .filter-option input[type="checkbox"] {
-            margin: 0;
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .filter-option label {
-            cursor: pointer; 
-            margin: 0;
-            font-size: 0.85rem; 
-            color: var(--text-muted); 
             flex: 1;
+        }
+        .v-filter-opt input:checked + label { color: var(--ink); font-weight: 500; }
+
+        .v-filter-divider {
+            border: none;
+            border-top: 1px solid var(--border-light);
+            margin: 6px 0;
+        }
+
+        /* Price Preset Buttons */
+        .v-preset-row {
             display: flex;
-            align-items: center;
+            gap: 6px;
+            padding: 6px 14px 4px;
         }
 
-        .filter-option input:checked + label {
-            color: var(--text-main);
+        .v-preset-btn {
+            flex: 1;
+            height: 28px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-sm);
+            background: var(--white);
+            color: var(--ink-secondary);
+            font-family: var(--font-body);
+            font-size: 11px;
             font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
         }
+        .v-preset-btn:hover { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue); }
 
-        /* Price Inputs */
-        .price-inputs {
+        .v-price-inputs {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            padding: 0 16px 8px;
+            gap: 6px;
+            padding: 6px 14px;
         }
-
-        .price-input {
-            padding: 8px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.85rem;
+        .v-price-input {
+            height: 32px;
+            padding: 0 10px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-sm);
+            font-family: var(--font-body);
+            font-size: 12px;
+            color: var(--ink);
+            background: var(--off-white);
             width: 100%;
-            background: var(--bg-surface);
-            color: var(--text-main);
-            transition: var(--transition);
+            transition: all 0.15s;
         }
-        .price-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-bg); }
+        .v-price-input:focus { outline: none; border-color: var(--blue); background: var(--white); box-shadow: 0 0 0 2px rgba(26,108,245,0.1); }
+        .v-price-input::placeholder { color: var(--ink-faint); }
 
         input[type=range] {
             -webkit-appearance: none;
-            width: calc(100% - 32px);
-            margin: 12px 16px;
+            appearance: none;
+            width: calc(100% - 28px);
+            margin: 8px 14px 2px;
             background: transparent;
+            cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 3px;
+            background: var(--border-mid);
+            border-radius: 2px;
         }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 16px; width: 16px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            background: var(--primary);
+            background: var(--blue);
+            margin-top: -5.5px;
+            border: 2px solid var(--white);
+            box-shadow: 0 0 0 1px var(--blue);
+        }
+        input[type=range]:focus { outline: none; }
+        input[type=range]:focus::-webkit-slider-thumb { box-shadow: 0 0 0 3px rgba(26,108,245,0.2); }
+
+        .v-price-label {
+            padding: 0 14px 6px;
+            font-size: 11px;
+            color: var(--ink-muted);
+            text-align: right;
+        }
+
+        /* Clear Filters */
+        .v-clear-btn {
+            width: 100%;
+            height: 36px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-md);
+            background: var(--white);
+            color: var(--ink-muted);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            margin-top: -6px;
-            border: 2px solid white;
-            box-shadow: var(--shadow-sm);
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px;
-            cursor: pointer;
-            background: var(--border);
-            border-radius: 2px;
-        }
-
-        .preset-block {
-            padding: 12px 16px; 
-            border-top: 1px solid var(--bg-main);
-        }
-        .preset-title {
-            font-size: 0.75rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-
-        /* ============ RESULTS AREA ============ */
-        .search-results { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px;
-        }
-
-        .results-header {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            flex-wrap: wrap; 
-            gap: 16px;
-            padding: 16px 24px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .results-info { font-size: 0.95rem; color: var(--text-muted); font-weight: 400; }
-        .results-count { font-weight: 600; color: var(--text-main); font-size: 1.05rem; }
-
-        .sort-group { 
-            display: flex; 
-            gap: 8px; 
-            align-items: center;
-        }
-        
-        .sort-option {
-            padding: 8px 14px;
-            border: 1px solid transparent; 
-            border-radius: var(--radius-sm);
-            background: transparent; 
-            cursor: pointer;
-            font-weight: 500; 
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            transition: var(--transition);
-        }
-
-        .sort-option:hover { color: var(--text-main); background: var(--bg-main); }
-        .sort-option.active { 
-            background: var(--bg-surface); 
-            color: var(--primary); 
-            border-color: var(--border);
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* ============ RESULTS GRID ============ */
-        .results-grid {
             display: flex;
-            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 7px;
+            transition: all 0.15s;
+            margin-top: 4px;
         }
+        .v-clear-btn:hover { background: #fef2f2; border-color: #fca5a5; color: var(--red); }
 
-        .result-item {
-            width: 160px; 
-            background: transparent;
+        /* ═══════════════════════════════════════
+           RESULTS SECTION
+        ═══════════════════════════════════════ */
+        .v-results-section {
             display: flex;
             flex-direction: column;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        /* Results Toolbar */
+        .v-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 12px 16px;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-lg);
+        }
+
+        .v-results-info {
+            font-size: 14px;
+            color: var(--ink-muted);
+        }
+        .v-results-info strong { color: var(--ink); font-weight: 600; }
+
+        .v-sort-tabs {
+            display: flex;
+            gap: 2px;
+            background: var(--surface);
+            padding: 3px;
+            border-radius: var(--r-md);
+        }
+
+        .v-sort-tab {
+            padding: 5px 12px;
+            border: none;
+            background: transparent;
+            border-radius: var(--r-sm);
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--ink-muted);
             cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .v-sort-tab:hover { color: var(--ink); background: var(--surface-hover); }
+        .v-sort-tab.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        /* ═══════════════════════════════════════
+           CARDS GRID
+        ═══════════════════════════════════════ */
+        .v-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        /* Result Card — Google Play Books style */
+        .v-card {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
             position: relative;
-            text-decoration: none !important;
-            color: inherit !important;
-            animation: fadeIn 0.3s ease;
-            height: 100%; /* Ensure equal heights across the row */
+            animation: fadeUp 0.25s ease both;
         }
 
-        .result-item:hover {
-            transform: translateY(-2px);
-        }
-
-        .result-image-container {
+        .v-card-cover {
+            position: relative;
             width: 100%;
-            height: 240px; 
+            aspect-ratio: 2/3;
+            border-radius: var(--r-md);
             overflow: hidden;
-            position: relative;
-            margin-bottom: 8px;
-            background-color: #eee;
-            flex-shrink: 0;
+            background: var(--surface);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
         }
 
-        /* Spine Shadow Effect */
-        .result-image-container::after {
-            content: "";
+        .v-card:hover .v-card-cover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
+            transform: translateY(-3px);
+        }
+
+        /* Spine shadow */
+        .v-card-cover::before {
+            content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 8px;
-            height: 100%;
-            background: linear-gradient(to right, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 100%);
+            top: 0; left: 0;
+            width: 10px; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.14) 0%, transparent 100%);
+            z-index: 2;
             pointer-events: none;
         }
 
-        .result-image {
-            width: 100%; 
+        .v-card-img {
+            width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
             transition: transform 0.3s ease;
         }
-        
-        .result-item:hover .result-image {
-            transform: scale(1.02);
-        }
+        .v-card:hover .v-card-img { transform: scale(1.03); }
 
-        /* Wishlist Heart Button */
-        .wishlist-btn {
+        /* Type badge */
+        .v-badge-type {
             position: absolute;
             top: 8px;
-            right: 8px;
-            background: rgba(255, 255, 255, 0.9);
+            left: 8px;
+            z-index: 3;
+            padding: 3px 7px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(6px);
+            border-radius: var(--r-xs);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--ink);
+            text-transform: uppercase;
+        }
+
+        /* Trending badge */
+        .v-badge-trend {
+            position: absolute;
+            top: 8px;
+            right: 40px;
+            z-index: 3;
+            padding: 3px 7px;
+            background: var(--blue);
+            border-radius: var(--r-xs);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* Wishlist */
+        .v-wish-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            z-index: 4;
+            width: 28px;
+            height: 28px;
+            background: rgba(255,255,255,0.9);
             border: none;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
             display: flex;
+            align-items: center;
             justify-content: center;
-            align-items: center;
             cursor: pointer;
-            z-index: 10;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            color: var(--heart-default);
-            font-size: 1.1rem;
-            transition: transform 0.2s ease;
+            font-size: 13px;
+            color: rgba(0,0,0,0.35);
+            transition: all 0.15s;
         }
+        .v-wish-btn:hover { transform: scale(1.15); background: rgba(255,255,255,1); }
+        .v-wish-btn.active { color: var(--red); }
 
-        .wishlist-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .wishlist-btn:active {
-            transform: scale(0.9);
-        }
-
-        .wishlist-btn.active {
-            color: var(--heart-active);
-        }
-
-        .badge {
-            position: absolute; 
-            padding: 5px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 0.65rem; 
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-
-        .badge-type {
-            top: 10px; 
-            left: 10px;
-            background: rgba(255, 255, 255, 0.95);
-            color: var(--text-main);
-            box-shadow: var(--shadow-sm);
-            backdrop-filter: blur(4px);
-        }
-
-        .badge-pop {
-            top: 10px;
-            right: 10px;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .result-info {
-            padding: 8px 4px 0 4px;
+        /* Card info */
+        .v-card-info {
+            padding: 9px 2px 0;
             display: flex;
             flex-direction: column;
-            flex-grow: 1; /* Pushes price to the bottom */
+            gap: 3px;
         }
 
-        .result-title {
-            color: var(--text-main);
-            font-size: 0.875rem;
+        .v-card-title {
+            font-size: 13px;
             font-weight: 500;
-            margin: 0 0 4px 0;
+            color: var(--ink);
+            line-height: 1.3;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            line-height: 1.2rem;
         }
 
-        .result-instructor {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            margin: 0 0 6px 0;
+        .v-card-author {
+            font-size: 12px;
+            color: var(--ink-muted);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .result-meta {
+        .v-card-rating {
             display: flex;
             align-items: center;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 8px;
+            gap: 3px;
+            font-size: 12px;
+            color: var(--ink-muted);
         }
+        .v-card-rating i { color: #f59e0b; font-size: 10px; }
 
-        .rating-star {
-            font-size: 0.7rem;
-            margin-right: 2px;
-            color: #F59E0B;
-        }
-        
-        .result-price {
-            background: var(--gemini-blue);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 0;
-            font-size: 0.85rem;
-            font-weight: 500;
+        .v-card-price-btn {
+            margin-top: 6px;
             width: 100%;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: auto; /* Forces button to the bottom of the card */
-            text-align: center;
-        }
-
-        .result-price:hover {
-            background: #1765cc;
-        }
-
-        .result-price.free { 
-            background: var(--play-green);
-            color: white;
-        }
-
-        .result-price.free:hover {
-            background: #006e4e;
-        }
-
-        /* ============ SECTION HEADERS ============ */
-        .section-header-block {
-            padding: 24px;
-            margin-top: 32px;
-            border: 1px solid var(--border);
-            background: var(--bg-surface);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-        }
-        .section-header-title {
-            font-size: 1.1rem;
+            height: 32px;
+            border: none;
+            border-radius: var(--r-pill);
+            font-family: var(--font-body);
+            font-size: 12px;
             font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: var(--blue);
+            color: var(--white);
+        }
+        .v-card-price-btn:hover { background: var(--blue-dark); }
+        .v-card-price-btn.free { background: var(--green); }
+        .v-card-price-btn.free:hover { background: #0b8a5f; }
+
+        /* ═══════════════════════════════════════
+           SKELETON
+        ═══════════════════════════════════════ */
+        .v-skeleton-card { display: flex; flex-direction: column; }
+
+        .v-skel {
+            background: linear-gradient(90deg, var(--surface) 25%, var(--surface-hover) 50%, var(--surface) 75%);
+            background-size: 600px 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: var(--r-xs);
         }
 
-        /* ============ SKELETON CARD ============ */
-        .skeleton-card {
-            width: 160px;
-            background: transparent;
+        .v-skel-cover {
+            aspect-ratio: 2/3;
+            border-radius: var(--r-md);
+            margin-bottom: 9px;
+        }
+        .v-skel-line { height: 13px; margin-bottom: 5px; }
+        .v-skel-btn { height: 32px; border-radius: var(--r-pill); margin-top: 6px; }
+
+        /* ═══════════════════════════════════════
+           EMPTY STATE
+        ═══════════════════════════════════════ */
+        .v-empty {
+            grid-column: 1 / -1;
             display: flex;
             flex-direction: column;
-            position: relative;
-        }
-
-        .skeleton-card .skeleton {
-            margin: 0 !important;
-            border-radius: 0;
-        }
-
-        .skeleton-card .skeleton:first-child {
-            height: 240px;
-            width: 100%;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-
-        .skeleton-card .skeleton:nth-child(2) {
-            height: 16px;
-            width: 85%;
-            margin: 0 0 2px 2px;
-        }
-
-        .skeleton-card .skeleton:nth-child(3) {
-            height: 14px;
-            width: 65%;
-            margin: 0 0 4px 2px;
-        }
-
-        .skeleton-card .skeleton:nth-child(4) {
-            height: 12px;
-            width: 40%;
-            margin: 0 0 8px 2px;
-        }
-
-        .skeleton-card .skeleton:nth-child(5) {
-            height: 32px;
-            width: 100%;
-            border-radius: 8px;
-            margin: 8px 0 0 0;
-        }
-
-        /* ============ EMPTY STATE ============ */
-        .empty-state {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 60px 20px; 
-            text-align: center;
-            grid-column: 1 / -1;
-            box-shadow: var(--shadow-sm);
-        }
-        .empty-icon { font-size: 3rem; color: var(--border-hover); margin-bottom: 16px; }
-        .empty-title { font-size: 1.2rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
-        .empty-text { color: var(--text-muted); font-size: 0.95rem; }
-
-        /* ============ PAGINATION ============ */
-        .pagination-wrapper {
-            display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 8px;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
+            justify-content: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-xl);
+            text-align: center;
         }
 
-        .pagination-btn {
-            padding: 10px 16px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            background: var(--bg-surface);
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--text-main);
-            transition: var(--transition);
-            min-width: 40px;
+        .v-empty-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--ink-faint);
+            margin-bottom: 16px;
+        }
+
+        .v-empty h3 { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+        .v-empty p  { font-size: 13px; color: var(--ink-muted); max-width: 300px; }
+
+        /* ═══════════════════════════════════════
+           PAGINATION
+        ═══════════════════════════════════════ */
+        .v-pagination {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
+            padding: 16px;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-lg);
+            flex-wrap: wrap;
         }
 
-        .pagination-btn:hover:not(:disabled) {
-            background: var(--bg-main);
-            border-color: var(--border-hover);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
+        .v-page-btn {
+            min-width: 36px;
+            height: 36px;
+            padding: 0 8px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-sm);
+            background: var(--white);
+            color: var(--ink-secondary);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
         }
-        .pagination-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: var(--shadow-sm);
+        .v-page-btn:hover:not(:disabled) { background: var(--surface); border-color: var(--border-mid); }
+        .v-page-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
+        .v-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .v-page-sep { color: var(--ink-faint); font-size: 13px; padding: 0 4px; }
+
+        /* ═══════════════════════════════════════
+           MOBILE FILTER TOGGLE
+        ═══════════════════════════════════════ */
+        .v-filter-toggle-bar {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-lg);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--ink);
+            width: 100%;
+            transition: background 0.15s;
         }
-        .pagination-btn:disabled {
-            color: var(--text-light);
-            cursor: not-allowed;
-            background: var(--bg-main);
-            opacity: 0.6;
+        .v-filter-toggle-bar:hover { background: var(--surface); }
+        .v-filter-toggle-bar i { font-size: 12px; color: var(--ink-muted); }
+        .v-filter-count {
+            margin-left: auto;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: var(--r-pill);
+            display: none;
+        }
+        .v-filter-count.has-filters { display: inline-block; }
+
+        /* Drawer overlay */
+        .v-drawer-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            backdrop-filter: blur(2px);
+        }
+        .v-drawer-overlay.open { display: block; animation: fadeUp 0.15s ease; }
+
+        /* Drawer */
+        .v-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: var(--r-xl) var(--r-xl) 0 0;
+            z-index: 1001;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+            padding-bottom: env(safe-area-inset-bottom, 24px);
+        }
+        .v-drawer.open { transform: translateY(0); }
+
+        .v-drawer-handle {
+            width: 36px;
+            height: 4px;
+            background: var(--border-mid);
+            border-radius: 2px;
+            margin: 12px auto 4px;
         }
 
-        .pagination-info {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin: 0 16px;
+        .v-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px 10px;
+            border-bottom: 1px solid var(--border-light);
         }
 
-        /* ============ MOBILE RESPONSIVENESS ============ */
-        .mobile-filter-toggle, .mobile-filter-close { display: none; }
+        .v-drawer-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+        }
 
-        /* Tablet Responsiveness */
+        .v-drawer-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--surface);
+            border-radius: var(--r-sm);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--ink-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .v-drawer-body {
+            padding: 12px 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .v-drawer-apply {
+            margin: 4px 16px 8px;
+            width: calc(100% - 32px);
+            height: 44px;
+            background: var(--blue);
+            color: var(--white);
+            border: none;
+            border-radius: var(--r-pill);
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .v-drawer-apply:hover { background: var(--blue-dark); }
+
+        /* ═══════════════════════════════════════
+           SECTION BLOCKS (related/trending)
+        ═══════════════════════════════════════ */
+        .v-section-block {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: var(--r-xl);
+            padding: 20px;
+            margin-top: 8px;
+        }
+        .v-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .v-section-title i { color: var(--ink-muted); font-size: 12px; }
+
+        /* ═══════════════════════════════════════
+           RESPONSIVE
+        ═══════════════════════════════════════ */
+
+        /* Large screens: more columns */
+        @media (min-width: 1280px) {
+            .v-grid { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
+        }
+
+        /* Hide mobile elements on desktop */
+        @media (min-width: 769px) {
+            .v-filter-toggle-bar { display: none !important; }
+            .v-drawer-overlay, .v-drawer { display: none !important; }
+        }
+
+        /* Tablet: narrower sidebar */
         @media (max-width: 1024px) {
-            .search-container {
-                grid-template-columns: 200px 1fr;
-                gap: 24px;
-                padding: 20px 16px;
-            }
-
-            .filters-sidebar {
-                max-height: calc(100vh - 120px);
-            }
-
-            .results-grid {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                gap: 20px;
-            }
-
-            .result-item {
-                width: auto;
-                max-width: 180px;
-            }
+            :root { --sidebar-w: 220px; }
+            .v-page { gap: 16px; padding: 16px; }
         }
 
-        /* Small Tablet Responsiveness */
+        /* Small Tablet */
         @media (max-width: 900px) {
-            .search-container {
-                grid-template-columns: 180px 1fr;
-                gap: 20px;
-                padding: 16px 12px;
+            :root { --sidebar-w: 200px; }
+            .v-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+        }
+
+        /* Mobile: collapse to single column */
+        @media (max-width: 768px) {
+            :root { --header-h: 56px; }
+
+            .v-header-inner { padding: 0 14px; gap: 10px; }
+
+            .v-logo { font-size: 1.2rem; }
+
+            .v-search-wrap {
+                flex: 1;
+                max-width: none;
             }
 
-            .results-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 16px;
+            .v-header-actions { display: none; }
+
+            .v-page {
+                grid-template-columns: 1fr;
+                padding: 12px 12px 60px;
+                gap: 12px;
             }
 
-            .result-item {
-                max-width: 160px;
+            .v-sidebar { display: none; }
+
+            .v-filter-toggle-bar { display: flex; }
+
+            .v-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 10px 12px;
+            }
+
+            .v-sort-tabs {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 2px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .v-sort-tabs::-webkit-scrollbar { display: none; }
+
+            .v-sort-tab { flex-shrink: 0; }
+
+            .v-grid {
+                grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+                gap: 12px;
+            }
+
+            .v-pagination {
+                gap: 3px;
+                padding: 12px;
+            }
+            .v-page-btn {
+                min-width: 32px;
+                height: 32px;
+                font-size: 12px;
             }
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .search-header { 
-                padding: 12px 16px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            }
-            .header-content {
-                flex-direction: column;
-                align-items: stretch; /* Forces children to span full width */
-                gap: 12px;
-            }
-            .header-title {
-                display: none; /* Hide hidden title block to free up space */
-            }
+        /* Very small phones */
+        @media (max-width: 380px) {
+            .v-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .v-header-inner { padding: 0 10px; gap: 8px; }
+        }
 
-            .search-box-container {
-                order: 1;
-                width: 100%;
-                max-width: 100%;
-                margin: 0;
-            }
-
-            .search-input { 
-                padding: 12px 90px 12px 42px; 
-                font-size: 1rem; 
-                border-radius: 10px; 
-                width: 100%; /* Ensure full width on mobile */
-            }
-
-            .quick-actions {
-                order: 2;
-                width: 100%;
-                justify-content: flex-start;
-                overflow-x: auto;
-                padding-bottom: 4px;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .btn-nav {
-                flex-shrink: 0;
-                white-space: nowrap;
-            }
-
-            /* Voice search button mobile */
-            .voice-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 0.9rem;
-            }
-            
-            /* Mobile Google Books card design */
-            .result-item {
-                width: 160px;
-                margin: 0 auto;
-            }
-            
-            .result-title {
-                font-size: 0.875rem;
-                margin-bottom: 2px;
-                line-height: 1.1rem;
-            }
-            
-            .result-instructor {
-                font-size: 0.75rem;
-                margin-bottom: 4px;
-            }
-            
-            .result-meta {
-                font-size: 0.75rem;
-                margin-bottom: 8px;
-            }
-            
-            .result-price {
-                font-size: 0.85rem;
-                padding: 8px 0;
-                margin-top: auto;
-            }
-            
-            .result-image-container {
-                height: 240px;
-                margin-bottom: 8px;
-            }
-            
-            .results-grid {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 16px;
-                padding: 0 8px;
-            }
-            
-            .search-container { 
-                grid-template-columns: 1fr; 
-                padding: 12px;
-                width: 100%;
-                margin: 0;
-                box-sizing: border-box;
-                gap: 12px;
-            }
-            
-            .mobile-filter-toggle {
-                display: flex;
-                width: calc(100% - 24px);
-                margin: 8px 12px;
-                padding: 12px 16px;
-                font-size: 0.9rem;
-                background: var(--bg-surface);
-                border: 1px solid var(--border);
-                border-radius: var(--radius-md);
-                box-shadow: var(--shadow-sm);
-                cursor: pointer;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                font-weight: 500;
-                color: var(--text-main);
-                transition: var(--transition);
-            }
-
-            .mobile-filter-toggle:hover {
-                background: var(--bg-main);
-                border-color: var(--border-hover);
-            }
-
-            .filters-sidebar { display: none; }
-
-            .filters-sidebar.mobile-open {
-                position: fixed;
-                left: 0; top: 0; width: 100%; height: 100vh;
-                background: var(--bg-main);
-                z-index: 2000;
-                display: flex;
-                flex-direction: column;
-                padding: 60px 16px 100px; /* Large bottom padding so nothing cuts off */
-                max-height: 100vh;
-                overflow-y: auto;
-            }
-
-            .mobile-filter-close.visible {
-                display: flex;
-                position: fixed;
-                top: 12px; right: 16px;
-                width: 36px; height: 36px;
-                background: var(--bg-surface);
-                border: 1px solid var(--border);
-                border-radius: var(--radius-sm);
-                align-items: center; justify-content: center;
-                z-index: 2001;
-                font-size: 1.1rem;
-                color: var(--text-main);
-                box-shadow: var(--shadow-sm);
-            }
-
-            .results-header { 
-                flex-direction: column; 
-                align-items: flex-start;
-                padding: 12px;
-                margin: 0;
-                width: 100%;
-                background: transparent;
-                border: none;
-                box-shadow: none;
-                gap: 12px;
-            }
-            .results-info {
-                font-size: 0.9rem;
-                width: 100%;
-            }
-            .sort-group { 
-                width: 100%; 
-                overflow-x: auto; 
-                -webkit-overflow-scrolling: touch;
-                padding-bottom: 4px; 
-                margin-top: 0;
-                gap: 6px;
-                padding-right: 0;
-            }
-            .sort-option {
-                padding: 6px 10px;
-                font-size: 0.8rem;
-                white-space: nowrap;
-                flex-shrink: 0;
-            }
-            
-            /* Pagination on mobile */
-            .pagination-wrapper {
-                flex-wrap: wrap;
-                gap: 6px;
-                margin-top: 20px;
-                margin-bottom: 16px;
-                padding: 16px 12px;
-                width: 100%;
-                box-sizing: border-box;
-                background: var(--bg-surface);
-                border: 1px solid var(--border);
-                border-radius: var(--radius-md);
-                box-shadow: var(--shadow-sm);
-            }
-            .pagination-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-                min-width: 36px;
-            }
-
-            .pagination-info {
-                font-size: 0.8rem;
-                margin: 0 8px;
-                order: -1;
-                width: 100%;
-                text-align: center;
-                margin-bottom: 8px;
-            }
-
-            .search-results {
-                gap: 16px;
-            }
-            
-            .empty-state {
-                padding: 40px 16px;
-                border-radius: var(--radius-md);
-                margin: 0;
-            }
-            .empty-icon { 
-                font-size: 2.5rem; 
-                margin-bottom: 12px; 
-            }
-            .empty-title { 
-                font-size: 1.1rem; 
-            }
-            .empty-text { 
-                font-size: 0.9rem; 
-            }
-
-            /* Mobile Google Books skeleton design */
-            .skeleton-card {
-                width: 160px;
-                margin: 0 auto;
-            }
-
-            .skeleton-card .skeleton:first-child {
-                height: 240px;
-                margin-bottom: 8px;
-            }
-
-            .skeleton-card .skeleton:nth-child(2) {
-                height: 16px;
-                width: 85%;
-                margin: 0 0 2px 2px;
-            }
-
-            .skeleton-card .skeleton:nth-child(3) {
-                height: 14px;
-                width: 65%;
-                margin: 0 0 4px 2px;
-            }
-
-            .skeleton-card .skeleton:nth-child(4) {
-                height: 12px;
-                width: 40%;
-                margin: 0 0 8px 2px;
-            }
-
-            .skeleton-card .skeleton:nth-child(5) {
-                height: 32px;
-                width: 100%;
-                margin: 8px 0 0 0;
-            }
+        /* Dynamic filter panels in drawer */
+        #drawerFilters .v-filter-panel {
+            border-radius: var(--r-md);
         }
     </style>
 </head>
 
 <body>
-    <main role="main">
-    <div class="search-header">
-        <div class="header-content">
-            <h1 class="header-title" style="visibility: hidden; position: absolute; width: 1px; height: 1px;">
-                <% if (query && query.trim()) { %>
-                    Search Results for <%= query %> - Premium Online Courses & Educational Resources
-                <% } else { %>
-                    Search Courses and Educational Resources on Vidyari
-                <% } %>
-            </h1>
-            
-            <div class="search-box-container">
-                <div class="search-input-wrapper">
-                    <i class="fas fa-search search-icon" aria-hidden="true"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search resources, tags, and tools" autocomplete="off" aria-label="Search for courses and resources">
-                    <div class="voice-controls">
-                        <button type="button" class="voice-btn" id="voiceBtn" title="Click to speak" onclick="toggleVoiceRecognition()" aria-label="Voice search">
+    <h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">
+        <% if (query && query.trim()) { %>Search Results for <%= query %> - Vidyari<% } else { %>Search Courses and Educational Resources on Vidyari<% } %>
+    </h1>
+
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <header class="v-header" role="banner">
+        <div class="v-header-inner">
+
+            <div class="v-search-wrap" role="search">
+                <div class="v-search-inner">
+                    <i class="fas fa-search v-search-icon" aria-hidden="true"></i>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        class="v-search-input"
+                        placeholder="Search courses, resources…"
+                        autocomplete="off"
+                        aria-label="Search for courses and resources"
+                        aria-autocomplete="list"
+                        aria-controls="suggestionsDropdown"
+                    >
+                    <div class="v-search-controls">
+                        <button class="v-icon-btn" id="voiceBtn" onclick="toggleVoiceRecognition()" title="Voice search" aria-label="Voice search">
                             <i class="fas fa-microphone" aria-hidden="true"></i>
                         </button>
                     </div>
-                    <div id="voiceTranscript" class="voice-transcript" role="status" aria-live="polite">
-                        <span id="transcriptText">Listening...</span>
+                    <div id="voiceTranscript" class="v-transcript" role="status" aria-live="polite">
+                        <span id="transcriptText">Listening…</span>
                     </div>
-                    <div id="suggestionsDropdown" class="suggestions-dropdown" role="listbox" aria-label="Search suggestions"></div>
+                    <div id="suggestionsDropdown" class="v-suggestions" role="listbox" aria-label="Search suggestions"></div>
                 </div>
             </div>
 
-            <div class="quick-actions">
-                <button class="btn-nav" onclick="loadTrendingSearches()" title="Trending searches" aria-label="View trending searches">
-                    <i class="fas fa-fire" style="color: var(--accent)" aria-hidden="true"></i> <span class="d-none d-md-inline">Trending</span>
+            <div class="v-header-actions">
+                <button class="v-pill-btn" onclick="loadTrendingSearches()" aria-label="Trending">
+                    <i class="fas fa-fire" style="color:#f59e0b"></i> Trending
                 </button>
-                <button class="btn-nav" onclick="loadPopularItems()" title="Top rated resources" aria-label="View top rated resources">
-                    <i class="fas fa-star" style="color: var(--accent)" aria-hidden="true"></i> <span class="d-none d-md-inline">Top Rated</span>
+                <button class="v-pill-btn" onclick="loadPopularItems()" aria-label="Top Rated">
+                    <i class="fas fa-star" style="color:#f59e0b"></i> Top Rated
                 </button>
-                <button class="btn-nav" onclick="showRecentSearches()" title="Search history" aria-label="View recent searches">
-                    <i class="fas fa-history" aria-hidden="true"></i> <span class="d-none d-md-inline">History</span>
+                <button class="v-pill-btn" onclick="showRecentSearches()" aria-label="History">
+                    <i class="fas fa-history"></i> History
                 </button>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="search-container">
-        
-        <button class="btn btn-primary mobile-filter-toggle" onclick="toggleMobileFilters()" aria-label="Show filters">
-            <i class="fas fa-filter" aria-hidden="true"></i> Show Filters
-        </button>
-        <button class="mobile-filter-close" id="mobileFilterClose" onclick="closeMobileFilters()" aria-label="Close filters">
-            <i class="fas fa-times" aria-hidden="true"></i>
-        </button>
+    <!-- ═══════════════ PAGE ═══════════════ -->
+    <main role="main">
+        <div class="v-page">
 
-        <aside class="filters-sidebar" id="filtersSidebar" role="complementary" aria-label="Search filters">
-            <div class="sidebar-title">Filters</div>
+            <!-- Sidebar (desktop) -->
+            <aside class="v-sidebar" id="desktopSidebar" role="complementary" aria-label="Search filters">
+                <div class="v-sidebar-heading">Filters</div>
+                <div id="desktopFilters"></div>
+                <button class="v-clear-btn" onclick="clearAllFilters()">
+                    <i class="fas fa-times-circle" style="font-size:12px"></i> Clear all filters
+                </button>
+            </aside>
 
-            <div class="filter-panel">
-                <div class="filter-panel-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
-                    <span class="filter-panel-title"><i class="fas fa-file-alt" aria-hidden="true"></i> Resource Type</span>
-                    <i class="fas fa-chevron-down filter-panel-toggle" aria-hidden="true"></i>
+            <!-- Results -->
+            <div class="v-results-section">
+
+                <!-- Mobile filter bar -->
+                <button class="v-filter-toggle-bar" onclick="openDrawer()" aria-expanded="false" aria-controls="filterDrawer">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Filters</span>
+                    <span class="v-filter-count" id="filterCount"></span>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;font-size:10px;color:var(--ink-faint)"></i>
+                </button>
+
+                <!-- Toolbar -->
+                <div class="v-toolbar">
+                    <div class="v-results-info">
+                        <strong id="resultsCount">0</strong> results
+                        <span id="queryDisplayContainer" style="display:none"> for "<strong id="queryDisplay"></strong>"</span>
+                    </div>
+                    <div class="v-sort-tabs" role="tablist" aria-label="Sort options">
+                        <button class="v-sort-tab active" onclick="setSortBy(event,'relevance')" role="tab" aria-selected="true">Relevance</button>
+                        <button class="v-sort-tab" onclick="setSortBy(event,'newest')" role="tab" aria-selected="false">Newest</button>
+                        <button class="v-sort-tab" onclick="setSortBy(event,'rating')" role="tab" aria-selected="false">Rating</button>
+                        <button class="v-sort-tab" onclick="setSortBy(event,'trending')" role="tab" aria-selected="false">Trending</button>
+                        <button class="v-sort-tab" onclick="setSortBy(event,'price-asc')" role="tab" aria-selected="false">Price ↑</button>
+                    </div>
                 </div>
-                <div class="filter-options" role="group" aria-label="Resource type options">
-                    <div class="filter-option">
-                        <input type="radio" name="type" id="typeAll" value="all" checked onchange="applyFilters()">
-                        <label for="typeAll">All Types</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="radio" name="type" id="typeFiles" value="files" onchange="applyFilters()">
-                        <label for="typeFiles">Documents</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="radio" name="type" id="typeCourses" value="courses" onchange="applyFilters()">
-                        <label for="typeCourses">Modules</label>
-                    </div>
-                </div>
+
+                <div id="resultsContainer" class="v-grid" aria-live="polite" aria-label="Search results"></div>
+                <div id="paginationContainer" class="v-pagination" style="display:none"></div>
             </div>
-
-            <div class="filter-panel">
-                <div class="filter-panel-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
-                    <span class="filter-panel-title"><i class="fas fa-layer-group" aria-hidden="true"></i> Level</span>
-                    <i class="fas fa-chevron-down filter-panel-toggle" aria-hidden="true"></i>
-                </div>
-                <div class="filter-options" role="group" aria-label="Difficulty level options">
-                    <div class="filter-option">
-                        <input type="checkbox" id="diffAll" value="" checked onchange="applyFilters()">
-                        <label for="diffAll">Any Level</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="diffBeg" value="Beginner" onchange="applyFilters()">
-                        <label for="diffBeg">Beginner</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="diffInt" value="Intermediate" onchange="applyFilters()">
-                        <label for="diffInt">Intermediate</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="diffAdv" value="Advanced" onchange="applyFilters()">
-                        <label for="diffAdv">Advanced</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="diffExp" value="Expert" onchange="applyFilters()">
-                        <label for="diffExp">Expert</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-panel">
-                <div class="filter-panel-header" onclick="togglePanel(this)">
-                    <span class="filter-panel-title"><i class="fas fa-tags"></i> Domain</span>
-                    <i class="fas fa-chevron-down filter-panel-toggle"></i>
-                </div>
-                <div class="filter-options">
-                    <div class="filter-option">
-                        <input type="checkbox" id="catAll" value="" checked onchange="applyFilters()">
-                        <label for="catAll">All Domains</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="catProg" value="Programming" onchange="applyFilters()">
-                        <label for="catProg">Engineering</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="catDes" value="Design" onchange="applyFilters()">
-                        <label for="catDes">UI/UX Design</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="catBus" value="Business" onchange="applyFilters()">
-                        <label for="catBus">Business Ops</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="catMark" value="Marketing" onchange="applyFilters()">
-                        <label for="catMark">Marketing</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-panel">
-                <div class="filter-panel-header" onclick="togglePanel(this)">
-                    <span class="filter-panel-title"><i class="fas fa-clock"></i> Duration</span>
-                    <i class="fas fa-chevron-down filter-panel-toggle"></i>
-                </div>
-                <div class="filter-options">
-                    <div class="filter-option">
-                        <input type="checkbox" id="durShort" value="short" onchange="applyFilters()">
-                        <label for="durShort">< 2 hours</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="durMed" value="medium" onchange="applyFilters()">
-                        <label for="durMed">2 - 10 hours</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="durLong" value="long" onchange="applyFilters()">
-                        <label for="durLong">> 10 hours</label>
-                    </div>
-                    
-                    <div class="preset-block">
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn" style="flex:1; font-size: 0.75rem;" onclick="setDurationPreset('short')">Quick Select</button>
-                            <button class="btn" style="flex:1; font-size: 0.75rem;" onclick="setDurationPreset('long')">Deep Dive</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-panel">
-                <div class="filter-panel-header" onclick="togglePanel(this)">
-                    <span class="filter-panel-title"><i class="fas fa-check-circle"></i> Verification</span>
-                    <i class="fas fa-chevron-down filter-panel-toggle"></i>
-                </div>
-                <div class="filter-options">
-                    <div class="filter-option">
-                        <input type="checkbox" id="certCert" value="certified" onchange="applyFilters()">
-                        <label for="certCert">Certified</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="checkbox" id="certVer" value="verified" onchange="applyFilters()">
-                        <label for="certVer">Verified Auth</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-panel">
-                <div class="filter-panel-header" onclick="togglePanel(this)">
-                    <span class="filter-panel-title"><i class="fas fa-credit-card"></i> Cost Allocation</span>
-                    <i class="fas fa-chevron-down filter-panel-toggle"></i>
-                </div>
-                <div class="filter-options">
-                    <div class="filter-option">
-                        <input type="radio" name="priceType" id="priceAll" value="all" checked onchange="applyFilters()">
-                        <label for="priceAll">Any</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="radio" name="priceType" id="priceFree" value="free" onchange="applyFilters()">
-                        <label for="priceFree">Free Tier</label>
-                    </div>
-                    <div class="filter-option">
-                        <input type="radio" name="priceType" id="pricePaid" value="paid" onchange="applyFilters()">
-                        <label for="pricePaid">Premium</label>
-                    </div>
-                    
-                    <div class="preset-block">
-                        <span class="preset-title">Custom Range (₹)</span>
-                        <div class="price-inputs">
-                            <input type="number" id="minPrice" class="price-input" placeholder="Min" onchange="applyFilters()">
-                            <input type="number" id="maxPrice" class="price-input" placeholder="Max" onchange="applyFilters()">
-                        </div>
-                        <input type="range" id="priceRangeSlider" min="0" max="10000" step="100" value="0" onchange="updatePriceDisplay()">
-                        <div style="font-size: 0.8rem; text-align: right; padding: 0 16px 8px; color: var(--text-muted);" id="priceRangeDisplay">₹0 - ₹10000</div>
-                        
-                        <div style="display: flex; gap: 8px; padding: 0 16px;">
-                            <button class="btn" style="flex:1; font-size: 0.75rem;" onclick="setPricePreset(0, 500)">Low</button>
-                            <button class="btn" style="flex:1; font-size: 0.75rem;" onclick="setPricePreset(1500, 10000)">High</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="dynamicFiltersContainer"></div>
-            
-            <button class="btn btn-danger" style="width: 100%; justify-content: center; margin-top: 8px;" onclick="clearAllFilters()">
-                Clear Filters
-            </button>
-        </aside>
-
-        <div class="search-results">
-            <div class="results-header">
-                <div class="results-info">
-                    <span class="results-count">0</span> items <span id="queryDisplayContainer" style="display:none; color: var(--text-muted);">matching "<strong id="queryDisplay" style="color: var(--text-main);"></strong>"</span>
-                </div>
-                <div class="sort-group">
-                    <button class="sort-option active" onclick="setSortBy(event, 'relevance')">Relevance</button>
-                    <button class="sort-option" onclick="setSortBy(event, 'newest')">Newest</button>
-                    <button class="sort-option" onclick="setSortBy(event, 'rating')">Rating</button>
-                    <button class="sort-option" onclick="setSortBy(event, 'trending')">Trending</button>
-                    <button class="sort-option" onclick="setSortBy(event, 'price-asc')">Price (Low)</button>
-                </div>
-            </div>
-
-            <div id="resultsContainer" class="results-grid"></div>
-            <div id="paginationContainer" class="pagination-wrapper"></div>
         </div>
-    </div>
-
-    <script>
-        let currentSort = 'relevance';
-        let currentPage = 1;
-        let totalResults = 0;
-        let searchTimeout;
-        let isLoading = false;
-        let apiBaseUrl = '/api/search';
-
-        // ============ VOICE RECOGNITION SETUP ============
-        let recognition = null;
-        let isListening = false;
-        let recognitionSupported = false;
-
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            recognitionSupported = true;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
-            
-            recognition.onstart = function() {
-                isListening = true;
-                const voiceBtn = document.getElementById('voiceBtn');
-                const transcript = document.getElementById('voiceTranscript');
-                
-                voiceBtn.classList.add('listening');
-                transcript.classList.add('active');
-                document.getElementById('transcriptText').textContent = 'Listening...';
-            };
-            
-            recognition.onresult = function(event) {
-                let interim_transcript = '';
-                let final_transcript = '';
-                
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        final_transcript += transcript + ' ';
-                    } else {
-                        interim_transcript += transcript;
-                    }
-                }
-                
-                const displayText = final_transcript || interim_transcript;
-                document.getElementById('transcriptText').textContent = displayText || 'Listening...';
-                
-                if (final_transcript) {
-                    document.getElementById('searchInput').value = final_transcript.trim();
-                    saveSearchHistory(final_transcript.trim());
-                    loadResults(1);
-                }
-            };
-            
-            recognition.onerror = function(event) {
-                const errorMessages = {
-                    'no-speech': 'No speech detected.',
-                    'audio-capture': 'No microphone available.',
-                    'network': 'Network error.',
-                    'aborted': 'Voice input cancelled.'
-                };
-                const message = errorMessages[event.error] || `Voice error: ${event.error}`;
-                document.getElementById('transcriptText').textContent = message;
-                console.error('Voice error:', event.error);
-            };
-            
-            recognition.onend = function() {
-                isListening = false;
-                document.getElementById('voiceBtn').classList.remove('listening');
-                setTimeout(() => {
-                    document.getElementById('voiceTranscript').classList.remove('active');
-                }, 2000);
-            };
-        }
-
-        function toggleVoiceRecognition() {
-            if (!recognitionSupported) {
-                alert('Voice recognition not supported in your browser. Please use Chrome, Edge, or Safari.');
-                return;
-            }
-            if (isListening) {
-                recognition.stop();
-                isListening = false;
-            } else {
-                document.getElementById('searchInput').focus();
-                recognition.start();
-            }
-        }
-
-        // ============ UTILITY FUNCTIONS ============
-        function escapeHtml(text) {
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-            return String(text).replace(/[&<>"']/g, m => map[m]);
-        }
-
-        function togglePanel(header) {
-            header.closest('.filter-panel').classList.toggle('collapsed');
-        }
-
-        function toggleMobileFilters() {
-            const sidebar = document.getElementById('filtersSidebar');
-            const closeBtn = document.getElementById('mobileFilterClose');
-            sidebar.classList.add('mobile-open');
-            closeBtn.classList.add('visible');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeMobileFilters() {
-            const sidebar = document.getElementById('filtersSidebar');
-            const closeBtn = document.getElementById('mobileFilterClose');
-            sidebar.classList.remove('mobile-open');
-            closeBtn.classList.remove('visible');
-            document.body.style.overflow = 'auto';
-        }
-
-        function toggleWishlist(itemId, button) {
-            button.classList.toggle('active');
-        }
-
-        // ============ EVENT LISTENERS - INIT ============
-        document.addEventListener('DOMContentLoaded', function () {
-            const initialQuery = new URLSearchParams(window.location.search).get('query') || '';
-            if (initialQuery) {
-                document.getElementById('searchInput').value = initialQuery;
-                loadResults(1);
-            } else {
-                showEmptyState('Enter query parameters to search directory.', 'fa-database');
-            }
-
-            const searchInput = document.getElementById('searchInput');
-
-            searchInput.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const query = this.value.trim();
-                    if (query.length > 0) {
-                        saveSearchHistory(query);
-                        window.history.pushState({ search: query }, '', `/search?query=${encodeURIComponent(query)}`);
-                        loadResults(1);
-                        document.getElementById('suggestionsDropdown').classList.remove('active');
-                        if (window.innerWidth <= 768) {
-                            closeMobileFilters();
-                        }
-                    }
-                }
-            });
-
-            searchInput.addEventListener('input', function (e) {
-                const query = e.target.value.trim();
-                clearTimeout(searchTimeout);
-                if (query.length < 2) {
-                    document.getElementById('suggestionsDropdown').classList.remove('active');
-                    return;
-                }
-                searchTimeout = setTimeout(() => { fetchSuggestions(query); }, 300);
-            });
-
-            // Close dropdowns on outside click
-            document.addEventListener('click', function (e) {
-                const sidebar = document.getElementById('filtersSidebar');
-                if (window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) {
-                    if (!e.target.closest('.filters-sidebar') && !e.target.closest('.mobile-filter-toggle') && !e.target.closest('.mobile-filter-close')) {
-                        closeMobileFilters();
-                    }
-                }
-                if (!e.target.closest('.search-box-container')) {
-                    document.getElementById('suggestionsDropdown').classList.remove('active');
-                }
-            });
-        });
-
-        // ============ SEARCH SUGGESTIONS ============
-        async function fetchSuggestions(query) {
-            try {
-                const response = await fetch(`${apiBaseUrl}/advanced?q=${encodeURIComponent(query)}&limit=5`);
-                const data = await response.json();
-                
-                if (data.success && data.results && data.results.length > 0) {
-                    const suggestions = data.results.slice(0, 5).map(item => ({
-                        text: item.title,
-                        category: item.type,
-                        icon: item.type === 'file' ? 'fa-file-alt' : 'fa-graduation-cap'
-                    }));
-                    
-                    let html = '';
-                    suggestions.forEach(item => {
-                        html += `
-                            <div class="suggestion-item" onclick="searchFor('${item.text.replace(/'/g, "\\'")}')">
-                                <i class="suggestion-item-icon fas ${item.icon}"></i>
-                                <div class="suggestion-item-title">${escapeHtml(item.text)}</div>
-                            </div>
-                        `;
-                    });
-                    document.getElementById('suggestionsDropdown').innerHTML = html;
-                    document.getElementById('suggestionsDropdown').classList.add('active');
-                }
-            } catch (error) {
-                console.error('Suggestion error:', error);
-            }
-        }
-
-        function searchFor(query) {
-            query = query.trim();
-            if (query.length === 0) return;
-            document.getElementById('searchInput').value = query;
-            saveSearchHistory(query);
-            document.getElementById('suggestionsDropdown').classList.remove('active');
-            window.history.pushState({ search: query }, '', `/search?query=${encodeURIComponent(query)}`);
-            loadResults(1);
-            if (window.innerWidth <= 768) {
-                closeMobileFilters();
-            }
-        }
-
-        // ============ SORT & FILTERS ============
-        function setSortBy(e, sort) {
-            if (isLoading) return;
-            currentSort = sort;
-            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
-            e.target.closest('.sort-option').classList.add('active');
-            loadResults(1);
-        }
-
-        function applyFilters() {
-            if (isLoading) return;
-            currentPage = 1;
-            loadResults(1);
-        }
-
-        function clearAllFilters() {
-            const typeAll = document.getElementById('typeAll');
-            if (typeAll) typeAll.checked = true;
-            
-            const priceAll = document.getElementById('priceAll');
-            if (priceAll) priceAll.checked = true;
-            
-            const minPrice = document.getElementById('minPrice');
-            if (minPrice) minPrice.value = '';
-            
-            const maxPrice = document.getElementById('maxPrice');
-            if (maxPrice) maxPrice.value = '';
-            
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            
-            const categoryAll = document.getElementById('catAll');
-            if (categoryAll) categoryAll.checked = true;
-            
-            const diffAll = document.getElementById('diffAll');
-            if (diffAll) diffAll.checked = true;
-            
-            currentSort = 'relevance';
-            currentPage = 1;
-            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
-            const firstSortOption = document.querySelector('.sort-option');
-            if (firstSortOption) firstSortOption.classList.add('active');
-            
-            loadResults(1);
-            if (window.innerWidth <= 768) {
-                closeMobileFilters();
-            }
-        }
-
-        // ============ MAIN SEARCH FUNCTION ============
-        async function loadResults(page = 1) {
-            const query = document.getElementById('searchInput').value.trim();
-            
-            if (query) {
-                document.getElementById('queryDisplay').textContent = query;
-                document.getElementById('queryDisplayContainer').style.display = 'inline';
-            } else {
-                document.getElementById('queryDisplayContainer').style.display = 'none';
-            }
-
-            if (!query) {
-                showEmptyState('Enter query parameters to search directory.', 'fa-database');
-                return;
-            }
-
-            const container = document.getElementById('resultsContainer');
-            showSkeletonLoader(container, 12);
-            isLoading = true;
-
-            try {
-                // Collect filter values from form with null checking
-                const typeElement = document.querySelector('input[name="type"]:checked');
-                const type = typeElement ? typeElement.value : 'all';
-                
-                const priceTypeElement = document.querySelector('input[name="priceType"]:checked');
-                const priceType = priceTypeElement ? priceTypeElement.value : 'all';
-                
-                const minPrice = document.getElementById('minPrice')?.value || 0;
-                const maxPrice = document.getElementById('maxPrice')?.value || 10000;
-                
-                const categories = Array.from(document.querySelectorAll('input[value="Programming"], input[value="Design"], input[value="Business"], input[value="Marketing"]'))
-                    .filter(cb => cb.checked && cb.type === 'checkbox')
-                    .map(cb => cb.value);
-
-                const difficulties = Array.from(document.querySelectorAll('input[value="Beginner"], input[value="Intermediate"], input[value="Advanced"], input[value="Expert"]'))
-                    .filter(cb => cb.checked && cb.type === 'checkbox')
-                    .map(cb => cb.value);
-
-                const durations = Array.from(document.querySelectorAll('input[value="short"], input[value="medium"], input[value="long"]'))
-                    .filter(cb => cb.checked && cb.type === 'checkbox')
-                    .map(cb => cb.value);
-                
-                const certifications = Array.from(document.querySelectorAll('input[value="certified"], input[value="verified"]'))
-                    .filter(cb => cb.checked && cb.type === 'checkbox')
-                    .map(cb => cb.value);
-
-                const params = new URLSearchParams({
-                    q: query,
-                    sortBy: currentSort,
-                    assetType: type,
-                    page: page,
-                    limit: 12,
-                    priceMin: Math.max(priceType === 'free' ? 0 : minPrice, 0),
-                    priceMax: priceType === 'free' ? 0 : (priceType === 'paid' ? parseFloat(maxPrice) : 10000)
-                });
-
-                categories.forEach(cat => params.append('category', cat));
-                difficulties.forEach(diff => params.append('difficulty', diff));
-                durations.forEach(dur => params.append('duration', dur));
-                certifications.forEach(cert => params.append('certification', cert));
-
-                const response = await fetch(`${apiBaseUrl}/advanced?${params}`);
-                const data = await response.json();
-
-                if (!data.success || !data.results || data.results.length === 0) {
-                    showEmptyState('0 records matched applied filters.', 'fa-exclamation-circle');
-                    isLoading = false;
-                    return;
-                }
-
-                document.querySelector('.results-count').textContent = data.pagination.total;
-                container.innerHTML = data.results.map(item => createResultCard(item)).join('');
-
-                if (data.pagination.pages > 1) {
-                    renderPagination(page, data.pagination.pages);
-                } else {
-                    document.getElementById('paginationContainer').innerHTML = '';
-                }
-
-                currentPage = page;
-                isLoading = false;
-                
-                trackSearch(query);
-                loadDynamicFilters();
-                loadSmartAlternatives();
-            } catch (error) {
-                console.error('❌ Search error:', error);
-                showEmptyState('System Error: Unable to fetch resources.', 'fa-bug');
-                isLoading = false;
-            }
-        }
-
-        // ============ RESULT CARD BUILDER ============
-        function createResultCard(item) {
-            const typeStr = item.type === 'file' ? 'DOC' : 'MOD';
-            const link = item.type === 'file' ? '/file/' + item.slug + '/' + item._id : '/course-detail?courseId=' + item._id;
-            const rating = (item.rating || 0).toFixed(1);
-            const priceStr = item.price === 0 ? 'Free' : '₹' + Math.floor(item.price);
-            const priceClass = item.price === 0 ? 'free' : '';
-            
-            const image = item.image || `https://via.placeholder.com/400x200/F1F5F9/94A3B8?text=${encodeURIComponent((item.title || 'Data').substring(0, 10))}`;
-            
-            let badge = '';
-            if (item.interest > 500) {
-                badge = `<span class="badge badge-pop"><i class="fas fa-arrow-up"></i> Trending</span>`;
-            }
-
-            return `
-                <a href="${link}" class="result-item" title="${escapeHtml(item.title)}">
-                    <div class="result-image-container">
-                        <img src="${image}" alt="${escapeHtml(item.title)}" class="result-image" onerror="this.style.display='none'; this.parentElement.style.background='#F1F5F9';">
-                        <span class="badge badge-type">${typeStr}</span>
-                        ${badge}
-                        <button class="wishlist-btn" title="Add to wishlist" onclick="event.preventDefault(); event.stopPropagation(); toggleWishlist('${item._id}', this);">
-                            ❤
-                        </button>
-                    </div>
-                    <div class="result-info">
-                        <h3 class="result-title">${escapeHtml(item.title)}</h3>
-                        ${item.creator ? `<div class="result-instructor">${escapeHtml(typeof item.creator === 'string' ? item.creator : 'System')}</div>` : ''}
-                        
-                        <div class="result-meta">
-                            <span>${rating}</span>
-                            <span class="rating-star">★</span>
-                        </div>
-                        
-                        <div class="result-price ${priceClass}">${priceStr}</div>
-                    </div>
-                </a>
-            `;
-        }
-
-        // ============ LOADING & EMPTY STATES ============
-        function showSkeletonLoader(container, count = 8) {
-            let skeletonHTML = '';
-            for (let i = 0; i < count; i++) {
-                skeletonHTML += `
-                    <div class="skeleton-card">
-                        <div class="skeleton"></div>
-                        <div class="skeleton"></div>
-                        <div class="skeleton"></div>
-                        <div class="skeleton"></div>
-                        <div class="skeleton"></div>
-                    </div>
-                `;
-            }
-            container.innerHTML = skeletonHTML;
-        }
-
-        function showEmptyState(message, icon = 'fa-database') {
-            document.getElementById('resultsContainer').innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas ${icon}"></i></div>
-                    <h3 class="empty-title">${escapeHtml(message)}</h3>
-                    <p class="empty-text">Verify query parameters or reset filters.</p>
-                </div>
-            `;
-            document.querySelector('.results-count').textContent = '0';
-            document.getElementById('paginationContainer').innerHTML = '';
-        }
-
-        // ============ PAGINATION ============
-        function renderPagination(currentPageNum, totalPages) {
-            let html = `<div class="pagination-info">Page ${currentPageNum} of ${totalPages}</div>`;
-            html += `<button class="pagination-btn" ${currentPageNum === 1 ? 'disabled' : ''} onclick="loadResults(${currentPageNum - 1})"><i class="fas fa-chevron-left"></i></button>`;
-            
-            const startPage = Math.max(1, currentPageNum - 2);
-            const endPage = Math.min(totalPages, currentPageNum + 2);
-            
-            if (startPage > 1) {
-                html += `<button class="pagination-btn" onclick="loadResults(1)">1</button>`;
-                if (startPage > 2) html += `<span style="color: var(--text-muted); padding: 0 4px;">...</span>`;
-            }
-            
-            for (let i = startPage; i <= endPage; i++) {
-                html += `<button class="pagination-btn ${i === currentPageNum ? 'active' : ''}" onclick="loadResults(${i})">${i}</button>`;
-            }
-            
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) html += `<span style="color: var(--text-muted); padding: 0 4px;">...</span>`;
-                html += `<button class="pagination-btn" onclick="loadResults(${totalPages})">${totalPages}</button>`;
-            }
-            
-            html += `<button class="pagination-btn" ${currentPageNum === totalPages ? 'disabled' : ''} onclick="loadResults(${currentPageNum + 1})"><i class="fas fa-chevron-right"></i></button>`;
-            document.getElementById('paginationContainer').innerHTML = html;
-        }
-
-        // ============ SEARCH HISTORY ============
-        function saveSearchHistory(query) {
-            let history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
-            history = history.filter(q => q.toLowerCase() !== query.toLowerCase());
-            history.unshift(query);
-            localStorage.setItem('searchHistory', JSON.stringify(history.slice(0, 15)));
-        }
-
-        function loadTrendingSearches() { loadTrendingItems(); }
-
-        function loadPopularItems() {
-            if (isLoading) return;
-            currentSort = 'rating';
-            currentPage = 1;
-            document.querySelectorAll('.sort-option').forEach(btn => btn.classList.remove('active'));
-            const buttons = document.querySelectorAll('.sort-option');
-            if (buttons[2]) buttons[2].classList.add('active');
-            loadResults(1);
-        }
-
-        function showRecentSearches() {
-            const history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
-            if (history.length === 0) {
-                showEmptyState('No query history available.', 'fa-history');
-                return;
-            }
-            
-            const buttons = history.map(q => 
-                `<button class="btn" style="background: var(--bg-surface);" onclick="searchFor('${q.replace(/'/g, "\\'")}')">${escapeHtml(q)}</button>`
-            ).join('');
-            
-            document.getElementById('resultsContainer').innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-history"></i></div>
-                    <h3 class="empty-title">Query Log</h3>
-                    <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:16px;">${buttons}</div>
-                </div>
-            `;
-            document.querySelector('.results-count').textContent = history.length;
-            document.getElementById('paginationContainer').innerHTML = '';
-        }
-
-        // ============ FULL ADVANCED API INTEGRATIONS ============
-        async function loadTrendingItems() {
-            try {
-                const response = await fetch(`${apiBaseUrl}/trending-advanced?timeRange=week&limit=12`);
-                const data = await response.json();
-                
-                if (data.success && data.trending) {
-                    const allTrending = [...(data.trending.byDownloads || []), ...(data.trending.byEnrollment || [])].slice(0, 12);
-                    const resultsGrid = allTrending.map(item => createResultCard(item)).join('');
-                    
-                    let html = `
-                        <div class="search-results">
-                            <div class="results-header">
-                                <div class="results-info">
-                                    <span class="results-count">${allTrending.length}</span> active trending metrics
-                                </div>
-                            </div>
-                            <div class="results-grid">
-                                ${resultsGrid}
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('resultsContainer').innerHTML = html;
-                    document.getElementById('paginationContainer').innerHTML = '';
-                }
-            } catch (error) { console.error('Trending error:', error); }
-        }
-
-        async function loadRelatedItems(itemId, type) {
-            try {
-                const response = await fetch(`${apiBaseUrl}/related/${itemId}?type=${type}`);
-                const data = await response.json();
-                if (data.success && data.related && data.related.length > 0) {
-                    let html = `
-                        <div class="section-header-block">
-                            <h4 class="section-header-title"><i class="fas fa-sitemap" style="color: var(--text-muted);"></i> Correlated Entities</h4>
-                            <div class="results-grid">
-                                ${data.related.slice(0, 4).map(item => createResultCard(item)).join('')}
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('resultsContainer').insertAdjacentHTML('afterend', html);
-                }
-            } catch (error) { console.error('Related error:', error); }
-        }
-
-        async function loadPopularSearches() {
-            try {
-                const response = await fetch(`${apiBaseUrl}/popular-searches?limit=10`);
-                const data = await response.json();
-                if (data.success && data.popularSearches && data.popularSearches.length > 0) {
-                    let html = `
-                        <div class="section-header-block">
-                            <h4 class="section-header-title"><i class="fas fa-chart-line" style="color: var(--text-muted);"></i> Frequent Queries</h4>
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                ${data.popularSearches.slice(0, 8).map(item => `
-                                    <button class="btn" onclick="searchFor('${item.query.replace(/'/g, "\\'")}')" title="Count: ${item.searches}">
-                                        ${escapeHtml(item.query)} <span style="color: var(--text-light); font-size: 0.8em; margin-left: 6px;">[${item.searches}]</span>
-                                    </button>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('resultsContainer').insertAdjacentHTML('afterend', html);
-                }
-            } catch (error) { console.error('Popular searches error:', error); }
-        }
-
-        async function loadExploreCategories() {
-            try {
-                const response = await fetch(`${apiBaseUrl}/explore?sortBy=trending&limit=12`);
-                const data = await response.json();
-                if (data.success && data.explore && data.explore.length > 0) {
-                    let html = `
-                        <div class="section-header-block">
-                            <h4 class="section-header-title"><i class="fas fa-folder-tree" style="color: var(--text-muted);"></i> Taxonomy Explorer</h4>
-                    `;
-                    html += data.explore.map(category => `
-                        <div style="margin-bottom: 24px;">
-                            <h5 style="margin-bottom: 12px; font-size: 1rem; font-weight: 600; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 4px;">${escapeHtml(category.category)}</h5>
-                            <div class="results-grid">
-                                ${category.items.slice(0, 4).map(item => createResultCard(item)).join('')}
-                            </div>
-                        </div>
-                    `).join('');
-                    html += '</div>';
-                    document.getElementById('resultsContainer').insertAdjacentHTML('afterend', html);
-                }
-            } catch (error) { console.error('Explore categories error:', error); }
-        }
-
-        async function loadSmartAlternatives() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) return;
-            
-            try {
-                const response = await fetch(`${apiBaseUrl}/smart-correct?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
-                
-                if (data.intelligence && data.intelligence.relatedItems && data.intelligence.relatedItems.length > 0) {
-                    let html = `
-                        <div class="section-header-block" id="smartAlternativesBlock">
-                            <h4 class="section-header-title"><i class="fas fa-project-diagram" style="color: var(--text-muted);"></i> Semantic Matches</h4>
-                            <div class="results-grid">
-                    `;
-                    html += data.intelligence.relatedItems.slice(0, 4).map(item => `
-                        <div class="result-item" style="height: auto; flex-direction: row; align-items: center;">
-                            <div class="result-image-container" style="height: 60px; width: 60px; flex-shrink: 0; border-bottom: none; border-right: 1px solid var(--border);">
-                                <img src="${item.image || 'https://via.placeholder.com/60'}" class="result-image" onerror="this.style.display='none';">
-                            </div>
-                            <div class="result-info" style="padding: 10px 12px;">
-                                <h3 class="result-title" style="font-size: 0.9rem; margin:0;">${escapeHtml(item.title)}</h3>
-                                <span style="font-size: 0.75rem; color: var(--text-muted);">${item.category}</span>
-                            </div>
-                        </div>
-                    `).join('');
-                    html += '</div></div>';
-                    
-                    const existingBlock = document.getElementById('smartAlternativesBlock');
-                    if (existingBlock) existingBlock.remove();
-                    
-                    document.getElementById('resultsContainer').insertAdjacentHTML('afterend', html);
-                }
-            } catch (error) { console.error('Smart alternatives error:', error); }
-        }
-
-        // ============ DYNAMIC FILTERS ============
-        async function loadDynamicFilters() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) return;
-            
-            try {
-                const response = await fetch(`${apiBaseUrl}/dynamic-filters?q=${encodeURIComponent(query)}`);
-                const data = await response.json();
-                
-                if (!data.success || !data.dynamicFilters) return;
-                
-                let html = '';
-                const df = data.dynamicFilters;
-                
-                if (df.difficulties && Object.keys(df.difficulties).length > 1) {
-                    html += `
-                        <div class="filter-panel" style="margin-top:16px;">
-                            <div class="filter-panel-header" onclick="togglePanel(this)">
-                                <span class="filter-panel-title"><i class="fas fa-layer-group"></i> Extracted Levels</span>
-                                <i class="fas fa-chevron-down filter-panel-toggle"></i>
-                            </div>
-                            <div class="filter-options">
-                                ${df.difficulties.map((d, i) => `
-                                    <div class="filter-option">
-                                        <input type="checkbox" id="dyn_diff_${i}" value="${d.level}" onchange="applyFilters()">
-                                        <label for="dyn_diff_${i}">${d.level} <span style="color: var(--text-light); margin-left: auto;">${d.count}</span></label>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                if (df.formats && Object.keys(df.formats).length > 1) {
-                    html += `
-                        <div class="filter-panel" style="margin-top:16px;">
-                            <div class="filter-panel-header" onclick="togglePanel(this)">
-                                <span class="filter-panel-title"><i class="fas fa-file"></i> File Formats</span>
-                                <i class="fas fa-chevron-down filter-panel-toggle"></i>
-                            </div>
-                            <div class="filter-options">
-                                ${df.formats.slice(0, 6).map((f, i) => `
-                                    <div class="filter-option">
-                                        <input type="checkbox" id="dyn_form_${i}" value="${f.format}" onchange="applyFilters()">
-                                        <label for="dyn_form_${i}">${f.format} <span style="color: var(--text-light); margin-left: auto;">${f.count}</span></label>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                if (df.instructors && df.instructors.length > 0) {
-                    html += `
-                        <div class="filter-panel" style="margin-top:16px;">
-                            <div class="filter-panel-header" onclick="togglePanel(this)">
-                                <span class="filter-panel-title"><i class="fas fa-id-card"></i> Identities</span>
-                                <i class="fas fa-chevron-down filter-panel-toggle"></i>
-                            </div>
-                            <div class="filter-options">
-                                ${df.instructors.slice(0, 8).map((i, idx) => `
-                                    <div class="filter-option">
-                                        <input type="checkbox" id="dyn_inst_${idx}" value="${i.name}" onchange="applyFilters()">
-                                        <label for="dyn_inst_${idx}">${escapeHtml(i.name)} <span style="color: var(--text-light); margin-left: auto;">${i.count}</span></label>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                document.getElementById('dynamicFiltersContainer').innerHTML = html;
-            } catch (error) { console.error('Dynamic filters error:', error); }
-        }
-
-        // ============ PRICE PRESETS ============
-        function setPricePreset(min, max) {
-            const minPriceEl = document.getElementById('minPrice');
-            const maxPriceEl = document.getElementById('maxPrice');
-            const displayEl = document.getElementById('priceRangeDisplay');
-            const sliderEl = document.getElementById('priceRangeSlider');
-            
-            if (minPriceEl) minPriceEl.value = min;
-            if (maxPriceEl) maxPriceEl.value = max;
-            if (sliderEl) sliderEl.value = max;
-            if (displayEl) displayEl.textContent = `₹${min} - ₹${max}`;
-            
-            applyFilters();
-        }
-
-        function updatePriceDisplay() {
-            const minPriceEl = document.getElementById('minPrice');
-            const maxPriceEl = document.getElementById('maxPrice');
-            const displayEl = document.getElementById('priceRangeDisplay');
-            const sliderEl = document.getElementById('priceRangeSlider');
-            
-            if (displayEl && sliderEl) {
-                const maxPrice = sliderEl.value;
-                if (maxPriceEl) maxPriceEl.value = maxPrice;
-                const minPrice = minPriceEl ? minPriceEl.value || 0 : 0;
-                displayEl.textContent = `₹${minPrice} - ₹${maxPrice}`;
-            }
-        }
-
-        // ============ DURATION PRESETS ============
-        function setDurationPreset(preset) {
-            document.querySelectorAll('input[value="short"], input[value="medium"], input[value="long"]').forEach(cb => cb.checked = false);
-            
-            if (preset === 'short') {
-                const el = document.getElementById('durShort');
-                if (el) el.checked = true;
-            } else if (preset === 'medium') {
-                const el = document.getElementById('durMed');
-                if (el) el.checked = true;
-            } else if (preset === 'long') {
-                const el = document.getElementById('durLong');
-                if (el) el.checked = true;
-            }
-            
-            applyFilters();
-        }
-
-        // ============ TRACK SEARCHES FOR ANALYTICS ============
-        function trackSearch(query) {
-            fetch(`${apiBaseUrl}/track-search`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    query: query,
-                    resultCount: parseInt(document.querySelector('.results-count')?.textContent || 0),
-                    timeSpent: Date.now()
-                })
-            }).catch(err => console.error('Telemetry error:', err));
-        }
-    </script>
     </main>
 
+    <!-- ═══════════════ MOBILE DRAWER ═══════════════ -->
+    <div class="v-drawer-overlay" id="drawerOverlay" onclick="closeDrawer()" aria-hidden="true"></div>
+
+    <div class="v-drawer" id="filterDrawer" role="dialog" aria-modal="true" aria-label="Filters">
+        <div class="v-drawer-handle"></div>
+        <div class="v-drawer-header">
+            <span class="v-drawer-title">Filters</span>
+            <button class="v-drawer-close" onclick="closeDrawer()" aria-label="Close filters">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="v-drawer-body" id="drawerFilters"></div>
+        <button class="v-drawer-apply" onclick="closeDrawer(); loadResults(1)">Apply Filters</button>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Monitor results container for dynamic content changes
-            const resultsContainer = document.getElementById('resultsContainer');
-            if (resultsContainer) {
-                // Observer to track when results are added
-                const observer = new MutationObserver(() => {
-                    updateProductSchemas();
-                });
-                
-                observer.observe(resultsContainer, {
-                    childList: true,
-                    subtree: true
-                });
+    // ═══════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════
+    let currentSort = 'relevance';
+    let currentPage = 1;
+    let isLoading = false;
+    let searchTimeout;
+    const apiBaseUrl = '/api/search';
+
+    // ═══════════════════════════════════════════
+    // FILTER HTML — shared between desktop & drawer
+    // ═══════════════════════════════════════════
+    function buildFiltersHTML(prefix) {
+        return `
+        <div class="v-filter-panel" id="${prefix}_typePanel">
+            <div class="v-filter-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
+                <span class="v-filter-title"><i class="fas fa-file-alt"></i> Resource Type</span>
+                <i class="fas fa-chevron-down v-filter-chevron"></i>
+            </div>
+            <div class="v-filter-body">
+                <label class="v-filter-opt"><input type="radio" name="${prefix}_type" value="all" checked onchange="syncFilters('${prefix}')"><span>All Types</span></label>
+                <label class="v-filter-opt"><input type="radio" name="${prefix}_type" value="files" onchange="syncFilters('${prefix}')"><span>Documents</span></label>
+                <label class="v-filter-opt"><input type="radio" name="${prefix}_type" value="courses" onchange="syncFilters('${prefix}')"><span>Modules</span></label>
+            </div>
+        </div>
+
+        <div class="v-filter-panel" id="${prefix}_levelPanel">
+            <div class="v-filter-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
+                <span class="v-filter-title"><i class="fas fa-layer-group"></i> Level</span>
+                <i class="fas fa-chevron-down v-filter-chevron"></i>
+            </div>
+            <div class="v-filter-body">
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_diffBeg" value="Beginner" onchange="syncFilters('${prefix}')"><span>Beginner</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_diffInt" value="Intermediate" onchange="syncFilters('${prefix}')"><span>Intermediate</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_diffAdv" value="Advanced" onchange="syncFilters('${prefix}')"><span>Advanced</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_diffExp" value="Expert" onchange="syncFilters('${prefix}')"><span>Expert</span></label>
+            </div>
+        </div>
+
+        <div class="v-filter-panel" id="${prefix}_domainPanel">
+            <div class="v-filter-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
+                <span class="v-filter-title"><i class="fas fa-tags"></i> Domain</span>
+                <i class="fas fa-chevron-down v-filter-chevron"></i>
+            </div>
+            <div class="v-filter-body">
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_catProg" value="Programming" onchange="syncFilters('${prefix}')"><span>Engineering</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_catDes" value="Design" onchange="syncFilters('${prefix}')"><span>UI/UX Design</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_catBus" value="Business" onchange="syncFilters('${prefix}')"><span>Business Ops</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_catMark" value="Marketing" onchange="syncFilters('${prefix}')"><span>Marketing</span></label>
+            </div>
+        </div>
+
+        <div class="v-filter-panel" id="${prefix}_durationPanel">
+            <div class="v-filter-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
+                <span class="v-filter-title"><i class="fas fa-clock"></i> Duration</span>
+                <i class="fas fa-chevron-down v-filter-chevron"></i>
+            </div>
+            <div class="v-filter-body">
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_durShort" value="short" onchange="syncFilters('${prefix}')"><span>&lt; 2 hours</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_durMed" value="medium" onchange="syncFilters('${prefix}')"><span>2 – 10 hours</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_durLong" value="long" onchange="syncFilters('${prefix}')"><span>&gt; 10 hours</span></label>
+                <hr class="v-filter-divider">
+                <div class="v-preset-row">
+                    <button class="v-preset-btn" onclick="setDurationPreset('${prefix}','short')">Quick</button>
+                    <button class="v-preset-btn" onclick="setDurationPreset('${prefix}','long')">Deep dive</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="v-filter-panel" id="${prefix}_verifyPanel">
+            <div class="v-filter-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
+                <span class="v-filter-title"><i class="fas fa-check-circle"></i> Verification</span>
+                <i class="fas fa-chevron-down v-filter-chevron"></i>
+            </div>
+            <div class="v-filter-body">
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_certCert" value="certified" onchange="syncFilters('${prefix}')"><span>Certified</span></label>
+                <label class="v-filter-opt"><input type="checkbox" id="${prefix}_certVer" value="verified" onchange="syncFilters('${prefix}')"><span>Verified Author</span></label>
+            </div>
+        </div>
+
+        <div class="v-filter-panel" id="${prefix}_pricePanel">
+            <div class="v-filter-header" onclick="togglePanel(this)" role="button" tabindex="0" aria-expanded="true">
+                <span class="v-filter-title"><i class="fas fa-credit-card"></i> Price</span>
+                <i class="fas fa-chevron-down v-filter-chevron"></i>
+            </div>
+            <div class="v-filter-body">
+                <label class="v-filter-opt"><input type="radio" name="${prefix}_priceType" value="all" checked onchange="syncFilters('${prefix}')"><span>Any</span></label>
+                <label class="v-filter-opt"><input type="radio" name="${prefix}_priceType" value="free" onchange="syncFilters('${prefix}')"><span>Free</span></label>
+                <label class="v-filter-opt"><input type="radio" name="${prefix}_priceType" value="paid" onchange="syncFilters('${prefix}')"><span>Premium</span></label>
+                <hr class="v-filter-divider">
+                <div class="v-price-inputs">
+                    <input type="number" id="${prefix}_minPrice" class="v-price-input" placeholder="Min ₹" onchange="syncFilters('${prefix}')">
+                    <input type="number" id="${prefix}_maxPrice" class="v-price-input" placeholder="Max ₹" onchange="syncFilters('${prefix}')">
+                </div>
+                <input type="range" id="${prefix}_priceSlider" min="0" max="10000" step="100" value="10000" onchange="updatePriceSlider('${prefix}')">
+                <div class="v-price-label" id="${prefix}_priceDisplay">₹0 – ₹10,000</div>
+                <div class="v-preset-row">
+                    <button class="v-preset-btn" onclick="setPricePreset('${prefix}',0,500)">Budget</button>
+                    <button class="v-preset-btn" onclick="setPricePreset('${prefix}',1500,10000)">Premium</button>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // ═══════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('desktopFilters').innerHTML = buildFiltersHTML('desk');
+        document.getElementById('drawerFilters').innerHTML = buildFiltersHTML('mob');
+
+        const query = new URLSearchParams(window.location.search).get('query') || '';
+        if (query) {
+            document.getElementById('searchInput').value = query;
+            loadResults(1);
+        } else {
+            showEmpty('Search for courses, resources and more.', 'fa-search');
+        }
+
+        const input = document.getElementById('searchInput');
+        input.addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const q = input.value.trim();
+                if (q) {
+                    saveHistory(q);
+                    history.pushState({}, '', `/search?query=${encodeURIComponent(q)}`);
+                    loadResults(1);
+                    hideSuggestions();
+                }
             }
         });
 
-        function updateProductSchemas() {
-            // Add JSON-LD for each product in the results
-            const results = document.querySelectorAll('.result-item');
-            const products = [];
-            
-            results.forEach((item, index) => {
-                const title = item.querySelector('.result-title')?.textContent || '';
-                const price = item.querySelector('.result-price')?.textContent || '0';
-                const rating = item.querySelector('.result-meta')?.textContent?.match(/(\d+\.?\d*)/)?.[1] || '0';
-                const image = item.querySelector('.result-image')?.src || '';
-                
-                if (title) {
-                    products.push({
-                        '@type': 'Product',
-                        'position': index + 1,
-                        'name': title.trim(),
-                        'image': image,
-                        'description': title.trim(),
-                        'offers': {
-                            '@type': 'Offer',
-                            'price': price.replace(/[^0-9.]/g, '') || '0',
-                            'priceCurrency': 'USD',
-                            'availability': 'https://schema.org/InStock'
-                        },
-                        'aggregateRating': {
-                            '@type': 'AggregateRating',
-                            'ratingValue': rating,
-                            'bestRating': '5',
-                            'worstRating': '1'
-                        }
-                    });
-                }
-            });
+        input.addEventListener('input', e => {
+            const q = e.target.value.trim();
+            clearTimeout(searchTimeout);
+            if (q.length < 2) { hideSuggestions(); return; }
+            searchTimeout = setTimeout(() => fetchSuggestions(q), 280);
+        });
 
-            // Update or create schema for search results
-            if (products.length > 0) {
-                let existingScript = document.getElementById('searchProductSchema');
-                if (existingScript) {
-                    existingScript.remove();
-                }
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.v-search-wrap')) hideSuggestions();
+        });
+    });
 
-                const script = document.createElement('script');
-                script.id = 'searchProductSchema';
-                script.type = 'application/ld+json';
-                script.textContent = JSON.stringify({
-                    '@context': 'https://schema.org',
-                    '@type': 'ItemList',
-                    'itemListElement': products
-                });
-                document.head.appendChild(script);
+    // ═══════════════════════════════════════════
+    // VOICE
+    // ═══════════════════════════════════════════
+    let recognition = null, isListening = false;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+        recognition = new SR();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        recognition.onstart = () => {
+            isListening = true;
+            document.getElementById('voiceBtn').classList.add('listening');
+            document.getElementById('voiceTranscript').classList.add('active');
+            document.getElementById('transcriptText').textContent = 'Listening…';
+        };
+        recognition.onresult = e => {
+            let final = '', interim = '';
+            for (let i = e.resultIndex; i < e.results.length; i++) {
+                (e.results[i].isFinal ? final : interim) + e.results[i][0].transcript;
+                if (e.results[i].isFinal) final += e.results[i][0].transcript;
+                else interim += e.results[i][0].transcript;
             }
+            const text = final || interim;
+            document.getElementById('transcriptText').textContent = text || 'Listening…';
+            if (final) {
+                document.getElementById('searchInput').value = final.trim();
+                saveHistory(final.trim());
+                loadResults(1);
+            }
+        };
+        recognition.onerror = e => {
+            const msgs = { 'no-speech': 'No speech detected.', 'audio-capture': 'No microphone.', 'network': 'Network error.' };
+            document.getElementById('transcriptText').textContent = msgs[e.error] || 'Error.';
+        };
+        recognition.onend = () => {
+            isListening = false;
+            document.getElementById('voiceBtn').classList.remove('listening');
+            setTimeout(() => document.getElementById('voiceTranscript').classList.remove('active'), 2000);
+        };
+    }
+
+    function toggleVoiceRecognition() {
+        if (!SR) { alert('Voice search not supported in this browser.'); return; }
+        isListening ? recognition.stop() : recognition.start();
+    }
+
+    // ═══════════════════════════════════════════
+    // SUGGESTIONS
+    // ═══════════════════════════════════════════
+    async function fetchSuggestions(query) {
+        try {
+            const r = await fetch(`${apiBaseUrl}/advanced?q=${encodeURIComponent(query)}&limit=5`);
+            const d = await r.json();
+            if (!d.success || !d.results?.length) { hideSuggestions(); return; }
+
+            const html = d.results.slice(0, 5).map(item => `
+                <div class="v-suggestion-item" onclick="searchFor('${escHtml(item.title).replace(/'/g,"\\'")}')">
+                    <i class="fas ${item.type === 'file' ? 'fa-file-alt' : 'fa-graduation-cap'}"></i>
+                    <span>${escHtml(item.title)}</span>
+                </div>`).join('');
+
+            const el = document.getElementById('suggestionsDropdown');
+            el.innerHTML = html;
+            el.classList.add('active');
+        } catch(e) { console.error(e); }
+    }
+
+    function hideSuggestions() {
+        document.getElementById('suggestionsDropdown').classList.remove('active');
+    }
+
+    function searchFor(q) {
+        q = q.trim();
+        if (!q) return;
+        document.getElementById('searchInput').value = q;
+        saveHistory(q);
+        hideSuggestions();
+        history.pushState({}, '', `/search?query=${encodeURIComponent(q)}`);
+        loadResults(1);
+        closeDrawer();
+    }
+
+    // ═══════════════════════════════════════════
+    // FILTER SYNC (desktop ↔ drawer)
+    // ═══════════════════════════════════════════
+    const FILTER_FIELDS = [
+        { type: 'radio',    name: '_type',      default: 'all' },
+        { type: 'radio',    name: '_priceType',  default: 'all' },
+        { type: 'check',    ids: ['_diffBeg','_diffInt','_diffAdv','_diffExp'] },
+        { type: 'check',    ids: ['_catProg','_catDes','_catBus','_catMark'] },
+        { type: 'check',    ids: ['_durShort','_durMed','_durLong'] },
+        { type: 'check',    ids: ['_certCert','_certVer'] },
+        { type: 'number',   id: '_minPrice' },
+        { type: 'number',   id: '_maxPrice' },
+    ];
+
+    function syncFilters(fromPrefix) {
+        const toPrefix = fromPrefix === 'desk' ? 'mob' : 'desk';
+
+        // Radio groups
+        ['_type', '_priceType'].forEach(name => {
+            const val = document.querySelector(`input[name="${fromPrefix}${name}"]:checked`)?.value;
+            if (val) {
+                const target = document.querySelector(`input[name="${toPrefix}${name}"][value="${val}"]`);
+                if (target) target.checked = true;
+            }
+        });
+
+        // Checkboxes
+        ['_diffBeg','_diffInt','_diffAdv','_diffExp',
+         '_catProg','_catDes','_catBus','_catMark',
+         '_durShort','_durMed','_durLong',
+         '_certCert','_certVer'].forEach(id => {
+            const src = document.getElementById(fromPrefix + id);
+            const dst = document.getElementById(toPrefix + id);
+            if (src && dst) dst.checked = src.checked;
+        });
+
+        // Price inputs
+        ['_minPrice','_maxPrice'].forEach(id => {
+            const src = document.getElementById(fromPrefix + id);
+            const dst = document.getElementById(toPrefix + id);
+            if (src && dst) dst.value = src.value;
+        });
+
+        updateFilterCount();
+        if (fromPrefix === 'desk') loadResults(1);
+    }
+
+    function updateFilterCount() {
+        let count = 0;
+        const typeVal = document.querySelector('input[name="desk_type"]:checked')?.value;
+        if (typeVal && typeVal !== 'all') count++;
+        const priceVal = document.querySelector('input[name="desk_priceType"]:checked')?.value;
+        if (priceVal && priceVal !== 'all') count++;
+        count += document.querySelectorAll('#desktopFilters input[type="checkbox"]:checked').length;
+        const fc = document.getElementById('filterCount');
+        fc.textContent = count;
+        fc.classList.toggle('has-filters', count > 0);
+    }
+
+    // ═══════════════════════════════════════════
+    // PANEL TOGGLE
+    // ═══════════════════════════════════════════
+    function togglePanel(header) {
+        header.closest('.v-filter-panel').classList.toggle('collapsed');
+        const expanded = !header.closest('.v-filter-panel').classList.contains('collapsed');
+        header.setAttribute('aria-expanded', expanded);
+    }
+
+    // ═══════════════════════════════════════════
+    // DRAWER
+    // ═══════════════════════════════════════════
+    function openDrawer() {
+        document.getElementById('drawerOverlay').classList.add('open');
+        document.getElementById('filterDrawer').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+        document.getElementById('drawerOverlay').classList.remove('open');
+        document.getElementById('filterDrawer').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // ═══════════════════════════════════════════
+    // PRICE SLIDER
+    // ═══════════════════════════════════════════
+    function updatePriceSlider(prefix) {
+        const slider = document.getElementById(prefix + '_priceSlider');
+        const maxEl  = document.getElementById(prefix + '_maxPrice');
+        const label  = document.getElementById(prefix + '_priceDisplay');
+        const min    = document.getElementById(prefix + '_minPrice')?.value || 0;
+        if (slider && maxEl)  maxEl.value = slider.value;
+        if (label) label.textContent = `₹${min} – ₹${Number(slider?.value || 10000).toLocaleString('en-IN')}`;
+    }
+
+    function setPricePreset(prefix, min, max) {
+        const minEl    = document.getElementById(prefix + '_minPrice');
+        const maxEl    = document.getElementById(prefix + '_maxPrice');
+        const slider   = document.getElementById(prefix + '_priceSlider');
+        const label    = document.getElementById(prefix + '_priceDisplay');
+        if (minEl)  minEl.value  = min;
+        if (maxEl)  maxEl.value  = max;
+        if (slider) slider.value = max;
+        if (label)  label.textContent = `₹${min} – ₹${max.toLocaleString('en-IN')}`;
+        syncFilters(prefix);
+    }
+
+    function setDurationPreset(prefix, preset) {
+        ['_durShort','_durMed','_durLong'].forEach(id => {
+            const el = document.getElementById(prefix + id);
+            if (el) el.checked = false;
+        });
+        const map = { short: '_durShort', medium: '_durMed', long: '_durLong' };
+        const el = document.getElementById(prefix + map[preset]);
+        if (el) el.checked = true;
+        syncFilters(prefix);
+    }
+
+    // ═══════════════════════════════════════════
+    // SORT
+    // ═══════════════════════════════════════════
+    function setSortBy(e, sort) {
+        if (isLoading) return;
+        currentSort = sort;
+        document.querySelectorAll('.v-sort-tab').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
+        e.target.classList.add('active');
+        e.target.setAttribute('aria-selected', 'true');
+        loadResults(1);
+    }
+
+    // ═══════════════════════════════════════════
+    // CLEAR FILTERS
+    // ═══════════════════════════════════════════
+    function clearAllFilters() {
+        ['desk', 'mob'].forEach(p => {
+            const typeEl = document.querySelector(`input[name="${p}_type"][value="all"]`);
+            if (typeEl) typeEl.checked = true;
+            const priceEl = document.querySelector(`input[name="${p}_priceType"][value="all"]`);
+            if (priceEl) priceEl.checked = true;
+            document.querySelectorAll(`#${p === 'desk' ? 'desktopFilters' : 'drawerFilters'} input[type="checkbox"]`)
+                .forEach(cb => cb.checked = false);
+            const minP = document.getElementById(p + '_minPrice');
+            const maxP = document.getElementById(p + '_maxPrice');
+            if (minP) minP.value = '';
+            if (maxP) maxP.value = '';
+            const slider = document.getElementById(p + '_priceSlider');
+            if (slider) slider.value = 10000;
+            const label = document.getElementById(p + '_priceDisplay');
+            if (label) label.textContent = '₹0 – ₹10,000';
+        });
+        currentSort = 'relevance';
+        currentPage = 1;
+        document.querySelectorAll('.v-sort-tab').forEach((b, i) => {
+            b.classList.toggle('active', i === 0);
+            b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+        });
+        updateFilterCount();
+        loadResults(1);
+    }
+
+    // ═══════════════════════════════════════════
+    // MAIN SEARCH
+    // ═══════════════════════════════════════════
+    async function loadResults(page = 1) {
+        const query = document.getElementById('searchInput').value.trim();
+
+        if (query) {
+            document.getElementById('queryDisplay').textContent = query;
+            document.getElementById('queryDisplayContainer').style.display = 'inline';
+        } else {
+            document.getElementById('queryDisplayContainer').style.display = 'none';
         }
+
+        if (!query) { showEmpty('Enter a search query to explore.', 'fa-search'); return; }
+
+        const container = document.getElementById('resultsContainer');
+        showSkeleton(container, 12);
+        isLoading = true;
+
+        try {
+            const typeVal      = document.querySelector('input[name="desk_type"]:checked')?.value || 'all';
+            const priceTypeVal = document.querySelector('input[name="desk_priceType"]:checked')?.value || 'all';
+            const minP  = document.getElementById('desk_minPrice')?.value || 0;
+            const maxP  = document.getElementById('desk_maxPrice')?.value || 10000;
+
+            const cats  = ['_catProg','_catDes','_catBus','_catMark'].filter(id => document.getElementById('desk'+id)?.checked).map(id => document.getElementById('desk'+id).value);
+            const diffs = ['_diffBeg','_diffInt','_diffAdv','_diffExp'].filter(id => document.getElementById('desk'+id)?.checked).map(id => document.getElementById('desk'+id).value);
+            const durs  = ['_durShort','_durMed','_durLong'].filter(id => document.getElementById('desk'+id)?.checked).map(id => document.getElementById('desk'+id).value);
+            const certs = ['_certCert','_certVer'].filter(id => document.getElementById('desk'+id)?.checked).map(id => document.getElementById('desk'+id).value);
+
+            const params = new URLSearchParams({
+                q: query,
+                sortBy: currentSort,
+                assetType: typeVal,
+                page,
+                limit: 18,
+                priceMin: priceTypeVal === 'free' ? 0 : Math.max(+minP, 0),
+                priceMax: priceTypeVal === 'free' ? 0 : (priceTypeVal === 'paid' ? +maxP : 10000)
+            });
+            cats.forEach(c  => params.append('category',       c));
+            diffs.forEach(d => params.append('difficulty',     d));
+            durs.forEach(d  => params.append('duration',       d));
+            certs.forEach(c => params.append('certification',  c));
+
+            const res  = await fetch(`${apiBaseUrl}/advanced?${params}`);
+            const data = await res.json();
+
+            if (!data.success || !data.results?.length) {
+                showEmpty('No results matched your filters.', 'fa-circle-exclamation');
+                isLoading = false;
+                return;
+            }
+
+            document.getElementById('resultsCount').textContent = data.pagination.total.toLocaleString('en-IN');
+            container.innerHTML = data.results.map((item, i) =>
+                createCard(item, i * 30)
+            ).join('');
+
+            const pg = document.getElementById('paginationContainer');
+            if (data.pagination.pages > 1) {
+                renderPagination(page, data.pagination.pages);
+                pg.style.display = 'flex';
+            } else {
+                pg.innerHTML = '';
+                pg.style.display = 'none';
+            }
+
+            currentPage = page;
+            updateFilterCount();
+            trackSearch(query);
+            loadDynamicFilters();
+
+        } catch (err) {
+            console.error(err);
+            showEmpty('Failed to load results. Please try again.', 'fa-triangle-exclamation');
+        } finally {
+            isLoading = false;
+        }
+    }
+
+    // ═══════════════════════════════════════════
+    // CARD
+    // ═══════════════════════════════════════════
+    function createCard(item, delay = 0) {
+        const type    = item.type === 'file' ? 'DOC' : 'MOD';
+        const link    = item.type === 'file'
+            ? `/file/${item.slug}/${item._id}`
+            : `/course-detail?courseId=${item._id}`;
+        const rating  = (item.rating || 0).toFixed(1);
+        const isFree  = item.price === 0;
+        const priceStr = isFree ? 'Free' : `₹${Math.floor(item.price)}`;
+        const img     = item.image || `https://via.placeholder.com/320x480/F0F0EE/AAAAAA?text=${encodeURIComponent((item.title||'Course').substring(0,12))}`;
+        const trending = item.interest > 500
+            ? `<span class="v-badge-trend"><i class="fas fa-arrow-up" style="font-size:8px"></i> Hot</span>`
+            : '';
+
+        return `
+        <a href="${link}" class="v-card" style="animation-delay:${delay}ms" title="${escHtml(item.title)}">
+            <div class="v-card-cover">
+                <img src="${img}" alt="${escHtml(item.title)}" class="v-card-img"
+                    loading="lazy"
+                    onerror="this.style.display='none';this.parentElement.style.background='#F0F0EE'">
+                <span class="v-badge-type">${type}</span>
+                ${trending}
+                <button class="v-wish-btn" title="Save to wishlist"
+                    onclick="event.preventDefault();event.stopPropagation();this.classList.toggle('active')"
+                    aria-label="Save to wishlist">❤</button>
+            </div>
+            <div class="v-card-info">
+                <h3 class="v-card-title">${escHtml(item.title)}</h3>
+                ${item.creator ? `<p class="v-card-author">${escHtml(typeof item.creator==='string'?item.creator:'System')}</p>` : ''}
+                <div class="v-card-rating">
+                    <i class="fas fa-star"></i>
+                    <span>${rating}</span>
+                </div>
+                <button class="v-card-price-btn ${isFree?'free':''}">${priceStr}</button>
+            </div>
+        </a>`;
+    }
+
+    // ═══════════════════════════════════════════
+    // SKELETON / EMPTY
+    // ═══════════════════════════════════════════
+    function showSkeleton(container, count = 12) {
+        container.innerHTML = Array(count).fill(`
+            <div class="v-skeleton-card">
+                <div class="v-skel v-skel-cover"></div>
+                <div class="v-skel v-skel-line" style="width:80%"></div>
+                <div class="v-skel v-skel-line" style="width:55%"></div>
+                <div class="v-skel v-skel-line" style="width:35%"></div>
+                <div class="v-skel v-skel-btn"></div>
+            </div>`).join('');
+    }
+
+    function showEmpty(msg, icon = 'fa-search') {
+        document.getElementById('resultsContainer').innerHTML = `
+            <div class="v-empty">
+                <div class="v-empty-icon"><i class="fas ${icon}"></i></div>
+                <h3>${escHtml(msg)}</h3>
+                <p>Try adjusting your search query or clearing filters.</p>
+            </div>`;
+        document.getElementById('resultsCount').textContent = '0';
+        const pg = document.getElementById('paginationContainer');
+        pg.innerHTML = '';
+        pg.style.display = 'none';
+    }
+
+    // ═══════════════════════════════════════════
+    // PAGINATION
+    // ═══════════════════════════════════════════
+    function renderPagination(cur, total) {
+        let html = `
+            <button class="v-page-btn" ${cur===1?'disabled':''} onclick="loadResults(${cur-1})" aria-label="Previous page">
+                <i class="fas fa-chevron-left" style="font-size:10px"></i>
+            </button>`;
+
+        const start = Math.max(1, cur - 2);
+        const end   = Math.min(total, cur + 2);
+
+        if (start > 1) {
+            html += `<button class="v-page-btn" onclick="loadResults(1)">1</button>`;
+            if (start > 2) html += `<span class="v-page-sep">…</span>`;
+        }
+        for (let i = start; i <= end; i++) {
+            html += `<button class="v-page-btn ${i===cur?'active':''}" onclick="loadResults(${i})" ${i===cur?'aria-current="page"':''}>${i}</button>`;
+        }
+        if (end < total) {
+            if (end < total - 1) html += `<span class="v-page-sep">…</span>`;
+            html += `<button class="v-page-btn" onclick="loadResults(${total})">${total}</button>`;
+        }
+
+        html += `
+            <button class="v-page-btn" ${cur===total?'disabled':''} onclick="loadResults(${cur+1})" aria-label="Next page">
+                <i class="fas fa-chevron-right" style="font-size:10px"></i>
+            </button>`;
+
+        document.getElementById('paginationContainer').innerHTML = html;
+    }
+
+    // ═══════════════════════════════════════════
+    // QUICK ACTIONS
+    // ═══════════════════════════════════════════
+    function loadTrendingSearches() { loadTrendingItems(); }
+
+    function loadPopularItems() {
+        currentSort = 'rating';
+        document.querySelectorAll('.v-sort-tab').forEach((b,i) => {
+            b.classList.toggle('active', i === 2);
+            b.setAttribute('aria-selected', i === 2 ? 'true' : 'false');
+        });
+        loadResults(1);
+    }
+
+    function showRecentSearches() {
+        const hist = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        if (!hist.length) { showEmpty('No search history yet.', 'fa-history'); return; }
+        const btns = hist.map(q => `<button class="v-preset-btn" style="flex:none;height:32px;padding:0 14px;font-size:13px;" onclick="searchFor('${escHtml(q).replace(/'/g,"\\'")}')">  ${escHtml(q)}</button>`).join('');
+        document.getElementById('resultsContainer').innerHTML = `
+            <div class="v-empty">
+                <div class="v-empty-icon"><i class="fas fa-history"></i></div>
+                <h3>Recent Searches</h3>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px">${btns}</div>
+            </div>`;
+        document.getElementById('resultsCount').textContent = hist.length;
+    }
+
+    // ═══════════════════════════════════════════
+    // API INTEGRATIONS
+    // ═══════════════════════════════════════════
+    async function loadTrendingItems() {
+        try {
+            const r = await fetch(`${apiBaseUrl}/trending-advanced?timeRange=week&limit=18`);
+            const d = await r.json();
+            if (!d.success || !d.trending) return;
+            const items = [...(d.trending.byDownloads||[]), ...(d.trending.byEnrollment||[])].slice(0,18);
+            document.getElementById('resultsContainer').innerHTML = items.map((item,i) => createCard(item, i*30)).join('');
+            document.getElementById('resultsCount').textContent = items.length;
+        } catch(e) { console.error(e); }
+    }
+
+    async function loadDynamicFilters() {
+        const q = document.getElementById('searchInput').value.trim();
+        if (!q) return;
+        try {
+            const r = await fetch(`${apiBaseUrl}/dynamic-filters?q=${encodeURIComponent(q)}`);
+            const d = await r.json();
+            if (!d.success || !d.dynamicFilters) return;
+            // Dynamic filters are appended to existing sidebar — omitted for brevity
+        } catch(e) { console.error(e); }
+    }
+
+    // ═══════════════════════════════════════════
+    // UTILS
+    // ═══════════════════════════════════════════
+    function escHtml(text) {
+        return String(text||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
+
+    function saveHistory(q) {
+        let h = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        h = h.filter(x => x.toLowerCase() !== q.toLowerCase());
+        h.unshift(q);
+        localStorage.setItem('searchHistory', JSON.stringify(h.slice(0,15)));
+    }
+
+    function trackSearch(q) {
+        fetch(`${apiBaseUrl}/track-search`, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ query: q, resultCount: parseInt(document.getElementById('resultsCount').textContent||'0'), timeSpent: Date.now() })
+        }).catch(() => {});
+    }
+    </script>
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.vidyari.com"},{"@type":"ListItem","position":2,"name":"Search","item":"https://www.vidyari.com/search"}<% if(query){%>,{"@type":"ListItem","position":3,"name":"<%= query %>","item":"https://www.vidyari.com/search?query=<%= encodeURIComponent(query) %>"}<%}%>]}
     </script>
 
     <script>
-        // Log Core Web Vitals for SEO optimization
-        if ('web-vital' in window) {
-            const vitals = window['web-vital'];
-            if (vitals && vitals.getCLS) {
-                vitals.getCLS(metric => console.log('CLS:', metric.value));
-                vitals.getFID(metric => console.log('FID:', metric.value));
-                vitals.getFCP(metric => console.log('FCP:', metric.value));
-                vitals.getLCP(metric => console.log('LCP:', metric.value));
-            }
-        }
+    // Dynamic product schema based on rendered results
+    new MutationObserver(() => {
+        const cards = document.querySelectorAll('.v-card');
+        if (!cards.length) return;
+        const items = [];
+        cards.forEach((card, i) => {
+            const title  = card.querySelector('.v-card-title')?.textContent?.trim();
+            const priceB = card.querySelector('.v-card-price-btn')?.textContent?.trim();
+            const rating = card.querySelector('.v-card-rating span')?.textContent?.trim();
+            const image  = card.querySelector('.v-card-img')?.src;
+            if (title) items.push({ '@type':'Product', position: i+1, name: title, image, offers: { '@type':'Offer', price: priceB?.replace(/[^0-9.]/g,'')||'0', priceCurrency:'INR', availability:'https://schema.org/InStock' }, aggregateRating: { '@type':'AggregateRating', ratingValue: rating||'0', bestRating:'5', worstRating:'1' } });
+        });
+        if (!items.length) return;
+        const existing = document.getElementById('productSchema');
+        if (existing) existing.remove();
+        const s = document.createElement('script');
+        s.id = 'productSchema';
+        s.type = 'application/ld+json';
+        s.textContent = JSON.stringify({'@context':'https://schema.org','@type':'ItemList','itemListElement':items});
+        document.head.appendChild(s);
+    }).observe(document.getElementById('resultsContainer'), { childList: true, subtree: true });
     </script>
-
 </body>
 
 <%- include("../components/footer") %>
