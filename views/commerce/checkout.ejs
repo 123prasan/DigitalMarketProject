@@ -384,8 +384,8 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     const fileId = "<%=file._id%>";
-    const originalPrice = <%=priceDetails.originalPrice%>; 
-    const fees = <%=priceDetails.serviceFee + priceDetails.gstTax%>;
+    const originalPrice = <%=priceDetails.originalPrice%>
+    const fees = <%=priceDetails.serviceFee + priceDetails.gstTax%>
 
     const couponInput = document.getElementById('coupon-code');
     const applyBtn = document.getElementById('apply-coupon-btn');
@@ -481,6 +481,7 @@
                 if (!res.ok || !order.success || order.error) {
                     payButton.innerHTML = originalContent;
                     payButton.disabled = false;
+                    console.error('Order creation failed:', order);
                     showToast(order.error || "Failed to create order", "error");
                     return;
                 }
@@ -489,7 +490,6 @@
                     key: order.key,
                     amount: order.amount,
                     name: "Vidyari",
-                    image:"http://www.vidyari.com/images/logo.svg",
                     description: "<%= file.filename %>",
                     order_id: order.order_id,
                     theme: { color: "#0b57d0" }, // Gemini Blue Theme
@@ -535,7 +535,21 @@
                         } 
                     }
                 };
-                new Razorpay(options).open();
+                console.log('Razorpay options:', options);
+                console.log('Razorpay available:', typeof Razorpay);
+                
+                try {
+                    const rzp = new Razorpay(options);
+                    console.log('Razorpay instance created successfully');
+                    rzp.open();
+                    console.log('Razorpay modal opened');
+                } catch (rzpError) {
+                    console.error('Razorpay initialization error:', rzpError);
+                    showToast('Payment initialization failed: ' + rzpError.message, 'error');
+                    payButton.disabled = false;
+                    payButton.innerHTML = originalContent;
+                    return;
+                }
             } catch (err) { 
                 console.error('Payment error:', err);
                 payButton.disabled = false; 

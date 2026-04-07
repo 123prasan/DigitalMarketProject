@@ -1801,7 +1801,7 @@ function setCTAState(btn, state, html) {
    PAYMENT FLOW — Enhanced states
 ══════════════════════════════════════════ */
 async function initiatePayment(btn) {
-    if(typeof Razorpay === 'undefined') { showToast('Payment loading, please wait.', 'error'); return; }
+    if(typeof Razorpay === 'undefined') { showToast('Payment system not loaded. Please refresh the page.', 'error'); return; }
 
     setCTAState(btn, 'loading', '<i class="fa-solid fa-spinner fa-spin"></i>&nbsp; Creating order…');
     window.ActivityTracker_Instance?.trackCartInteraction('checkout_start', { fileId:FILE_ID, fileName:FILE_NAME, amount:activeTotal });
