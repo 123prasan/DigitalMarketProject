@@ -82,6 +82,7 @@
             line-height: 1.6;
             margin: 0;
             padding: 0;
+            padding-top: 92px;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
@@ -116,20 +117,22 @@
         /* HEADER STYLES                                             */
         /* ========================================================= */
         .site-header {
-            background-color: var(--bg-surface);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background-color: var(--bg-surface);
             z-index: 1020;
-            padding: 16px 32px; 
-            transition: all var(--transition-smooth); 
+            padding: 16px 32px;
             border-bottom: 1px solid var(--border);
+            transition: box-shadow var(--transition-smooth), background-color var(--transition-smooth);
         }
         
         .site-header.scrolled {
             box-shadow: var(--shadow-solid);
-            padding: 12px 32px; 
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
         }
         
         /* Logo */
