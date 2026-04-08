@@ -10,7 +10,7 @@ module.exports= async function passReset(email,subject,username,resetLink){
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:20px;border:1px solid #e0e0e0;border-radius:8px;">
         <div style="text-align:center; margin-bottom: 20px;">
           <!-- Your logo will appear here -->
-          <img src="cid:vidyari_logo" alt="Vidyari Logo" style="max-width:150px; height:auto; display:block; margin: 0 auto;">
+          <img src="https://www.vidyari.com/images/logo.svg" alt="Vidyari Logo" style="max-width:150px; height:auto; display:block; margin: 0 auto;">
         </div>
         <h2 style="color:#333;text-align:center;">Reset Your Password</h2>
         <p>Hello,${username}</p>
