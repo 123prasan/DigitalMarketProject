@@ -2659,18 +2659,13 @@ app.get("/", authenticateJWT_user, async (req, res) => {
     const files = await File.find().sort({ downloadCount: -1 }).limit(5);
     const filesWithPreviews = await Promise.all(
       files.map(async (file) => {
-        const { data: previewData } = await supabase.storage
-          .from("files")
-          .createSignedUrl(`previews/${file._id}.jpg`, 60 * 5);
-
-        const { data: pdfData } = await supabase.storage
-          .from("files")
-          .createSignedUrl(file.fileUrl, 60 * 5);
+        const previewUrl = await getValidFileUrl(file);
+        const pdfUrl = `${CF_DOMAIN}/${file.fileUrl}`;
 
         return {
           ...file.toObject(),
-          previewUrl: previewData?.signedUrl || null,
-          pdfUrl: pdfData?.signedUrl || null,
+          previewUrl,
+          pdfUrl,
         };
       })
     );

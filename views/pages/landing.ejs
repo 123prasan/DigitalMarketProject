@@ -368,7 +368,10 @@
                 <div class="grid-container grid-3">
                      <% popularFiles.forEach((file, index) => { %>
                      <div class="glass-card product-card" data-animation="fade-in" style="transition-delay: <%= index * 100 %>ms;">
-                         <img class="product-thumbnail" src="<%=file.previewUrl%>" alt="<%= file.filename %> preview image" loading="lazy">
+                         <% 
+                         const img = file.previewUrl && file.previewUrl.trim() !== '' ? file.previewUrl : '/images/File_Demo.svg';
+                         %>
+                         <img class="product-thumbnail" src="<%= img %>" alt="<%= file.filename %> preview image" loading="lazy" onerror="this.src='/images/File_Demo.svg'">
                          <h4 class="product-title"><%= file.filename %></h4>
                          <div class="product-meta">
                              <img src="/images/logo.svg" class="creator-avatar" alt="<%=file.user%> Avatar" loading="lazy">
