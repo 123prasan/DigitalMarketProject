@@ -16,7 +16,7 @@ class ClientFileValidator {
       ALLOWED_MIME_TYPES: {
         image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
         file: ['application/pdf', 'application/zip', 'application/x-rar-compressed', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'video/mp4', 'video/webm'],
-      },ss
+      },
       DANGEROUS_EXTENSIONS: [
         'exe', 'bat', 'cmd', 'sh', 'ps1', 'vbs', 'js', 'jar', 'app', 'com',
         'scr', 'pif', 'msi', 'dll', 'sys', 'drv', 'tmp', 'chm', 'hlp'

@@ -11,9 +11,12 @@ const {
     AbortMultipartUploadCommand
 } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { getSignedUrl: getCloudFrontSignedUrl } = require('@aws-sdk/cloudfront-signer');
+const { PDFDocument } = require('pdf-lib');
 const cors = require('cors');
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
 const File = require("./models/file");
 const fileSecurityValidator = require('./services/fileSecurityValidator');
@@ -30,6 +33,43 @@ const IMAGE_BUCKET = process.env.S3_IMAGE_BUCKET || 'vidyari3';
 const MAIN_FILE_BUCKET = process.env.S3_MAIN_FILE_BUCKET || 'vidyarimain2';
 const REGION = process.env.AWS_REGION || 'ap-south-1';
 const URL_EXPIRATION_SECONDS = 21600;
+const CF_DOMAIN_DOWNLOADS = process.env.CF_DOMAIN_DOWNLOADS || 'd2q25uqlym20sh.cloudfront.net';
+const CLOUDFRONT_DOWNLOAD_KEY_PAIR_ID = process.env.CLOUDFRONT_KEY_PAIR_ID || process.env.CLOUDFRONT_KEYPAIR_ID;
+const CLOUDFRONT_PRIVATE_KEY_PATH = path.join(__dirname, 'private_keys', 'cloudfront-private-key.pem');
+let CLOUDFRONT_PRIVATE_KEY = null;
+try {
+    CLOUDFRONT_PRIVATE_KEY = fs.readFileSync(CLOUDFRONT_PRIVATE_KEY_PATH, 'utf8');
+} catch (err) {
+    console.warn('CloudFront private key not found at', CLOUDFRONT_PRIVATE_KEY_PATH);
+}
+
+function buildCloudFrontSignedUrl(fileKey, ttlSeconds = 3600) {
+    if (!fileKey) {
+        throw new Error('Missing CloudFront file key');
+    }
+    if (!CLOUDFRONT_DOWNLOAD_KEY_PAIR_ID || !CLOUDFRONT_PRIVATE_KEY) {
+        throw new Error('CloudFront signing configuration is missing');
+    }
+
+    const cleanedDomain = String(CF_DOMAIN_DOWNLOADS).replace(/^https?:\/\//, '').replace(/\/+$/, '');
+    let cleanKey = String(fileKey).trim();
+    try {
+        const parsed = new URL(cleanKey);
+        cleanKey = parsed.pathname.replace(/^\/+/, '');
+    } catch (e) {
+        cleanKey = cleanKey.replace(/^\/+/, '');
+    }
+
+    const encodedKey = encodeURIComponent(cleanKey).replace(/%2F/g, '/');
+    const unsignedUrl = `https://${cleanedDomain}/${encodedKey}`;
+
+    return getCloudFrontSignedUrl({
+        url: unsignedUrl,
+        keyPairId: CLOUDFRONT_DOWNLOAD_KEY_PAIR_ID,
+        privateKey: CLOUDFRONT_PRIVATE_KEY,
+        dateLessThan: new Date(Date.now() + ttlSeconds * 1000),
+    });
+}
 
 // --- S3 Client ---
 const s3Client = new S3Client({
@@ -69,9 +109,18 @@ const getS3Params = (fileType, originalFileName, fileId) => {
             key: `main-files/${generatedFileName}`,
             generatedFileName: generatedFileName // Return just the filename part
         };
-    } 
+    }
     
-    throw new Error('Invalid fileType specified. Must be "image" or "main".');
+    if (fileType === 'sample') {
+        const generatedFileName = `sample-${fileId}-${Date.now()}${fileExtension}`;
+        return {
+            bucket: MAIN_FILE_BUCKET,
+            key: `sample-files/${generatedFileName}`,
+            generatedFileName: generatedFileName
+        };
+    }
+    
+    throw new Error('Invalid fileType specified. Must be "image", "main", or "sample".');
 };
 
 
@@ -185,7 +234,8 @@ router.post('/complete-multipart-upload', authenticateJWT_user, async (req, res)
     // Final size validation
     const MAX_IMAGE_SIZE = 50 * 1024 * 1024; // 50 MB
     const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500 MB
-    const maxSize = fileType === 'image' ? MAX_IMAGE_SIZE : MAX_FILE_SIZE;
+    const MAX_SAMPLE_SIZE = 100 * 1024 * 1024; // 100 MB
+    const maxSize = fileType === 'image' ? MAX_IMAGE_SIZE : fileType === 'sample' ? MAX_SAMPLE_SIZE : MAX_FILE_SIZE;
     
     if (fileSize > maxSize) {
         console.error(`❌ BLOCKED: File exceeds size limit`);
@@ -222,11 +272,16 @@ router.post('/complete-multipart-upload', authenticateJWT_user, async (req, res)
             const ext = path.extname(generatedFileName).slice(1).toLowerCase();
             // normalise jpeg/jpg etc
             updatePayload.imageType = ext === "jpeg" ? "jpeg" : ext === "jpg" ? "jpg" : ext;
-        } else { // 'main' file
+        } else if (fileType === 'main') {
             // For the main file, save ONLY the generated name to fileUrl
             updatePayload.fileUrl = generatedFileName; // e.g., "my-doc-175...-d7f3.pdf"
             updatePayload.storedFilename = key; // e.g., "main-files/my-doc-175...-d7f3.pdf"
             updatePayload.fileSize = fileSize;
+        } else if (fileType === 'sample') {
+            // For sample PDF, save the generated name and store path
+            updatePayload.samplePdfUrl = generatedFileName;
+            updatePayload.samplePdfStoredFilename = key; // e.g., "sample-files/sample-abc123-1234567890.pdf"
+            updatePayload.samplePdfSize = fileSize;
         }
 
         const updatedFile = await File.findByIdAndUpdate(fileId, updatePayload, { new: true });
@@ -390,6 +445,108 @@ router.post('/api/cleanup-failed-upload', authenticateJWT_user, async (req, res)
   } catch (error) {
     console.error('Cleanup error:', error);
     res.status(500).json({ error: 'Could not cleanup failed upload' });
+  }
+});
+
+// --- Extract PDF Pages from Local File (before upload) ---
+router.post('/extract-pdf-pages', authenticateJWT_user, async (req, res) => {
+  try {
+    // This endpoint expects the PDF file to be sent as base64 in the request body
+    const { pdfBase64 } = req.body;
+    
+    if (!pdfBase64) {
+      return res.status(400).json({ error: 'PDF file data is required' });
+    }
+
+    // Convert base64 to buffer
+    const pdfBuffer = Buffer.from(pdfBase64, 'base64');
+
+    // Load PDF document
+    const pdfDoc = await PDFDocument.load(pdfBuffer);
+    const pageCount = pdfDoc.getPageCount();
+
+    const pages = [];
+    for (let i = 0; i < pageCount && i < 20; i++) { // Limit to first 20 pages for performance
+      const page = pdfDoc.getPage(i);
+      const { width, height } = page.getSize();
+      
+      pages.push({
+        pageNumber: i + 1,
+        width: Math.round(width),
+        height: Math.round(height)
+      });
+    }
+
+    res.json({ pages, totalPages: pageCount });
+
+  } catch (error) {
+    console.error('Error extracting PDF pages:', error);
+    res.status(500).json({ error: 'Failed to extract PDF pages' });
+  }
+});
+
+// --- Sample Download Route ---
+router.get('/sample-download/:fileId', authenticateJWT_user, async (req, res) => {
+  try {
+    const { fileId } = req.params;
+
+    const file = await File.findById(fileId);
+    if (!file) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    // Check if file has a sample PDF
+    if (!file.samplePdfUrl && !file.samplePdfStoredFilename) {
+      return res.status(404).json({ error: 'Sample PDF not available for this file' });
+    }
+
+    // Check if file is paid (price > 0)
+    if (file.price <= 0) {
+      return res.status(400).json({ error: 'Sample download is only available for paid files' });
+    }
+
+    // Get signed CloudFront URL for sample PDF
+    const sampleKey = file.samplePdfStoredFilename || file.samplePdfUrl;
+    const signedUrl = buildCloudFrontSignedUrl(sampleKey, 3600); // 1 hour
+
+    res.redirect(signedUrl);
+
+  } catch (error) {
+    console.error('Error downloading sample PDF:', error);
+    res.status(500).json({ error: 'Failed to download sample PDF' });
+  }
+});
+
+// --- Update File with Sample PDF Info ---
+router.post('/api/update-file-sample-pdf', authenticateJWT_user, async (req, res) => {
+  try {
+    const { fileId, samplePdfUrl, samplePdfSize } = req.body;
+    
+    if (!fileId || !samplePdfUrl) {
+      return res.status(400).json({ error: 'File ID and sample PDF URL are required' });
+    }
+
+    const file = await File.findById(fileId);
+    if (!file) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    // Verify ownership
+    if (file.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    // Update file with sample PDF info
+    file.samplePdfUrl = samplePdfUrl;
+    file.samplePdfStoredFilename = samplePdfUrl;
+    file.samplePdfSize = samplePdfSize || 0;
+    await file.save();
+
+    res.json({ success: true, message: 'File updated with sample PDF information' });
+
+  } catch (error) {
+    console.error('Error updating file with sample PDF:', error);
+    res.status(500).json({ error: 'Failed to update file' });
   }
 });
 

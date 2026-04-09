@@ -363,6 +363,7 @@ app.use(
           "https://cdn.jsdelivr.net",
           "https://cdn.tailwindcss.com",
           "https://cdn.quilljs.com",
+          "https://cdnjs.cloudflare.com",
           "https://www.googletagmanager.com",
           "https://www.google-analytics.com",
           "https://pagead2.googlesyndication.com",

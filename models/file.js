@@ -25,6 +25,11 @@ const fileSchema = new mongoose.Schema({
   validationErrors: [String], // Any errors during validation (if failed)
   validationWarnings: [String], // Non-critical warnings
  
+  // Sample PDF fields
+  samplePdfUrl: { type: String, default: null }, // URL to sample PDF
+  samplePdfStoredFilename: { type: String, default: null }, // Stored filename for sample PDF
+  samplePdfSize: { type: Number, default: null }, // Size of sample PDF
+ 
   // 1. ADD THE NEW SLUG FIELD
   slug: {
     type: String,

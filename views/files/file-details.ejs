@@ -1390,6 +1390,11 @@ const isFree = Number(priceDetails.total) === 0;
                         <button class="cta-btn" id="payBtn">
                             <i class="fa-solid fa-lock"></i> Secure Checkout
                         </button>
+                        <% if((file.samplePdfUrl || file.samplePdfStoredFilename) && file.price > 0){ %>
+                            <a href="/sample-download/<%= file._id %>" class="cta-btn" style="background: #10b981; margin-top: 10px; text-decoration: none;" target="_blank">
+                                <i class="fa-solid fa-eye"></i> Download Sample (Free)
+                            </a>
+                        <% } %>
                     <% } %>
 
                     <div class="guarantee-row">
@@ -1487,6 +1492,11 @@ const isFree = Number(priceDetails.total) === 0;
             <button class="mobile-enroll-btn" id="payBtnMobile">
                 <i class="fa-solid fa-lock"></i> Checkout
             </button>
+            <% if((file.samplePdfUrl || file.samplePdfStoredFilename) && file.price > 0){ %>
+                <a href="/sample-download/<%= file._id %>" target="_blank" class="mobile-enroll-btn" style="background: #10b981; margin-top: 8px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fa-solid fa-eye"></i> View Sample (Free)
+                </a>
+            <% } %>
         <% } %>
     </div>
 </div>
