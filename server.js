@@ -390,6 +390,12 @@ app.use(
           "https://checkout.razorpay.com"
         ],
 
+        workerSrc: [
+          "'self'",
+          "blob:",
+          "https://cdnjs.cloudflare.com"
+        ],
+
         imgSrc: [
           "'self'",
           "data:",
@@ -4599,15 +4605,64 @@ app.get('/pdf-viewer', authenticateJWT_user, requireAuth, async (req, res) => {
     const normalizedKey = rawFileKey.startsWith('main-files/') ? rawFileKey : `main-files/${rawFileKey}`;
     const cleanFileName = decodeURIComponent(normalizedKey).replace(/\s+/g, ' ').trim();
     const encodedFileKey = encodeURIComponent(cleanFileName).replace(/%2F/g, '/');
-    const signedUrl = buildCloudFrontSignedUrl(encodedFileKey, 60);
 
     return res.render('files/pdf-viewer', {
-      signedUrl,
+      pdfDataUrl: '/pdf-viewer-data',
       fileName: fileName || 'Document'
     });
   } catch (err) {
     console.error('Error serving PDF viewer:', err);
     return res.status(500).render('errors/500');
+  }
+});
+
+app.get('/pdf-viewer-data', authenticateJWT_user, requireAuth, async (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+
+  const token = req.cookies?.pdfViewerToken;
+  if (!token) {
+    return res.status(404).render('files/file-not-found');
+  }
+
+  const tokenData = pdfViewerTokens.get(token);
+  if (!tokenData || tokenData.userId !== String(req.user._id) || tokenData.expiresAt < Date.now()) {
+    return res.status(404).render('files/file-not-found');
+  }
+
+  try {
+    const file = await File.findById(tokenData.fileId).lean();
+    if (!file) {
+      return res.status(404).render('files/file-not-found');
+    }
+
+    const rawFileKey = String(file.fileUrl || '').trim();
+    if (!rawFileKey) {
+      return res.status(404).render('files/file-not-found');
+    }
+
+    const normalizedKey = rawFileKey.startsWith('main-files/') ? rawFileKey : `main-files/${rawFileKey}`;
+    const cleanFileName = decodeURIComponent(normalizedKey).replace(/\s+/g, ' ').trim();
+    const encodedFileKey = encodeURIComponent(cleanFileName).replace(/%2F/g, '/');
+    const signedUrl = buildCloudFrontSignedUrl(encodedFileKey, 60);
+
+    const upstream = await axios.get(signedUrl, {
+      responseType: 'stream',
+      headers: {
+        Accept: 'application/pdf'
+      },
+      maxRedirects: 5,
+      timeout: 30000
+    });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    upstream.data.pipe(res);
+  } catch (err) {
+    console.error('Error proxying PDF data:', err);
+    if (!res.headersSent) {
+      return res.status(502).send('Unable to load PDF');
+    }
   }
 });
 

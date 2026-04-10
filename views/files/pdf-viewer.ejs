@@ -7,7 +7,9 @@
   <title>PageFlow Reader</title>
   <link rel="icon" type="image/png" href="./images/logo.svg" />
       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3321203820490717" crossorigin="anonymous"></script>
-
+<script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -1855,7 +1857,9 @@
     <div class="gh-sub">Swipe left for next, right for previous</div>
     <button class="gh-dismiss" id="ghint-dismiss">Got it!</button>
   </div>
-
+<amp-auto-ads type="adsense"
+        data-ad-client="ca-pub-3321203820490717">
+</amp-auto-ads>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -2660,7 +2664,7 @@
     function showLoad(msg) { document.getElementById('ls').classList.add('on'); document.getElementById('lm').textContent = msg || '…'; }
     function hideLoad() { document.getElementById('ls').classList.remove('on'); }
 
-    const viewerFileUrl = <%- JSON.stringify(signedUrl) %>;
+    const viewerFileUrl = <%- JSON.stringify(pdfDataUrl) %>;
     const viewerFileName = <%- JSON.stringify(fileName) %> || 'Document';
 
     async function initializeViewer() {
