@@ -74,6 +74,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 const app = express();
+const pdfViewerTokens = new Map();
 app.use(express.static(path.join(__dirname, "public"), {
   setHeaders: (res, path) => {
     if (path.endsWith(".svg") || path.match(/\.(png|jpg|jpeg|gif|webp)$/)) {
@@ -431,7 +432,8 @@ app.use(
           "https://cdn.jsdelivr.net",
           "https://cdnjs.cloudflare.com",
           "https://*.s3.ap-south-1.amazonaws.com",
-          "https://vidyarimain2.s3.ap-south-1.amazonaws.com"
+          "https://vidyarimain2.s3.ap-south-1.amazonaws.com",
+          "https://*.cloudfront.net"
         ],
 
         mediaSrc: [
@@ -4522,12 +4524,90 @@ app.get("/download", authenticateJWT_user, requireAuth, async (req, res) => {
     res.set('X-RateLimit-Remaining', String(rateLimitCheck.remaining));
     res.set('X-RateLimit-Reset', String(downloadRateLimiter[String(req.user._id)].resetTime));
 
-    // ✅ Redirect to CloudFront (fastest edge delivery)
+    // ✅ If this is a PDF, show it inside the custom viewer instead of redirecting directly.
+    const fileExt = path.extname(String(file.fileUrl || '')).toLowerCase();
+    if (fileExt === '.pdf') {
+      const token = crypto.randomBytes(24).toString('hex');
+      pdfViewerTokens.set(token, {
+        fileId,
+        fileName: file.filename || 'Document',
+        userId: String(req.user._id),
+        expiresAt: Date.now() + 2 * 60 * 1000,
+      });
+      setTimeout(() => pdfViewerTokens.delete(token), 2 * 60 * 1000);
+      res.cookie('pdfViewerToken', token, {
+        httpOnly: true,
+        sameSite: 'lax',
+        maxAge: 2 * 60 * 1000,
+      });
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+      return res.redirect('/pdf-viewer');
+    }
+
+    // ✅ Redirect to CloudFront for non-PDF downloads.
     return res.redirect(signedUrl);
 
   } catch (error) {
     console.error("💥 Error in /download route:", error);
     return res.status(500).render("errors/500");
+  }
+});
+
+app.get('/pdf-viewer', authenticateJWT_user, requireAuth, async (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+
+  const token = req.cookies?.pdfViewerToken;
+  if (!token) {
+    return res.status(404).render('files/file-not-found');
+  }
+
+  const tokenData = pdfViewerTokens.get(token);
+  if (!tokenData || tokenData.userId !== String(req.user._id) || tokenData.expiresAt < Date.now()) {
+    return res.status(404).render('files/file-not-found');
+  }
+
+  const { fileId, fileName } = tokenData;
+
+  try {
+    const file = await File.findById(fileId).lean();
+    if (!file) {
+      return res.status(404).render('files/file-not-found');
+    }
+
+    const fileExt = path.extname(String(file.fileUrl || '')).toLowerCase();
+    if (fileExt !== '.pdf') {
+      return res.status(404).render('files/file-not-found');
+    }
+
+    if (file.price > 0) {
+      const purchased = await Userpurchases.exists({ userId: req.user._id, productId: fileId });
+      if (!purchased) {
+        return res.render('errors/404');
+      }
+    }
+
+    const rawFileKey = String(file.fileUrl || '').trim();
+    if (!rawFileKey) {
+      console.error('PDF viewer error: missing file.fileUrl for', fileId);
+      return res.status(404).render('files/file-not-found');
+    }
+
+    const normalizedKey = rawFileKey.startsWith('main-files/') ? rawFileKey : `main-files/${rawFileKey}`;
+    const cleanFileName = decodeURIComponent(normalizedKey).replace(/\s+/g, ' ').trim();
+    const encodedFileKey = encodeURIComponent(cleanFileName).replace(/%2F/g, '/');
+    const signedUrl = buildCloudFrontSignedUrl(encodedFileKey, 60);
+
+    return res.render('files/pdf-viewer', {
+      signedUrl,
+      fileName: fileName || 'Document'
+    });
+  } catch (err) {
+    console.error('Error serving PDF viewer:', err);
+    return res.status(500).render('errors/500');
   }
 });
 

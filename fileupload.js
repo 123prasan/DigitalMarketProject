@@ -18,6 +18,8 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const https = require('https');
+const http = require('http');
 const File = require("./models/file");
 const fileSecurityValidator = require('./services/fileSecurityValidator');
 const authenticateJWT_user  = require('./routes/authentication/jwtAuth'); // Assuming path is correct
@@ -485,7 +487,7 @@ router.post('/extract-pdf-pages', authenticateJWT_user, async (req, res) => {
   }
 });
 
-// --- Sample Download Route ---
+// --- Sample Viewer Route ---
 router.get('/sample-download/:fileId', authenticateJWT_user, async (req, res) => {
   try {
     const { fileId } = req.params;
@@ -505,15 +507,75 @@ router.get('/sample-download/:fileId', authenticateJWT_user, async (req, res) =>
       return res.status(400).json({ error: 'Sample download is only available for paid files' });
     }
 
-    // Get signed CloudFront URL for sample PDF
     const sampleKey = file.samplePdfStoredFilename || file.samplePdfUrl;
-    const signedUrl = buildCloudFrontSignedUrl(sampleKey, 3600); // 1 hour
+    const signedUrl = `/sample-proxy/${encodeURIComponent(fileId)}`;
 
-    res.redirect(signedUrl);
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
+    return res.render('files/pdf-viewer', {
+      signedUrl,
+      fileName: file.filename ? `Sample - ${file.filename}` : 'Sample Document'
+    });
 
   } catch (error) {
-    console.error('Error downloading sample PDF:', error);
-    res.status(500).json({ error: 'Failed to download sample PDF' });
+    console.error('Error serving sample PDF viewer:', error);
+    res.status(500).json({ error: 'Failed to load sample PDF viewer' });
+  }
+});
+
+// --- Sample Proxy Route for PDF Viewer ---
+router.get('/sample-proxy/:fileId', authenticateJWT_user, async (req, res) => {
+  try {
+    const { fileId } = req.params;
+    const file = await File.findById(fileId);
+    if (!file) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    if (!file.samplePdfUrl && !file.samplePdfStoredFilename) {
+      return res.status(404).json({ error: 'Sample PDF not available' });
+    }
+
+    if (file.price <= 0) {
+      return res.status(400).json({ error: 'Sample PDF is only available for paid files' });
+    }
+
+    const sampleKey = file.samplePdfStoredFilename || file.samplePdfUrl;
+    const signedUrl = buildCloudFrontSignedUrl(sampleKey, 60);
+    const parsedUrl = new URL(signedUrl);
+    const transport = parsedUrl.protocol === 'https:' ? https : http;
+
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
+    const proxyOptions = {
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: parsedUrl.host,
+      },
+    };
+
+    const proxyReq = transport.request(parsedUrl, proxyOptions, cloudRes => {
+      const statusCode = cloudRes.statusCode || 502;
+      res.writeHead(statusCode, cloudRes.headers);
+      cloudRes.pipe(res);
+    });
+
+    proxyReq.on('error', err => {
+      console.error('Sample proxy request failed:', err);
+      if (!res.headersSent) {
+        res.status(502).send('Failed to fetch sample PDF');
+      }
+    });
+
+    req.pipe(proxyReq);
+  } catch (error) {
+    console.error('Error proxying sample PDF:', error);
+    res.status(500).json({ error: 'Failed to proxy sample PDF' });
   }
 });
 

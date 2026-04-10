@@ -1,0 +1,2831 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>PageFlow Reader</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --accent: #6C63FF;
+      --accent2: #FF6584;
+      --chrome: rgba(10, 10, 15, 0.92);
+      --glass: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.08);
+      --txt: rgba(255, 255, 255, 0.9);
+      --txt2: rgba(255, 255, 255, 0.45);
+      --r: 16px;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0d0d0f;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      touch-action: none;
+      color: #fff
+    }
+
+    /* ── GRAIN TEXTURE ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: .025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* ── CANVAS ── */
+    #rc {
+      position: fixed;
+      top: 0;
+      left: 0;
+      touch-action: none;
+      display: block;
+      will-change: transform;
+      transform: translateZ(0);
+      z-index: 2
+    }
+
+    /* ── AMBIENT GLOW (behind canvas, theme-reactive) ── */
+    #amb {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      transition: background 1.2s ease;
+      background: radial-gradient(ellipse 80% 60% at 50% 110%, rgba(108, 99, 255, 0.12) 0%, transparent 70%);
+    }
+
+    /* ── TAP ZONES ── */
+    .tz {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      z-index: 40;
+      pointer-events: all;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    #tz-l {
+      left: 0;
+      width: 25%
+    }
+
+    #tz-c {
+      left: 25%;
+      right: 25%
+    }
+
+    #tz-r {
+      right: 0;
+      width: 25%
+    }
+
+    /* ══════════════════════════ CHROME ══════════════════════════ */
+    #ct,
+    #cb {
+      position: fixed;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--chrome);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      will-change: transform, opacity;
+      transition: transform .38s cubic-bezier(.4, 0, .2, 1), opacity .38s;
+    }
+
+    #ct {
+      top: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #cb {
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid var(--border);
+    }
+
+    #ct.off {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none
+    }
+
+    #cb.off {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none
+    }
+
+    .ib {
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: transparent;
+      color: var(--txt);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .12s, transform .1s, color .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ib:active {
+      background: var(--glass);
+      transform: scale(0.9)
+    }
+
+    .ib svg {
+      transition: transform .2s cubic-bezier(.34, 1.5, .64, 1)
+    }
+
+    .ib:active svg {
+      transform: scale(0.85)
+    }
+
+    .doc-wrap {
+      flex: 1;
+      min-width: 0;
+      padding: 0 8px
+    }
+
+    .doc-t {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--txt);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -.01em
+    }
+
+    .doc-s {
+      font-size: 11px;
+      color: var(--txt2);
+      letter-spacing: .01em;
+      margin-top: 1px
+    }
+
+    /* ── SLIDER ROW ── */
+    .sl-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      gap: 14px
+    }
+
+    .pg-lbl {
+      font-size: 11px;
+      color: var(--txt2);
+      white-space: nowrap;
+      min-width: 52px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-weight: 500
+    }
+
+    input.pg-sl {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      background-image: linear-gradient(var(--accent), var(--accent));
+      background-size: 0% 100%;
+      background-repeat: no-repeat;
+    }
+
+    input.pg-sl::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .5), 0 0 0 3px rgba(108, 99, 255, .3);
+      transition: box-shadow .15s, transform .15s;
+    }
+
+    input.pg-sl:active::-webkit-slider-thumb {
+      transform: scale(1.25);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .6), 0 0 0 5px rgba(108, 99, 255, .25)
+    }
+
+    .act-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 10px;
+      gap: 4px
+    }
+
+    .act-center {
+      display: flex;
+      gap: 4px
+    }
+
+    /* ── MINI PROGRESS ── */
+    #mp {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      z-index: 99;
+      pointer-events: none;
+      background: rgba(255, 255, 255, 0.06)
+    }
+
+    #mpf {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .3s cubic-bezier(.4, 0, .2, 1);
+      border-radius: 0 2px 2px 0
+    }
+
+    /* ── RIPPLE ── */
+    .ripple {
+      position: fixed;
+      border-radius: 50%;
+      background: rgba(108, 99, 255, .25);
+      pointer-events: none;
+      z-index: 50;
+      transform: translate(-50%, -50%) scale(0);
+      animation: rip .55s cubic-bezier(.4, 0, .2, 1) forwards
+    }
+
+    @keyframes rip {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(3.5);
+        opacity: 0
+      }
+    }
+
+    /* ── PAGE NUMBER TOAST ── */
+    #pgtoast {
+      position: fixed;
+      left: 50%;
+      bottom: 90px;
+      transform: translateX(-50%) translateY(10px);
+      background: rgba(10, 10, 15, 0.88);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      pointer-events: none;
+      z-index: 150;
+      opacity: 0;
+      transition: opacity .2s, transform .2s cubic-bezier(.34, 1.3, .64, 1);
+      white-space: nowrap;
+    }
+
+    #pgtoast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
+    }
+
+    /* ══════════════════════════ THUMBNAIL STRIP ══════════════════════════ */
+    #ts {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(5, 5, 8, 0.96);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s cubic-bezier(.4, 0, .2, 1);
+      touch-action: none;
+      overflow: hidden;
+    }
+
+    #ts.open {
+      opacity: 1;
+      pointer-events: all;
+      touch-action: pan-x
+    }
+
+    .ts-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 20px 12px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ts-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.02em
+    }
+
+    .ts-cnt {
+      font-size: 12px;
+      color: var(--txt2);
+      margin-top: 2px
+    }
+
+    .ts-x {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--glass);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .15s, transform .1s;
+      border: 1px solid var(--border);
+    }
+
+    .ts-x:active {
+      transform: scale(0.88)
+    }
+
+    #ts-scroll {
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: hidden;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 24px env(safe-area-inset-bottom, 20px);
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+    }
+
+    #ts-scroll::-webkit-scrollbar {
+      display: none
+    }
+
+    .tc {
+      flex-shrink: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2.5px solid rgba(255, 255, 255, 0.08);
+      scroll-snap-align: center;
+      cursor: pointer;
+      transition: border-color .2s, transform .25s cubic-bezier(.34, 1.3, .64, 1), box-shadow .2s, opacity .2s;
+      position: relative;
+      background: #111;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .6);
+      -webkit-tap-highlight-color: transparent;
+      opacity: 0.7;
+    }
+
+    .tc.cur {
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(108, 99, 255, .4);
+      opacity: 1;
+      transform: scale(1.06) translateY(-4px)
+    }
+
+    .tc:active {
+      transform: scale(0.93)
+    }
+
+    .tc:not(.cur):hover {
+      opacity: 0.9;
+      transform: scale(1.03) translateY(-2px)
+    }
+
+    .tc canvas {
+      display: block
+    }
+
+    .tc-n {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0, 0, 0, .85));
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      text-align: center;
+      padding: 14px 2px 6px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .02em;
+    }
+
+    .ts-loading {
+      color: var(--txt2);
+      font-size: 13px;
+      text-align: center;
+      padding: 40px;
+      width: 100%;
+      font-weight: 500
+    }
+
+    /* ══════════════════════════ SEARCH ══════════════════════════ */
+    #so {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, .65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 16px;
+    }
+
+    #so.open {
+      display: flex
+    }
+
+    .sc {
+      background: #131318;
+      border-radius: 20px;
+      width: calc(100% - 32px);
+      max-width: 440px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      animation: popIn .24s cubic-bezier(.34, 1.2, .64, 1);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .6);
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(.88) translateY(-12px);
+        opacity: 0
+      }
+
+      to {
+        transform: none;
+        opacity: 1
+      }
+    }
+
+    .sc-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 12px 14px 18px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .sc-top svg {
+      color: var(--txt2);
+      flex-shrink: 0
+    }
+
+    #si {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 16px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      padding: 2px 0;
+      font-weight: 400
+    }
+
+    #si::placeholder {
+      color: rgba(255, 255, 255, .2)
+    }
+
+    .sc-nav {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      gap: 6px;
+      background: rgba(255, 255, 255, .02)
+    }
+
+    .sc-ct {
+      flex: 1;
+      font-size: 12px;
+      color: var(--txt2);
+      padding-left: 4px;
+      font-weight: 500
+    }
+
+    .snb {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .12s, transform .1s;
+    }
+
+    .snb:disabled {
+      opacity: .2
+    }
+
+    .snb:active {
+      background: rgba(255, 255, 255, .15);
+      transform: scale(0.9)
+    }
+
+    #sr {
+      max-height: 52vh;
+      overflow-y: auto
+    }
+
+    #sr::-webkit-scrollbar {
+      width: 3px
+    }
+
+    #sr::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    #sr::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .1);
+      border-radius: 2px
+    }
+
+    .sri {
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .1s
+    }
+
+    .sri:active {
+      background: rgba(255, 255, 255, .05)
+    }
+
+    .sri-p {
+      font-size: 10px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: .06em;
+      text-transform: uppercase
+    }
+
+    .sri-s {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .55);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden
+    }
+
+    .sri-s mark {
+      background: rgba(108, 99, 255, .3);
+      color: #fff;
+      border-radius: 3px;
+      font-style: normal;
+      padding: 0 2px
+    }
+
+    .sc-empty {
+      padding: 28px;
+      text-align: center;
+      font-size: 13px;
+      color: rgba(255, 255, 255, .2);
+      font-weight: 500
+    }
+
+    /* ══════════════════════════ SETTINGS ══════════════════════════ */
+    #set {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0, 0, 0, .55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center
+    }
+
+    #set.open {
+      display: flex
+    }
+
+    .set-sh {
+      background: #131318;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 480px;
+      padding-bottom: env(safe-area-inset-bottom, 12px);
+      animation: sUp .3s cubic-bezier(.34, 1.1, .64, 1);
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+
+    @keyframes sUp {
+      from {
+        transform: translateY(60px);
+        opacity: 0
+      }
+
+      to {
+        transform: none;
+        opacity: 1
+      }
+    }
+
+    .sh-pill {
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, .15);
+      margin: 14px auto 0
+    }
+
+    .sh-lb {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--txt2);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 18px 20px 10px
+    }
+
+    .th-row {
+      display: flex;
+      gap: 8px;
+      padding: 0 20px 20px
+    }
+
+    .th-chip {
+      flex: 1;
+      height: 52px;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: border-color .2s, transform .15s, box-shadow .2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .th-chip:active {
+      transform: scale(0.94)
+    }
+
+    .th-chip.on {
+      border-color: var(--accent);
+      box-shadow: 0 4px 20px rgba(108, 99, 255, .25)
+    }
+
+    .th-chip[data-t=white] {
+      background: #F8F3EA;
+      color: #2c2c2c
+    }
+
+    .th-chip[data-t=sepia] {
+      background: #F0E6C8;
+      color: #5A3E1B
+    }
+
+    .th-chip[data-t=night] {
+      background: #141414;
+      color: #888;
+      border-color: rgba(255, 255, 255, .1)
+    }
+
+    .th-chip[data-t=night].on {
+      border-color: var(--accent)
+    }
+
+    .sh-div {
+      height: 1px;
+      background: var(--border);
+      margin: 0 20px
+    }
+
+    /* Font size row */
+    .fs-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px 20px
+    }
+
+    .fs-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: #fff;
+      font-size: 18px;
+      font-weight: 300;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .12s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+    }
+
+    .fs-btn:active {
+      transform: scale(0.9);
+      background: rgba(255, 255, 255, .12)
+    }
+
+    .fs-val {
+      flex: 1;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff
+    }
+
+    .fs-sub {
+      font-size: 11px;
+      color: var(--txt2);
+      font-weight: 400
+    }
+
+    /* brightness row */
+    .br-row {
+      padding: 0 20px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .br-icon {
+      color: var(--txt2);
+      flex-shrink: 0
+    }
+
+    input[type=range].br-sl {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, .12);
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    input[type=range].br-sl::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, .4)
+    }
+
+    /* reading stats row */
+    .stat-row {
+      display: flex;
+      gap: 0;
+      padding: 0 20px 20px
+    }
+
+    .stat-box {
+      flex: 1;
+      background: rgba(255, 255, 255, .04);
+      border-radius: 12px;
+      padding: 10px 8px;
+      text-align: center;
+      border: 1px solid var(--border)
+    }
+
+    .stat-box+.stat-box {
+      margin-left: 8px
+    }
+
+    .stat-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.02em
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      color: var(--txt2);
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-top: 2px
+    }
+
+    /* ══════════════════════════ OPEN MODAL ══════════════════════════ */
+    #om {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0, 0, 0, .75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center
+    }
+
+    #om.hidden {
+      display: none
+    }
+
+    .om-sh {
+      background: #131318;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 480px;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+      animation: sUp .3s cubic-bezier(.34, 1.1, .64, 1);
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+
+    .om-h {
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, .15);
+      margin: 14px auto 0
+    }
+
+    .om-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 0
+    }
+
+    .om-ti {
+      font-size: 19px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.02em
+    }
+
+    .om-x {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .12s, transform .1s
+    }
+
+    .om-x:active {
+      transform: scale(0.88)
+    }
+
+    .om-tabs {
+      display: flex;
+      margin: 16px 20px 0;
+      background: rgba(255, 255, 255, .05);
+      border-radius: 14px;
+      padding: 4px;
+      gap: 3px
+    }
+
+    .om-tab {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .35);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .18s, color .18s;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: -.01em
+    }
+
+    .om-tab.on {
+      background: rgba(255, 255, 255, .12);
+      color: #fff
+    }
+
+    .om-pn {
+      display: none;
+      padding: 16px 20px 20px
+    }
+
+    .om-pn.on {
+      display: block
+    }
+
+    /* drop zone */
+    .dz {
+      border: 2px dashed rgba(255, 255, 255, .1);
+      border-radius: 16px;
+      padding: 32px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s, transform .15s;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dz::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: radial-gradient(circle at 50% 0%, rgba(108, 99, 255, .08), transparent 70%);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    .dz:active,
+    .dz.ov {
+      border-color: var(--accent);
+      transform: scale(0.99)
+    }
+
+    .dz:active::before,
+    .dz.ov::before {
+      opacity: 1
+    }
+
+    .dz-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(108, 99, 255, .12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      border: 1px solid rgba(108, 99, 255, .2);
+    }
+
+    .dz h3 {
+      font-size: 15px;
+      color: #fff;
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: -.01em
+    }
+
+    .dz p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .35);
+      line-height: 1.5
+    }
+
+    .om-or {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0;
+      font-size: 12px;
+      color: rgba(255, 255, 255, .2);
+      font-weight: 500
+    }
+
+    .om-or::before,
+    .om-or::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, .06)
+    }
+
+    .fbtn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent), #8b84ff);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: -.01em;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 20px rgba(108, 99, 255, .35);
+    }
+
+    .fbtn:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px rgba(108, 99, 255, .25)
+    }
+
+    .ur {
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color .18s
+    }
+
+    .ur:focus-within {
+      border-color: var(--accent)
+    }
+
+    #ui {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      color: #fff;
+      padding: 13px 16px;
+      font-family: monospace
+    }
+
+    #ui::placeholder {
+      color: rgba(255, 255, 255, .18);
+      font-family: 'Inter', sans-serif
+    }
+
+    #ug {
+      padding: 0 18px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: -.01em
+    }
+
+    .uerr {
+      display: none;
+      margin-top: 10px;
+      padding: 11px 14px;
+      background: rgba(234, 67, 53, .1);
+      border: 1px solid rgba(234, 67, 53, .2);
+      border-radius: 10px;
+      font-size: 12px;
+      color: #f28b82;
+      line-height: 1.5
+    }
+
+    .un {
+      margin-top: 10px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, .18);
+      line-height: 1.5
+    }
+
+    /* ══════════════════════════ LOADING ══════════════════════════ */
+    #ls {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: rgba(5, 5, 8, .92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    #ls.on {
+      display: flex
+    }
+
+    .lr-wrap {
+      position: relative;
+      width: 56px;
+      height: 56px
+    }
+
+    .lr {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, .06);
+      border-top-color: var(--accent);
+      animation: spin .75s cubic-bezier(.5, 0, .5, 1) infinite
+    }
+
+    .lr2 {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .04);
+      border-bottom-color: var(--accent2);
+      animation: spin .5s cubic-bezier(.5, 0, .5, 1) infinite reverse
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    #lm {
+      font-size: 14px;
+      color: var(--txt2);
+      font-weight: 500;
+      letter-spacing: -.01em
+    }
+
+    .lp {
+      width: 160px;
+      height: 2px;
+      background: rgba(255, 255, 255, .08);
+      border-radius: 2px;
+      overflow: hidden
+    }
+
+    .lp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      width: 0%;
+      transition: width .3s;
+      animation: lpPulse 1.5s ease-in-out infinite
+    }
+
+    @keyframes lpPulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .5
+      }
+    }
+
+    /* ══════════════════════════ EMPTY STATE ══════════════════════════ */
+    #empty {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      pointer-events: none;
+      padding: 32px
+    }
+
+    #empty.gone {
+      display: none
+    }
+
+    .empty-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 60%, rgba(108, 99, 255, .07) 0%, transparent 70%)
+    }
+
+    .ei-wrap {
+      position: relative;
+      margin-bottom: 24px
+    }
+
+    .ei {
+      width: 88px;
+      height: 88px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(108, 99, 255, .15), rgba(255, 101, 132, .08));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(108, 99, 255, .2);
+      box-shadow: 0 8px 40px rgba(108, 99, 255, .15);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-8px)
+      }
+    }
+
+    .ei-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 32px;
+      border: 1px solid rgba(108, 99, 255, .12);
+      animation: float 3s ease-in-out infinite .3s
+    }
+
+    .ei-ring2 {
+      position: absolute;
+      inset: -18px;
+      border-radius: 40px;
+      border: 1px solid rgba(108, 99, 255, .06);
+      animation: float 3s ease-in-out infinite .6s
+    }
+
+    .eh {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -.03em;
+      margin-bottom: 8px
+    }
+
+    .ep {
+      font-size: 14px;
+      color: var(--txt2);
+      text-align: center;
+      max-width: 260px;
+      line-height: 1.65;
+      margin-bottom: 28px;
+      font-weight: 400
+    }
+
+    .ebtn {
+      pointer-events: all;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, var(--accent), #8b84ff);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(108, 99, 255, .4);
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: -.01em;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .ebtn:active {
+      transform: scale(0.96);
+      box-shadow: 0 4px 16px rgba(108, 99, 255, .3)
+    }
+
+    .empty-hint {
+      pointer-events: none;
+      margin-top: 20px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, .15);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500
+    }
+
+    /* ══════════════════════════ BIG PICTURE OPEN ══════════════════════════ */
+    @keyframes bigPictureIn {
+      0% {
+        transform: scale(0.06) translateZ(0);
+        opacity: 0;
+        filter: brightness(2) blur(4px)
+      }
+
+      35% {
+        opacity: 1;
+        filter: brightness(1.2) blur(0px)
+      }
+
+      70% {
+        transform: scale(1.035) translateZ(0)
+      }
+
+      85% {
+        transform: scale(0.988) translateZ(0)
+      }
+
+      100% {
+        transform: scale(1) translateZ(0);
+        opacity: 1;
+        filter: none
+      }
+    }
+
+    @keyframes bigPictureFlash {
+      0% {
+        opacity: 0
+      }
+
+      12% {
+        opacity: .22
+      }
+
+      100% {
+        opacity: 0
+      }
+    }
+
+    #bp-flash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #fff;
+      pointer-events: none;
+      opacity: 0
+    }
+
+    #bp-flash.flash {
+      animation: bigPictureFlash .6s cubic-bezier(.4, 0, .2, 1) forwards
+    }
+
+    #rc.bp-opening {
+      animation: bigPictureIn .7s cubic-bezier(.22, 1, .36, 1) forwards;
+      transform-origin: center center
+    }
+
+    /* ══════════════════════════ BOOKMARK BUTTON ══════════════════════════ */
+    #bm-btn {
+      position: fixed;
+      top: 70px;
+      right: 12px;
+      z-index: 90;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--chrome);
+      backdrop-filter: blur(20px);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity .3s, transform .3s cubic-bezier(.34, 1.3, .64, 1), background .2s;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #bm-btn.vis {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    #bm-btn.bm-on {
+      background: rgba(255, 101, 132, .15);
+      border-color: rgba(255, 101, 132, .35);
+      color: var(--accent2)
+    }
+
+    #bm-btn:active {
+      transform: scale(0.88)
+    }
+
+    /* ══════════════════════════ GESTURE HINT ══════════════════════════ */
+    #ghint {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .4s;
+    }
+
+    #ghint.show {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .gh-hand {
+      font-size: 48px;
+      animation: swipeHint 1.6s ease-in-out infinite
+    }
+
+    @keyframes swipeHint {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      40% {
+        transform: translateX(-30px)
+      }
+
+      60% {
+        transform: translateX(20px)
+      }
+    }
+
+    .gh-txt {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      letter-spacing: -.01em
+    }
+
+    .gh-sub {
+      font-size: 13px;
+      color: var(--txt2);
+      text-align: center
+    }
+
+    .gh-dismiss {
+      margin-top: 8px;
+      padding: 10px 28px;
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .15s;
+      pointer-events: all
+    }
+
+    .gh-dismiss:active {
+      background: rgba(255, 255, 255, .2)
+    }
+
+    /* ══════════════════════════ READING PROGRESS RING ══════════════════════════ */
+    #prog-ring {
+      position: fixed;
+      bottom: 90px;
+      right: 14px;
+      z-index: 90;
+      width: 42px;
+      height: 42px;
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
+    }
+
+    #prog-ring.vis {
+      opacity: 1
+    }
+
+    #prog-ring svg {
+      transform: rotate(-90deg)
+    }
+
+    #pr-track {
+      fill: none;
+      stroke: rgba(255, 255, 255, .08);
+      stroke-width: 3
+    }
+
+    #pr-fill {
+      fill: none;
+      stroke: url(#pr-grad);
+      stroke-width: 3;
+      stroke-linecap: round;
+      transition: stroke-dashoffset .5s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    #pr-pct {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--txt2);
+      letter-spacing: -.02em
+    }
+
+    /* ══════════════════════════ SWIPE EDGE GLOW ══════════════════════════ */
+    #edge-l,
+    #edge-r {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 60px;
+      z-index: 45;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    #edge-l {
+      left: 0;
+      background: linear-gradient(to right, rgba(108, 99, 255, .2), transparent)
+    }
+
+    #edge-r {
+      right: 0;
+      background: linear-gradient(to left, rgba(108, 99, 255, .2), transparent)
+    }
+
+    /* ══════════════════════════ FILE-INPUT ══════════════════════════ */
+    #file-input {
+      display: none
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Ambient glow -->
+  <div id="amb"></div>
+  <!-- Big-picture flash -->
+  <div id="bp-flash"></div>
+  <!-- Reader canvas -->
+  <canvas id="rc"></canvas>
+  <!-- Swipe edge glows -->
+  <div id="edge-l"></div>
+  <div id="edge-r"></div>
+
+  <!-- Tap zones -->
+  <div class="tz" id="tz-l"></div>
+  <div class="tz" id="tz-c"></div>
+  <div class="tz" id="tz-r"></div>
+
+  <!-- Mini progress -->
+  <div id="mp">
+    <div id="mpf" style="width:0%"></div>
+  </div>
+
+  <!-- Page number toast -->
+  <div id="pgtoast">1 / 1</div>
+
+  <!-- Progress ring -->
+  <div id="prog-ring">
+    <svg width="42" height="42" viewBox="0 0 42 42">
+      <defs>
+        <linearGradient id="pr-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#6C63FF" />
+          <stop offset="100%" stop-color="#FF6584" />
+        </linearGradient>
+      </defs>
+      <circle id="pr-track" cx="21" cy="21" r="18" />
+      <circle id="pr-fill" cx="21" cy="21" r="18" stroke-dasharray="113" stroke-dashoffset="113" />
+    </svg>
+    <div id="pr-pct">0%</div>
+  </div>
+
+  <!-- Bookmark button -->
+  <button id="bm-btn" title="Bookmark">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+    </svg>
+  </button>
+
+  <!-- TOP CHROME -->
+  <div id="ct">
+    <button class="ib" id="btn-open" title="Open">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+      </svg>
+    </button>
+    <div class="doc-wrap">
+      <div class="doc-t" id="doc-t">PageFlow Reader</div>
+      <div class="doc-s" id="doc-s">Open a PDF to begin</div>
+    </div>
+    <button class="ib" id="btn-search" title="Search">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+    </button>
+    <button class="ib" id="btn-set" title="Settings">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3" />
+        <path
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- BOTTOM CHROME -->
+  <div id="cb">
+    <div class="sl-row">
+      <button class="ib" id="btn-prev" style="width:40px;height:40px">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <input type="range" class="pg-sl" id="pg-sl" min="1" value="1" step="1" />
+      <button class="ib" id="btn-next" style="width:40px;height:40px">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    </div>
+    <div class="act-row">
+      <button class="ib" id="btn-bm-tgl" title="Bookmarks" style="width:40px;height:40px">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+        </svg>
+      </button>
+      <div class="act-center">
+        <div class="pg-lbl" id="pg-lbl">—</div>
+        <button class="ib" id="btn-pages" title="All pages" style="width:40px;height:40px">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg>
+        </button>
+      </div>
+      <button class="ib" id="btn-auto" title="Auto-read" style="width:40px;height:40px">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- THUMBNAIL STRIP -->
+  <div id="ts">
+    <div class="ts-hdr">
+      <div>
+        <div class="ts-title">All Pages</div>
+        <div class="ts-cnt" id="ts-cnt"></div>
+      </div>
+      <button class="ts-x" id="ts-x">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <div id="ts-scroll"></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="so">
+    <div class="sc">
+      <div class="sc-top">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input id="si" type="search" placeholder="Search in document…" autocomplete="off" autocorrect="off" />
+        <button class="ib" id="sc-x" style="color:var(--txt2);width:36px;height:36px">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="sc-nav">
+        <span class="sc-ct" id="sc-ct">Type to search</span>
+        <button class="snb" id="sn-p" disabled><svg width="13" height="13" fill="none" stroke="currentColor"
+            stroke-width="2.5" viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6" />
+          </svg></button>
+        <button class="snb" id="sn-n" disabled><svg width="13" height="13" fill="none" stroke="currentColor"
+            stroke-width="2.5" viewBox="0 0 24 24">
+            <polyline points="9 18 15 12 9 6" />
+          </svg></button>
+      </div>
+      <div id="sr"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="set">
+    <div class="set-sh">
+      <div class="sh-pill"></div>
+      <div class="sh-lb">Reading Theme</div>
+      <div class="th-row">
+        <div class="th-chip on" data-t="white">☀️ Light</div>
+        <div class="th-chip" data-t="sepia">☕ Sepia</div>
+        <div class="th-chip" data-t="night">🌙 Dark</div>
+      </div>
+      <div class="sh-div"></div>
+      <div class="sh-lb" style="margin-top:4px">Brightness</div>
+      <div class="br-row">
+        <svg class="br-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+          viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4" />
+          <line x1="12" y1="2" x2="12" y2="4" />
+          <line x1="12" y1="20" x2="12" y2="22" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="2" y1="12" x2="4" y2="12" />
+          <line x1="20" y1="12" x2="22" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+        <input type="range" class="br-sl" id="br" min="20" max="100" value="100" />
+        <svg class="br-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+          viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4" />
+          <line x1="12" y1="2" x2="12" y2="4" />
+          <line x1="12" y1="20" x2="12" y2="22" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="2" y1="12" x2="4" y2="12" />
+          <line x1="20" y1="12" x2="22" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      </div>
+      <div class="sh-div"></div>
+      <div class="sh-lb" style="margin-top:4px">Reading Stats</div>
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-val" id="st-pages">0</div>
+          <div class="stat-lbl">Pages Read</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="st-pct">0%</div>
+          <div class="stat-lbl">Progress</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="st-bm">0</div>
+          <div class="stat-lbl">Bookmarks</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPEN MODAL -->
+  <div id="om">
+    <div class="om-sh">
+      <div class="om-h"></div>
+      <div class="om-hdr">
+        <span class="om-ti">Open PDF</span>
+        <button class="om-x" id="om-x">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="om-tabs">
+        <button class="om-tab on" data-tab="file">📂 Device</button>
+        <button class="om-tab" data-tab="url">🔗 URL</button>
+      </div>
+      <div class="om-pn on" id="om-file">
+        <div class="dz" id="dz">
+          <div class="dz-icon">
+            <svg width="26" height="26" fill="none" stroke="rgba(108,99,255,.9)" stroke-width="1.8" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="12" y1="13" x2="12" y2="18" />
+              <polyline points="9 16 12 13 15 16" />
+            </svg>
+          </div>
+          <h3>Drop PDF here</h3>
+          <p>Drag & drop or tap to browse</p>
+        </div>
+        <div class="om-or">or</div>
+        <button class="fbtn" id="browse">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          </svg>
+          Browse Files
+        </button>
+      </div>
+      <div class="om-pn" id="om-url">
+        <div class="ur">
+          <input id="ui" type="url" placeholder="https://example.com/file.pdf" autocomplete="off" autocorrect="off"
+            autocapitalize="none" spellcheck="false" />
+          <button id="ug">Load</button>
+        </div>
+        <div class="uerr" id="uerr"></div>
+        <p class="un">⚠ Some servers block cross-origin requests.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="ls">
+    <div class="lr-wrap">
+      <div class="lr"></div>
+      <div class="lr2"></div>
+    </div>
+    <div id="lm">Loading…</div>
+    <div class="lp">
+      <div class="lp-fill"></div>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div id="empty">
+    <div class="empty-bg"></div>
+    <div class="ei-wrap">
+      <div class="ei-ring2"></div>
+      <div class="ei-ring"></div>
+      <div class="ei">
+        <svg width="38" height="38" fill="none" stroke="rgba(108,99,255,.9)" stroke-width="1.6" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+        </svg>
+      </div>
+    </div>
+    <div class="eh">PageFlow Reader</div>
+    <div class="ep">Your beautiful, distraction-free PDF reading experience awaits.</div>
+    <button class="ebtn" id="ebtn">Open a PDF</button>
+    <div class="empty-hint">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      Swipe left/right to turn pages
+    </div>
+  </div>
+
+  <!-- Gesture hint overlay -->
+  <div id="ghint">
+    <div class="gh-hand">👆</div>
+    <div class="gh-txt">Swipe to turn pages</div>
+    <div class="gh-sub">Swipe left for next, right for previous</div>
+    <button class="gh-dismiss" id="ghint-dismiss">Got it!</button>
+  </div>
+
+  <input type="file" id="file-input" accept=".pdf" />
+
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    /* ═══════════════════════════════════════
+       WEB AUDIO ENGINE
+    ═══════════════════════════════════════ */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playPageTurn(dir) {
+      try {
+        const now = audioCtx.currentTime;
+        const sr = audioCtx.sampleRate;
+        // ── Layered paper rustle ──
+        const bufLen = sr * 0.22;
+        const buf = audioCtx.createBuffer(2, bufLen, sr);
+        for (let ch = 0; ch < 2; ch++) {
+          const d = buf.getChannelData(ch);
+          let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0; // pink noise state
+          for (let i = 0; i < bufLen; i++) {
+            const wh = Math.random() * 2 - 1;
+            b0 = 0.99886 * b0 + wh * 0.0555179; b1 = 0.99332 * b1 + wh * 0.0750759;
+            b2 = 0.96900 * b2 + wh * 0.1538520; b3 = 0.86650 * b3 + wh * 0.3104856;
+            b4 = 0.55000 * b4 + wh * 0.5329522; b5 = -0.7616 * b5 - wh * 0.0168980;
+            const pink = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + wh * 0.5362) / 7;
+            b6 = wh * 0.115926;
+            const env = Math.pow(1 - i / bufLen, 0.7) * Math.pow(i / bufLen + 0.01, 0.15);
+            d[i] = pink * env * (ch === 0 ? 1 : 0.7);
+          }
+        }
+        const src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        const bp = audioCtx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.setValueAtTime(dir === 'next' ? 2200 : 1800, now);
+        bp.frequency.exponentialRampToValueAtTime(dir === 'next' ? 900 : 1100, now + 0.18);
+        bp.Q.value = 0.5;
+        const hs = audioCtx.createBiquadFilter();
+        hs.type = 'highshelf'; hs.frequency.value = 4000; hs.gain.value = 8;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0, now);
+        g.gain.linearRampToValueAtTime(0.6, now + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        // Thud
+        const o = audioCtx.createOscillator();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(220, now + 0.06);
+        o.frequency.exponentialRampToValueAtTime(55, now + 0.2);
+        const og = audioCtx.createGain();
+        og.gain.setValueAtTime(0.2, now + 0.06);
+        og.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        src.connect(bp); bp.connect(hs); hs.connect(g); g.connect(audioCtx.destination);
+        o.connect(og); og.connect(audioCtx.destination);
+        src.start(now); src.stop(now + 0.24);
+        o.start(now + 0.06); o.stop(now + 0.26);
+      } catch (e) { }
+    }
+
+    function playTap() {
+      try {
+        const now = audioCtx.currentTime;
+        const o = audioCtx.createOscillator();
+        o.type = 'sine'; o.frequency.setValueAtTime(900, now);
+        o.frequency.exponentialRampToValueAtTime(400, now + 0.06);
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.08, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(now); o.stop(now + 0.08);
+      } catch (e) { }
+    }
+
+    function playBookmark(on) {
+      try {
+        const now = audioCtx.currentTime;
+        const freqs = on ? [880, 1320] : [660, 440];
+        freqs.forEach((f, i) => {
+          const o = audioCtx.createOscillator();
+          o.type = 'sine'; o.frequency.value = f;
+          const g = audioCtx.createGain();
+          g.gain.setValueAtTime(0, now + i * 0.06);
+          g.gain.linearRampToValueAtTime(0.12, now + i * 0.06 + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.12);
+          o.connect(g); g.connect(audioCtx.destination);
+          o.start(now + i * 0.06); o.stop(now + i * 0.06 + 0.14);
+        });
+      } catch (e) { }
+    }
+
+    function playOpen() {
+      try {
+        const now = audioCtx.currentTime;
+        const sr = audioCtx.sampleRate;
+        const bufLen = sr * 0.45;
+        const buf = audioCtx.createBuffer(1, bufLen, sr);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < bufLen; i++) {
+          d[i] = (Math.random() * 2 - 1) * Math.pow(i / bufLen, 0.25) * Math.pow(1 - i / bufLen, 0.6);
+        }
+        const src = audioCtx.createBufferSource(); src.buffer = buf;
+        const lp = audioCtx.createBiquadFilter();
+        lp.type = 'lowpass';
+        lp.frequency.setValueAtTime(200, now);
+        lp.frequency.exponentialRampToValueAtTime(5000, now + 0.35);
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.35, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.46);
+        // Chime chord
+        [523, 659, 784].forEach((f, i) => {
+          const o = audioCtx.createOscillator();
+          o.type = 'triangle'; o.frequency.value = f;
+          const og = audioCtx.createGain();
+          og.gain.setValueAtTime(0, now + i * 0.04);
+          og.gain.linearRampToValueAtTime(0.06, now + i * 0.04 + 0.02);
+          og.gain.exponentialRampToValueAtTime(0.001, now + i * 0.04 + 0.6);
+          o.connect(og); og.connect(audioCtx.destination);
+          o.start(now + i * 0.04); o.stop(now + i * 0.04 + 0.65);
+        });
+        src.connect(lp); lp.connect(g); g.connect(audioCtx.destination);
+        src.start(now); src.stop(now + 0.48);
+      } catch (e) { }
+    }
+
+    function resumeAudio() { if (audioCtx.state === 'suspended') audioCtx.resume(); }
+    document.addEventListener('touchstart', resumeAudio, { once: true });
+    document.addEventListener('click', resumeAudio, { once: true });
+
+    /* ═══════════════════════════════════════
+       BIG PICTURE ANIMATION
+    ═══════════════════════════════════════ */
+    function triggerBigPicture() {
+      playOpen();
+      const flash = document.getElementById('bp-flash');
+      flash.classList.remove('flash'); void flash.offsetWidth;
+      flash.classList.add('flash');
+      const canvas = document.getElementById('rc');
+      canvas.classList.remove('bp-opening'); void canvas.offsetWidth;
+      canvas.classList.add('bp-opening');
+      canvas.addEventListener('animationend', () => canvas.classList.remove('bp-opening'), { once: true });
+    }
+
+    /* ═══════════════════════════════════════
+       CANVAS & STATE
+    ═══════════════════════════════════════ */
+    const rc = document.getElementById('rc');
+    const ctx = rc.getContext('2d', { alpha: false, willReadFrequently: false });
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    const DPR = window.devicePixelRatio || 1;
+
+    let W = 0, H = 0;
+    let pdf = null, total = 0, cur = 1;
+    let pageCache = {}, thumbCache = {}, pageTexts = {};
+    let theme = 'white', brightness = 1;
+    let bookmarks = new Set();
+    let pagesRead = new Set();
+    let autoReadTimer = null, autoReadOn = false;
+    let sessionStart = Date.now();
+
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      rc.width = W * DPR; rc.height = H * DPR;
+      rc.style.width = W + 'px'; rc.style.height = H + 'px';
+    }
+    resize();
+
+    function pageBG() {
+      return theme === 'sepia' ? '#F0E6C8' : theme === 'night' ? '#161618' : '#F8F3EA';
+    }
+    function updateAmbient() {
+      const colors = {
+        white: 'rgba(200,190,255,0.08)',
+        sepia: 'rgba(200,160,80,0.08)',
+        night: 'rgba(108,99,255,0.15)'
+      };
+      document.getElementById('amb').style.background =
+        `radial-gradient(ellipse 80% 60% at 50% 110%, ${colors[theme]}, transparent 70%)`;
+    }
+    updateAmbient();
+
+    /* ── Render page ── */
+    async function renderPage(n) {
+      if (pageCache[n]) return pageCache[n];
+      const page = await pdf.getPage(n);
+      const vp1 = page.getViewport({ scale: 1 });
+      const scale = Math.min((W * DPR) / vp1.width, (H * DPR) / vp1.height) * 0.96;
+      const vp = page.getViewport({ scale });
+      const oc = document.createElement('canvas');
+      oc.width = Math.ceil(vp.width); oc.height = Math.ceil(vp.height);
+      const octx = oc.getContext('2d');
+      octx.fillStyle = pageBG();
+      octx.fillRect(0, 0, oc.width, oc.height);
+      if (brightness < 1) octx.filter = `brightness(${brightness})`;
+      await page.render({ canvasContext: octx, viewport: vp }).promise;
+      octx.filter = 'none';
+      pageCache[n] = { canvas: oc, w: oc.width, h: oc.height };
+      return pageCache[n];
+    }
+
+    /* ── Page shadow on canvas bg ── */
+    function clearBg() {
+      ctx.fillStyle = theme === 'night' ? '#0d0d0f' : '#1a1a1e';
+      ctx.fillRect(0, 0, W * DPR, H * DPR);
+    }
+
+    async function showPage(n) {
+      const pc = await renderPage(n);
+      clearBg();
+      const x = Math.round((W * DPR - pc.w) / 2);
+      const y = Math.round((H * DPR - pc.h) / 2);
+      // Subtle drop shadow under page
+      ctx.shadowColor = 'rgba(0,0,0,0.55)';
+      ctx.shadowBlur = 40 * DPR;
+      ctx.shadowOffsetY = 8 * DPR;
+      ctx.drawImage(pc.canvas, x, y);
+      ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+      pagesRead.add(n);
+      updateUI();
+      preload(n);
+      updateBookmarkBtn(n);
+    }
+
+    function preload(n) {
+      if (n > 1) renderPage(n - 1).catch(() => { });
+      if (n < total) renderPage(n + 1).catch(() => { });
+    }
+
+    /* ═══════════════════════════════════════
+       PAGE-TURN FOLD RENDERER
+    ═══════════════════════════════════════ */
+    let animRaf = null, swipeDir = null, swipeProg = 0;
+
+    function drawFold(foldXpx, dir) {
+      const A = pageCache[cur];
+      const B = dir === 'next' ? pageCache[cur + 1] : pageCache[cur - 1];
+      if (!A) return;
+      const CW = W * DPR, CH = H * DPR;
+      const iw = A.w, ih = A.h;
+      const cx = (CW - iw) >> 1, cy = (CH - ih) >> 1;
+      const creaseL = Math.max(0, Math.min(iw, (foldXpx | 0) - cx));
+      clearBg();
+
+      // Drop shadow helper
+      function drawShadowedPage(canvas, dx, dy) {
+        ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 30 * DPR; ctx.shadowOffsetY = 6 * DPR;
+        ctx.drawImage(canvas, dx, dy);
+        ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+      }
+
+      if (dir === 'next') {
+        const peeledW = iw - creaseL;
+        const t = peeledW / iw;
+        if (creaseL > 0) ctx.drawImage(A.canvas, 0, 0, creaseL, ih, cx, cy, creaseL, ih);
+        if (peeledW > 0 && B) {
+          const bx = (CW - B.w) >> 1, by = (CH - B.h) >> 1;
+          ctx.drawImage(B.canvas, creaseL, 0, peeledW, ih, bx + creaseL, by, peeledW, ih);
+        }
+        if (peeledW > 0) {
+          const angle = t * (Math.PI / 2);
+          const proj = Math.max(1, (peeledW * Math.cos(angle)) | 0);
+          ctx.drawImage(A.canvas, creaseL, 0, peeledW, ih, cx + creaseL - proj, cy, proj, ih);
+          // Curl shade
+          const shade = ctx.createLinearGradient(cx + creaseL - proj, 0, cx + creaseL, 0);
+          shade.addColorStop(0, `rgba(255,255,255,${0.08 * t})`);
+          shade.addColorStop(0.5, `rgba(0,0,0,${0.3 * t})`);
+          shade.addColorStop(1, `rgba(0,0,0,${0.72 * t})`);
+          ctx.fillStyle = shade; ctx.fillRect(cx + creaseL - proj, cy, proj, ih);
+          // Specular highlight at curl edge
+          const spec = ctx.createLinearGradient(cx + creaseL - proj, 0, cx + creaseL - proj + Math.max(1, proj * 0.15), 0);
+          spec.addColorStop(0, `rgba(255,255,255,${0.18 * t})`);
+          spec.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = spec; ctx.fillRect(cx + creaseL - proj, cy, proj * 0.15, ih);
+          // Shadow on B
+          const sw = Math.min(iw * 0.12, peeledW) | 0;
+          if (sw > 0) {
+            const shadow = ctx.createLinearGradient(cx + creaseL, 0, cx + creaseL + sw, 0);
+            shadow.addColorStop(0, `rgba(0,0,0,${0.5 * Math.min(t * 2, 1)})`);
+            shadow.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = shadow; ctx.fillRect(cx + creaseL, cy, sw, ih);
+          }
+        }
+      } else {
+        const t = creaseL / iw;
+        ctx.drawImage(A.canvas, cx, cy);
+        if (creaseL > 0 && B) {
+          const bx = (CW - B.w) >> 1, by = (CH - B.h) >> 1;
+          ctx.drawImage(B.canvas, 0, 0, creaseL, ih, bx, by, creaseL, ih);
+          const angle = (1 - t) * (Math.PI / 2);
+          const proj = Math.max(1, (creaseL * Math.cos(angle)) | 0);
+          ctx.drawImage(B.canvas, B.w - creaseL, 0, creaseL, ih, cx + creaseL, cy, proj, ih);
+          // Curl shade
+          const shade = ctx.createLinearGradient(cx + creaseL, 0, cx + creaseL + proj, 0);
+          shade.addColorStop(0, `rgba(0,0,0,${0.68 * t})`);
+          shade.addColorStop(0.5, `rgba(0,0,0,${0.22 * t})`);
+          shade.addColorStop(1, `rgba(255,255,255,${0.14 * t})`);
+          ctx.fillStyle = shade; ctx.fillRect(cx + creaseL, cy, proj, ih);
+          // Specular
+          const spec = ctx.createLinearGradient(cx + creaseL + proj - proj * 0.12, 0, cx + creaseL + proj, 0);
+          spec.addColorStop(0, 'rgba(255,255,255,0)');
+          spec.addColorStop(1, `rgba(255,255,255,${0.2 * t})`);
+          ctx.fillStyle = spec; ctx.fillRect(cx + creaseL + proj - proj * 0.12, cy, proj * 0.12, ih);
+          // Shadow leftward
+          const sw = Math.min(iw * 0.12, creaseL) | 0;
+          if (sw > 0) {
+            const shadow = ctx.createLinearGradient(cx + creaseL - sw, 0, cx + creaseL, 0);
+            shadow.addColorStop(0, 'rgba(0,0,0,0)');
+            shadow.addColorStop(1, `rgba(0,0,0,${0.5 * Math.min(t * 2, 1)})`);
+            ctx.fillStyle = shadow; ctx.fillRect(cx + creaseL - sw, cy, sw, ih);
+          }
+        }
+      }
+    }
+
+    function progToFoldX(p, dir) {
+      const A = pageCache[cur];
+      if (!A) return (W * DPR) >> 1;
+      const cx = ((W * DPR - A.w) >> 1);
+      return dir === 'next' ? cx + A.w - (A.w * p) | 0 : cx + (A.w * p) | 0;
+    }
+
+    function animateFold(fromP, toP, onDone) {
+      if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; }
+      const dir = swipeDir;
+      const dist = Math.abs(toP - fromP);
+      const ms = Math.max(90, Math.min(dist * 300, 340));
+      const t0 = performance.now();
+      function frame(ts) {
+        const t = Math.min((ts - t0) / ms, 1);
+        // Spring-like: ease out with slight bounce feel
+        const p = fromP + (toP - fromP) * (1 - Math.pow(1 - t, 3));
+        drawFold(progToFoldX(p, dir), dir);
+        if (t < 1) { animRaf = requestAnimationFrame(frame); }
+        else { animRaf = null; onDone(); }
+      }
+      animRaf = requestAnimationFrame(frame);
+    }
+
+    /* ═══════════════════════════════════════
+       TOUCH HANDLING
+    ═══════════════════════════════════════ */
+    let tStartX = 0, tStartY = 0, tDir = null, tActive = false, tDragging = false, tCurX = 0;
+    let edgeTimeout = null;
+
+    document.addEventListener('touchstart', onTS, { passive: true });
+    document.addEventListener('touchmove', onTM, { passive: false });
+    document.addEventListener('touchend', onTE, { passive: true });
+
+    function onTS(e) {
+      if (e.target.closest('#ts,#so,#set,#om,#ls,#ghint')) return;
+      if (e.touches.length !== 1 || !pdf) return;
+      tStartX = e.touches[0].clientX; tStartY = e.touches[0].clientY; tCurX = tStartX;
+      tDir = null; tActive = true; tDragging = false;
+      if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; }
+    }
+
+    function onTM(e) {
+      if (!tActive || e.touches.length !== 1 || !pdf) return;
+      const dx = e.touches[0].clientX - tStartX;
+      const dy = e.touches[0].clientY - tStartY;
+      tCurX = e.touches[0].clientX;
+      if (!tDragging) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dy) > Math.abs(dx) * 1.3) { tActive = false; return; }
+        tDragging = true;
+        tDir = dx < 0 ? 'next' : 'prev';
+        swipeDir = tDir; swipeProg = 0;
+        if (tDir === 'next' && cur >= total) { tActive = false; tDragging = false; showEdgeBounce('right'); return; }
+        if (tDir === 'prev' && cur <= 1) { tActive = false; tDragging = false; showEdgeBounce('left'); return; }
+        renderPage(tDir === 'next' ? cur + 1 : cur - 1).catch(() => { });
+      }
+      if (!tDragging) return;
+      e.preventDefault();
+      const cur_pc = pageCache[cur];
+      const pageW = cur_pc ? cur_pc.w / DPR : W;
+      const absDx = Math.abs(tCurX - tStartX);
+      swipeProg = Math.min(absDx / pageW, 0.98);
+      const CW = W * DPR, iw = cur_pc ? cur_pc.w : CW, cx = Math.round((CW - iw) / 2);
+      let foldXpx;
+      if (tDir === 'next') foldXpx = Math.max(cx, (cx + iw) - absDx * DPR);
+      else foldXpx = Math.min(cx + iw, cx + absDx * DPR);
+      drawFold(foldXpx, swipeDir);
+      // Edge glow
+      const el = document.getElementById('edge-l'), er = document.getElementById('edge-r');
+      if (tDir === 'prev') { el.style.opacity = Math.min(swipeProg * 2, 0.8) + ''; er.style.opacity = '0'; }
+      else { er.style.opacity = Math.min(swipeProg * 2, 0.8) + ''; el.style.opacity = '0'; }
+    }
+
+    function onTE(e) {
+      document.getElementById('edge-l').style.opacity = '0';
+      document.getElementById('edge-r').style.opacity = '0';
+      if (!tDragging || !pdf) { tActive = false; return; }
+      tActive = false; tDragging = false;
+      const threshold = 0.26;
+      const startP = swipeProg, dir = swipeDir;
+      if (startP >= threshold) {
+        playPageTurn(dir);
+        animateFold(startP, 1, () => {
+          cur = dir === 'next' ? cur + 1 : cur - 1;
+          swipeProg = 0; swipeDir = null;
+          showPage(cur);
+        });
+      } else {
+        animateFold(startP, 0, () => { swipeProg = 0; swipeDir = null; showPage(cur); });
+      }
+    }
+
+    function showEdgeBounce(side) {
+      const el = document.getElementById(side === 'left' ? 'edge-l' : 'edge-r');
+      el.style.transition = 'none'; el.style.opacity = '0.5';
+      setTimeout(() => { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; }, 200);
+    }
+
+    /* ═══════════════════════════════════════
+       CHROME & UI
+    ═══════════════════════════════════════ */
+    let chromeOn = true, hideT = null;
+    function showChrome() {
+      clearTimeout(hideT); chromeOn = true;
+      document.getElementById('ct').classList.remove('off');
+      document.getElementById('cb').classList.remove('off');
+      document.getElementById('bm-btn').classList.add('vis');
+      document.getElementById('prog-ring').classList.add('vis');
+    }
+    function hideChrome() {
+      chromeOn = false;
+      document.getElementById('ct').classList.add('off');
+      document.getElementById('cb').classList.add('off');
+      document.getElementById('bm-btn').classList.remove('vis');
+      // Keep ring visible
+    }
+    function scheduleHide() { clearTimeout(hideT); hideT = setTimeout(hideChrome, 3500); }
+
+    function ripple(x, y, color = 'rgba(108,99,255,.25)') {
+      const d = document.createElement('div');
+      d.className = 'ripple';
+      d.style.cssText = `left:${x}px;top:${y}px;width:70px;height:70px;background:${color}`;
+      document.body.appendChild(d);
+      setTimeout(() => d.remove(), 600);
+    }
+
+    /* Page number toast */
+    let toastT = null;
+    function showToast(msg) {
+      const t = document.getElementById('pgtoast');
+      t.textContent = msg; t.classList.add('show');
+      clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1200);
+    }
+
+    /* Tap zones */
+    document.getElementById('tz-l').addEventListener('click', e => {
+      if (!pdf) return;
+      ripple(e.clientX, e.clientY);
+      playTap();
+      if (cur > 1) {
+        swipeDir = 'prev';
+        renderPage(cur - 1).then(() => {
+          playPageTurn('prev');
+          animateFold(0, 1, () => { cur--; swipeProg = 0; swipeDir = null; showPage(cur); });
+        });
+      } else { showEdgeBounce('left'); }
+      showChrome(); scheduleHide();
+    });
+    document.getElementById('tz-r').addEventListener('click', e => {
+      if (!pdf) return;
+      ripple(e.clientX, e.clientY);
+      playTap();
+      if (cur < total) {
+        swipeDir = 'next';
+        renderPage(cur + 1).then(() => {
+          playPageTurn('next');
+          animateFold(0, 1, () => { cur++; swipeProg = 0; swipeDir = null; showPage(cur); });
+        });
+      } else { showEdgeBounce('right'); }
+      showChrome(); scheduleHide();
+    });
+    document.getElementById('tz-c').addEventListener('click', () => {
+      if (chromeOn) hideChrome(); else { showChrome(); scheduleHide(); }
+    });
+
+    /* Button nav */
+    document.getElementById('btn-prev').addEventListener('click', () => {
+      if (!pdf || cur <= 1) return;
+      swipeDir = 'prev';
+      renderPage(cur - 1).then(() => { playPageTurn('prev'); animateFold(0, 1, () => { cur--; swipeProg = 0; swipeDir = null; showPage(cur); }); });
+      scheduleHide();
+    });
+    document.getElementById('btn-next').addEventListener('click', () => {
+      if (!pdf || cur >= total) return;
+      swipeDir = 'next';
+      renderPage(cur + 1).then(() => { playPageTurn('next'); animateFold(0, 1, () => { cur++; swipeProg = 0; swipeDir = null; showPage(cur); }); });
+      scheduleHide();
+    });
+
+    /* Slider with live preview toast */
+    const pgSl = document.getElementById('pg-sl');
+    pgSl.addEventListener('input', e => {
+      const n = parseInt(e.target.value);
+      showToast(`${n} / ${total}`);
+      // update gradient fill
+      const pct = ((n - 1) / (total - 1 || 1)) * 100;
+      pgSl.style.backgroundSize = pct + '% 100%';
+    });
+    pgSl.addEventListener('change', e => {
+      const n = parseInt(e.target.value);
+      if (n !== cur) { cur = n; showPage(cur); }
+      scheduleHide();
+    });
+
+    function updateUI() {
+      document.getElementById('pg-lbl').textContent = `${cur} / ${total}`;
+      pgSl.value = cur;
+      const pct = total > 1 ? ((cur - 1) / (total - 1)) * 100 : 0;
+      pgSl.style.backgroundSize = pct + '% 100%';
+      document.getElementById('mpf').style.width = pct + '%';
+      // Progress ring
+      const circ = 113; // 2π*18
+      const offset = circ - (pct / 100) * circ;
+      document.getElementById('pr-fill').style.strokeDashoffset = offset;
+      document.getElementById('pr-pct').textContent = Math.round(pct) + '%';
+      // Thumbs
+      document.querySelectorAll('.tc').forEach(c => c.classList.toggle('cur', parseInt(c.dataset.n) === cur));
+      const tc = document.querySelector(`.tc[data-n="${cur}"]`);
+      if (tc) tc.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      // Stats
+      document.getElementById('st-pages').textContent = pagesRead.size;
+      document.getElementById('st-pct').textContent = Math.round(pct) + '%';
+      document.getElementById('st-bm').textContent = bookmarks.size;
+      // Thumbnail count
+      document.getElementById('ts-cnt').textContent = total ? `${total} pages` : '';
+    }
+
+    /* ═══════════════════════════════════════
+       BOOKMARKS
+    ═══════════════════════════════════════ */
+    function updateBookmarkBtn(n) {
+      const btn = document.getElementById('bm-btn');
+      const tgl = document.getElementById('btn-bm-tgl');
+      const on = bookmarks.has(n);
+      btn.classList.toggle('bm-on', on);
+      tgl.querySelector('svg').style.fill = on ? 'var(--accent2)' : 'none';
+      tgl.style.color = on ? 'var(--accent2)' : '';
+    }
+
+    document.getElementById('bm-btn').addEventListener('click', () => {
+      if (!pdf) return;
+      const on = bookmarks.has(cur);
+      if (on) bookmarks.delete(cur); else bookmarks.add(cur);
+      playBookmark(!on);
+      updateBookmarkBtn(cur);
+      updateUI();
+      // Micro-animation: scale pulse
+      const btn = document.getElementById('bm-btn');
+      btn.style.transform = 'scale(1.35)';
+      setTimeout(() => btn.style.transform = '', 200);
+    });
+    document.getElementById('btn-bm-tgl').addEventListener('click', () => {
+      document.getElementById('bm-btn').click();
+    });
+
+    /* ═══════════════════════════════════════
+       AUTO-READ
+    ═══════════════════════════════════════ */
+    document.getElementById('btn-auto').addEventListener('click', () => {
+      autoReadOn = !autoReadOn;
+      const btn = document.getElementById('btn-auto');
+      btn.style.color = autoReadOn ? 'var(--accent)' : '';
+      btn.querySelector('svg').style.fill = autoReadOn ? 'var(--accent)' : 'none';
+      if (autoReadOn) {
+        playTap();
+        scheduleAutoRead();
+      } else {
+        clearTimeout(autoReadTimer); autoReadTimer = null;
+      }
+      scheduleHide();
+    });
+    function scheduleAutoRead() {
+      if (!autoReadOn) return;
+      autoReadTimer = setTimeout(() => {
+        if (!autoReadOn || !pdf) return;
+        if (cur < total) {
+          swipeDir = 'next';
+          renderPage(cur + 1).then(() => {
+            playPageTurn('next');
+            animateFold(0, 1, () => { cur++; swipeProg = 0; swipeDir = null; showPage(cur); scheduleAutoRead(); });
+          });
+        } else {
+          autoReadOn = false;
+          document.getElementById('btn-auto').style.color = '';
+          document.getElementById('btn-auto').querySelector('svg').style.fill = 'none';
+        }
+      }, 5000);
+    }
+
+    /* ═══════════════════════════════════════
+       THUMBNAIL STRIP
+    ═══════════════════════════════════════ */
+    async function renderThumb(n) {
+      if (thumbCache[n]) return thumbCache[n];
+      const page = await pdf.getPage(n);
+      const vp1 = page.getViewport({ scale: 1 });
+      const targetH = Math.round(window.innerHeight * 0.52);
+      const scale = (targetH / vp1.height) * DPR;
+      const vp = page.getViewport({ scale });
+      const c = document.createElement('canvas');
+      c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+      const tc = c.getContext('2d');
+      tc.fillStyle = pageBG(); tc.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: tc, viewport: vp }).promise;
+      thumbCache[n] = { canvas: c, w: vp.width / DPR, h: vp.height / DPR };
+      return thumbCache[n];
+    }
+
+    async function openThumbStrip() {
+      document.getElementById('ts').classList.add('open');
+      const scroll = document.getElementById('ts-scroll');
+      if (scroll.children.length > 0) { updateUI(); return; }
+      scroll.innerHTML = '<div class="ts-loading">Generating previews…</div>';
+      const frag = document.createDocumentFragment();
+      for (let i = 1; i <= total; i++) {
+        const card = document.createElement('div');
+        card.className = 'tc' + (i === cur ? ' cur' : '');
+        card.dataset.n = i;
+        card.style.cssText = 'width:110px;height:165px';
+        // Bookmark badge
+        const nbadge = document.createElement('div');
+        nbadge.className = 'tc-n'; nbadge.textContent = i;
+        card.appendChild(nbadge);
+        card.addEventListener('click', () => {
+          playTap();
+          document.getElementById('ts').classList.remove('open');
+          if (i !== cur) {
+            const dir = i > cur ? 'next' : 'prev';
+            cur = i; swipeDir = dir;
+            renderPage(i).then(() => { playPageTurn(dir); animateFold(0, 1, () => { swipeProg = 0; swipeDir = null; showPage(cur); }); });
+          }
+        });
+        frag.appendChild(card);
+      }
+      scroll.innerHTML = ''; scroll.appendChild(frag);
+      const cards = scroll.querySelectorAll('.tc');
+      for (let i = 0; i < cards.length; i++) {
+        const n = i + 1;
+        const th = await renderThumb(n);
+        const card = cards[i];
+        const cssW = Math.round(th.w), cssH = Math.round(th.h);
+        th.canvas.style.width = cssW + 'px'; th.canvas.style.height = cssH + 'px';
+        card.style.width = cssW + 'px'; card.style.height = (cssH + 22) + 'px';
+        card.insertBefore(th.canvas, card.querySelector('.tc-n'));
+        // Animate in
+        card.style.opacity = '0'; card.style.transform = 'scale(0.9) translateY(10px)';
+        requestAnimationFrame(() => {
+          card.style.transition = `opacity .25s ${i * 0.03}s, transform .25s ${i * 0.03}s cubic-bezier(.34,1.2,.64,1)`;
+          card.style.opacity = ''; card.style.transform = '';
+        });
+      }
+      const curCard = scroll.querySelector(`.tc[data-n="${cur}"]`);
+      if (curCard) curCard.scrollIntoView({ inline: 'center', block: 'nearest' });
+    }
+
+    document.getElementById('btn-pages').addEventListener('click', () => { playTap(); openThumbStrip(); showChrome(); });
+    document.getElementById('ts-x').addEventListener('click', () => { playTap(); document.getElementById('ts').classList.remove('open'); });
+
+    /* ═══════════════════════════════════════
+       SEARCH
+    ═══════════════════════════════════════ */
+    let sMatches = [], sIdx = -1;
+    document.getElementById('btn-search').addEventListener('click', () => {
+      playTap();
+      document.getElementById('so').classList.add('open');
+      document.getElementById('si').focus();
+      showChrome();
+    });
+    document.getElementById('sc-x').addEventListener('click', closeSearch);
+    document.getElementById('so').addEventListener('click', e => { if (e.target === document.getElementById('so')) closeSearch(); });
+    document.getElementById('sn-p').addEventListener('click', () => navS(-1));
+    document.getElementById('sn-n').addEventListener('click', () => navS(1));
+
+    function closeSearch() {
+      document.getElementById('so').classList.remove('open');
+      document.getElementById('si').value = '';
+      sMatches = []; sIdx = -1; updateSUI();
+    }
+    let sdt;
+    document.getElementById('si').addEventListener('input', e => {
+      clearTimeout(sdt); sdt = setTimeout(() => doSearch(e.target.value.trim()), 320);
+    });
+
+    async function doSearch(q) {
+      sMatches = []; sIdx = -1;
+      const sr = document.getElementById('sr');
+      if (!q || !pdf) { updateSUI(); sr.innerHTML = ''; return; }
+      sr.innerHTML = '<div class="sc-empty">Searching…</div>';
+      const lq = q.toLowerCase();
+      for (let p = 1; p <= total; p++) {
+        if (!pageTexts[p]) {
+          const page = await pdf.getPage(p);
+          const tc = await page.getTextContent();
+          pageTexts[p] = tc.items.map(i => i.str).join(' ');
+        }
+        const txt = pageTexts[p]; let i = 0;
+        while ((i = txt.toLowerCase().indexOf(lq, i)) !== -1) {
+          sMatches.push({ page: p, snip: txt.substring(Math.max(0, i - 40), i + q.length + 60), q });
+          i += q.length;
+        }
+      }
+      if (sMatches.length) sIdx = 0;
+      updateSUI(); renderSResults();
+    }
+
+    function renderSResults() {
+      const sr = document.getElementById('sr');
+      if (!sMatches.length) { sr.innerHTML = '<div class="sc-empty">No results found</div>'; return; }
+      sr.innerHTML = sMatches.map((m, i) => {
+        const hi = m.snip.replace(new RegExp(m.q, 'gi'), s => `<mark>${s}</mark>`);
+        return `<div class="sri" data-i="${i}"><div class="sri-p">Page ${m.page}</div><div class="sri-s">…${hi}…</div></div>`;
+      }).join('');
+      sr.querySelectorAll('.sri').forEach(el => {
+        el.addEventListener('click', () => {
+          const m = sMatches[parseInt(el.dataset.i)];
+          closeSearch();
+          if (m.page !== cur) { const d = m.page > cur ? 'next' : 'prev'; cur = m.page; swipeDir = d; renderPage(cur).then(() => { playPageTurn(d); animateFold(0, 1, () => { swipeProg = 0; swipeDir = null; showPage(cur); }); }); }
+        });
+      });
+    }
+    function navS(d) { if (!sMatches.length) return; sIdx = (sIdx + d + sMatches.length) % sMatches.length; updateSUI(); }
+    function updateSUI() {
+      const ct = document.getElementById('sc-ct'), p = document.getElementById('sn-p'), n = document.getElementById('sn-n');
+      if (!sMatches.length) { ct.textContent = sIdx === -1 ? 'Type to search' : 'No results'; p.disabled = n.disabled = true; }
+      else { ct.textContent = `${sIdx + 1} of ${sMatches.length}`; p.disabled = n.disabled = false; }
+    }
+
+    /* ═══════════════════════════════════════
+       SETTINGS
+    ═══════════════════════════════════════ */
+    document.getElementById('btn-set').addEventListener('click', () => { playTap(); document.getElementById('set').classList.add('open'); showChrome(); });
+    document.getElementById('set').addEventListener('click', e => { if (e.target === document.getElementById('set')) { playTap(); document.getElementById('set').classList.remove('open'); } });
+
+    document.querySelectorAll('.th-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.th-chip').forEach(c => c.classList.remove('on'));
+        chip.classList.add('on');
+        theme = chip.dataset.t;
+        playTap();
+        pageCache = {}; thumbCache = {};
+        document.getElementById('ts-scroll').innerHTML = '';
+        updateAmbient();
+        if (pdf) showPage(cur);
+      });
+    });
+
+    document.getElementById('br').addEventListener('input', e => {
+      brightness = parseInt(e.target.value) / 100;
+      pageCache = {};
+      if (pdf) showPage(cur);
+    });
+
+    /* ═══════════════════════════════════════
+       OPEN MODAL
+    ═══════════════════════════════════════ */
+    function openModal() { document.getElementById('om').classList.remove('hidden'); }
+    function closeModal() { document.getElementById('om').classList.add('hidden'); }
+    ['btn-open', 'ebtn'].forEach(id => document.getElementById(id).addEventListener('click', () => { playTap(); openModal(); }));
+    document.getElementById('om-x').addEventListener('click', () => { playTap(); closeModal(); });
+    document.getElementById('om').addEventListener('click', e => { if (e.target === document.getElementById('om')) closeModal(); });
+    document.querySelectorAll('.om-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        playTap();
+        document.querySelectorAll('.om-tab').forEach(t => t.classList.remove('on'));
+        document.querySelectorAll('.om-pn').forEach(p => p.classList.remove('on'));
+        tab.classList.add('on');
+        document.getElementById('om-' + tab.dataset.tab).classList.add('on');
+      });
+    });
+
+    document.getElementById('browse').addEventListener('click', () => document.getElementById('file-input').click());
+    document.getElementById('file-input').addEventListener('change', e => {
+      const f = e.target.files[0]; if (f) { closeModal(); loadFile(f); }
+      e.target.value = '';
+    });
+    const dz = document.getElementById('dz');
+    dz.addEventListener('click', () => document.getElementById('file-input').click());
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('ov'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('ov'));
+    dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('ov'); const f = e.dataTransfer.files[0]; if (f?.type === 'application/pdf') { closeModal(); loadFile(f); } });
+
+    document.getElementById('ug').addEventListener('click', loadURL);
+    document.getElementById('ui').addEventListener('keydown', e => { if (e.key === 'Enter') loadURL(); });
+
+    async function loadURL() {
+      const url = document.getElementById('ui').value.trim();
+      const err = document.getElementById('uerr'); err.style.display = 'none';
+      if (!url.startsWith('http')) { err.textContent = 'Enter a valid URL.'; err.style.display = 'block'; return; }
+      closeModal(); showLoad('Fetching PDF…');
+      try {
+        const res = await fetch(url); if (!res.ok) throw new Error('HTTP ' + res.status);
+        await loadBuf(await res.arrayBuffer(), url.split('/').pop() || 'Document');
+      } catch (e) {
+        hideLoad(); openModal();
+        setTimeout(() => {
+          document.querySelectorAll('.om-tab').forEach(t => t.classList.remove('on'));
+          document.querySelectorAll('.om-pn').forEach(p => p.classList.remove('on'));
+          document.querySelector('[data-tab=url]').classList.add('on');
+          document.getElementById('om-url').classList.add('on');
+          const er = document.getElementById('uerr');
+          er.textContent = 'Failed: ' + e.message;
+          er.style.display = 'block';
+        }, 150);
+      }
+    }
+
+    async function loadFile(file) {
+      resumeAudio();
+      showLoad('Opening ' + file.name + '…');
+      await loadBuf(await file.arrayBuffer(), file.name.replace(/\.pdf$/i, ''));
+    }
+
+    async function loadRemoteUrl(url, name) {
+      resumeAudio();
+      if (!url) throw new Error('Missing remote PDF URL');
+      showLoad('Opening PDF…');
+      pageCache = {}; thumbCache = {}; pageTexts = {};
+      bookmarks = new Set(); pagesRead = new Set();
+      document.getElementById('ts-scroll').innerHTML = '';
+      pdf = await pdfjsLib.getDocument({ url, withCredentials: false }).promise;
+      total = pdf.numPages; cur = 1;
+      pgSl.max = total;
+      document.getElementById('doc-t').textContent = name || 'Document';
+      document.getElementById('doc-s').textContent = total + ' pages';
+      document.getElementById('empty').classList.add('gone');
+      hideLoad();
+      await showPage(1);
+      triggerBigPicture();
+      showChrome(); scheduleHide();
+      if (!localStorage.getItem('pf-hint-seen')) {
+        setTimeout(() => { document.getElementById('ghint').classList.add('show'); }, 800);
+      }
+    }
+
+    async function loadBuf(buf, name) {
+      pageCache = {}; thumbCache = {}; pageTexts = {};
+      bookmarks = new Set(); pagesRead = new Set();
+      document.getElementById('ts-scroll').innerHTML = '';
+      pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      total = pdf.numPages; cur = 1;
+      pgSl.max = total;
+      document.getElementById('doc-t').textContent = name;
+      document.getElementById('doc-s').textContent = total + ' pages';
+      document.getElementById('empty').classList.add('gone');
+      hideLoad();
+      await showPage(1);
+      triggerBigPicture();
+      showChrome(); scheduleHide();
+      // Show gesture hint first time
+      if (!localStorage.getItem('pf-hint-seen')) {
+        setTimeout(() => { document.getElementById('ghint').classList.add('show'); }, 800);
+      }
+    }
+
+    function showLoad(msg) { document.getElementById('ls').classList.add('on'); document.getElementById('lm').textContent = msg || '…'; }
+    function hideLoad() { document.getElementById('ls').classList.remove('on'); }
+
+    async function loadFromQueryString() {
+      const params = new URLSearchParams(window.location.search);
+      const fileId = params.get('file_id');
+      const fileUrl = params.get('file');
+      const name = params.get('name') || 'Document';
+      const source = fileId ? `/pdf-stream?file_id=${encodeURIComponent(fileId)}` : fileUrl;
+      if (!source) return;
+      closeModal();
+      try {
+        await loadRemoteUrl(source, name);
+      } catch (err) {
+        console.error('Failed to load PDF from query string:', err);
+        hideLoad();
+        openModal();
+        const er = document.getElementById('uerr');
+        er.textContent = 'Unable to open document.';
+        er.style.display = 'block';
+      }
+    }
+
+    loadFromQueryString().catch(err => {
+      console.error('PDF viewer init error:', err);
+    });
+
+    /* ═══════════════════════════════════════
+       GESTURE HINT
+    ═══════════════════════════════════════ */
+    document.getElementById('ghint-dismiss').addEventListener('click', () => {
+      playTap();
+      document.getElementById('ghint').classList.remove('show');
+      try { localStorage.setItem('pf-hint-seen', '1'); } catch (e) { }
+    });
+
+    /* ═══════════════════════════════════════
+       KEYBOARD
+    ═══════════════════════════════════════ */
+    document.addEventListener('keydown', e => {
+      if (!pdf) return;
+      if (document.activeElement === document.getElementById('si')) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') document.getElementById('btn-next').click();
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') document.getElementById('btn-prev').click();
+      if (e.key === 'b') document.getElementById('bm-btn').click();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); document.getElementById('btn-search').click(); }
+    });
+
+    /* ═══════════════════════════════════════
+       RESIZE
+    ═══════════════════════════════════════ */
+    let lastW = window.innerWidth;
+    window.addEventListener('resize', () => {
+      if (window.innerWidth === lastW) return;
+      lastW = window.innerWidth; resize(); pageCache = {}; thumbCache = {};
+      if (pdf) showPage(cur);
+    });
+  </script>
+</body>
+
+</html>

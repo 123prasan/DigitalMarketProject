@@ -1384,7 +1384,7 @@ const isFree = Number(priceDetails.total) === 0;
 
                     <% if(isFree){ %>
                         <a href="/download?file_id=<%= file._id %>" class="cta-btn free-btn" style="text-decoration:none;">
-                            <i class="fa-solid fa-cloud-arrow-down"></i> Download Free
+                            <i class="fa-solid fa-cloud-arrow-down"></i> open Free
                         </a>
                     <% } else { %>
                         <button class="cta-btn" id="payBtn">
@@ -1392,7 +1392,7 @@ const isFree = Number(priceDetails.total) === 0;
                         </button>
                         <% if((file.samplePdfUrl || file.samplePdfStoredFilename) && file.price > 0){ %>
                             <a href="/sample-download/<%= file._id %>" class="cta-btn" style="background: #10b981; margin-top: 10px; text-decoration: none;" target="_blank">
-                                <i class="fa-solid fa-eye"></i> Download Sample (Free)
+                                <i class="fa-solid fa-eye"></i> open Sample (Free)
                             </a>
                         <% } %>
                     <% } %>
@@ -1494,7 +1494,7 @@ const isFree = Number(priceDetails.total) === 0;
             </button>
             <% if((file.samplePdfUrl || file.samplePdfStoredFilename) && file.price > 0){ %>
                 <a href="/sample-download/<%= file._id %>" target="_blank" class="mobile-enroll-btn" style="background: #10b981; margin-top: 8px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <i class="fa-solid fa-eye"></i> View Sample (Free)
+                    <i class="fa-solid fa-eye"></i> Sample (Free)
                 </a>
             <% } %>
         <% } %>

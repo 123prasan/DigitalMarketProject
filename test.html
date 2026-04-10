@@ -2,280 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Theater Reader</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Secure Viewer</title>
     <style>
-        :root {
-            --bg-theater: #f0f4f9; /* Soft Gemini Blue-Gray */
-            --toolbar-bg: rgba(255, 255, 255, 0.85);
-            --accent-blue: #0b57d0;
-            --text-dark: #1f1f1f;
-            --shadow-page: 0 10px 30px rgba(0,0,0,0.15);
-            --radius: 12px;
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #323639; overflow: hidden;
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background-color: var(--bg-theater);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden; /* Prevent body scroll */
+        .viewer-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100dvh;
         }
 
-        /* Top Bar */
-        .header-bar {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 800px;
-            height: 60px;
-            background: var(--toolbar-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            z-index: 1000;
-            border: 1px solid rgba(255,255,255,0.3);
+        iframe {
+            width: 100%; height: 100%; border: none;
         }
 
-        .file-info {
-            font-weight: 500;
-            color: var(--text-dark);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
+        /* THE SHIELD: This invisible box sits over the top 50px 
+           to stop people from clicking the toolbar buttons */
+        .toolbar-shield {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 50px;
+            z-index: 10;
+            cursor: default;
+            /* background: rgba(255,0,0,0.2); Uncomment this to see the shield */
         }
-
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .page-indicator {
-            font-size: 14px;
-            color: var(--text-dark);
-            background: #e1e7ef;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-weight: 600;
-        }
-
-        button {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-            color: var(--accent-blue);
-        }
-
-        button:hover {
-            background: rgba(11, 87, 208, 0.1);
-        }
-
-        button:disabled {
-            color: #ccc;
-            cursor: not-allowed;
-        }
-
-        /* Main Theater Stage */
-        #viewer-stage {
-            height: 100vh;
-            width: 100vw;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 100px; /* Room for header */
-            padding-bottom: 50px;
-            scroll-behavior: smooth;
-        }
-
-        /* The Page Container */
-        .pdf-page-canvas {
-            background: white;
-            box-shadow: var(--shadow-page);
-            margin-bottom: 40px;
-            border-radius: 4px;
-            max-width: 95%;
-            transition: transform 0.3s ease;
-        }
-
-        /* Initial Upload UI */
-        #upload-overlay {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-theater);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            transition: opacity 0.5s ease;
-        }
-
-        .upload-card {
-            background: white;
-            padding: 40px;
-            border-radius: var(--radius);
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-        }
-
-        .btn-primary {
-            background: var(--accent-blue);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 600;
-            margin-top: 20px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-        }
-
-        input[type="file"] { display: none; }
-
-        /* Custom Scrollbar */
-        #viewer-stage::-webkit-scrollbar { width: 8px; }
-        #viewer-stage::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
     </style>
 </head>
-<body>
-
-    <div id="upload-overlay">
-        <div class="upload-card">
-            <h1 style="color: var(--accent-blue);">Theater Reader</h1>
-            <p style="color: #666;">Experience your documents in a clean, focused view.</p>
-            <label class="btn-primary" for="pdf-input">Choose PDF File</label>
-            <input type="file" id="pdf-input" accept="application/pdf">
-        </div>
+<body oncontextmenu="return false;"> <div class="viewer-wrapper">
+        <div class="toolbar-shield"></div>
+        <iframe 
+            src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf#toolbar=0" 
+            id="pdfFrame">
+        </iframe>
     </div>
-
-    <div class="header-bar" id="toolbar" style="display: none;">
-        <div class="file-info" id="file-name">Document.pdf</div>
-        
-        <div class="nav-controls">
-            <button id="prev-btn" title="Previous Page">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            
-            <span class="page-indicator">
-                <span id="current-page">0</span> / <span id="total-pages">0</span>
-            </span>
-
-            <button id="next-btn" title="Next Page">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-        </div>
-
-        <button id="close-btn" title="Close" onclick="location.reload()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-    </div>
-
-    <div id="viewer-stage"></div>
 
     <script>
-        let pdfDoc = null;
-        let pageNum = 1;
-        let isRendering = false;
-        const scale = 2.0; // High resolution rendering
-
-        const pdfInput = document.getElementById('pdf-input');
-        const stage = document.getElementById('viewer-stage');
-        const toolbar = document.getElementById('toolbar');
-        const uploadOverlay = document.getElementById('upload-overlay');
-        const fileNameLabel = document.getElementById('file-name');
-        
-        const curPageLabel = document.getElementById('current-page');
-        const totalPageLabel = document.getElementById('total-pages');
-
-        pdfInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            fileNameLabel.innerText = file.name;
-            uploadOverlay.style.opacity = '0';
-            setTimeout(() => {
-                uploadOverlay.style.display = 'none';
-                toolbar.style.display = 'flex';
-            }, 500);
-
-            const arrayBuffer = await file.arrayBuffer();
-            pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            totalPageLabel.innerText = pdfDoc.numPages;
-            
-            // Render the first page
-            renderPage(pageNum);
-        });
-
-        async function renderPage(num) {
-            isRendering = true;
-            curPageLabel.innerText = num;
-            stage.innerHTML = ''; // Clear stage for single page theater view
-
-            const page = await pdfDoc.getPage(num);
-            const viewport = page.getViewport({ scale: scale });
-
-            const canvas = document.createElement('canvas');
-            canvas.className = 'pdf-page-canvas';
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-
-            // Fit to screen height logic
-            const displayWidth = Math.min(viewport.width / 2, window.innerWidth * 0.85);
-            canvas.style.width = displayWidth + "px";
-
-            stage.appendChild(canvas);
-
-            await page.render({ canvasContext: context, viewport: viewport }).promise;
-            isRendering = false;
-
-            // Update button states
-            document.getElementById('prev-btn').disabled = (num <= 1);
-            document.getElementById('next-btn').disabled = (num >= pdfDoc.numPages);
-        }
-
-        // Navigation logic
-        document.getElementById('prev-btn').addEventListener('click', () => {
-            if (pageNum <= 1 || isRendering) return;
-            pageNum--;
-            renderPage(pageNum);
-            stage.scrollTo(0,0);
-        });
-
-        document.getElementById('next-btn').addEventListener('click', () => {
-            if (pageNum >= pdfDoc.numPages || isRendering) return;
-            pageNum++;
-            renderPage(pageNum);
-            stage.scrollTo(0,0);
-        });
-
-        // Keyboard navigation
-        window.addEventListener('keydown', (e) => {
-            if (e.key === "ArrowRight") document.getElementById('next-btn').click();
-            if (e.key === "ArrowLeft") document.getElementById('prev-btn').click();
+        // Disable Print (Ctrl + P) and Save (Ctrl + S)
+        window.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 's')) {
+                e.preventDefault();
+                alert("Printing and Saving are disabled for this document.");
+            }
         });
     </script>
 </body>
