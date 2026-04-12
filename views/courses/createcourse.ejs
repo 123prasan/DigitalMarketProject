@@ -422,6 +422,10 @@
                         <span class="text-sm text-gray-500"><%= typeof files !=='undefined' ? files.length : 0 %> items</span>
                     </div>
                     
+                    <div class="mb-6" style="border: 1px solid #0b57d0;" >
+                        <input type="text" id="file-search-input" placeholder="Search uploaded files..." class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" style="font-family: var(--v-font-sans);">
+                    </div>
+                    
                     <div id="file-card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                         <% if (typeof files !=='undefined' && files.length> 0) { %>
                             <% files.forEach(file=> { %>
@@ -1103,9 +1107,9 @@
             const filename = document.getElementById('edit-file-name').value.trim();
             const filedescription = document.getElementById('edit-file-description').value.trim();
             const priceValue = document.getElementById('edit-file-price').value.trim();
-            const price = priceValue === '' ? null : parseFloat(priceValue);
+            const price = priceValue === '' ? 0 : parseFloat(priceValue);
             
-            if(!filename || !filedescription || price === null || isNaN(price)) {
+            if(!filename || !filedescription || isNaN(price)) {
                 alert(`Please fill in all fields correctly.`); return;
             }
             
@@ -1119,6 +1123,7 @@
                 const response = await fetch('/edit-file', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify({
                         fileId: fileId,
                         filename: filename,
@@ -1126,6 +1131,15 @@
                         price: price
                     })
                 });
+                
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    alert(`Server error: ${response.status}. Please try again.`);
+                    return;
+                }
                 
                 const data = await response.json();
                 if(data.success) {
@@ -1256,6 +1270,43 @@
             });
         }
     });
+
+    // File Search Functionality
+    const fileSearchInput = document.getElementById('file-search-input');
+    if (fileSearchInput) {
+        fileSearchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const fileCards = document.querySelectorAll('.file-card-unique');
+            
+            fileCards.forEach(card => {
+                const fileName = card.querySelector('.file-card-name').textContent.toLowerCase();
+                if (fileName.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Show empty state if no results
+            const visibleCards = Array.from(fileCards).filter(card => card.style.display !== 'none');
+            const grid = document.getElementById('file-card-grid');
+            if (visibleCards.length === 0 && fileCards.length > 0) {
+                if (!document.getElementById('no-search-results')) {
+                    const noResults = document.createElement('div');
+                    noResults.id = 'no-search-results';
+                    noResults.className = 'col-span-full py-12 text-center text-gray-500';
+                    noResults.innerHTML = `
+                        <i class="fa-regular fa-magnifying-glass text-4xl mb-3 opacity-50"></i>
+                        <p>No files found matching "<strong>${this.value}</strong>"</p>
+                    `;
+                    grid.appendChild(noResults);
+                }
+            } else {
+                const noResults = document.getElementById('no-search-results');
+                if (noResults) noResults.remove();
+            }
+        });
+    }
 
     // Course Creation Form JavaScript from gencourse.ejs
 

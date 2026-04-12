@@ -3130,10 +3130,15 @@ function getCSSVariables() {
 }
 
 
-app.post("/edit-file", authenticateJWT, async (req, res) => {
+app.post("/edit-file", authenticateJWT_user, async (req, res) => {
   const { fileId, filename, filedescription, price, couponCode } = req.body;
 
   try {
+    // Check authentication
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: 'Unauthorized - Please login' });
+    }
+
     const updatedFile = await File.findByIdAndUpdate(fileId, {
       filename,
       filedescription,
@@ -3509,7 +3514,7 @@ function buildPreviewUrl(file, CLOUDFRONT_DOMAIN = process.env.CF_DOMAIN_PROFILE
 
 // import NodeCache from "node-cache";
 const userCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // 10 min cache
-// const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
+
 
 // Helper function to extend TTL of a cached key
 function extendTTL(key) {

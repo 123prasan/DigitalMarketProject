@@ -388,7 +388,8 @@
                         >
                         <button 
                             class="wishlist-item-remove" 
-                            onclick="removeFromWishlist('${fileId}', '${(fileDetails.title || 'Item').replace(/'/g, "\\'")}'); event.stopPropagation();"
+                            data-file-id="${fileId}"
+                            data-file-title="${(fileDetails.title || 'Item').replace(/"/g, '&quot;')}"
                             title="Remove from wishlist"
                         >
                             <i class="fa-solid fa-xmark"></i>
@@ -444,6 +445,7 @@
                 const response = await fetch(`/api/wishlist/remove/${fileId}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                 });
 
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -458,6 +460,17 @@
                 showToast('Failed to remove item', 'error');
             }
         }
+
+        // Event delegation for remove buttons
+        document.addEventListener('click', function(e) {
+            const removeBtn = e.target.closest('.wishlist-item-remove');
+            if (removeBtn) {
+                e.stopPropagation();
+                const fileId = removeBtn.dataset.fileId;
+                const title = removeBtn.dataset.fileTitle;
+                removeFromWishlist(fileId, title);
+            }
+        });
 
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
