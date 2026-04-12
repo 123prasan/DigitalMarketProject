@@ -507,9 +507,6 @@ router.get("/logout", (req, res) => {
   res.redirect("/");
 });
 
-
-
-
 // NEW: Token Sync Route - Allows frontend to get token from URL and populate localStorage
 router.get("/sync-token", (req, res) => {
   try {

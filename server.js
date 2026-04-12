@@ -3511,9 +3511,16 @@ function buildPreviewUrl(file, CLOUDFRONT_DOMAIN = process.env.CF_DOMAIN_PROFILE
 const userCache = new NodeCache({ stdTTL: 600, checkperiod: 120 }); // 10 min cache
 // const CLOUDFRONT_AVATAR_URL = "https://previewfiles.vidyari.com/avatars";
 
+// Helper function to extend TTL of a cached key
+function extendTTL(key) {
+  const value = userCache.get(key);
+  if (value !== undefined) {
+    userCache.set(key, value, 600); // Reset TTL to 10 minutes (600 seconds)
+  }
+}
 
-// ======================================================
-// ✅ SEO Helper: Generate keyword-optimized meta description
+
+
 function generateOptimizedSEOForFile(file) {
   const filename = file.filename || '';
   const category = file.category || 'Study Material';
