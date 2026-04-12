@@ -133,16 +133,13 @@ router.get('/chat/:userId',authenticateJWT_user, requireAuth, async (req, res) =
         }
 
         // Fetch any other data needed for your header
-        const user = await User.findById(req.user.id);
+        // User data prepared by middleware
 
         res.render('social/user-chat', { // Assuming your EJS file is named 'chat.ejs'
             myUserId: myUserId,
             recipientId: recipientId,
             // Pass other necessary data for your header
-            isLoggedin: !!req.user,
-            username: user.username,
-            profileUrl: user.profilePicUrl,
-            useremail: user.email
+            ...res.locals.userData,
         });
     } catch (error) {
         console.error("Error loading chat page:", error);

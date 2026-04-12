@@ -863,23 +863,49 @@
 
     <script src="/js/activity-tracker.js" defer></script>
     <script src="/js/wishlist-manager.js" defer></script>
+    
+    <!-- CRITICAL: Sync login token from URL immediately (runs synchronously before other scripts) -->
+    <script>
+        (function() {
+            try {
+                // Check if we just returned from Google OAuth with token in URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const loginToken = urlParams.get('loginToken');
+                
+                if (loginToken) {
+                    // Store token in localStorage immediately
+                    localStorage.setItem('token', loginToken);
+                    // Clean up URL to hide token parameter
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    console.log('✅ Token synced to localStorage from OAuth redirect');
+                }
+            } catch (e) {
+                console.error('Token sync error:', e);
+            }
+        })();
+    </script>
+    
     <script defer>
+        
+        
         document.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem('token');
             const isLoggedinServer = <%= isLoggedin ? 'true' : 'false' %>;
-            const reloadAttempt = sessionStorage.getItem('authReloadAttempt') || '0';
+            const reloadAttempt = parseInt(sessionStorage.getItem('authReloadAttempt') || '0');
             
-            if (parseInt(reloadAttempt) > 2) {
+            // Prevent infinite reload loops
+            if (reloadAttempt > 2) {
                 sessionStorage.removeItem('authReloadAttempt');
-                localStorage.removeItem('token'); 
+                localStorage.removeItem('token');
                 return;
             }
             
-            if (token && !isLoggedinServer && parseInt(reloadAttempt) === 0) {
+            // CASE 1: Token in localStorage but server says not logged in → Validate token
+            if (token && !isLoggedinServer && reloadAttempt === 0) {
                 fetch('/api/validate-token', {
                     method: 'POST',
                     headers: { 
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': 'Bearer ' + token,
                         'Content-Type': 'application/json'
                     }
                 })
@@ -897,25 +923,19 @@
                     localStorage.removeItem('token');
                     sessionStorage.removeItem('authReloadAttempt');
                 });
-            } else if (parseInt(reloadAttempt) > 0) {
-                sessionStorage.removeItem('authReloadAttempt');
             }
-            
-            if (!token && isLoggedinServer) {
-                const userAvatar = document.querySelector('[data-user-id]');
-                if (userAvatar?.dataset.userId) {
-                    return;
-                }
+            // CASE 2: Server says logged in but localStorage is empty → sync now
+            else if (!token && isLoggedinServer && reloadAttempt === 0) {
+                // Server says we're logged in but localStorage is empty
+                // This means the token is in the HTTP-only cookie, so we just reload
+                // to ensure the header renders with the correct login status
+                sessionStorage.setItem('authReloadAttempt', '1');
+                window.location.reload();
             }
-        });
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                if (typeof ActivityTracker !== 'undefined') {
-                    window.ActivityTracker_Instance = new ActivityTracker();
-                    window.ActivityTracker_Instance.init({ autoTrack: true });
-                }
-            } catch (error) {}
+            // Reset reload attempt counter after successful sync
+            else if (reloadAttempt > 0) {
+                sessionStorage.removeItem('authReloadAttempt');  
+            }
         });
     </script>
 </body>

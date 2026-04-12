@@ -236,16 +236,13 @@ router.get(
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined, // allow across subdomains
     });
-    // Redirect the user to the dashboard or home page after successful login
-    console.log("callback recieved");
-    res.redirect("/");
+    
+    // Redirect with token in URL fragment (client-side only, not sent to server)
+    // This allows localStorage to be set before the page fully loads
+    res.redirect(`/?loginToken=${encodeURIComponent(token)}`);
   }
-);
 
 // ----- Facebook Auth Routes (NEW) -----
-router.get(
-  "/auth/facebook",
-  passport.authenticate("facebook", { scope: ["email", "public_profile"] }) // Requesting email and public profile
 );
 
 router.get(
@@ -291,7 +288,7 @@ router.post("/verify-2fa", async (req, res) => {
   try {
     const payload = jwt.verify(
       token,
-      "3a1f0b9d5c7e2a8f6d1c4b8a9e3f0d7a2c5e8b6d1a4f7c3e9b0d2a1f6e4c8b2"
+      process.env.JWT_SECRET_USER_LOGIN || "3a1f0b9d5c7e2a8f6d1c4b8a9e3f0d7a2c5e8b6d1a4f7c3e9b0d2a1f6e4c8b2"
     );
     const user = await User.findById(payload.userId);
     const verified = speakeasy.totp.verify({
@@ -303,13 +300,15 @@ router.post("/verify-2fa", async (req, res) => {
 
     const jwtToken = jwt.sign(
       { userId: user.id, email: user.email },
-      "3a1f0b9d5c7e2a8f6d1c4b8a9e3f0d7a2c5e8b6d1a4f7c3e9b0d2a1f6e4c8b2",
+      process.env.JWT_SECRET_USER_LOGIN || "3a1f0b9d5c7e2a8f6d1c4b8a9e3f0d7a2c5e8b6d1a4f7c3e9b0d2a1f6e4c8b2",
       { expiresIn: "7d" }
     );
     res.cookie("token", jwtToken, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      domain: process.env.NODE_ENV === "production" ? ".vidyari.com" : undefined,
     });
     res.json({ message: "Login successful", token: jwtToken });
   } catch (err) {
@@ -341,16 +340,7 @@ router.get(
     const payouts = await Payouts.find({ userId: req.user._id });
     const files = await File.find({ userId: req.user._id });
 
-    let user = null;
-
-    if (req.user) {
-      const userId = req.user._id;
-      // Fetch only the necessary fields
-      user = await User.findById(userId).select("profilePicUrl username email");
-      if (user) {
-        console.log("User profile pic URL:", user.profilePicUrl);
-      }
-    }
+    // User data prepared by middleware
     const userPaymentMethod = await paymentMethod.findOne({ userId: req.user._id });
     const userwithreq=await withdrawelReq.find({
       userId:req.user._id
@@ -374,13 +364,9 @@ router.get(
       upiId: userPaymentMethod ? userPaymentMethod.upi : null,
       transactions: userTransactions,
       payouts,
-      isLoggedin: !!req.user,
-      profileUrl: user?.profilePicUrl || null,
-      username: user?.username || null,
-      useremail: user?.email || null,
+      ...res.locals.userData,
       files,
       userwithreq,
-      user,
       Ubalance:Ubalance.Balance?Ubalance.Balance:0,
     });
   }
@@ -496,31 +482,14 @@ router.get(
       const userDownloads = await UserDownloads.find({ userId: userId }).sort({
         createdAt: -1,
       });
-      let user = null;
-
-      if (req.user) {
-        const userId = req.user._id;
-        // Fetch only the necessary fields
-        user = await User.findById(userId).select(
-          "profilePicUrl username email"
-        );
-        if (user) {
-          console.log("User profile pic URL:", user.profilePicUrl);
-        }
-      }
       // const downloads = await userdownloads.find({ userId: req.user._id });
 
       // res.render("mydownloads.ejs", {  downloads });
       // 3. Render the EJS view, passing the downloads data to it
       res.render("dashboard/mydownloads", {
-        isLoggedin: !!req.user,
         pageTitle: "My Downloads",
         downloads: userDownloads,
-        isLoggedin: !!req.user,
-        profileUrl: user?.profilePicUrl || null,
-        username: user?.username || null,
-        useremail: user?.email || null,
-         uId: user?._id || null, // This 'downloads' variable will be available in downloads.ejs
+        ...res.locals.userData,
       });
     } catch (error) {
       console.error("Error fetching user downloads:", error);
@@ -535,11 +504,48 @@ router.get("/logout", (req, res) => {
     req.session.destroy((err) => {
       if (err) console.log(err);
     });
-  res.redirect("/user-login");
+  res.redirect("/");
 });
 
 
 
+
+// NEW: Token Sync Route - Allows frontend to get token from URL and populate localStorage
+router.get("/sync-token", (req, res) => {
+  try {
+    const token = req.query.token;
+    const redirect = req.query.redirect || "/";
+
+    if (!token) {
+      return res.redirect("/");
+    }
+
+    // Render a page that stores the token in localStorage and then redirects
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Syncing...</title>
+      </head>
+      <body>
+        <script>
+          try {
+            // Store the token in localStorage so frontend can access it
+            localStorage.setItem('token', '${token.replace(/'/g, "\\'")}')
+            // Redirect to the intended page
+            window.location.href = '${redirect.replace(/'/g, "\\'")}'
+          } catch (e) {
+            console.error('Failed to sync token:', e)
+            window.location.href = '${redirect.replace(/'/g, "\\'")}'
+          }
+        </script>
+      </body>
+      </html>
+    `);
+  } catch (err) {
+    res.redirect("/");
+  }
+});
 
 router.post("/auth/login", async (req, res) => {
   try {
@@ -877,12 +883,8 @@ router.get(
       numsOfDocs,
       numOfCourses,
       userData: userData,
-      isLoggedin: !!req.user,
-      profileUrl: user?.profilePicUrl || null,
-      username: user?.username || null,
-      useremail: user?.email || null,
+      ...res.locals.userData,
       hasPassword: hasPassword,
-       uId: user?._id || null,
     });
   }
 );
@@ -942,10 +944,7 @@ router.get('/following', authenticateJWT_user, reaquireAuth, async (req, res) =>
     }
 
     res.render('dashboard/following', {
-      isLoggedin: !!req.user,
-      profileUrl: user?.profilePicUrl || null,
-      username: user?.username || null,
-      useremail: user?.email || null,
+      ...res.locals.userData,
       followingList: currentUser.following // This must be an array of user objects
     });
 
@@ -976,10 +975,7 @@ router.get('/followers', authenticateJWT_user, reaquireAuth, async (req, res) =>
     }
 
     res.render('dashboard/followers', {
-      isLoggedin: !!req.user,
-      profileUrl: user?.profilePicUrl || null,
-      username: user?.username || null,
-      useremail: user?.email || null,
+      ...res.locals.userData,
       followersList: currentUser.followers // Pass the populated array to the EJS file
     });
 
@@ -1317,10 +1313,7 @@ router.get("/profile/:username", authenticateJWT_user, async (req, res) => {
     }));
 
     let renderOptions = {
-      isLoggedin: !!req.user,
-      profileUrl: user?.profilePicUrl || null,
-      username: user?.username || null,
-      useremail: user?.email || null,
+      ...res.locals.userData,
       numsOfDocs,
       numOfCourses,
       files: filesWithPreviews,

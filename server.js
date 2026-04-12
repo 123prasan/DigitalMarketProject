@@ -52,6 +52,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const fileSecurityValidator = require('./services/fileSecurityValidator');
 const activityTrackingRoutes = require('./routes/activityTrackingRoutes');
 const authenticateJWT_user = require("./routes/authentication/jwtAuth.js");
+const { prepareUserData } = require("./middleware/prepareUserData.js");
 const User = require("./models/userData");
 const UserDownloads = require("./models/userDownloads.js");
 const Userpurchases = require("./models/userPerchase.js");
@@ -83,6 +84,15 @@ app.use(express.static(path.join(__dirname, "public"), {
   }
 }));
 app.use(cookieParser());
+
+// Apply JWT authentication globally to all routes
+// This will set req.user if a valid token exists, or req.user = null if not
+app.use(authenticateJWT_user);
+
+// Apply user data preparation middleware globally
+// This prepares isLoggedin, profileUrl, username, useremail, uId in res.locals.userData
+// All views can access this via res.locals.userData
+app.use(prepareUserData);
 
 app.use("/", UserChats);
 // Use cookie-parser middleware
@@ -728,11 +738,7 @@ app.get("/my-courses", authenticateJWT_user, async (req, res) => {
     res.render("courses/my-courses", {
       courses: courses,
       courseProgress: courseProgress,
-      isLoggedin: !!req.user,
-      username: req.user?.username || req.user?.email,
-      useremail: req.user?.email,
-      uId: req.user?._id,
-      profileUrl: req.user?.profilePicUrl || '/images/avatar.jpg',
+      ...res.locals.userData,
     });
   } catch (error) {
     console.error("Error fetching user courses:", error);
@@ -750,11 +756,7 @@ app.get("/analytics-dashboard", authenticateJWT_user, async (req, res) => {
     }
 
     res.render("admin/analytics-dashboard", {
-      isLoggedin: !!req.user,
-      username: req.user?.username || req.user?.email,
-      useremail: req.user?.email,
-      uId: req.user?._id,
-      profileUrl: req.user?.profilePicUrl || '/images/avatar.jpg',
+      ...res.locals.userData,
     });
   } catch (error) {
     console.error("Error rendering analytics dashboard:", error);
@@ -915,9 +917,7 @@ app.get("/edit-course/:courseId", authenticateJWT_user, async (req, res) => {
     res.render("courses/edit-course", {
       courseId: courseId,
       course: course,
-      isLoggedin: !!req.user,
-      username: req.user?.username || req.user?.email,
-      profileUrl: req.user?.profilePicUrl || '/images/avatar.jpg',
+      ...res.locals.userData,
     });
   } catch (error) {
     console.error("Error loading edit course page:", error);
@@ -1746,11 +1746,7 @@ app.get("/dashboard", authenticateJWT_user, async (req, res) => {
     res.render("courses/createcourse", {
       instructorCourses: instructorCourses,
       files: filesWithPreview,
-      isLoggedin: !!req.user,
-      username: req.user?.username || req.user?.email,
-      useremail: req.user?.email,
-      uId: req.user?._id,
-      profileUrl: req.user?.profilePicUrl || '/images/avatar.jpg',
+      ...res.locals.userData,
     });
   } catch (error) {
     console.error("Error loading dashboard:", error);
@@ -1874,36 +1870,6 @@ app.get("/contact", (req, res) => {
 app.get("/search",authenticateJWT_user, async (req, res) => {
   try {
     const query = req.query.query || req.query.q || '';
- let user = null;
-    let profileUrl = null;
-
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const cachedUser = pageCache.get(cacheKey);
-
-      if (cachedUser) {
-        user = cachedUser;
-        profileUrl = cachedUser.profilePicUrl;
-      } else {
-        // Fetch minimal data for rendering
-        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-        if (user) {
-          // Convert to CloudFront if S3-based
-          if (user.profilePicUrl?.includes("s3.")) {
-            try {
-              const fileName = user.profilePicUrl.split("/").pop();
-              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-            } catch (err) {
-              console.warn("⚠️ Profile URL conversion failed:", err.message);
-            }
-          }
-
-          // Cache for future requests
-          pageCache.set(cacheKey, user);
-          profileUrl = user.profilePicUrl;
-        }
-      }
-    }
 
     // Track search activity
     if (query.trim()) {
@@ -2020,21 +1986,14 @@ app.get("/search",authenticateJWT_user, async (req, res) => {
 
     res.render("search/search", { 
       query,
-      uId: req.user?.id || null,
-      isLoggedin: !!req.user,
+      ...res.locals.userData,
       seo: res.locals.seo,
-     
-      profileUrl,
-      username: user?.username || null,
-      useremail: user?.email || null,
-     
     });
   } catch (error) {
     console.error('Search page error:', error);
     res.render("search/search", { 
       query: '',
-      uId: null,
-      isLoggedin: false,
+      ...res.locals.userData,
       seo: res.locals.seo
     });
   }
@@ -2679,23 +2638,10 @@ app.get("/", authenticateJWT_user, async (req, res) => {
       })
     );
 
-    let user = null;
-
-    if (req.user) {
-      const userId = req.user._id;
-      // Fetch only the necessary fields
-      user = await User.findById(userId).select("profilePicUrl username email");
-      if (user) {
-        console.log("User profile pic URL:", user.profilePicUrl);
-      }
-    }
+    // Use pre-prepared user data from middleware
     res.render("pages/landing", {
       popularFiles: filesWithPreviews,
-      isLoggedin: !!req.user,
-      profileUrl: user?.profilePicUrl || null,
-      username: user?.username || null,
-      useremail: user?.email || null,
-      uId: user?._id || null,
+      ...res.locals.userData,  // Contains isLoggedin, profileUrl, username, useremail, uId
     });
   } catch (err) {
     console.error("DB fetch error:", err);
@@ -2744,53 +2690,10 @@ app.get("/pricing", authenticateJWT_user, async (req, res) => {
   });
   // =============== END SEO SETUP ===============
 
-  let profileUrl = null;
-  let user = null;
-  if (req.user) {
-    const cacheKey = `user_${req.user._id}`;
-    const cachedUser = pageCache.get(cacheKey);
-
-    if (cachedUser) {
-      user = cachedUser;
-      profileUrl = cachedUser.profilePicUrl;
-    } else {
-      // Fetch minimal data for rendering
-      user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-      if (user) {
-        // Convert to CloudFront if S3-based
-        if (user.profilePicUrl?.includes("s3.")) {
-          try {
-            const fileName = user.profilePicUrl.split("/").pop();
-            user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-          } catch (err) {
-            console.warn("⚠️ Profile URL conversion failed:", err.message);
-          }
-        }
-
-        // Cache for future requests
-        pageCache.set(cacheKey, user);
-        profileUrl = user.profilePicUrl;
-      }
-    }
-  }
-
-  // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
-  if (req.user) {
-    const cacheKey = `user_${req.user._id}`;
-    const ttl = pageCache.getTtl(cacheKey);
-    if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
-      pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
-    }
-  }
-
   res.render("commerce/pricing", {
-    isLoggedin: !!req.user,
-    profileUrl,
-    username: user?.username || null,
-    useremail: user?.email || null,
-    uId: user?._id?.toString() || null,
-  })
-})
+    ...res.locals.userData,
+  });
+});
 app.get("/About", authenticateJWT_user, async (req, res) => {
   // =============== SEO SETUP ===============
   res.locals.setMetaTags('about', {
@@ -2805,53 +2708,13 @@ app.get("/About", authenticateJWT_user, async (req, res) => {
   });
   // =============== END SEO SETUP ===============
 
-  let profileUrl = null;
-  let user = null;
-  if (req.user) {
-    const cacheKey = `user_${req.user._id}`;
-    const cachedUser = pageCache.get(cacheKey);
+  // User data prepared by middleware
 
-    if (cachedUser) {
-      user = cachedUser;
-      profileUrl = cachedUser.profilePicUrl;
-    } else {
-      // Fetch minimal data for rendering
-      user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-      if (user) {
-        // Convert to CloudFront if S3-based
-        if (user.profilePicUrl?.includes("s3.")) {
-          try {
-            const fileName = user.profilePicUrl.split("/").pop();
-            user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-          } catch (err) {
-            console.warn("⚠️ Profile URL conversion failed:", err.message);
-          }
-        }
-
-        // Cache for future requests
-        pageCache.set(cacheKey, user);
-        profileUrl = user.profilePicUrl;
-      }
-    }
-  }
-
-  // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
-  if (req.user) {
-    const cacheKey = `user_${req.user._id}`;
-    const ttl = pageCache.getTtl(cacheKey);
-    if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
-      pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
-    }
-  }
 
   res.render("pages/about", {
-    isLoggedin: !!req.user,
-    profileUrl,
-    username: user?.username || null,
-    useremail: user?.email || null,
-    uId: user?._id?.toString() || null,
-  })
-})
+    ...res.locals.userData,
+  });
+});
 // Download PDF - No auth needed (public, post-payment)
 // app.post("/download-pdf", async (req, res) => {
 //     const { fileId, paymentId } = req.body;
@@ -3938,39 +3801,8 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
     const previewUrl = await getValidFileUrl(file);
     const pdfUrl = `d3epchi0htsp3c.cloudfront.net/${file.fileUrl}`;
 
-    // 👥 Logged-in viewer info (cached)
-    let user = null;
-    let profileUrl = "/images/avatar.jpg";
-
-    if (req.user) {
-      const viewerCacheKey = `user_${req.user._id}`;
-      user = userCache.get(viewerCacheKey);
-
-      if (!user) {
-        user = await User.findById(req.user._id)
-          .select("profilePicUrl username email")
-          .lean();
-
-        if (user) userCache.set(viewerCacheKey, user);
-      }
-
-      // Convert S3 → CloudFront
-      if (user?.profilePicUrl?.includes("s3.")) {
-        const fileName = user.profilePicUrl.split("/").pop();
-        profileUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-      } else if (user?.profilePicUrl) {
-        profileUrl = user.profilePicUrl;
-      }
-    }
-
-    // 🧠 Extend cache for active users
-    const extendTTL = (key) => {
-      const ttl = userCache.getTtl(key);
-      if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
-        userCache.ttl(key, 15 * 60);
-      }
-    };
-    if (req.user) extendTTL(`user_${req.user._id}`);
+    // 👥 Logged-in viewer info - use pre-prepared middleware data
+    // (middleware handles caching and CloudFront conversion)
     if (file.userId) extendTTL(`seller_${file.userId}`);
 
     // Prepare price details for checkout display
@@ -3995,11 +3827,7 @@ app.get("/file/:slug/:id", authenticateJWT_user, async (req, res) => {
       cashfreeAppId: process.env.CASHFREE_APP_ID,
       previewUrl,
       pdfUrl,
-      isLoggedin: !!req.user,
-      profileUrl,
-      username: user?.username || null,
-      useremail: user?.email || null,
-      uId: user?._id || null,
+      ...res.locals.userData,
       priceDetails,
       seoMetaDescription: seoData.metaDescription,
       seoKeywords: seoData.keywords_string,
@@ -4805,55 +4633,10 @@ app.get("/documents", authenticateJWT_user, async (req, res) => {
       pageCache.set("categories", categories);
     }
 
-    // 🧠 Step 2: Try cached user profile (keyed by userId)
-    let user = null;
-    let profileUrl = null;
-
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const cachedUser = pageCache.get(cacheKey);
-
-      if (cachedUser) {
-        user = cachedUser;
-        profileUrl = cachedUser.profilePicUrl;
-      } else {
-        // Fetch minimal data for rendering
-        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-        if (user) {
-          // Convert to CloudFront if S3-based
-          if (user.profilePicUrl?.includes("s3.")) {
-            try {
-              const fileName = user.profilePicUrl.split("/").pop();
-              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-            } catch (err) {
-              console.warn("⚠️ Profile URL conversion failed:", err.message);
-            }
-          }
-
-          // Cache for future requests
-          pageCache.set(cacheKey, user);
-          profileUrl = user.profilePicUrl;
-        }
-      }
-    }
-
-    // 🧠 Step 3: Cache auto-refresh if popular (extend TTL when hit frequently)
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const ttl = pageCache.getTtl(cacheKey);
-      if (ttl && ttl - Date.now() < 3 * 60 * 1000) {
-        pageCache.ttl(cacheKey, 15 * 60); // extend 15 min if hot
-      }
-    }
-
-    // ✅ Step 4: Render final page
+    // ✅ Use pre-prepared user data from middleware (handles caching, CloudFront conversion)
     res.render("pages/index", {
       categories,
-      isLoggedin: !!req.user,
-      profileUrl,
-      username: user?.username || null,
-      useremail: user?.email || null,
-      uId: user?._id?.toString() || null,
+      ...res.locals.userData,  // Contains isLoggedin, profileUrl, username, useremail, uId
     });
   } catch (err) {
     console.error("❌ Error loading /documents:", err);
@@ -4986,33 +4769,7 @@ app.get('/courses', authenticateJWT_user, async (req, res) => {
     });
     // =============== END SEO SETUP ===============
 
-    let user = null;
-    let profileUrl = null;
-
-    // 1. User Caching Logic
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const cachedUser = pageCache.get(cacheKey);
-
-      if (cachedUser) {
-        user = cachedUser;
-        profileUrl = cachedUser.profilePicUrl;
-      } else {
-        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-        if (user) {
-          if (user.profilePicUrl?.includes("s3.")) {
-            try {
-              const fileName = user.profilePicUrl.split("/").pop();
-              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-            } catch (err) {
-              console.warn("⚠️ Profile URL conversion failed:", err.message);
-            }
-          }
-          pageCache.set(cacheKey, user);
-          profileUrl = user.profilePicUrl;
-        }
-      }
-    }
+    // User data prepared by middleware
 
     // 2. Detect if request is AJAX/API or a standard page load
     // This checks if the frontend used fetch() with JSON headers or passed a specific query parameter
@@ -5174,11 +4931,7 @@ app.get('/courses', authenticateJWT_user, async (req, res) => {
 
       res.render('courses/courses', {
         courses: formattedCourses,
-        isLoggedin: !!req.user,
-        profileUrl,
-        username: user?.username || null,
-        useremail: user?.email || null,
-        uId: user?._id?.toString() || null,
+        ...res.locals.userData,
       });
     }
 
@@ -5271,45 +5024,13 @@ app.get('/course-detail', authenticateJWT_user, async (req, res) => {
     });
     // =============== END SEO SETUP ===============
 
-    let user = null;
-    let profileUrl = null;
-
-    // 1. User Caching Logic
-    if (req.user) {
-      const cacheKey = `user_${req.user._id}`;
-      const cachedUser = pageCache.get(cacheKey);
-
-      if (cachedUser) {
-        user = cachedUser;
-        profileUrl = cachedUser.profilePicUrl;
-      } else {
-        user = await User.findById(req.user._id).select("profilePicUrl username email").lean();
-        if (user) {
-          if (user.profilePicUrl?.includes("s3.")) {
-            try {
-              const fileName = user.profilePicUrl.split("/").pop();
-              user.profilePicUrl = `${CLOUDFRONT_AVATAR_URL}/${fileName}`;
-            } catch (err) {
-              console.warn("⚠️ Profile URL conversion failed:", err.message);
-            }
-          }
-          pageCache.set(cacheKey, user);
-          profileUrl = user.profilePicUrl;
-        }
-      }
-    }
-
     console.log(`Loading course details for: ${course.title}`);
 
-    // Pass course data to view
+    // Pass course data to view (user data is prepared by middleware)
     res.render('courses/course-detail', {
       course: course,
       title: course.title,
-      isLoggedin: !!req.user,
-      profileUrl,
-      username: user?.username || null,
-      useremail: user?.email || null,
-      uId: user?._id?.toString() || null,
+      ...res.locals.userData,
     });
 
   } catch (error) {
@@ -5886,11 +5607,7 @@ app.get("/help/user/dashboard", (req, res) => {
 app.get("/wishlist", authenticateJWT_user, (req, res) => {
   try {
     res.render("search/wishlist", {
-      uId: req.user?._id || req.userId,
-      username: req.user?.username || req.userUsername,
-      useremail: req.user?.email || req.userEmail,
-      isLoggedin: !!req.user,
-      profileUrl: req.user?.profilePicUrl || "/images/avatar.jpg"
+      ...res.locals.userData
     });
   } catch (error) {
     console.error('Error rendering wishlist page:', error);
@@ -5929,24 +5646,13 @@ app.get(
 
       if (req.user) {
         const userId = req.user._id;
-        // Fetch only the necessary fields
-        user = await User.findById(userId).select(
-          "profilePicUrl username email"
-        );
-        if (user) {
-          console.log("User profile pic URL:", user.profilePicUrl);
-
-        }
+        // User data is already prepared by middleware
       }
 
       // Render the EJS template and pass the 'purchases' data to it
       res.render("dashboard/perchasehistory", {
         purchases: processedPurchases,
-        isLoggedin: !!req.user,
-        profileUrl: user?.profilePicUrl || null,
-        username: user?.username || null,
-        useremail: user?.email || null,
-        uId: user?._id || null,
+        ...res.locals.userData,
       });
     } catch (error) {
       console.error("Error fetching purchase history:", error);
