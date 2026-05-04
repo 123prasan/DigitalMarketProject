@@ -515,7 +515,7 @@ router.get('/sample-download/:fileId', authenticateJWT_user, async (req, res) =>
     res.set('Expires', '0');
 
     return res.render('files/pdf-viewer', {
-      signedUrl,
+      pdfDataUrl: signedUrl,
       fileName: file.filename ? `Sample - ${file.filename}` : 'Sample Document'
     });
 

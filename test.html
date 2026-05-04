@@ -1,52 +1,1610 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
+    <script type="module" src="/@vite/client"></script>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Secure Viewer</title>
-    <style>
-        html, body {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #323639; overflow: hidden;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Google AI Studio App</title>
+  <script src="/_aistudio-iframe.js"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas-pro"></script><style>.aistudio-hover-highlight { box-shadow: inset 0 0 0 0.5px white, inset 0 0 0 1.5px rgba(128,128,128,0.6) !important; }.aistudio-active-highlight { box-shadow: inset 0 0 0 0.5px white, inset 0 0 0 1.5px #87a9ff !important; }#aistudio-focus-mode-tag { position: absolute; display: none; background: #87a9ff; border-radius: 4px; border: 0.5px solid white; z-index: 10000; text-transform: lowercase; padding: 2px 4px; color: #32302c; font-family: Inter, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; line-height: 16px; pointer-events: none; }#aistudio-hover-mode-tag { position: absolute; display: none; background: rgba(128,128,128,0.6); border-radius: 4px; border: 0.5px solid white; z-index: 10000; text-transform: lowercase; padding: 2px 4px; color: white; font-family: Inter, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; line-height: 16px; pointer-events: none; }</style><style type="text/css" data-vite-dev-id="/app/applet/src/index.css">
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap');
+/*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    --color-green-600: oklch(62.7% 0.194 149.214);
+    --color-green-700: oklch(52.7% 0.154 150.069);
+    --color-black: #000;
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --container-3xl: 48rem;
+    --container-7xl: 80rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-base: 1rem;
+    --text-base--line-height: calc(1.5 / 1);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
+    --text-xl: 1.25rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
+    --text-5xl: 3rem;
+    --text-5xl--line-height: 1;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --tracking-tight: -0.025em;
+    --tracking-wide: 0.025em;
+    --tracking-wider: 0.05em;
+    --tracking-widest: 0.1em;
+    --leading-tight: 1.25;
+    --leading-snug: 1.375;
+    --leading-relaxed: 1.625;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --blur-sm: 8px;
+    --blur-2xl: 40px;
+    --blur-3xl: 64px;
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --default-font-family: var(--font-sans);
+    --default-mono-font-family: var(--font-mono);
+    --color-brand-primary: #1A1A1A;
+    --color-brand-bg: #FAF9F6;
+  }
+}
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+  html, :host {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
+    font-feature-settings: var(--default-font-feature-settings, normal);
+    font-variation-settings: var(--default-font-variation-settings, normal);
+    -webkit-tap-highlight-color: transparent;
+  }
+  hr {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+  abbr:where([title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+  a {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+  b, strong {
+    font-weight: bolder;
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+    font-feature-settings: var(--default-mono-font-feature-settings, normal);
+    font-variation-settings: var(--default-mono-font-variation-settings, normal);
+    font-size: 1em;
+  }
+  small {
+    font-size: 80%;
+  }
+  sub, sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+  sub {
+    bottom: -0.25em;
+  }
+  sup {
+    top: -0.5em;
+  }
+  table {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+  :-moz-focusring {
+    outline: auto;
+  }
+  progress {
+    vertical-align: baseline;
+  }
+  summary {
+    display: list-item;
+  }
+  ol, ul, menu {
+    list-style: none;
+  }
+  img, svg, video, canvas, audio, iframe, embed, object {
+    display: block;
+    vertical-align: middle;
+  }
+  img, video {
+    max-width: 100%;
+    height: auto;
+  }
+  button, input, select, optgroup, textarea, ::file-selector-button {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+  :where(select:is([multiple], [size])) optgroup {
+    font-weight: bolder;
+  }
+  :where(select:is([multiple], [size])) optgroup option {
+    padding-inline-start: 20px;
+  }
+  ::file-selector-button {
+    margin-inline-end: 4px;
+  }
+  ::placeholder {
+    opacity: 1;
+  }
+  @supports (not (-webkit-appearance: -apple-pay-button))  or (contain-intrinsic-size: 1px) {
+    ::placeholder {
+      color: currentcolor;
+      @supports (color: color-mix(in lab, red, red)) {
+        color: color-mix(in oklab, currentcolor 50%, transparent);
+      }
+    }
+  }
+  textarea {
+    resize: vertical;
+  }
+  ::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
+  ::-webkit-date-and-time-value {
+    min-height: 1lh;
+    text-align: inherit;
+  }
+  ::-webkit-datetime-edit {
+    display: inline-flex;
+  }
+  ::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  ::-webkit-datetime-edit, ::-webkit-datetime-edit-year-field, ::-webkit-datetime-edit-month-field, ::-webkit-datetime-edit-day-field, ::-webkit-datetime-edit-hour-field, ::-webkit-datetime-edit-minute-field, ::-webkit-datetime-edit-second-field, ::-webkit-datetime-edit-millisecond-field, ::-webkit-datetime-edit-meridiem-field {
+    padding-block: 0;
+  }
+  ::-webkit-calendar-picker-indicator {
+    line-height: 1;
+  }
+  :-moz-ui-invalid {
+    box-shadow: none;
+  }
+  button, input:where([type="button"], [type="reset"], [type="submit"]), ::file-selector-button {
+    appearance: button;
+  }
+  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {
+    height: auto;
+  }
+  [hidden]:where(:not([hidden="until-found"])) {
+    display: none !important;
+  }
+}
+@layer utilities {
+  .pointer-events-none {
+    pointer-events: none;
+  }
+  .absolute {
+    position: absolute;
+  }
+  .fixed {
+    position: fixed;
+  }
+  .relative {
+    position: relative;
+  }
+  .sticky {
+    position: sticky;
+  }
+  .inset-0 {
+    inset: calc(var(--spacing) * 0);
+  }
+  .top-0 {
+    top: calc(var(--spacing) * 0);
+  }
+  .top-1\/2 {
+    top: calc(1 / 2 * 100%);
+  }
+  .top-2 {
+    top: calc(var(--spacing) * 2);
+  }
+  .top-3\.5 {
+    top: calc(var(--spacing) * 3.5);
+  }
+  .top-4 {
+    top: calc(var(--spacing) * 4);
+  }
+  .right-0 {
+    right: calc(var(--spacing) * 0);
+  }
+  .right-4 {
+    right: calc(var(--spacing) * 4);
+  }
+  .bottom-0 {
+    bottom: calc(var(--spacing) * 0);
+  }
+  .bottom-6 {
+    bottom: calc(var(--spacing) * 6);
+  }
+  .left-0 {
+    left: calc(var(--spacing) * 0);
+  }
+  .left-1\/2 {
+    left: calc(1 / 2 * 100%);
+  }
+  .left-2 {
+    left: calc(var(--spacing) * 2);
+  }
+  .left-4 {
+    left: calc(var(--spacing) * 4);
+  }
+  .left-10 {
+    left: calc(var(--spacing) * 10);
+  }
+  .z-10 {
+    z-index: 10;
+  }
+  .z-20 {
+    z-index: 20;
+  }
+  .z-40 {
+    z-index: 40;
+  }
+  .z-50 {
+    z-index: 50;
+  }
+  .z-\[100\] {
+    z-index: 100;
+  }
+  .-mx-4 {
+    margin-inline: calc(var(--spacing) * -4);
+  }
+  .mx-1 {
+    margin-inline: calc(var(--spacing) * 1);
+  }
+  .mx-2 {
+    margin-inline: calc(var(--spacing) * 2);
+  }
+  .mx-4 {
+    margin-inline: calc(var(--spacing) * 4);
+  }
+  .mx-auto {
+    margin-inline: auto;
+  }
+  .my-3 {
+    margin-block: calc(var(--spacing) * 3);
+  }
+  .mt-1 {
+    margin-top: calc(var(--spacing) * 1);
+  }
+  .mt-8 {
+    margin-top: calc(var(--spacing) * 8);
+  }
+  .mt-10 {
+    margin-top: calc(var(--spacing) * 10);
+  }
+  .mt-auto {
+    margin-top: auto;
+  }
+  .-mr-4 {
+    margin-right: calc(var(--spacing) * -4);
+  }
+  .mr-2 {
+    margin-right: calc(var(--spacing) * 2);
+  }
+  .mb-1 {
+    margin-bottom: calc(var(--spacing) * 1);
+  }
+  .mb-2 {
+    margin-bottom: calc(var(--spacing) * 2);
+  }
+  .mb-3 {
+    margin-bottom: calc(var(--spacing) * 3);
+  }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
+  .mb-5 {
+    margin-bottom: calc(var(--spacing) * 5);
+  }
+  .mb-6 {
+    margin-bottom: calc(var(--spacing) * 6);
+  }
+  .mb-8 {
+    margin-bottom: calc(var(--spacing) * 8);
+  }
+  .mb-10 {
+    margin-bottom: calc(var(--spacing) * 10);
+  }
+  .mb-12 {
+    margin-bottom: calc(var(--spacing) * 12);
+  }
+  .-ml-4 {
+    margin-left: calc(var(--spacing) * -4);
+  }
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .line-clamp-4 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+  .flex {
+    display: flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .hidden {
+    display: none;
+  }
+  .aspect-\[3\/4\] {
+    aspect-ratio: 3/4;
+  }
+  .h-4 {
+    height: calc(var(--spacing) * 4);
+  }
+  .h-5 {
+    height: calc(var(--spacing) * 5);
+  }
+  .h-6 {
+    height: calc(var(--spacing) * 6);
+  }
+  .h-7 {
+    height: calc(var(--spacing) * 7);
+  }
+  .h-9 {
+    height: calc(var(--spacing) * 9);
+  }
+  .h-10 {
+    height: calc(var(--spacing) * 10);
+  }
+  .h-12 {
+    height: calc(var(--spacing) * 12);
+  }
+  .h-40 {
+    height: calc(var(--spacing) * 40);
+  }
+  .h-64 {
+    height: calc(var(--spacing) * 64);
+  }
+  .h-\[64px\] {
+    height: 64px;
+  }
+  .h-\[150px\] {
+    height: 150px;
+  }
+  .h-\[160px\] {
+    height: 160px;
+  }
+  .h-\[260px\] {
+    height: 260px;
+  }
+  .h-auto {
+    height: auto;
+  }
+  .h-full {
+    height: 100%;
+  }
+  .h-px {
+    height: 1px;
+  }
+  .h-screen {
+    height: 100vh;
+  }
+  .w-4 {
+    width: calc(var(--spacing) * 4);
+  }
+  .w-5 {
+    width: calc(var(--spacing) * 5);
+  }
+  .w-6 {
+    width: calc(var(--spacing) * 6);
+  }
+  .w-7 {
+    width: calc(var(--spacing) * 7);
+  }
+  .w-9 {
+    width: calc(var(--spacing) * 9);
+  }
+  .w-10 {
+    width: calc(var(--spacing) * 10);
+  }
+  .w-12 {
+    width: calc(var(--spacing) * 12);
+  }
+  .w-40 {
+    width: calc(var(--spacing) * 40);
+  }
+  .w-64 {
+    width: calc(var(--spacing) * 64);
+  }
+  .w-\[100px\] {
+    width: 100px;
+  }
+  .w-\[140px\] {
+    width: 140px;
+  }
+  .w-\[280px\] {
+    width: 280px;
+  }
+  .w-fit {
+    width: fit-content;
+  }
+  .w-full {
+    width: 100%;
+  }
+  .w-px {
+    width: 1px;
+  }
+  .max-w-3xl {
+    max-width: var(--container-3xl);
+  }
+  .max-w-7xl {
+    max-width: var(--container-7xl);
+  }
+  .max-w-\[200px\] {
+    max-width: 200px;
+  }
+  .max-w-\[500px\] {
+    max-width: 500px;
+  }
+  .max-w-\[720px\] {
+    max-width: 720px;
+  }
+  .min-w-0 {
+    min-width: calc(var(--spacing) * 0);
+  }
+  .flex-1 {
+    flex: 1;
+  }
+  .flex-none {
+    flex: none;
+  }
+  .flex-shrink-0 {
+    flex-shrink: 0;
+  }
+  .shrink-0 {
+    flex-shrink: 0;
+  }
+  .-translate-x-1\/2 {
+    --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .-translate-x-full {
+    --tw-translate-x: -100%;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-x-0 {
+    --tw-translate-x: calc(var(--spacing) * 0);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-x-1\/2 {
+    --tw-translate-x: calc(1 / 2 * 100%);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .-translate-y-1\/2 {
+    --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-y-1\/2 {
+    --tw-translate-y: calc(1 / 2 * 100%);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .transform {
+    transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .cursor-not-allowed {
+    cursor: not-allowed;
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .snap-x {
+    scroll-snap-type: x var(--tw-scroll-snap-strictness);
+  }
+  .snap-mandatory {
+    --tw-scroll-snap-strictness: mandatory;
+  }
+  .snap-start {
+    scroll-snap-align: start;
+  }
+  .appearance-none {
+    appearance: none;
+  }
+  .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .flex-col {
+    flex-direction: column;
+  }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .items-end {
+    align-items: flex-end;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
+  }
+  .gap-1 {
+    gap: calc(var(--spacing) * 1);
+  }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
+  }
+  .gap-3 {
+    gap: calc(var(--spacing) * 3);
+  }
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
+  }
+  .gap-5 {
+    gap: calc(var(--spacing) * 5);
+  }
+  .gap-8 {
+    gap: calc(var(--spacing) * 8);
+  }
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  .overflow-x-auto {
+    overflow-x: auto;
+  }
+  .overflow-y-auto {
+    overflow-y: auto;
+  }
+  .rounded {
+    border-radius: 0.25rem;
+  }
+  .rounded-2xl {
+    border-radius: var(--radius-2xl);
+  }
+  .rounded-\[28px\] {
+    border-radius: 28px;
+  }
+  .rounded-\[32px\] {
+    border-radius: 32px;
+  }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
+  }
+  .rounded-lg {
+    border-radius: var(--radius-lg);
+  }
+  .rounded-md {
+    border-radius: var(--radius-md);
+  }
+  .rounded-xl {
+    border-radius: var(--radius-xl);
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .border-t {
+    border-top-style: var(--tw-border-style);
+    border-top-width: 1px;
+  }
+  .border-b {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 1px;
+  }
+  .border-transparent {
+    border-color: transparent;
+  }
+  .border-white\/20 {
+    border-color: color-mix(in srgb, #fff 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-white) 20%, transparent);
+    }
+  }
+  .bg-\[\#0b57d0\]\/10 {
+    background-color: color-mix(in oklab, #0b57d0 10%, transparent);
+  }
+  .bg-\[\#e9eef6\] {
+    background-color: #e9eef6;
+  }
+  .bg-black\/5 {
+    background-color: color-mix(in srgb, #000 5%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-black) 5%, transparent);
+    }
+  }
+  .bg-black\/40 {
+    background-color: color-mix(in srgb, #000 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-black) 40%, transparent);
+    }
+  }
+  .bg-green-600 {
+    background-color: var(--color-green-600);
+  }
+  .bg-transparent {
+    background-color: transparent;
+  }
+  .bg-white\/20 {
+    background-color: color-mix(in srgb, #fff 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-white) 20%, transparent);
+    }
+  }
+  .bg-white\/40 {
+    background-color: color-mix(in srgb, #fff 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-white) 40%, transparent);
+    }
+  }
+  .bg-gradient-to-tr {
+    --tw-gradient-position: to top right in oklab;
+    background-image: linear-gradient(var(--tw-gradient-stops));
+  }
+  .from-black\/60 {
+    --tw-gradient-from: color-mix(in srgb, #000 60%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-gradient-from: color-mix(in oklab, var(--color-black) 60%, transparent);
+    }
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .to-transparent {
+    --tw-gradient-to: transparent;
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .fill-\[\#fbbc04\] {
+    fill: #fbbc04;
+  }
+  .object-cover {
+    object-fit: cover;
+  }
+  .p-1\.5 {
+    padding: calc(var(--spacing) * 1.5);
+  }
+  .p-2 {
+    padding: calc(var(--spacing) * 2);
+  }
+  .p-3 {
+    padding: calc(var(--spacing) * 3);
+  }
+  .p-3\.5 {
+    padding: calc(var(--spacing) * 3.5);
+  }
+  .p-4 {
+    padding: calc(var(--spacing) * 4);
+  }
+  .p-6 {
+    padding: calc(var(--spacing) * 6);
+  }
+  .p-8 {
+    padding: calc(var(--spacing) * 8);
+  }
+  .px-1 {
+    padding-inline: calc(var(--spacing) * 1);
+  }
+  .px-1\.5 {
+    padding-inline: calc(var(--spacing) * 1.5);
+  }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
+  }
+  .px-2\.5 {
+    padding-inline: calc(var(--spacing) * 2.5);
+  }
+  .px-3 {
+    padding-inline: calc(var(--spacing) * 3);
+  }
+  .px-4 {
+    padding-inline: calc(var(--spacing) * 4);
+  }
+  .px-6 {
+    padding-inline: calc(var(--spacing) * 6);
+  }
+  .px-8 {
+    padding-inline: calc(var(--spacing) * 8);
+  }
+  .py-0\.5 {
+    padding-block: calc(var(--spacing) * 0.5);
+  }
+  .py-1 {
+    padding-block: calc(var(--spacing) * 1);
+  }
+  .py-1\.5 {
+    padding-block: calc(var(--spacing) * 1.5);
+  }
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
+  .py-2\.5 {
+    padding-block: calc(var(--spacing) * 2.5);
+  }
+  .py-3 {
+    padding-block: calc(var(--spacing) * 3);
+  }
+  .py-4 {
+    padding-block: calc(var(--spacing) * 4);
+  }
+  .py-8 {
+    padding-block: calc(var(--spacing) * 8);
+  }
+  .pt-2 {
+    padding-top: calc(var(--spacing) * 2);
+  }
+  .pt-4 {
+    padding-top: calc(var(--spacing) * 4);
+  }
+  .pt-8 {
+    padding-top: calc(var(--spacing) * 8);
+  }
+  .pt-10 {
+    padding-top: calc(var(--spacing) * 10);
+  }
+  .pr-1 {
+    padding-right: calc(var(--spacing) * 1);
+  }
+  .pr-4 {
+    padding-right: calc(var(--spacing) * 4);
+  }
+  .pr-8 {
+    padding-right: calc(var(--spacing) * 8);
+  }
+  .pb-4 {
+    padding-bottom: calc(var(--spacing) * 4);
+  }
+  .pb-6 {
+    padding-bottom: calc(var(--spacing) * 6);
+  }
+  .pb-16 {
+    padding-bottom: calc(var(--spacing) * 16);
+  }
+  .pl-12 {
+    padding-left: calc(var(--spacing) * 12);
+  }
+  .text-center {
+    text-align: center;
+  }
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
+  }
+  .text-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
+  }
+  .text-base {
+    font-size: var(--text-base);
+    line-height: var(--tw-leading, var(--text-base--line-height));
+  }
+  .text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--tw-leading, var(--text-lg--line-height));
+  }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .text-xl {
+    font-size: var(--text-xl);
+    line-height: var(--tw-leading, var(--text-xl--line-height));
+  }
+  .text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .text-\[10px\] {
+    font-size: 10px;
+  }
+  .leading-none {
+    --tw-leading: 1;
+    line-height: 1;
+  }
+  .leading-relaxed {
+    --tw-leading: var(--leading-relaxed);
+    line-height: var(--leading-relaxed);
+  }
+  .leading-snug {
+    --tw-leading: var(--leading-snug);
+    line-height: var(--leading-snug);
+  }
+  .leading-tight {
+    --tw-leading: var(--leading-tight);
+    line-height: var(--leading-tight);
+  }
+  .font-bold {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+  }
+  .font-medium {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+  }
+  .tracking-tight {
+    --tw-tracking: var(--tracking-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+  .tracking-wide {
+    --tw-tracking: var(--tracking-wide);
+    letter-spacing: var(--tracking-wide);
+  }
+  .tracking-wider {
+    --tw-tracking: var(--tracking-wider);
+    letter-spacing: var(--tracking-wider);
+  }
+  .tracking-widest {
+    --tw-tracking: var(--tracking-widest);
+    letter-spacing: var(--tracking-widest);
+  }
+  .text-\[\#fbbc04\] {
+    color: #fbbc04;
+  }
+  .text-green-700 {
+    color: var(--color-green-700);
+  }
+  .text-white {
+    color: var(--color-white);
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+  .opacity-0 {
+    opacity: 0%;
+  }
+  .opacity-50 {
+    opacity: 50%;
+  }
+  .opacity-80 {
+    opacity: 80%;
+  }
+  .opacity-100 {
+    opacity: 100%;
+  }
+  .shadow-2xl {
+    --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, rgb(0 0 0 / 0.25));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .shadow-lg {
+    --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 4px 6px -4px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .shadow-md {
+    --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .shadow-sm {
+    --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .shadow-xl {
+    --tw-shadow: 0 20px 25px -5px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 8px 10px -6px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .blur-2xl {
+    --tw-blur: blur(var(--blur-2xl));
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
+  .blur-3xl {
+    --tw-blur: blur(var(--blur-3xl));
+    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  }
+  .backdrop-blur-sm {
+    --tw-backdrop-blur: blur(var(--blur-sm));
+    -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+    backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+  }
+  .transition-all {
+    transition-property: all;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-colors {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-transform {
+    transition-property: transform, translate, scale, rotate;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .duration-300 {
+    --tw-duration: 300ms;
+    transition-duration: 300ms;
+  }
+  .duration-500 {
+    --tw-duration: 500ms;
+    transition-duration: 500ms;
+  }
+  .ease-in-out {
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
+  }
+  .outline-none {
+    --tw-outline-style: none;
+    outline-style: none;
+  }
+  .group-hover\:scale-105 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        --tw-scale-x: 105%;
+        --tw-scale-y: 105%;
+        --tw-scale-z: 105%;
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+      }
+    }
+  }
+  .group-hover\:opacity-100 {
+    &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        opacity: 100%;
+      }
+    }
+  }
+  .hover\:bg-\[\#0842a0\] {
+    &:hover {
+      @media (hover: hover) {
+        background-color: #0842a0;
+      }
+    }
+  }
+  .hover\:opacity-90 {
+    &:hover {
+      @media (hover: hover) {
+        opacity: 90%;
+      }
+    }
+  }
+  .hover\:shadow-md {
+    &:hover {
+      @media (hover: hover) {
+        --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+        box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+      }
+    }
+  }
+  .focus\:bg-white {
+    &:focus {
+      background-color: var(--color-white);
+    }
+  }
+  .focus\:shadow-md {
+    &:focus {
+      --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 2px 4px -2px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    }
+  }
+  .focus\:ring-2 {
+    &:focus {
+      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    }
+  }
+  .focus\:outline-none {
+    &:focus {
+      --tw-outline-style: none;
+      outline-style: none;
+    }
+  }
+  .sm\:mx-1 {
+    @media (width >= 40rem) {
+      margin-inline: calc(var(--spacing) * 1);
+    }
+  }
+  .sm\:mx-4 {
+    @media (width >= 40rem) {
+      margin-inline: calc(var(--spacing) * 4);
+    }
+  }
+  .sm\:mb-4 {
+    @media (width >= 40rem) {
+      margin-bottom: calc(var(--spacing) * 4);
+    }
+  }
+  .sm\:block {
+    @media (width >= 40rem) {
+      display: block;
+    }
+  }
+  .sm\:flex {
+    @media (width >= 40rem) {
+      display: flex;
+    }
+  }
+  .sm\:w-\[160px\] {
+    @media (width >= 40rem) {
+      width: 160px;
+    }
+  }
+  .sm\:grid-cols-3 {
+    @media (width >= 40rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .sm\:flex-row {
+    @media (width >= 40rem) {
+      flex-direction: row;
+    }
+  }
+  .sm\:items-center {
+    @media (width >= 40rem) {
+      align-items: center;
+    }
+  }
+  .sm\:gap-6 {
+    @media (width >= 40rem) {
+      gap: calc(var(--spacing) * 6);
+    }
+  }
+  .sm\:rounded-\[36px\] {
+    @media (width >= 40rem) {
+      border-radius: 36px;
+    }
+  }
+  .sm\:p-6 {
+    @media (width >= 40rem) {
+      padding: calc(var(--spacing) * 6);
+    }
+  }
+  .sm\:p-10 {
+    @media (width >= 40rem) {
+      padding: calc(var(--spacing) * 10);
+    }
+  }
+  .sm\:px-1 {
+    @media (width >= 40rem) {
+      padding-inline: calc(var(--spacing) * 1);
+    }
+  }
+  .md\:relative {
+    @media (width >= 48rem) {
+      position: relative;
+    }
+  }
+  .md\:z-0 {
+    @media (width >= 48rem) {
+      z-index: 0;
+    }
+  }
+  .md\:mx-0 {
+    @media (width >= 48rem) {
+      margin-inline: calc(var(--spacing) * 0);
+    }
+  }
+  .md\:mr-8 {
+    @media (width >= 48rem) {
+      margin-right: calc(var(--spacing) * 8);
+    }
+  }
+  .md\:block {
+    @media (width >= 48rem) {
+      display: block;
+    }
+  }
+  .md\:flex {
+    @media (width >= 48rem) {
+      display: flex;
+    }
+  }
+  .md\:hidden {
+    @media (width >= 48rem) {
+      display: none;
+    }
+  }
+  .md\:w-2\/5 {
+    @media (width >= 48rem) {
+      width: calc(2 / 5 * 100%);
+    }
+  }
+  .md\:w-\[180px\] {
+    @media (width >= 48rem) {
+      width: 180px;
+    }
+  }
+  .md\:translate-x-0 {
+    @media (width >= 48rem) {
+      --tw-translate-x: calc(var(--spacing) * 0);
+      translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+  }
+  .md\:grid-cols-2 {
+    @media (width >= 48rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .md\:flex-row {
+    @media (width >= 48rem) {
+      flex-direction: row;
+    }
+  }
+  .md\:justify-start {
+    @media (width >= 48rem) {
+      justify-content: flex-start;
+    }
+  }
+  .md\:gap-5 {
+    @media (width >= 48rem) {
+      gap: calc(var(--spacing) * 5);
+    }
+  }
+  .md\:rounded-\[32px\] {
+    @media (width >= 48rem) {
+      border-radius: 32px;
+    }
+  }
+  .md\:bg-transparent {
+    @media (width >= 48rem) {
+      background-color: transparent;
+    }
+  }
+  .md\:px-10 {
+    @media (width >= 48rem) {
+      padding-inline: calc(var(--spacing) * 10);
+    }
+  }
+  .md\:text-left {
+    @media (width >= 48rem) {
+      text-align: left;
+    }
+  }
+  .md\:text-3xl {
+    @media (width >= 48rem) {
+      font-size: var(--text-3xl);
+      line-height: var(--tw-leading, var(--text-3xl--line-height));
+    }
+  }
+  .md\:text-5xl {
+    @media (width >= 48rem) {
+      font-size: var(--text-5xl);
+      line-height: var(--tw-leading, var(--text-5xl--line-height));
+    }
+  }
+  .md\:text-base {
+    @media (width >= 48rem) {
+      font-size: var(--text-base);
+      line-height: var(--tw-leading, var(--text-base--line-height));
+    }
+  }
+  .lg\:grid-cols-4 {
+    @media (width >= 64rem) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .lg\:px-14 {
+    @media (width >= 64rem) {
+      padding-inline: calc(var(--spacing) * 14);
+    }
+  }
+  .xl\:grid-cols-5 {
+    @media (width >= 80rem) {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+}
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-primary);
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+@property --tw-translate-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-rotate-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-z {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-scroll-snap-strictness {
+  syntax: "*";
+  inherits: false;
+  initial-value: proximity;
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-gradient-position {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-from {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-via {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-to {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-gradient-stops {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-via-stops {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-gradient-from-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+@property --tw-gradient-via-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 50%;
+}
+@property --tw-gradient-to-position {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-tracking {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-inset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-ring-inset {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-offset-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-ring-offset-color {
+  syntax: "*";
+  inherits: false;
+  initial-value: #fff;
+}
+@property --tw-ring-offset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-drop-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-drop-shadow-size {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-blur {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-brightness {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-contrast {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-grayscale {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-hue-rotate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-invert {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-opacity {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-saturate {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-backdrop-sepia {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-duration {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ease {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-scale-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-translate-z: 0;
+      --tw-rotate-x: initial;
+      --tw-rotate-y: initial;
+      --tw-rotate-z: initial;
+      --tw-skew-x: initial;
+      --tw-skew-y: initial;
+      --tw-scroll-snap-strictness: proximity;
+      --tw-border-style: solid;
+      --tw-gradient-position: initial;
+      --tw-gradient-from: #0000;
+      --tw-gradient-via: #0000;
+      --tw-gradient-to: #0000;
+      --tw-gradient-stops: initial;
+      --tw-gradient-via-stops: initial;
+      --tw-gradient-from-position: 0%;
+      --tw-gradient-via-position: 50%;
+      --tw-gradient-to-position: 100%;
+      --tw-leading: initial;
+      --tw-font-weight: initial;
+      --tw-tracking: initial;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-color: initial;
+      --tw-shadow-alpha: 100%;
+      --tw-inset-shadow: 0 0 #0000;
+      --tw-inset-shadow-color: initial;
+      --tw-inset-shadow-alpha: 100%;
+      --tw-ring-color: initial;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-inset-ring-color: initial;
+      --tw-inset-ring-shadow: 0 0 #0000;
+      --tw-ring-inset: initial;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-blur: initial;
+      --tw-brightness: initial;
+      --tw-contrast: initial;
+      --tw-grayscale: initial;
+      --tw-hue-rotate: initial;
+      --tw-invert: initial;
+      --tw-opacity: initial;
+      --tw-saturate: initial;
+      --tw-sepia: initial;
+      --tw-drop-shadow: initial;
+      --tw-drop-shadow-color: initial;
+      --tw-drop-shadow-alpha: 100%;
+      --tw-drop-shadow-size: initial;
+      --tw-backdrop-blur: initial;
+      --tw-backdrop-brightness: initial;
+      --tw-backdrop-contrast: initial;
+      --tw-backdrop-grayscale: initial;
+      --tw-backdrop-hue-rotate: initial;
+      --tw-backdrop-invert: initial;
+      --tw-backdrop-opacity: initial;
+      --tw-backdrop-saturate: initial;
+      --tw-backdrop-sepia: initial;
+      --tw-duration: initial;
+      --tw-ease: initial;
+      --tw-scale-x: 1;
+      --tw-scale-y: 1;
+      --tw-scale-z: 1;
+    }
+  }
+}
+</style></head>
+  <body>
+    <div id="root"><div class="h-screen bg-m3-surface text-m3-tertiary font-sans flex overflow-hidden"><div class="fixed inset-0 bg-m3-tertiary/20 z-40 md:hidden transition-opacity opacity-0 pointer-events-none"></div><aside class="fixed md:relative top-0 left-0 h-full w-[280px] bg-m3-surface md:bg-transparent z-50 md:z-0 transform transition-transform duration-300 ease-in-out shrink-0 overflow-y-auto px-3 py-4 flex flex-col gap-2 -translate-x-full md:translate-x-0"><div class="flex items-center justify-between md:hidden mb-2 px-3"><span class="font-medium text-lg text-m3-tertiary">Menu</span><button class="p-2 hover:bg-m3-outline-variant/30 rounded-full text-m3-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x w-6 h-6" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div><button class="flex items-center gap-3 px-4 py-3 mb-4 rounded-full bg-m3-surface-container hover:bg-m3-surface-container-high border border-m3-outline-variant shadow-sm text-m3-tertiary font-medium transition-colors w-fit mx-1"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus w-5 h-5 text-m3-primary" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Upload Document</button><div class="flex flex-col gap-1"><button class="flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium transition-colors w-full bg-m3-primary-container text-m3-on-primary-container"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass w-5 h-5 text-m3-on-primary-container" aria-hidden="true"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path><circle cx="12" cy="12" r="10"></circle></svg>Discover</button><button class="flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium transition-colors w-full text-m3-secondary hover:bg-m3-outline-variant/30 hover:text-m3-tertiary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-copy w-5 h-5 text-m3-secondary" aria-hidden="true"><path d="M5 7a2 2 0 0 0-2 2v11"></path><path d="M5.803 18H5a2 2 0 0 0 0 4h9.5a.5.5 0 0 0 .5-.5V21"></path><path d="M9 15V4a2 2 0 0 1 2-2h9.5a.5.5 0 0 1 .5.5v14a.5.5 0 0 1-.5.5H11a2 2 0 0 1 0-4h10"></path></svg>My Library</button><button class="flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium transition-colors w-full text-m3-secondary hover:bg-m3-outline-variant/30 hover:text-m3-tertiary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bookmark w-5 h-5 text-m3-secondary" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>Wishlist</button></div><div class="h-px bg-m3-outline-variant my-3 mx-4"></div><div class="flex flex-col gap-1"><span class="px-4 py-2 text-xs font-medium text-m3-secondary">Your Activity</span><button class="flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium text-m3-secondary hover:bg-m3-outline-variant/30 hover:text-m3-tertiary transition-colors w-full"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square w-5 h-5 text-m3-secondary" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path></svg>Discussions</button><button class="flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium text-m3-secondary hover:bg-m3-outline-variant/30 hover:text-m3-tertiary transition-colors w-full"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-history w-5 h-5 text-m3-secondary" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></svg>History</button></div><div class="mt-auto pt-4 flex flex-col gap-1"><button class="flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium text-m3-secondary hover:bg-m3-outline-variant/30 hover:text-m3-tertiary transition-colors w-full"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings w-5 h-5" aria-hidden="true"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle></svg>Settings</button></div></aside><div class="flex-1 flex flex-col min-w-0 h-full"><header class="h-[64px] flex items-center justify-between px-4 sticky top-0 bg-transparent z-40 shrink-0"><div class="flex items-center gap-3 md:gap-5"><button class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-m3-outline-variant/30 text-m3-secondary transition-colors md:hidden"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu w-6 h-6" aria-hidden="true"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg></button><div class="flex items-center gap-2 text-m3-primary mr-2 md:mr-8 cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-library-big w-7 h-7" aria-hidden="true"><rect width="8" height="18" x="3" y="3" rx="1"></rect><path d="M7 3v18"></path><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z"></path></svg><span class="font-sans font-medium text-xl tracking-wide hidden sm:block text-m3-tertiary">Vidyari</span></div><div class="relative flex-1 max-w-[720px] hidden md:block"><input placeholder="Search millions of titles, authors, and topics" class="w-full h-12 pl-12 pr-4 bg-[#e9eef6] border border-transparent rounded-full text-base focus:bg-white focus:shadow-md focus:outline-none transition-all text-m3-tertiary placeholder:text-m3-secondary" type="text"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search w-5 h-5 absolute left-4 top-3.5 text-m3-secondary pointer-events-none" aria-hidden="true"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg></div></div><div class="flex items-center gap-2"><button class="hidden sm:flex items-center justify-center h-10 px-4 rounded-full text-sm font-medium hover:bg-m3-outline-variant/30 text-m3-secondary transition-colors">Upload</button><div class="w-10 h-10 rounded-full bg-m3-primary-container text-m3-on-primary-container font-medium text-sm flex items-center justify-center cursor-pointer hover:opacity-90">U</div></div></header><main class="flex-1 bg-m3-surface-container mx-2 mb-2 rounded-[32px] sm:mx-4 sm:mb-4 sm:rounded-[36px] shadow-sm border border-m3-outline-variant overflow-y-auto px-4 py-8 md:px-10 lg:px-14"><div class="max-w-7xl mx-auto pb-16"><div class="flex flex-col md:flex-row gap-8 mb-10 bg-m3-primary-container text-m3-on-primary-container p-6 sm:p-10 rounded-[28px] md:rounded-[32px] overflow-hidden relative"><div class="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div><div class="absolute bottom-0 left-10 w-40 h-40 bg-[#0b57d0]/10 rounded-full blur-2xl translate-y-1/2 pointer-events-none"></div><div class="w-full md:w-[180px] h-[260px] bg-m3-primary rounded-xl flex-shrink-0 relative overflow-hidden shadow-lg mx-auto md:mx-0 z-10 border border-white/20"><img alt="The Art of Computer Programming" class="absolute inset-0 w-full h-full object-cover" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-gradient-to-tr from-black/60 to-transparent"></div><div class="p-4 text-white text-center flex flex-col h-full justify-end pb-6 relative z-10"><div class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-2">Must Read</div><div class="font-medium text-lg leading-tight">The Art of Computer Programming</div></div></div><div class="flex flex-col justify-center text-center md:text-left z-10"><div class="flex items-center justify-center md:justify-start gap-2 mb-3"><span class="px-2.5 py-1 bg-white/40 rounded-md text-xs font-bold text-m3-on-primary-container uppercase tracking-wider backdrop-blur-sm">Technology</span><span class="text-m3-on-primary-container/70 text-sm font-medium">★ 4.8 (2.4k)</span></div><h1 class="text-3xl md:text-5xl mb-4 tracking-tight font-medium">The Art of Computer<br class="hidden md:block"> Programming</h1><p class="text-m3-on-primary-container/80 text-base mb-8 max-w-[500px] leading-relaxed mx-auto md:mx-0">A comprehensive monograph written by computer scientist Donald Knuth that covers many kinds of programming algorithms and their analysis.</p><div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start"><button class="px-8 py-3 bg-m3-primary text-m3-on-primary rounded-full text-sm font-medium hover:opacity-90 transition-opacity">Start Reading</button><button class="px-8 py-3 border border-m3-on-primary-container/20 text-m3-on-primary-container rounded-full text-sm font-medium hover:bg-m3-on-primary-container/5 transition-colors">Add to Library</button></div></div></div><div class="relative mb-12"><div class="flex items-end justify-between mb-6"><h2 class="text-xl font-medium text-m3-tertiary tracking-tight px-1">Top Charts</h2><button class="hidden sm:block text-sm font-medium text-m3-primary hover:bg-m3-primary/10 px-3 py-1.5 rounded-full transition-colors">View all</button></div><div class="group relative"><button class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-10 h-10 bg-m3-surface border border-m3-outline-variant rounded-full flex items-center justify-center shadow-md text-m3-secondary hover:text-m3-primary transition-all opacity-0 group-hover:opacity-100 hidden md:flex"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left w-5 h-5" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button><div class="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-1 sm:px-1"><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="The Art of Computer Programming" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="The Art of Computer Programming">The Art of Computer Programming</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Donald Knuth</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-m3-primary">$54.99</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><span class="absolute top-2 left-2 z-20 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-wider uppercase">New</span><img alt="Clean Code" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Clean Code">Clean Code</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Robert C. Martin</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$34.5</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Introduction to Algorithms" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Introduction to Algorithms">Introduction to Algorithms</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Thomas H. Cormen</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.7</span></div><span class="text-sm font-semibold text-m3-primary">$85</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Design Patterns" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Design Patterns">Design Patterns</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Erich Gamma</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.6</span></div><span class="text-sm font-semibold text-m3-primary">$45.99</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Code Complete" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Code Complete">Code Complete</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Steve McConnell</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-m3-primary">$42</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Refactoring" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1627398514015-4ba2b444c1a7?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Refactoring">Refactoring</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Martin Fowler</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$48</span></div></div></div></div></div><button class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-10 h-10 bg-m3-surface border border-m3-outline-variant rounded-full flex items-center justify-center shadow-md text-m3-secondary hover:text-m3-primary transition-all opacity-0 group-hover:opacity-100 hidden md:flex"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right w-5 h-5" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></div></div><div class="relative mb-12"><div class="flex items-end justify-between mb-6"><h2 class="text-xl font-medium text-m3-tertiary tracking-tight px-1">New Releases</h2><button class="hidden sm:block text-sm font-medium text-m3-primary hover:bg-m3-primary/10 px-3 py-1.5 rounded-full transition-colors">View all</button></div><div class="group relative"><button class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-10 h-10 bg-m3-surface border border-m3-outline-variant rounded-full flex items-center justify-center shadow-md text-m3-secondary hover:text-m3-primary transition-all opacity-0 group-hover:opacity-100 hidden md:flex"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left w-5 h-5" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button><div class="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-1 sm:px-1"><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><span class="absolute top-2 left-2 z-20 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-wider uppercase">New</span><img alt="Clean Code" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Clean Code">Clean Code</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Robert C. Martin</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$34.5</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><span class="absolute top-2 left-2 z-20 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-wider uppercase">New</span><img alt="Thinking, Fast and Slow" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Thinking, Fast and Slow">Thinking, Fast and Slow</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Daniel Kahneman</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.7</span></div><span class="text-sm font-semibold text-m3-primary">$12.99</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="A Brief History of Time" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="A Brief History of Time">A Brief History of Time</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Stephen Hawking</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-green-700">Free</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Sapiens" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Sapiens">Sapiens</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Yuval Noah Harari</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-m3-primary">$14.99</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><span class="absolute top-2 left-2 z-20 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-wider uppercase">New</span><img alt="Thinking, Fast and Slow" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Thinking, Fast and Slow">Thinking, Fast and Slow</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Daniel Kahneman</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.7</span></div><span class="text-sm font-semibold text-m3-primary">$12.99</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Deep Learning" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1551269901-5c5e14c25df7?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Deep Learning">Deep Learning</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Ian Goodfellow</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$65</span></div></div></div></div></div><button class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-10 h-10 bg-m3-surface border border-m3-outline-variant rounded-full flex items-center justify-center shadow-md text-m3-secondary hover:text-m3-primary transition-all opacity-0 group-hover:opacity-100 hidden md:flex"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right w-5 h-5" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></div></div><div class="mb-10"><h2 class="text-xl font-medium text-m3-tertiary tracking-tight mb-5 px-1">Browse Categories</h2><div class="flex flex-wrap gap-3"><button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-m3-surface-container border border-m3-outline-variant hover:bg-m3-surface-container-high transition-colors group cursor-pointer"><div class="text-m3-primary bg-m3-primary-container p-1.5 rounded-full group-hover:bg-m3-primary group-hover:text-m3-on-primary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-laptop w-4 h-4" aria-hidden="true"><path d="M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z"></path><path d="M20.054 15.987H3.946"></path></svg></div><span class="text-sm font-medium text-m3-tertiary pr-1">Technology</span></button><button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-m3-surface-container border border-m3-outline-variant hover:bg-m3-surface-container-high transition-colors group cursor-pointer"><div class="text-m3-primary bg-m3-primary-container p-1.5 rounded-full group-hover:bg-m3-primary group-hover:text-m3-on-primary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator w-4 h-4" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg></div><span class="text-sm font-medium text-m3-tertiary pr-1">Mathematics</span></button><button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-m3-surface-container border border-m3-outline-variant hover:bg-m3-surface-container-high transition-colors group cursor-pointer"><div class="text-m3-primary bg-m3-primary-container p-1.5 rounded-full group-hover:bg-m3-primary group-hover:text-m3-on-primary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flask-conical w-4 h-4" aria-hidden="true"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"></path><path d="M6.453 15h11.094"></path><path d="M8.5 2h7"></path></svg></div><span class="text-sm font-medium text-m3-tertiary pr-1">Science</span></button><button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-m3-surface-container border border-m3-outline-variant hover:bg-m3-surface-container-high transition-colors group cursor-pointer"><div class="text-m3-primary bg-m3-primary-container p-1.5 rounded-full group-hover:bg-m3-primary group-hover:text-m3-on-primary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase w-4 h-4" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path><rect width="20" height="14" x="2" y="6" rx="2"></rect></svg></div><span class="text-sm font-medium text-m3-tertiary pr-1">Business</span></button><button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-m3-surface-container border border-m3-outline-variant hover:bg-m3-surface-container-high transition-colors group cursor-pointer"><div class="text-m3-primary bg-m3-primary-container p-1.5 rounded-full group-hover:bg-m3-primary group-hover:text-m3-on-primary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-palette w-4 h-4" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle></svg></div><span class="text-sm font-medium text-m3-tertiary pr-1">Arts</span></button><button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-m3-surface-container border border-m3-outline-variant hover:bg-m3-surface-container-high transition-colors group cursor-pointer"><div class="text-m3-primary bg-m3-primary-container p-1.5 rounded-full group-hover:bg-m3-primary group-hover:text-m3-on-primary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open w-4 h-4" aria-hidden="true"><path d="M12 7v14"></path><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"></path></svg></div><span class="text-sm font-medium text-m3-tertiary pr-1">History</span></button><button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-m3-surface-container border border-m3-outline-variant hover:bg-m3-surface-container-high transition-colors group cursor-pointer"><div class="text-m3-primary bg-m3-primary-container p-1.5 rounded-full group-hover:bg-m3-primary group-hover:text-m3-on-primary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code w-4 h-4" aria-hidden="true"><path d="m16 18 6-6-6-6"></path><path d="m8 6-6 6 6 6"></path></svg></div><span class="text-sm font-medium text-m3-tertiary pr-1">Programming</span></button><button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-m3-surface-container border border-m3-outline-variant hover:bg-m3-surface-container-high transition-colors group cursor-pointer"><div class="text-m3-primary bg-m3-primary-container p-1.5 rounded-full group-hover:bg-m3-primary group-hover:text-m3-on-primary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen-tool w-4 h-4" aria-hidden="true"><path d="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l5.586-5.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z"></path><path d="m18 13-1.375-6.874a1 1 0 0 0-.746-.776L3.235 2.028a1 1 0 0 0-1.207 1.207L5.35 15.879a1 1 0 0 0 .776.746L13 18"></path><path d="m2.3 2.3 7.286 7.286"></path><circle cx="11" cy="11" r="2"></circle></svg></div><span class="text-sm font-medium text-m3-tertiary pr-1">Design</span></button></div></div><div class="relative mb-12"><div class="flex items-end justify-between mb-6"><h2 class="text-xl font-medium text-m3-tertiary tracking-tight px-1">Editor's Choice</h2><button class="hidden sm:block text-sm font-medium text-m3-primary hover:bg-m3-primary/10 px-3 py-1.5 rounded-full transition-colors">View all</button></div><div class="group relative"><button class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-10 h-10 bg-m3-surface border border-m3-outline-variant rounded-full flex items-center justify-center shadow-md text-m3-secondary hover:text-m3-primary transition-all opacity-0 group-hover:opacity-100 hidden md:flex"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left w-5 h-5" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button><div class="flex gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-1 sm:px-1"><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><span class="absolute top-2 left-2 z-20 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-wider uppercase">New</span><img alt="Clean Code" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Clean Code">Clean Code</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Robert C. Martin</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$34.5</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Refactoring" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1627398514015-4ba2b444c1a7?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Refactoring">Refactoring</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Martin Fowler</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$48</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Deep Learning" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1551269901-5c5e14c25df7?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Deep Learning">Deep Learning</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Ian Goodfellow</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$65</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Structure and Interpretation of Computer Programs" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1495640388908-05fa85288e61?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Structure and Interpretation of Computer Programs">Structure and Interpretation of Computer Programs</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Harold Abelson</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-green-700">Free</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="The Art of Computer Programming" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="The Art of Computer Programming">The Art of Computer Programming</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Donald Knuth</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-m3-primary">$54.99</span></div></div></div></div><div class="flex-none w-[140px] sm:w-[160px] snap-start"><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Code Complete" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Code Complete">Code Complete</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Steve McConnell</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-m3-primary">$42</span></div></div></div></div></div><button class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-10 h-10 bg-m3-surface border border-m3-outline-variant rounded-full flex items-center justify-center shadow-md text-m3-secondary hover:text-m3-primary transition-all opacity-0 group-hover:opacity-100 hidden md:flex"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right w-5 h-5" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button></div></div><div><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 mt-8 pt-8 border-t border-m3-outline-variant px-1"><div><h2 class="text-xl font-medium text-m3-tertiary tracking-tight mb-1">Most Popular</h2><p class="text-sm text-m3-secondary">Showing 10 of 12 resources</p></div><div class="flex items-center gap-3"><select class="text-sm bg-m3-surface border border-m3-outline-variant rounded-full px-4 py-2 text-m3-tertiary outline-none focus:ring-2 focus:ring-m3-primary appearance-none hover:bg-m3-outline-variant/20 transition-colors"><option value="match">Top matches</option><option value="new">New arrivals</option><option value="price-asc">Price: Low to high</option><option value="price-desc">Price: High to low</option></select><div class="hidden sm:flex border border-m3-outline-variant rounded-full overflow-hidden bg-m3-surface-container"><button class="p-2 transition-colors bg-m3-primary-container text-m3-on-primary-container"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid w-4 h-4" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg></button><div class="w-px bg-m3-outline-variant"></div><button class="p-2 transition-colors text-m3-secondary hover:text-m3-tertiary hover:bg-m3-outline-variant/30"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-list w-4 h-4" aria-hidden="true"><path d="M3 5h.01"></path><path d="M3 12h.01"></path><path d="M3 19h.01"></path><path d="M8 5h13"></path><path d="M8 12h13"></path><path d="M8 19h13"></path></svg></button></div></div></div><div class="grid gap-5 sm:gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="The Art of Computer Programming" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="The Art of Computer Programming">The Art of Computer Programming</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Donald Knuth</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-m3-primary">$54.99</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><span class="absolute top-2 left-2 z-20 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-wider uppercase">New</span><img alt="Clean Code" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Clean Code">Clean Code</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Robert C. Martin</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$34.5</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Introduction to Algorithms" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Introduction to Algorithms">Introduction to Algorithms</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Thomas H. Cormen</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.7</span></div><span class="text-sm font-semibold text-m3-primary">$85</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Design Patterns" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Design Patterns">Design Patterns</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Erich Gamma</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.6</span></div><span class="text-sm font-semibold text-m3-primary">$45.99</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Code Complete" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Code Complete">Code Complete</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Steve McConnell</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-m3-primary">$42</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Refactoring" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1627398514015-4ba2b444c1a7?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Refactoring">Refactoring</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Martin Fowler</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$48</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="A Brief History of Time" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="A Brief History of Time">A Brief History of Time</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Stephen Hawking</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-green-700">Free</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Sapiens" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Sapiens">Sapiens</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Yuval Noah Harari</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.8</span></div><span class="text-sm font-semibold text-m3-primary">$14.99</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><span class="absolute top-2 left-2 z-20 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm tracking-wider uppercase">New</span><img alt="Thinking, Fast and Slow" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Thinking, Fast and Slow">Thinking, Fast and Slow</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Daniel Kahneman</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.7</span></div><span class="text-sm font-semibold text-m3-primary">$12.99</span></div></div></div></div><div class=""><div class="flex flex-col group cursor-pointer h-full bg-m3-surface-container border border-m3-outline-variant rounded-2xl overflow-hidden hover:shadow-md hover:border-m3-outline transition-all duration-300"><div class="aspect-[3/4] bg-m3-surface-container-high relative overflow-hidden shrink-0 border-b border-m3-outline-variant"><img alt="Deep Learning" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" src="https://images.unsplash.com/photo-1551269901-5c5e14c25df7?w=400&amp;q=80&amp;fit=crop"><div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div></div><div class="p-3.5 flex flex-col flex-1"><h3 class="text-sm font-semibold text-m3-tertiary leading-tight line-clamp-2 mb-1" title="Deep Learning">Deep Learning</h3><p class="text-xs font-medium text-m3-secondary truncate mb-2">Ian Goodfellow</p><div class="mt-auto flex items-center justify-between pt-2"><div class="flex items-center gap-1 bg-m3-surface px-1.5 py-0.5 rounded"><span class="text-xs font-medium text-m3-tertiary leading-none">★</span><span class="text-xs font-medium text-m3-secondary">4.9</span></div><span class="text-sm font-semibold text-m3-primary">$65</span></div></div></div></div></div><div class="mt-10 flex justify-center"><div class="flex items-center gap-2"><button disabled="" class="px-4 py-2 border border-m3-outline-variant rounded-full text-m3-secondary bg-m3-surface text-sm font-medium cursor-not-allowed opacity-50">Previous</button><button class="w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-colors text-m3-on-primary-container bg-m3-primary-container">1</button><button class="w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-colors text-m3-secondary hover:bg-m3-outline-variant/30">2</button><button class="px-4 py-2 border border-m3-outline-variant rounded-full text-sm font-medium transition-colors text-m3-tertiary hover:bg-m3-outline-variant/30">Next</button></div></div></div></div></main></div></div></div>
+    <script type="module" src="/src/main.tsx"></script>
+  
 
-        .viewer-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100dvh;
-        }
 
-        iframe {
-            width: 100%; height: 100%; border: none;
-        }
-
-        /* THE SHIELD: This invisible box sits over the top 50px 
-           to stop people from clicking the toolbar buttons */
-        .toolbar-shield {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 50px;
-            z-index: 10;
-            cursor: default;
-            /* background: rgba(255,0,0,0.2); Uncomment this to see the shield */
-        }
-    </style>
-</head>
-<body oncontextmenu="return false;"> <div class="viewer-wrapper">
-        <div class="toolbar-shield"></div>
-        <iframe 
-            src="https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf#toolbar=0" 
-            id="pdfFrame">
-        </iframe>
-    </div>
-
-    <script>
-        // Disable Print (Ctrl + P) and Save (Ctrl + S)
-        window.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 's')) {
-                e.preventDefault();
-                alert("Printing and Saving are disabled for this document.");
-            }
-        });
-    </script>
-</body>
-</html>
+</body></html>

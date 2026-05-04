@@ -384,8 +384,8 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     const fileId = "<%=file._id%>";
-    const originalPrice = <%=priceDetails.originalPrice%>
-    const fees = <%=priceDetails.serviceFee + priceDetails.gstTax%>
+    const originalPrice=<%=priceDetails.originalPrice%>
+    const fees=<%=priceDetails.serviceFee+priceDetails.gstTax%>
 
     const couponInput = document.getElementById('coupon-code');
     const applyBtn = document.getElementById('apply-coupon-btn');
